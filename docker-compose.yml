@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: .
+      target: development # Targets the development stage in our Dockerfile
+    container_name: merge_backend_api
+    volumes:
+      - .:/user/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    command: npm run start:dev # Runs the live-reloading Nest server
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  redis: 
+    image: redis:7-alpine
+    container_name: merge_redis
+    ports: 
+      - "6379:6379"
+    restart: unless-stopped
+
+
+      
