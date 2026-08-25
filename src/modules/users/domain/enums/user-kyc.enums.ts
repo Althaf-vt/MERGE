@@ -1,0 +1,22 @@
+export enum VerificationStatus{
+    NOT_STARTED = 'NOT_STARTED',
+    PENDING = 'PENDING',
+    UNDER_REVIEW = 'UNDER_REVIEW',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED'
+}
+export enum VerificationDevice{
+    CURRENT_DEVICE = 'CURRENT_DEVICE',
+    MOBILE_HANDOFF = 'MOBILE_HANDOFF'
+}
+export enum DocumentType{
+    PASSPORT = 'PASSPORT',
+    NATIONAL_ID = 'NATIONAL_ID',
+    DRIVING_LICENSE = 'DRIVING_LICENSE',
+}
+export enum ReviewDecision{
+    AUTO_APPROVED = 'AUTO_APPROVED',
+    MANUAL_REVIEW = 'MANUAL_REVIEW',
+    AUTO_REJECTED = 'AUTO_REJECTED'
+}
+
