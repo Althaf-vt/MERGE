@@ -1,0 +1,12 @@
+import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
+
+// Defines and validates the data required for OTP verification.
+export class VerifyOtpDto{
+    @IsEmail()
+    @IsNotEmpty()
+    email:string;
+
+    @IsString()
+    @Length(6,6, {message: "OTP must be exactly 6 digits"})
+    otp: string;
+}
