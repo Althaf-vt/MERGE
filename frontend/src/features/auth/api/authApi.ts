@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 // DTO used to type the data sent to the auth API
-import { RegisterUserDto, VerifyOtpDto } from '../types';
+import type { RegisterUserDto, VerifyOtpDto } from '../types';
 
 // Defines the auth API endpoints and manages their server communication
 export const authApi = createApi({

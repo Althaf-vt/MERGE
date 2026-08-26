@@ -1,4 +1,5 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import type {PayloadAction} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 // Represents the current step of the user registration flow
 type RegistrationStep = 'REGISTER' | 'OTP';
