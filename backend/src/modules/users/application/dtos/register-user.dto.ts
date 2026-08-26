@@ -14,5 +14,5 @@ export class RegisterUserDto{
     @IsString()
     @IsNotEmpty()
     @Match('password',{message: "Passwords do not match"})
-    consfirmPassword: string
+    confirmPassword: string
 }

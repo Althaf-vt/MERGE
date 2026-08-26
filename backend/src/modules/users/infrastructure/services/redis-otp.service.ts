@@ -20,26 +20,32 @@ export class RedisOtpService implements IOtpService{
     }
 
     // Stores an OTP in Redis with a time-to-live to expire it automatically
-    async storeOtp(email: string, otp: string, ttlSeconds: number): Promise<void> {
-        await this.redis.set(this.getKey(email), otp, 'EX', ttlSeconds);
+    async storeRegistrationDraft(email: string, otp: string, passwordHash: string, ttlSeconds: number): Promise<void> {
+        const payload = JSON.stringify({otp,passwordHash});
+        await this.redis.set(this.getKey(email), payload, 'EX', ttlSeconds);
     }
 
     // Checks whether the provided OTP matched the stored OTP
-    async verifyOtp(email: string, otp: string): Promise<boolean> {
+    async verifyAndRetrieveDraft(email: string, otp: string): Promise<{passwordHash: string} | null> {
         const key = this.getKey(email);
-        const storedOtp = await this.redis.get(key);
+        const storedData = await this.redis.get(key);
 
-        if(!storedOtp || storedOtp !== otp){
-            return false;
+        if(!storedData){
+            return null;
         }
 
-        // Removes the OTP immediately after successful verification so it cannot be reused
-        await this.redis.del(key); // Invalidate immediately upon successful use
-        return true;
+        const parsedData = JSON.parse(storedData);
+
+        // Invalid OTP
+        if(parsedData.otp !== otp){
+            return null;
+        }
+
+        return {passwordHash: parsedData.passwordHash}
     }
 
     // Removed the user's OTP form Redis
-    async deleteOtp(email: string): Promise<void> {
+    async deleteDraft(email: string): Promise<void> {
         await this.redis.del(this.getKey(email))
     }
 }

@@ -27,7 +27,7 @@ export class RegisterUserUseCase{
     ){}
 
     // Registers a new user and returns the creted UserEntity.
-    async execute(dto: RegisterUserDto): Promise<UserAggregate>{
+    async execute(dto: RegisterUserDto): Promise<void>{
         const existingUser = await this.userRepository.findByEmail(dto.email);
         if(existingUser){
             throw new ConflictException("User with this email already exists");
@@ -35,42 +35,48 @@ export class RegisterUserUseCase{
 
         const passwordHash = await this.passwordHasher.hash(dto.password);
         
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await this.otpService.storeRegistrationDraft(dto.email, otp, passwordHash, 600);
+
+        await this.emailService.sendOtpEmail(dto.email, otp);
+
         // Validate and normalize the email using the Email value object.
-        const emailVO = new EmailVO(dto.email);
+        // const emailVO = new EmailVO(dto.email);
 
         // Create the UserEntity with the initial registration state.
-        const newUser = new UserAggregate({
-            email: emailVO,
-            passwordHash,
-            authProvider: AuthProvider.EMAIL,
-            isEmailVerified: false,
-            accountStatus: UserStatus.ACTIVE,
-            kycCompleted: false,
-            onboardingStep: 1,
-            onboardingCompleted: false,
-            profileCompleted: false,
-            castingDirectorCompleted: false,
-            lumenEnabled: true,
-            dailyMatchHours: [],
-            lumenRecommendationGeneratedToday: 0,
-            lastLumenReset: new Date(),
-        });
+        // const newUser = new UserAggregate({
+        //     email: emailVO,
+        //     passwordHash,
+        //     authProvider: AuthProvider.EMAIL,
+        //     isEmailVerified: false,
+        //     accountStatus: UserStatus.ACTIVE,
+        //     kycCompleted: false,
+        //     onboardingStep: 1,
+        //     onboardingCompleted: false,
+        //     profileCompleted: false,
+        //     castingDirectorCompleted: false,
+        //     lumenEnabled: true,
+        //     dailyMatchHours: [],
+        //     lumenRecommendationGeneratedToday: 0,
+        //     lastLumenReset: new Date(),
+        // });
 
-        // Save the new user through the repository.
-        const savedUser = await this.userRepository.create(newUser)
+        // // Save the new user through the repository.
+        // const savedUser = await this.userRepository.create(newUser)
 
         // Save the new user through the repository.
         // return await this.userRepository.create(newUser);
 
         // 1. Generate OTP and Store in Redis
         // Generate 6-digit code and store in Redis with 10-min TTL (600 seconds)
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        await this.otpService.storeOtp(dto.email, otp, 600);
+        // const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        // await this.otpService.storeOtp(dto.email, otp, 600);
 
-        // 2. Dispatch the Email via Infrastructure Adapter
-        await this.emailService.sendOtpEmail(dto.email, otp);
+        // // 2. Dispatch the Email via Infrastructure Adapter
+        // await this.emailService.sendOtpEmail(dto.email, otp);
 
-        return savedUser;
+        // return savedUser;
 
     }
 }

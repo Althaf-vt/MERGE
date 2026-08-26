@@ -21,11 +21,10 @@ export class AuthController{
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() dto: RegisterUserDto){
-        const user = await this.registerUserUserCase.execute(dto);
+        await this.registerUserUserCase.execute(dto);
 
         return{
-            message: "Registration successful. Please check your mail for the OTP.",
-            user: UserResponseMapper.toResponse(user)
+            message: "Registration started. Please check you mail for the OTP"
         }
     }
 
