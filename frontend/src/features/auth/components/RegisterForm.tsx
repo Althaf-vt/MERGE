@@ -11,13 +11,26 @@ export const RegisterForm = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [clientError, setClientError] = useState<string | null>(null);
 
-    const handleSubmit = async(e: React.FormEvent) => {
+    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setClientError(null);
+
+        if(password.length < 8){
+            setClientError("Password must be at least 8 characters long");
+            return;
+        }
+
+        if(password !== confirmPassword){
+            setClientError("Password do not match");
+            return;
+        }
 
         try {
             // unwrap() extracts the payload or throws the error so we can catch it
-            await register({email, password}).unwrap();
+            await register({email, password,confirmPassword}).unwrap();
 
             // If successful, save the email to global state and move to OTP screen
             dispatch(setRegisteredEmail(email));
@@ -31,6 +44,7 @@ export const RegisterForm = () => {
         <form onSubmit={handleSubmit}>
             <h2>Create Your MERGE account</h2>
 
+            {clientError && <div style={{color:'red'}}>{clientError}</div>}
             {/* Error handling from NestJS backend */}
             {error && <div style={{color:'red'}}>Registration failed, Please check the credentials.</div>}
 
@@ -45,6 +59,12 @@ export const RegisterForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
+            />
+            <input 
+                type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm Password"
             />
 
             <button type="submit" disabled={isLoading}>

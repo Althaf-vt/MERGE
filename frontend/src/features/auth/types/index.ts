@@ -2,6 +2,7 @@
 export interface RegisterUserDto{
     email: string;
     password: string;
+    confirmPassword: string;
 }
 
 export interface VerifyOtpDto{
