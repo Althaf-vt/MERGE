@@ -1,0 +1,23 @@
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "../features/auth/slices/authSlice";
+import { authApi } from "../features/auth/api/authApi";
+
+
+export const store = configureStore({
+    reducer: {
+        // 1. Client State (our Redux Slices)
+        auth: authReducer,
+
+        // 2. Server State (RTK Query cache)
+        // We use a dynamic key here so it scales perfectly as we add more APIs
+        [authApi.reducerPath]: authApi.reducer,
+    },
+
+    // 3. The Middleware
+    // We take the default Redux middleware and add the RTK Query middleware on top of it.
+    middleware: (getDefaultMiddleware) => 
+        getDefaultMiddleware().concat(authApi.middleware)
+})
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
