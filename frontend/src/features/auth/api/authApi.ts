@@ -10,7 +10,7 @@ export const authApi = createApi({
     reducerPath: 'authApi',
 
     // Base URL shared by all auth API requests
-    baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3000/api/auth'}),
+    baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3110/api/v1/auth'}),
     endpoints: (builder) => ({
 
         // Sends the registration data to the backend
