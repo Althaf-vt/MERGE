@@ -21,7 +21,6 @@ interface AuthState{
 
     // auth session state
     accessToken: string | null;
-    refreshToken: string | null;
     user: AuthUser | null;
     isAuthenticated: boolean;
 }
@@ -29,7 +28,6 @@ interface AuthState{
 // Payload contract for setting authenticated session credentials
 interface SetCredentialsPayload{
     accessToken: string;
-    refreshToken: string;
     user: AuthUser;
 }
 
@@ -40,7 +38,6 @@ const initialState: AuthState = {
 
     // Default unauthenticated session values
     accessToken: null,
-    refreshToken: localStorage.getItem('refreshToken'),
     user: null,
     isAuthenticated: false
 }
@@ -66,26 +63,19 @@ const authSlice = createSlice({
         },
 
         setCredentials: (state, action: PayloadAction<SetCredentialsPayload>) => {
-            const {accessToken, refreshToken, user} = action.payload;
+            const {accessToken, user} = action.payload;
 
             state.accessToken = accessToken;
-            state.refreshToken = refreshToken;
             state.user = user;
             state.isAuthenticated = true;
-
-            localStorage.setItem('refreshToken',refreshToken);
         },
 
         logout: (state) => {
             state.accessToken = null;
-            state.refreshToken = null;
             state.user = null;
             state.isAuthenticated = false;
             state.currentStep = 'REGISTER',
             state.registeredEmail = null;
-
-            // Remove persisted token
-            localStorage.removeItem('refreshToken');
         }
     }
 })

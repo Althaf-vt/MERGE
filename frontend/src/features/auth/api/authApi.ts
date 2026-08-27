@@ -9,6 +9,7 @@ import { logout, setCredentials } from '../slices/authSlice';
 // 1. Define the standard base query with the outgoing token injector
 const baseQuery = fetchBaseQuery({
     baseUrl: 'http://localhost:3110/api/v1',
+    credentials: 'include',
     prepareHeaders: (headers, {getState}) => {
         const token = (getState() as RootState).auth.accessToken;
 
@@ -31,40 +32,32 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
     // B. If the request fails with a 401 Unauthorized, the token is dead
     if(result.error && result.error.status === 401){
 
-        // Grab the refresh token from Redux state
-        const rootState = api.getState() as RootState;
-        const refreshToken = rootState.auth.refreshToken || localStorage.getItem('refreshToken');
+        // Silently call the refresh endpoint
+        // The browser automatically attached the HttpOnly cookie here
+        const refreshResult = await baseQuery(
+            {
+                url: '/auth/refresh',
+                method: 'POST'
+            },
+            api,
+            extraOptions
+        )
 
-        if(refreshToken){
-            // C. Attempt to get a new access token
-            const refreshResult = await baseQuery(
-                {
-                    url: '/auth/refresh',
-                    method: 'POST',
-                    body: {refreshToken}
-                },
-                api,
-                extraOptions
-            );
+        if(refreshResult.data){
+            // Success! Store the new access token in Redux
+            const data = refreshResult.data as {accessToken: string};
+            const rootState = api.getState() as RootState;
 
-            if(refreshResult.data){
-                // D. Success! Store the new tokens in Redux
-                const data = refreshResult.data as {accessToken: string, refreshToken: string};
+            // Save the new access token
+            api.dispatch(setCredentials({
+                accessToken: data.accessToken,
+                user: rootState.auth.user!
+            }));
 
-                api.dispatch(setCredentials({
-                    accessToken: data.accessToken,
-                    refreshToken: data.refreshToken,
-                    user: rootState.auth.user! // Keep the existing user data intact
-                }))
-
-                // E. Retry the original query with the new token automatically
-                result = await baseQuery(args, api, extraOptions);
-            }else{
-                // F. If the refresh token is expired/invalid, log them out completely
-                api.dispatch(logout()); 
-            }
+            // Retry the original query
+            result = await baseQuery(args,api, extraOptions);
         }else{
-            // Not refresh token available, force logout
+            // token is dead or missing, force logout
             api.dispatch(logout())
         }
     }
