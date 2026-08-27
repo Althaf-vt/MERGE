@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 // DTO used to type the data sent to the auth API
-import type { RegisterUserDto, VerifyOtpDto } from '../types';
+import type { LoginUserDto, RegisterUserDto, VerifyOtpDto } from '../types';
 
 // Defines the auth API endpoints and manages their server communication
 export const authApi = createApi({
@@ -29,9 +29,18 @@ export const authApi = createApi({
                 method: 'POST',
                 body: data
             })
+        }),
+
+        // Sends the login credentials to the backend for verification
+        loginUser: builder.mutation<any, LoginUserDto>({
+            query: (credentials) => ({
+                url: '/login',
+                method: 'POST',
+                body: credentials
+            })
         })
     })
 })
 
 // RTK Query automatically generates hooks for calling these endpoints
-export const {useRegisterUserMutation, useVerifyOtpMutation} = authApi;
+export const {useRegisterUserMutation, useVerifyOtpMutation, useLoginUserMutation} = authApi;
