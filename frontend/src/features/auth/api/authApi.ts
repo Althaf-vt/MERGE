@@ -2,7 +2,7 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 // DTO used to type the data sent to the auth API
 import type { LoginUserDto, RegisterUserDto, VerifyOtpDto } from '../types';
-import type { RootState } from '@reduxjs/toolkit/query';
+import type { RootState } from '../../../app/store'
 
 // Defines the auth API endpoints and manages their server communication
 export const authApi = createApi({
@@ -22,12 +22,14 @@ export const authApi = createApi({
             const state = getState() as RootState;
 
             // Extract the access token
-            const token = state.token.accessToken;
+            const token = state.auth.accessToken;
 
             // if we have a token, attach it to the standard Authorization header
             if(token){
                 headers.set('authorization',`Bearer ${token}`);
             }
+
+            return headers;
         }
     }),
 
