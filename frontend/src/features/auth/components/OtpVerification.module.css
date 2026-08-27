@@ -1,0 +1,105 @@
+.wrapper {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.title {
+  color: #18181b;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #71717a;
+  font-size: 0.95rem;
+  margin: 0 0 2.5rem 0;
+  line-height: 1.5;
+}
+
+.emailHighlight {
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.inputGroup {
+  width: 100%;
+}
+
+.otpInput {
+  width: 100%;
+  padding: 1.25rem 1rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.75rem; /* Spreads the 6 digits out evenly */
+  text-align: center;
+  background-color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.otpInput::placeholder {
+  color: #d4d4d8;
+  font-weight: 400;
+}
+
+.otpInput:focus {
+  border-color: #6200ea;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-bottom: -0.5rem;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.primaryBtn:disabled {
+  background-color: #a78bfa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.resendText {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #71717a;
+}
+
+.resendLink {
+  color: #6200ea;
+  text-decoration: none;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
