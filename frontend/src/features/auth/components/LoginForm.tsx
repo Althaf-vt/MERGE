@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../../app/hooks"
 import { useLoginUserMutation } from "../api/authApi";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from './LoginForm.module.css';
 import { setCredentials } from "../slices/authSlice";
 
@@ -66,7 +66,7 @@ export const LoginForm = () => {
 
     return(
         <div className={styles.formWrapper}>
-            
+
             <div className={styles.branding}>
                 <h1 className={styles.title}>MERGE</h1>
                 <p className={styles.subtitle}>Two Souls, One Journey.</p>

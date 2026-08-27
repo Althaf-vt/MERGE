@@ -44,7 +44,7 @@ export class AuthController{
     }
 
     // Handle User Login Requests
-    @Post()
+    @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() dto: LoginUserDto){
         const result = await this.loginUserUseCase.execute(dto);
