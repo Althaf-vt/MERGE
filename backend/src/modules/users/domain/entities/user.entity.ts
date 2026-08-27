@@ -77,7 +77,7 @@ export class UserAggregate {
     // Getters : Provides read-only access to the User's provate properties.
     get id(): string | undefined {return this.props.id}
     get email(): EmailVO {return this.props.email}
-    get passwordHash(): string | null | undefined {return this.passwordHash}
+    get passwordHash(): string | null | undefined {return this.props.passwordHash}
     get authProvider(): AuthProvider {return this.props.authProvider};
     get isEmailVerified(): boolean {return this.props.isEmailVerified}
     get accountStatus(): UserStatus {return this.props.accountStatus}
