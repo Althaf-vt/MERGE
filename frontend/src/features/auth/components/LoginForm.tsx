@@ -36,7 +36,6 @@ export const LoginForm = () => {
             // 2. Save the tokens and user to the Redux store
             dispatch(setCredentials({
                 accessToken: response.accessToken,
-                refreshToken: response.refreshToken,
                 user: response.user
             }))
 
