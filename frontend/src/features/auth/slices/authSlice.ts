@@ -40,7 +40,7 @@ const initialState: AuthState = {
 
     // Default unauthenticated session values
     accessToken: null,
-    refreshToken: null,
+    refreshToken: localStorage.getItem('refreshToken'),
     user: null,
     isAuthenticated: false
 }
