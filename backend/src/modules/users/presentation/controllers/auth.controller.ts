@@ -4,6 +4,8 @@ import { VerifyOtpUseCase } from "../../application/use-cases/verify-otp.use-cas
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
+import { LoginUserDto } from "../../application/dtos/login-user.dto";
+import {LoginUserUseCase} from '../../application/use-cases/login-user.use-case'
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -11,8 +13,9 @@ export class AuthController{
 
     // Injects the use-cases responsible for registration and OTP verification.
     constructor(
-        private  readonly registerUserUserCase: RegisterUserUseCase,
+        private  readonly registerUserUseCase: RegisterUserUseCase,
         private readonly verifyOtpUseCase: VerifyOtpUseCase,
+        private readonly loginUserUseCase: LoginUserUseCase,
 
         // Inject login and forgot pass use cases here later....
     ){}
@@ -21,7 +24,7 @@ export class AuthController{
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() dto: RegisterUserDto){
-        await this.registerUserUserCase.execute(dto);
+        await this.registerUserUseCase.execute(dto);
 
         return{
             message: "Registration started. Please check you mail for the OTP"
@@ -39,4 +42,19 @@ export class AuthController{
             user: UserResponseMapper.toResponse(user),
         }
     }
+
+    // Handle User Login Requests
+    @Post()
+    @HttpCode(HttpStatus.OK)
+    async login(@Body() dto: LoginUserDto){
+        const result = await this.loginUserUseCase.execute(dto);
+
+        return {
+            message: "Login Successful",
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            user: UserResponseMapper.toResponse(result.user)
+        }
+    }
 }
+
