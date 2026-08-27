@@ -1,0 +1,147 @@
+.formWrapper {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.branding {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  color: #6200ea;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: #71717a;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inputGroup {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #a1a1aa;
+}
+
+.input:focus {
+  border-color: #6200ea;
+}
+
+.icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+  cursor: pointer;
+}
+
+.passwordMeter {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: -0.5rem;
+}
+
+.meterBar {
+  height: 4px;
+  flex: 1;
+  background-color: #f3f4f6;
+  border-radius: 2px;
+}
+
+.meterBarActive {
+  background-color: #e0e7ff; 
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #71717a;
+  font-size: 0.85rem;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 1rem;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 1rem;
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: #18181b;
+}
+
+.footerText {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #71717a;
+}
+
+.footerLink {
+  color: #6200ea;
+  text-decoration: none;
+  font-weight: 500;
+}
