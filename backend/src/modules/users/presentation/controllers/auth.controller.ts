@@ -6,6 +6,8 @@ import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
 import { LoginUserDto } from "../../application/dtos/login-user.dto";
 import {LoginUserUseCase} from '../../application/use-cases/login-user.use-case'
+import { RefreshTokenDto } from "../../application/dtos/refresh-token.dto";
+import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -16,6 +18,7 @@ export class AuthController{
         private  readonly registerUserUseCase: RegisterUserUseCase,
         private readonly verifyOtpUseCase: VerifyOtpUseCase,
         private readonly loginUserUseCase: LoginUserUseCase,
+        private readonly refreshTokenUseCase: RefreshTokenUseCase
 
         // Inject login and forgot pass use cases here later....
     ){}
@@ -55,6 +58,13 @@ export class AuthController{
             refreshToken: result.refreshToken,
             user: UserResponseMapper.toResponse(result.user)
         }
+    }
+
+    @Post('refresh')
+    @HttpCode(HttpStatus.OK)
+    async refresh(@Body() dto: RefreshTokenDto){
+        // return {accessToken, refreshToken} directly to satisfy the RTK QUERY frontend
+        return await this.refreshTokenUseCase.execute(dto)
     }
 }
 

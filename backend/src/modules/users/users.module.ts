@@ -13,6 +13,7 @@ import { MongoUserRepository } from "./infrastructure/persistence/mongo-user.rep
 import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
+import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -38,6 +39,7 @@ import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
         RegisterUserUseCase,
         VerifyOtpUseCase,
         LoginUserUseCase,
+        RefreshTokenUseCase,
 
         // Maps interface tokens to their concrete implementations.
 
