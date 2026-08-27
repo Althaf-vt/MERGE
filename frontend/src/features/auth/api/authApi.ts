@@ -2,6 +2,7 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 
 // DTO used to type the data sent to the auth API
 import type { LoginUserDto, RegisterUserDto, VerifyOtpDto } from '../types';
+import type { RootState } from '@reduxjs/toolkit/query';
 
 // Defines the auth API endpoints and manages their server communication
 export const authApi = createApi({
@@ -10,7 +11,26 @@ export const authApi = createApi({
     reducerPath: 'authApi',
 
     // Base URL shared by all auth API requests
-    baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3110/api/v1/auth'}),
+        // 1.Configure the baseQuery with prepareHeaders
+    baseQuery: fetchBaseQuery({
+        baseUrl: 'http://localhost:3110/api/v1/auth',
+
+        // 2. This function runs before every request send through this API
+        prepareHeaders: (headers, {getState}) => {
+
+            // Grab the current state from Redux store
+            const state = getState() as RootState;
+
+            // Extract the access token
+            const token = state.token.accessToken;
+
+            // if we have a token, attach it to the standard Authorization header
+            if(token){
+                headers.set('authorization',`Bearer ${token}`);
+            }
+        }
+    }),
+
     endpoints: (builder) => ({
 
         // Sends the registration data to the backend
