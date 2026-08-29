@@ -1,11 +1,46 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole, KycStatus } from '../../domain/entities/user.entity';
-import { AuthProvider, UserStatus } from '../../domain/enums/user.enums';
+import { AuthProvider, DocumentType, UserStatus, VerificationStatus } from '../../domain/enums/user.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
 // Mongoose document type combining the User schema with a MongoDb document.
 export type UserDocument = User & Document;
+
+// Defining a sub-schema for the KYC data
+
+@Schema({_id: false}) // _id is false coz it belongs to the parent User document
+class KycVerificationSchema{
+    @Prop({type: String, enum: VerificationStatus, default: VerificationStatus.NOT_STARTED})
+    verificationStatus: VerificationStatus;
+
+    @Prop({type: String, enum: DocumentType})
+    documentType: DocumentType;
+
+    @Prop()
+    issuingCountry: string;
+
+    @Prop()
+    documentFrontS3: string;
+
+    @Prop()
+    documentBackS3: string;
+
+    @Prop()
+    legalName: string;
+
+    @Prop()
+    verifiedDOB: Date;
+
+    // This is the critical field we query against for duplicated
+    @Prop({index: true})
+    hashedDocumentNumber: string;
+
+    @Prop()
+    ocrConfidence: number;
+}
+
+// export type UserDocument = User & Document;
 
 // Defines the User collection and enables automatic createdAt and updatedAt timestamps.
 @Schema({timestamps: true, collection: 'users'})
@@ -54,6 +89,10 @@ export class User{
 
     @Prop({default: null})
     lastLogin: Date;
+
+    // Embed the KYC schema
+    @Prop({type: KycVerificationSchema, default: null})
+    kycVerification: KycVerificationSchema;
 
     createdAt: Date;
     updatedAt: Date;

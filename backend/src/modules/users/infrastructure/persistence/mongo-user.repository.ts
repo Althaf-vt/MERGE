@@ -5,6 +5,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
 import { Model } from "mongoose";
+import { UserKyc } from "../../domain/entities/kyc-verification.entity";
 
 
 // MongoDB implementation of the UserRepository.
@@ -30,6 +31,19 @@ export class MongoUserRepository implements IUserRepository{
         const document = await this.userModel.findById(id).exec();
         if(!document) return null;
         return UserPersistenceMapper.toDomain(document);
+    }
+
+    async findByDocumentHash(documentHash: string): Promise<UserKyc | null> {
+        const document = await this.userModel.findOne({
+            'kycVerification.hashedDocumentNumber': documentHash
+        }).exec();
+        if(!document) return null;
+        
+        //  Convert the raw document to our Domain Aggregate
+        const userAggregate = UserPersistenceMapper.toDomain(document);
+
+        // Extract and return just the KYC portion
+        return userAggregate.kycVerfication || null;
     }
 
     // Converts the domain entity into persistence data and creates a new MongoDB document.

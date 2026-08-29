@@ -1,3 +1,4 @@
+import { UserKyc } from "../entities/kyc-verification.entity";
 import { UserAggregate } from "../entities/user.entity";
 
 // Unique DI token used to identify the UserRepository implementation.
@@ -8,6 +9,7 @@ export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 export interface IUserRepository{
     findByEmail(email: string): Promise<UserAggregate | null>;
     findById(id: string): Promise<UserAggregate | null>;
+    findByDocumentHash(documentHash: string): Promise<UserKyc | null>;
     create(user: UserAggregate): Promise<UserAggregate>;
     update(user: UserAggregate): Promise<UserAggregate>;
 }

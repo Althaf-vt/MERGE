@@ -1,3 +1,4 @@
+import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
 import { UserAggregate, UserRole, KycStatus } from "../../../domain/entities/user.entity";
 import { AuthProvider, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../domain/value-objects/email.vo";
@@ -8,6 +9,25 @@ export class UserPersistenceMapper{
 
     // Converts a MongoDB/Mongoose User document into a domain UserEntity.
     public static toDomain(raw: UserDocument): UserAggregate{
+
+        // Reconstruct the UserKyc entity if the data exists in the database
+        let kycEntity: UserKyc | undefined;
+
+        if(raw.kycVerification){
+            kycEntity = new UserKyc({
+                userId: raw._id.toString(),
+                verificationStatus: raw.kycVerification.verificationStatus,
+                documentType: raw.kycVerification.documentType,
+                issuingCountry: raw.kycVerification.issuingCountry,
+                documentFrontS3: raw.kycVerification.documentFrontS3,
+                documentBackS3: raw.kycVerification.documentBackS3,
+                legalName: raw.kycVerification.legalName,
+                verifiedDOB: raw.kycVerification.verifiedDOB,
+                hashedDocumentNumber: raw.kycVerification.hashedDocumentNumber,
+                ocrConfidence: raw.kycVerification.ocrConfidence
+            })
+        }
+
         return new UserAggregate({
             id: raw._id.toString(),
             email: new EmailVO(raw.email),
@@ -25,6 +45,7 @@ export class UserPersistenceMapper{
             lumenRecommendationGeneratedToday: raw.lumenRecommendationGeneratedToday ?? 0,
             lastLumenReset: raw.lastLumenReset ?? new Date(),
             lastLogin: raw.lastLogin,
+            kycVerification: kycEntity, //  Attach to the root aggregate
             createdAt: raw['createdAt'],
             updatedAt: raw['updatedAt']
         });
@@ -48,7 +69,19 @@ export class UserPersistenceMapper{
             dailyMatchHours: data.dailyMatchHours,
             lumenRecommendationGeneratedToday: data.lumenRecommendationGeneratedToday,
             lastLumenReset: data.lastLumenReset,
-            lastLogin: data.lastLogin
+            lastLogin: data.lastLogin,
+
+            // Flatten the KYC entity for MongoDB storage
+            kycVerification: data.kycVerification ? {
+                verificationStatus: data.kycVerification.verificationStatus,
+                documentType: data.kycVerification.documentType,
+                issuingCountry: data.kycVerification.issuingCountry,
+                documentFrontS3: data.kycVerification.documentFrontS3,
+                documentBackS3: data.kycVerification.documentBackS3,
+                legalName: data.kycVerification.legalName,
+                verifiedDOB: data.kycVerification.hashedDocumentNumber,
+                ocrConfidence: data.kycVerification.ocrConfidence,
+            }: null,
         }
     }
 }

@@ -125,6 +125,11 @@ export class UserAggregate {
         this.markUpdatedAt();
     }
 
+        // Update KYC verification
+    updateKycVerification(kycEntity: UserKyc): void{
+        this.props.kycVerification = kycEntity;
+    }
+
     //2. ONBOARDING & PIPELINE PROGRESSION
 
     advanceOnboardingStep(step: number): void{
