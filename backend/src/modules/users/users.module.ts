@@ -14,6 +14,9 @@ import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
 import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
+import { KycController } from "./presentation/controllers/kyc.controller";
+import { GetPresignedUrlUseCase } from "./application/use-cases/get-presigned-urls.use-case";
+import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -30,7 +33,10 @@ import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-c
     ],
 
     // Registers the controllers that handle HTTP requests for this module.
-    controllers: [AuthController],
+    controllers: [
+        AuthController,
+        KycController
+    ],
     providers: [
         // Shared Services
         BcryptService,
@@ -40,6 +46,8 @@ import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-c
         VerifyOtpUseCase,
         LoginUserUseCase,
         RefreshTokenUseCase,
+        GetPresignedUrlUseCase,
+        SubmitKycDocumentUseCase,
 
         // Maps interface tokens to their concrete implementations.
 
