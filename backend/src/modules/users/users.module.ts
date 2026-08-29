@@ -17,7 +17,7 @@ import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-c
 import { KycController } from "./presentation/controllers/kyc.controller";
 import { GetPresignedUrlUseCase } from "./application/use-cases/get-presigned-urls.use-case";
 import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
-import { KYC_HASH_SERVICE, STORAGE_SERVICE } from "./domain/interfaces/kyc-service.interface";
+import { KYC_HASH_SERVICE, OCR_SERVICE, STORAGE_SERVICE } from "./domain/interfaces/kyc-service.interface";
 import { AwsStorageService } from "./infrastructure/services/aws-storage.service";
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
 import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
@@ -84,7 +84,7 @@ import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
         },
 
         {
-            provide: OTP_SERVICE,
+            provide: OCR_SERVICE,
             useClass: AwsOcrService
         }
     ],
