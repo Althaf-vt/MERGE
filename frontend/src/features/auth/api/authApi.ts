@@ -7,7 +7,7 @@ import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolk
 import { logout, setCredentials } from '../slices/authSlice';
 
 // 1. Define the standard base query with the outgoing token injector
-const baseQuery = fetchBaseQuery({
+export const baseQuery = fetchBaseQuery({
     baseUrl: 'http://localhost:3110/api/v1',
     credentials: 'include',
     prepareHeaders: (headers, {getState}) => {
@@ -21,7 +21,7 @@ const baseQuery = fetchBaseQuery({
 })
 
 // 2. Create the Re-authorization wrapper (The incoming checkpoint)
-const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async(
+export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async(
     args,
     api,
     extraOptions
