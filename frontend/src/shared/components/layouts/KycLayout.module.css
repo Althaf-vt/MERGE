@@ -1,0 +1,51 @@
+.layoutContainer {
+  min-height: 100vh;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.topBar {
+  width: 100%;
+  background-color: #ffffff;
+  padding: 1.5rem 3rem;
+  border-bottom: 1px solid #e4e4e7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.brand {
+  color: #18181b;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.helpLink {
+  color: #71717a;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.progressContainer {
+  width: 100%;
+  height: 4px;
+  background-color: #f4f4f5;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: #6200ea;
+  transition: width 0.4s ease;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}

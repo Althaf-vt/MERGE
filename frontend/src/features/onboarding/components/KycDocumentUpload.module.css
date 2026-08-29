@@ -1,0 +1,112 @@
+.wrapper {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.title {
+  color: #18181b;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: #71717a;
+  font-size: 0.95rem;
+  margin: 0 0 2rem 0;
+  text-align: center;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inputGroup {
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  color: #18181b;
+}
+
+.fileUploadBox {
+  border: 2px dashed #e4e4e7;
+  border-radius: 8px;
+  background-color: #fafafa;
+  transition: border-color 0.2s ease;
+}
+
+.fileUploadBox:hover {
+  border-color: #6200ea;
+}
+
+.fileLabel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 1rem;
+  cursor: pointer;
+  color: #71717a;
+  font-weight: 500;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.primaryBtn:disabled {
+  background-color: #a78bfa;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.dataCard {
+  width: 100%;
+  background-color: #f4f4f5;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  color: #3f3f46;
+}
+
+.dataCard p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
