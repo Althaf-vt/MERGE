@@ -1,8 +1,7 @@
-import React from 'react'
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import { RegisterPage } from './features/auth/pages/RegisterPage'
 import { LoginPage } from './features/auth/pages/LoginPage'
-import { KycDocumentUpload } from './features/onboarding/components/KycDocumentUpload'
+import { KycPage } from './features/onboarding/Pages/KycPage'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
@@ -36,7 +35,7 @@ export const App = () => {
             {/* --- ONBOARDING ROUTES --- */}
 
             {/* Users will be redirected here after successful OTP verification */}
-            <Route path="/kyc" element={<KycDocumentUpload />} />
+            <Route path="/onboarding/kyc" element={<KycPage />} />
 
             {/* Catch-all for 404 Not Found */}
             <Route path='*' element={<div>404 - Page Not Found</div>} />
