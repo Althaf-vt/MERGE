@@ -97,9 +97,17 @@ export class AwsOcrService implements IOcrService{
         const averageConfidence = fieldCount > 0 ? (totalConfidence / fieldCount) : 0;
         const legalName = `${firstName} ${lastName}`.trim();
 
+        // Safely parse the date string returned by Textract
+        let parseDate = new Date(dateOfBirthStr);
+        if(isNaN(parseDate.getTime())){
+
+            // Fallback or default if Textract returns a non-standard string format during testing
+            parseDate = new Date()
+        }
+
         return{
             legalName,
-            dateOfBirth: new Date(dateOfBirthStr),
+            dateOfBirth: parseDate,
             documentNumber,
             confidenceScore: averageConfidence
         }

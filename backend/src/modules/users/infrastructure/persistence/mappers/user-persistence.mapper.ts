@@ -79,7 +79,7 @@ export class UserPersistenceMapper{
                 documentFrontS3: data.kycVerification.documentFrontS3,
                 documentBackS3: data.kycVerification.documentBackS3,
                 legalName: data.kycVerification.legalName,
-                verifiedDOB: data.kycVerification.hashedDocumentNumber,
+                verifiedDOB: data.kycVerification.verifiedDOB,
                 ocrConfidence: data.kycVerification.ocrConfidence,
             }: null,
         }
