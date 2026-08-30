@@ -8,7 +8,7 @@ import { logout, setCredentials } from '../slices/authSlice';
 
 // 1. Define the standard base query with the outgoing token injector
 export const baseQuery = fetchBaseQuery({
-    baseUrl: 'http://localhost:3110/api/v1',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
     credentials: 'include',
     prepareHeaders: (headers, {getState}) => {
         const token = (getState() as RootState).auth.accessToken;
@@ -59,6 +59,9 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         }else{
             // token is dead or missing, force logout
             api.dispatch(logout())
+
+            // Completely wipe all cached API data from Redux memory
+            api.dispatch(authApi.util.resetApiState());
         }
     }
 
