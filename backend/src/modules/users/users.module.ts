@@ -21,6 +21,7 @@ import { KYC_HASH_SERVICE, OCR_SERVICE, STORAGE_SERVICE } from "./domain/interfa
 import { AwsStorageService } from "./infrastructure/services/aws-storage.service";
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
 import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
+import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guard";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -44,6 +45,7 @@ import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
     providers: [
         // Shared Services
         BcryptService,
+        JwtAuthGuard,
 
         // Use Cases
         RegisterUserUseCase,
@@ -90,7 +92,7 @@ import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE],
+    exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE, JwtAuthGuard],
 })
 
 export class UserModule {}
