@@ -5,7 +5,7 @@ import { AnalyzeIDCommand, IdentityDocumentField, InternalServerError, TextractC
 @Injectable()
 export class AwsOcrService implements IOcrService{
     private readonly textractClient: TextractClient;
-    private readonly bucketName = process.env.AWS_S3_kYC_BUCKET;
+    private readonly bucketName = process.env.AWS_S3_KYC_BUCKET;
 
     constructor(){
         this.textractClient = new TextractClient({
@@ -40,6 +40,10 @@ export class AwsOcrService implements IOcrService{
 
             return this.mapTextractFieldsToResult(idDocument.IdentityDocumentFields);
         } catch (error) {
+            if(error instanceof BadRequestException){
+                throw error;
+            }
+            console.error("Textract Exceution Error: ",error);
             throw new InternalServerErrorException('Failed to process document via OCR');
         }
     }
@@ -58,7 +62,7 @@ export class AwsOcrService implements IOcrService{
             const confidence = field.ValueDetection?.Confidence || 0;
 
 
-            if(!value) continue;
+            if(!value || !type) continue;
 
             switch(type){
                 case 'FIRST_NAME':
@@ -73,6 +77,12 @@ export class AwsOcrService implements IOcrService{
                     break;
                 case 'DATE_OF_BIRTH':
                     dateOfBirthStr = value; // Usually returns in YYYY-MM-DD or mm/dd/yyyy format
+                    totalConfidence += confidence;
+                    fieldCount ++;
+                    break;
+                case "DOCUMENT_NUMBER":
+                case "ID_NUMBER":
+                    documentNumber = value;
                     totalConfidence += confidence;
                     fieldCount ++;
                     break;
