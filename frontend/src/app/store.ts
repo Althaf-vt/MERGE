@@ -21,7 +21,7 @@ export const store = configureStore({
     // 3. The Middleware
     // We take the default Redux middleware and add the RTK Query middleware on top of it.
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(authApi.middleware)
+        getDefaultMiddleware().concat(authApi.middleware, kycApi.middleware)
 })
 
 export type RootState = ReturnType<typeof store.getState>;
