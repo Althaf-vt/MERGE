@@ -3,9 +3,10 @@ import { GetPresignedUrlUseCase } from "../../application/use-cases/get-presigne
 import { SubmitKycDocumentUseCase } from "../../application/use-cases/submit-kyc-document.use-case";
 import { GetPresignedUrlDto } from "../../application/dtos/get-presigned-url.dto";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
+import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
 
 @Controller('kyc')
-@UseGuards() // Protects all endpoints below, requiring a valid access token
+@UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
 export class KycController{
     constructor(
         private readonly getPresignedUrlUseCase: GetPresignedUrlUseCase,
