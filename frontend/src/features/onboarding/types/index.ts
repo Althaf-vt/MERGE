@@ -10,6 +10,6 @@ export interface SubmitKycPayload{
 }
 
 export interface PresignedUrlResponse{
-    uploadUrl: string;
-    fileKey: string;
+    front: {uploadUrl: string, fileKey: string};
+    back: {uploadUrl: string, fileKey: string};
 }

@@ -29,11 +29,11 @@ export const KycDocumentUpload = () => {
         setStatus('uploading');
 
         try {
-            // 1. Get Presigned URL for the front image
-            const frontData = await getPresignedUrl({mimeType: frontFile.type}).unwrap();
+            // 1. Backend return both front and back data in a single call
+            const presignedData = await getPresignedUrl({mimeType: frontFile.type}).unwrap();
 
             // 2. Upload directly to AWS S3 using standart fetch (bypass RTK Query interceptors)
-            await fetch(frontData.uploadUrl, {
+            await fetch(presignedData.front.uploadUrl, {
                 method: 'PUT',
                 body: frontFile,
                 headers: {'Content-Type': frontFile.type}
@@ -43,24 +43,23 @@ export const KycDocumentUpload = () => {
 
             // Repeat for back image if required by document type
             if(backFile && documentType !== 'PASSPORT'){
-                const backData = await getPresignedUrl({mimeType: backFile.type}).unwrap();
 
-                await fetch(backData.uploadUrl, {
+                await fetch(presignedData.back.uploadUrl, {
                     method: "PUT",
                     body: backFile,
                     headers: {'Content-Type': backFile.type}
                 })
 
-                backKey = backData.fileKey;
+                backKey = presignedData.back.fileKey;
             }
 
             setStatus('extracting');
 
-            // 3. Submit the file keys to our backend to trugger OCR & hashing
+            // 3. Submit the file keys to our backend to trigger OCR & hashing
             const result = await submitKyc({
                 documentType,
                 issuingCountry,
-                documentFrontKey: frontData.fileKey,
+                documentFrontKey: presignedData.front.fileKey,
                 documentBackKey: backKey
             }).unwrap();
 
@@ -71,20 +70,20 @@ export const KycDocumentUpload = () => {
             setError(error?.data?.message || "Failed to process document. Please try again.");
             setStatus('idle');
         }
-
-        if(status === 'success' && extractedData){
-            return(
-                <div className={styles.wrapper}>
-                    <h2 className={styles.title}>Identity Verified</h2>
-                    <p className={styles.subtitle}>We habe successfully extracted your data.</p>
-                    <div className={styles.dataCard}>
-                        <p><strong>Legal Name:</strong> {extractedData?.legalName}</p>
-                        <p><strong>Date of Birth:</strong> {extractedData?.dateOfBirth}</p>
-                    </div>
-                    <button className={styles.primaryBtn}>Continue Onboarding</button>
+    }
+    // 4. Success UI
+    if(status === 'success' && extractedData){
+        return(
+            <div className={styles.wrapper}>
+                <h2 className={styles.title}>Identity Verified</h2>
+                <p className={styles.subtitle}>We habe successfully extracted your data.</p>
+                <div className={styles.dataCard}>
+                    <p><strong>Legal Name:</strong> {extractedData?.legalName}</p>
+                    <p><strong>Date of Birth:</strong> {extractedData?.dateOfBirth}</p>
                 </div>
-            )
-        }
+                <button className={styles.primaryBtn}>Continue Onboarding</button>
+            </div>
+        )
     }
 
     return (
