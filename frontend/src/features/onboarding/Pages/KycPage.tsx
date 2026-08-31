@@ -2,9 +2,9 @@ import { Navigate } from "react-router-dom";
 import { useAppSelector } from "../../../app/hooks"
 import { KycDocumentUpload } from "../components/KycDocumentUpload";
 import { KycLayout } from "../../../shared/components/layouts/KycLayout";
+import { KycSuccess } from "../components/KycSuccess";
 
 const LivenessCheck = () => <div>Liveness Biometric Check(Coming soon) </div>
-const KycSuccess = () => <div>KYC Complete. Redirecting to Profile Setup... </div>
 
 export const KycPage = () => {
     // 1. Verify the user is actually authenticated before they can access onboarding
@@ -23,8 +23,6 @@ export const KycPage = () => {
         switch(currentStep){
             case 'DOCUMENT_UPLOAD':
                 return <KycDocumentUpload/>;
-            case 'LIVENESS_CHECK':
-                return <LivenessCheck/>;
             case 'SUCCESS':
                 return <KycSuccess/>;
             default:
