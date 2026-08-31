@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { DocumentType, VerificationDevice } from "../../domain/enums/user.enums";
+import { DocumentType } from "../../domain/enums/user.enums";
 
 export class SubmitKycDto{
     @IsEnum(DocumentType, {message: "Invalid document type"})
@@ -11,10 +11,6 @@ export class SubmitKycDto{
     issuingCountry: string;
 
     @IsString()
-    @IsNotEmpty()
-    documentFrontKey: string;
-
-    @IsString()
     @IsOptional()
-    documentBackKey?: string;
+    shareCode?: string;
 }

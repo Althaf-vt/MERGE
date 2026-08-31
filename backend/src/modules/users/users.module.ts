@@ -15,13 +15,11 @@ import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
 import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
 import { KycController } from "./presentation/controllers/kyc.controller";
-import { GetPresignedUrlUseCase } from "./application/use-cases/get-presigned-urls.use-case";
 import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
-import { KYC_HASH_SERVICE, OCR_SERVICE, STORAGE_SERVICE } from "./domain/interfaces/kyc-service.interface";
-import { AwsStorageService } from "./infrastructure/services/aws-storage.service";
+import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/kyc-service.interface";
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
-import { AwsOcrService } from "./infrastructure/services/aws-ocr.service";
 import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guard";
+import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -52,7 +50,6 @@ import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guar
         VerifyOtpUseCase,
         LoginUserUseCase,
         RefreshTokenUseCase,
-        GetPresignedUrlUseCase,
         SubmitKycDocumentUseCase,
 
         // Maps interface tokens to their concrete implementations.
@@ -76,18 +73,13 @@ import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guar
 
         // KYC Service bindings
         {
-            provide: STORAGE_SERVICE,
-            useClass: AwsStorageService
-        },
-
-        {
             provide: KYC_HASH_SERVICE,
             useClass: KycHashService
         },
 
         {
-            provide: OCR_SERVICE,
-            useClass: AwsOcrService
+            provide: PKI_VERIFICATION_SERVICE,
+            useClass: AadharPkiService
         }
     ],
 
