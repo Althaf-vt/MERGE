@@ -8,14 +8,11 @@ export interface UserKycProps{
     verificationAttempt?: number;
     documentType?: DocumentType;
     issuingCountry?: string;
-    documentFrontS3?: string;
-    documentBackS3?: string;
     verificationDevice?: VerificationDevice;
     qrSessionId?: string;
     legalName?: string;
     verifiedDOB?: Date;
     hashedDocumentNumber?: string;
-    ocrConfidence?: number;
     liveSelfieS3?: string;
     selfieFaceEmbedding?: number[];
     livenessScore?: number;
@@ -31,20 +28,12 @@ export interface UserKycProps{
     updatedAt?: Date;
 }
 
-export interface SubmitDocumentsPayload{
+export interface SubmitPkiDocumentsPayload{
     documentType: DocumentType;
     issuingCountry: string;
-    documentFrontS3: string;
-    documentBackS3: string;
-    verificationDevice: VerificationDevice;
-    qrSessionId: string;
-}
-
-export interface RecordOcrResultPayload{
     legalName: string;
     verifiedDOB: Date;
     hashedDocumentNumber: string;
-    ocrConfidence: number;
 }
 
 export interface RecordBiometricResultPayload{
@@ -86,14 +75,11 @@ export class UserKyc{
     get verificationAttempt(): number | undefined {return this.props.verificationAttempt};
     get documentType(): DocumentType | undefined {return this.props.documentType};
     get issuingCountry(): string | undefined {return this.props.issuingCountry};
-    get documentFrontS3(): string | undefined {return this.props.documentFrontS3};
-    get documentBackS3(): string | undefined {return this.props.documentBackS3};
     get verificationDevice(): VerificationDevice | undefined {return this.props.verificationDevice};
     get qrSessionId(): string | undefined {return this.props.qrSessionId};
     get legalName(): string | undefined {return this.props.legalName};
     get verifiedDOB(): Date | undefined {return this.props.verifiedDOB};
     get hashedDocumentNumber(): string | undefined {return this.props.hashedDocumentNumber};
-    get ocrConfidence(): number | undefined {return this.props.ocrConfidence};
     get liveSelfieS3(): string | undefined {return this.props.liveSelfieS3};
     get selfieFaceEmbedding(): number[] | undefined {return this.props.selfieFaceEmbedding};
     get livenessScore(): number | undefined {return this.props.livenessScore};
@@ -107,27 +93,18 @@ export class UserKyc{
     get createdAt(): Date | undefined {return this.props.createdAt};
     get updatedAt(): Date | undefined {return this.props.updatedAt};
 
-    submitDocuments(payload: SubmitDocumentsPayload): void{
+    // Instant PKI validation
+    recordPkiValidation(payload: SubmitPkiDocumentsPayload): void{
         this.props.documentType = payload.documentType;
         this.props.issuingCountry = payload.issuingCountry;
-        this.props.documentFrontS3 = payload.documentFrontS3;
-        this.props.documentBackS3 = payload.documentBackS3;
-        this.props.verificationDevice = payload.verificationDevice;
-        this.props.qrSessionId = payload.qrSessionId;
-
-        this.props.verificationStatus = VerificationStatus.PENDING;
-        this.props.verificationAttempt = (this.props.verificationAttempt ?? 0) + 1;
-        this.props.submittedAt = new Date();
-        this.props.updatedAt = new Date();
-    }
-
-    // OCR extraction and blacklist check
-
-    recordOcrResult(payload: RecordOcrResultPayload): void{
         this.props.legalName = payload.legalName;
         this.props.verifiedDOB = payload.verifiedDOB;
         this.props.hashedDocumentNumber = payload.hashedDocumentNumber;
-        this.props.ocrConfidence = payload.ocrConfidence;
+
+        // Auto-approve upon successful cryptographic validation
+        this.props.verificationStatus = VerificationStatus.APPROVED;
+        this.props.verificationAttempt = (this.props.verificationAttempt ?? 0) + 1;
+        this.props.submittedAt = new Date();
         this.props.updatedAt = new Date();
     }
 

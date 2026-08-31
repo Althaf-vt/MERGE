@@ -1,22 +1,17 @@
-export const STORAGE_SERVICE = Symbol('STORAGE_SERVICE');
+export const PKI_VERIFICATION_SERVICE = Symbol('PKI_VERIFICATION_SERVICE');
 export const OCR_SERVICE = Symbol('OCR_SERVICE');
 export const KYC_HASH_SERVICE = Symbol('KYC_HASH_SERVICE');
 
-export interface IStorageService{
-    // Generates a time-limited AWS URL for direct frontend uploads
-    generatePresignedUploadUrl(userId: string, side: 'front' | 'back', mimeType: string): Promise<{uploadUrl: string, fileKey: string}>;
-}
-
-export interface IOcrResult{
+// Represent the pure demographic values extracted from digitally signed files
+export interface IPkiResult{
     legalName: string;
     dateOfBirth: Date;
-    documentNumber: string;
-    confidenceScore: number;
+    documentNumber: string // will be the macked Id extracted from XML
 }
 
-export interface IOcrService{
-    // Reads the doument directly from S3 using file key
-    extractDocumentData(frontFileKey: string, backFileKey?: string): Promise<IOcrResult>;
+export interface IPkiVerificationService{
+    // Verifies the XML-DSig and extracts data using the provided share code
+    verifyAadhaarXml(zipBuffer: Buffer, shareCode: string): Promise<IPkiResult>;
 }
 
 export interface IKycHashService{

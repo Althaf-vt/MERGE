@@ -24,11 +24,10 @@ export enum VerificationDevice {
 }
 
 export enum DocumentType {
-  PASSPORT = 'PASSPORT',
-  NATIONAL_ID = 'NATIONAL_ID',
-  DRIVING_LICENSE = 'DRIVING_LICENSE',
-  RESIDENCE_PERMIT = 'RESIDENCE_PERMIT',
-  OTHER = 'OTHER',
+  AADHAAR_XML = 'AADHAR_XML',
+  EPAN_PDF = 'EPAN_PDF',
+  DIGILOCKER_DL = 'DIGILOCKER_DL',
+  PASSPORT = 'PASSPORT'
 }
 
 export enum ReviewDecision {
