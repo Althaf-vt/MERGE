@@ -20,6 +20,12 @@ import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
 import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guard";
 import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service";
+import { HandoffController } from "./presentation/controllers/handoff.controller";
+import { HandoffGateway } from "./presentation/gateways/handoff.gateway";
+import { ValidateHandoffUseCase } from "./application/use-cases/validate-handoff.use-case";
+import { GenerateHandoffSessionUseCase } from "./application/use-cases/generate-handoff-session.use-case";
+import { HANDOFF_SERVICE } from "./domain/interfaces/handoff-service.interface";
+import { RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -38,20 +44,25 @@ import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service"
     // Registers the controllers that handle HTTP requests for this module.
     controllers: [
         AuthController,
-        KycController
+        KycController,
+        HandoffController,
     ],
     providers: [
-        // Shared Services
+        // 1. Shared Services & Guards
         BcryptService,
         JwtAuthGuard,
+        HandoffGateway,
 
-        // Use Cases
+        // 2. Standard Providers (Gateways & Use Cases)
         RegisterUserUseCase,
         VerifyOtpUseCase,
         LoginUserUseCase,
         RefreshTokenUseCase,
         SubmitKycDocumentUseCase,
+        ValidateHandoffUseCase,
+        GenerateHandoffSessionUseCase,
 
+        // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
 
         // Maps the repository interface token to its MongoDB implementation.
@@ -80,6 +91,12 @@ import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service"
         {
             provide: PKI_VERIFICATION_SERVICE,
             useClass: AadharPkiService
+        },
+
+        // 
+        {
+            provide: HANDOFF_SERVICE,
+            useClass: RedisHandoffService
         }
     ],
 
