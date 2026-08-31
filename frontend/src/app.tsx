@@ -3,6 +3,7 @@ import { RegisterPage } from './features/auth/pages/RegisterPage'
 import { LoginPage } from './features/auth/pages/LoginPage'
 import { KycPage } from './features/onboarding/Pages/KycPage'
 import { MobileHandoff } from './features/onboarding/Pages/MobileHandoff'
+import { PersistLogin } from './features/auth/components/PersistLogin'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
@@ -32,12 +33,16 @@ export const App = () => {
 
             <Route path='/login' element={<LoginPage/>}/>
 
-            {/* --- ONBOARDING ROUTES --- */}
+            {/* All protected routes go inside PersistLogin */} 
+            <Route element={<PersistLogin/>}>
 
-            {/* Users will be redirected here after successful OTP verification */}
-            <Route path="/onboarding/kyc" element={<KycPage />} />
+                {/* --- ONBOARDING ROUTES --- */}
 
-            <Route path='/handoff' element={<MobileHandoff/>} />
+                {/* Users will be redirected here after successful OTP verification */}
+                <Route path="/onboarding/kyc" element={<KycPage />} />
+
+            </Route>
+                <Route path='/handoff' element={<MobileHandoff/>} />
 
             {/* Catch-all for 404 Not Found */}
             <Route path='*' element={<div>404 - Page Not Found</div>} />

@@ -11,6 +11,10 @@ export interface AuthUser{
     isEmailVerified: boolean;
     kycCompleted?: boolean;
     onboardingStep?: number;
+    kycVerification?: {
+        verificationStatus: string;
+        documentType?: string;
+    }
     createdAt?: Date | string
 }
 

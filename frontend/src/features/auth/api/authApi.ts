@@ -102,9 +102,16 @@ export const authApi = createApi({
                 method: 'POST',
                 body: credentials
             })
-        })
+        }),
+
+        refresh: builder.mutation<{accessToken: string, user: any}, void>({
+            query: () => ({
+                url: '/auth/refresh',
+                method: 'POST'
+            })
+        }),
     })
 })
 
 // RTK Query automatically generates hooks for calling these endpoints
-export const {useRegisterUserMutation, useVerifyOtpMutation, useLoginUserMutation} = authApi;
+export const {useRegisterUserMutation, useVerifyOtpMutation, useLoginUserMutation, useRefreshMutation} = authApi;
