@@ -14,7 +14,6 @@ export class RefreshTokenUseCase{
     async execute(dto: RefreshTokenDto){
         // 1. Validate signature and expiration using the infrastructure service
         // If the token is invalid or expired, this throws an UnauthorizedException
-
         const payload = this.tokenService.verifyRefreshToken(dto.refreshToken);
 
         // 2. Verify the user still existis in the db
@@ -34,7 +33,8 @@ export class RefreshTokenUseCase{
 
         return {
             accessToken: this.tokenService.generateAccessToken(newPayload),
-            refreshToken: this.tokenService.generateRefreshToken(newPayload)
+            refreshToken: this.tokenService.generateRefreshToken(newPayload),
+            user: user
         }
     }
 }

@@ -12,6 +12,10 @@ export class UserResponseMapper{
             kycCompleted: entity.kycCompleted,
             accountStatus: entity.accountStatus,
             onboardingStep: entity.onboardingStep,
+            kycVerification: entity.kycVerfication? {
+                verificationStatus: entity.kycVerfication.verificationStatus,
+                documentType: entity.kycVerfication.documentType,
+            } : null,
             createdAt: entity.createdAt
         }
     }

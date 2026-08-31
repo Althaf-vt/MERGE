@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { RegisterUserUseCase } from "../../application/use-cases/register-user.use-case";
 import { VerifyOtpUseCase } from "../../application/use-cases/verify-otp.use-case";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
@@ -71,7 +71,7 @@ export class AuthController{
 
     @Post('refresh')
     @HttpCode(HttpStatus.OK)
-    async refresh(@Body() req: Request, @Res({passthrough: true}) res: Response){
+    async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response){
         // Extract the token directly from the incoming cookie
         const refreshToken = req.cookies['refreshToken'];
 
@@ -92,7 +92,8 @@ export class AuthController{
 
         // Return the new access token to the frontend
         return {
-            accessToken: result.accessToken
+            accessToken: result.accessToken,
+            user: UserResponseMapper.toResponse(result.user)
         }
     }
 
