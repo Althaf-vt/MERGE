@@ -1,5 +1,4 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { GetPresignedUrlUseCase } from "../../application/use-cases/get-presigned-urls.use-case";
 import { SubmitKycDocumentUseCase } from "../../application/use-cases/submit-kyc-document.use-case";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
@@ -10,7 +9,6 @@ import 'multer'
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
 export class KycController{
     constructor(
-        private readonly getPresignedUrlUseCase: GetPresignedUrlUseCase,
         private readonly submitKycDocumentUseCase: SubmitKycDocumentUseCase
     ){}
 

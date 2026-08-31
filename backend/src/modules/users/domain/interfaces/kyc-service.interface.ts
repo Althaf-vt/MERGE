@@ -1,5 +1,4 @@
 export const PKI_VERIFICATION_SERVICE = Symbol('PKI_VERIFICATION_SERVICE');
-export const OCR_SERVICE = Symbol('OCR_SERVICE');
 export const KYC_HASH_SERVICE = Symbol('KYC_HASH_SERVICE');
 
 // Represent the pure demographic values extracted from digitally signed files
