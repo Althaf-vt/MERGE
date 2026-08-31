@@ -1,7 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 
-type KycStep = 'DOCUMENT_UPLOAD' | 'SUCCESS';
+export type KycStep = 
+  | 'DOCUMENT_UPLOAD' 
+  | 'DOCUMENT_SUCCESS' 
+  | 'DEVICE_SELECTION' 
+  | 'LIVENESS_CHECK' 
+  | 'SUCCESS';
 
 interface ExtractedKycData{
     legalName: string;

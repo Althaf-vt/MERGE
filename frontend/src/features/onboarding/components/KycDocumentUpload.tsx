@@ -40,7 +40,7 @@ export const KycDocumentUpload = () => {
             const result = await submitKyc(formData).unwrap();
 
             dispatch(setExtractedData(result.extractedData));
-            dispatch(setKycStep('SUCCESS'));
+            dispatch(setKycStep('DEVICE_SELECTION'));
         } catch (error: any) {
             console.error(error);
             setError(error?.data?.message || "Cryptographic verification falied. Ensure the file is unmodified.");
