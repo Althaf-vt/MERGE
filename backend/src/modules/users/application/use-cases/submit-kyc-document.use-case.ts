@@ -1,14 +1,12 @@
 import { BadRequestException, ConflictException, Inject, Injectable } from "@nestjs/common";
-import { DocumentType, VerificationDevice } from "../../domain/enums/user.enums";
+import { DocumentType } from "../../domain/enums/user.enums";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { type IKycHashService, type IPkiVerificationService, KYC_HASH_SERVICE, OCR_SERVICE, PKI_VERIFICATION_SERVICE } from "../../domain/interfaces/kyc-service.interface";
+import { type IKycHashService, type IPkiVerificationService, KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "../../domain/interfaces/kyc-service.interface";
 import { UserKyc } from "../../domain/entities/kyc-verification.entity";
+import { SubmitKycDto } from "../dtos/submit-kyc.dto";
 
-export interface SubmitKycDto{
-    documentType: DocumentType;
-    issuingCountry: string;
+export interface SubmitKycPayload extends SubmitKycDto{
     fileBuffer: Buffer;
-    shareCode?: string;
 }
 
 @Injectable()
@@ -19,7 +17,7 @@ export class SubmitKycDocumentUseCase{
         @Inject(KYC_HASH_SERVICE) private readonly hashService: IKycHashService
     ){}
 
-    async execute(userId: string, dto: SubmitKycDto){
+    async execute(userId: string, payload: SubmitKycPayload){
         const user = await this.userRepository.findById(userId);
 
         let extractedData;
@@ -27,15 +25,15 @@ export class SubmitKycDocumentUseCase{
         if(!user) throw new BadRequestException("User not found");
 
         // 1. Route to the correct cryptographic engine
-        if(dto.documentType === DocumentType.AADHAAR_XML){
-            if(!dto.shareCode) throw new BadRequestException("Share code required for XML validation");
-            extractedData = await this.pkiService.verifyAadhaarXml(dto.fileBuffer, dto.shareCode);
+        if(payload.documentType === DocumentType.AADHAAR_XML){
+            if(!payload.shareCode) throw new BadRequestException("Share code required for XML validation");
+            extractedData = await this.pkiService.verifyAadhaarXml(payload.fileBuffer, payload.shareCode);
         }else{
-            throw new BadRequestException('Document type engine yet implemented.')
+            throw new BadRequestException('Document type engine not yet implemented.')
         }
 
         // 2. Hash the extracted documnet number deterministically
-        const hashedDocumentNumber = this.hashService.hashDocumentNumber(extractedData.documentNumber, dto.issuingCountry);
+        const hashedDocumentNumber = this.hashService.hashDocumentNumber(extractedData.documentNumber, payload.issuingCountry);
 
         // 3. Prevent duplicate accounts/ban evasions
         const existingKyc = await this.userRepository.findByDocumentHash(hashedDocumentNumber);
@@ -47,8 +45,8 @@ export class SubmitKycDocumentUseCase{
         const kycEntity = user.kycVerfication || new UserKyc({userId});
 
         kycEntity.recordPkiValidation({
-            documentType: dto.documentType,
-            issuingCountry: dto.issuingCountry,
+            documentType: payload.documentType,
+            issuingCountry: payload.issuingCountry,
             legalName: extractedData.legalName,
             verifiedDOB: extractedData.dateOfBirth,
             hashedDocumentNumber,
