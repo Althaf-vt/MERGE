@@ -4,6 +4,7 @@ import { LoginPage } from './features/auth/pages/LoginPage'
 import { KycPage } from './features/onboarding/Pages/KycPage'
 import { MobileHandoff } from './features/onboarding/Pages/MobileHandoff'
 import { PersistLogin } from './features/auth/components/PersistLogin'
+import { PublicRoute } from './features/auth/components/PublicRoute'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
@@ -28,12 +29,16 @@ export const App = () => {
                 the Email/Password from the OTP Verification screen
                 using the Redux authSlice we built.
             */}
+            {/* 1. Public-Only routes (redirects authenticated user away from login/register) */}
+            <Route element={<PublicRoute/>}>
+                <Route path='/register' element={<RegisterPage/>}/>
+                <Route path='/login' element={<LoginPage/>}/>
+            </Route>
 
-            <Route path='/register' element={<RegisterPage/>}/>
+            {/* 2. Public Mobile Handoff (Self-authenticating token endpoint) */}
+            <Route path='/handoff' element={<MobileHandoff/>} />
 
-            <Route path='/login' element={<LoginPage/>}/>
-
-            {/* All protected routes go inside PersistLogin */} 
+            {/* 3. Protected Routes (Wrapped in PersistLogin for session restoration) */}
             <Route element={<PersistLogin/>}>
 
                 {/* --- ONBOARDING ROUTES --- */}
@@ -42,7 +47,6 @@ export const App = () => {
                 <Route path="/onboarding/kyc" element={<KycPage />} />
 
             </Route>
-                <Route path='/handoff' element={<MobileHandoff/>} />
 
             {/* Catch-all for 404 Not Found */}
             <Route path='*' element={<div>404 - Page Not Found</div>} />

@@ -40,7 +40,7 @@ export const LoginForm = () => {
             }))
 
             // 3. Redirect the user to the KYC onboarding screen
-            navigate('/onboarding/kyc');
+            navigate('/onboarding/kyc', { replace: true });
             
         } catch (error) {
             console.error("Login failed: ", error);
