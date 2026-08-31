@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import { useAppDispatch } from "../../../app/hooks";
 import { useValidateMobileSessionQuery } from "../api/handoffApi";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import styles from './MobileHandoff.module.css';
 export const MobileHandoff = () => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     // Automatically trigger the silent authentication token if a token exists

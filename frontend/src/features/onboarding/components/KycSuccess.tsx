@@ -1,5 +1,3 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import styles from './KycDocumentUpload.module.css';
 import { setKycStep } from '../slices/kycSlice';
