@@ -1,7 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "../../auth/api/authApi";
-import type { PresignedUrlResponse, SubmitKycPayload } from "../types";
-// import type { GetPresignedUrlDto, SubmitKycDto } from "../types";
 
 // use the new wrapper in your API
 export const kycApi = createApi({
@@ -11,23 +9,16 @@ export const kycApi = createApi({
     baseQuery: baseQueryWithReauth,
     endpoints: (builder) => ({
 
-        // We use a mutation so we can trigger this exactly when the user clicks submit
-        getPresignedUrl: builder.mutation<PresignedUrlResponse, {mimeType: string}>({
-            query: (params) => ({
-                url: `/kyc/presigned-url?mimeType=${encodeURIComponent(params.mimeType)}`,
-                method: 'GET'
-            })
-        }),
-
-        submitKyc: builder.mutation<any, SubmitKycPayload>({
-            query: (data) => ({
+        // Acceps a native FormData object containing the file buffer and text fields
+        submitKyc: builder.mutation<any, FormData>({
+            query: (formData) => ({
                 url: '/kyc/submit',
                 method: 'POST',
-                body: data,
+                body: formData,
             })
         }),
 
     })
 })
 
-export const { useGetPresignedUrlMutation, useSubmitKycMutation } = kycApi;
+export const { useSubmitKycMutation } = kycApi;

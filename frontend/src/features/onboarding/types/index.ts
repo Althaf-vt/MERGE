@@ -1,15 +1,14 @@
-// export interface GetPresignedUrlDto{
-//     mimeType: string;
-// }
+export const DocumentType = {
+    AADHAAR_XML : 'AADHAAR_XML',
+    EPAN_PDF : 'EPAN_PDF',
+    DIGILOCKER_DL : 'DIGILOCKER_DL',
+    PASSPORT : 'PASSPORT'
+} as const
+
+export type DocumentType = typeof DocumentType[keyof typeof DocumentType]
 
 export interface SubmitKycPayload{
-    documentType: string;
+    documentType: DocumentType;
     issuingCountry: string;
-    documentFrontKey: string;
-    documentBackKey?: string;
-}
-
-export interface PresignedUrlResponse{
-    front: {uploadUrl: string, fileKey: string};
-    back: {uploadUrl: string, fileKey: string};
+    sharedCode?: string // Required for password-protected formats like Aadhaar XML
 }
