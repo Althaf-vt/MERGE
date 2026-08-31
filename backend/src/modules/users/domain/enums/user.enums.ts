@@ -24,10 +24,10 @@ export enum VerificationDevice {
 }
 
 export enum DocumentType {
-  AADHAAR_XML = 'AADHAR_XML',
+  AADHAAR_XML = 'AADHAAR_XML',
   EPAN_PDF = 'EPAN_PDF',
   DIGILOCKER_DL = 'DIGILOCKER_DL',
-  PASSPORT = 'PASSPORT'
+  PASSPORT = 'PASSPORT',
 }
 
 export enum ReviewDecision {
