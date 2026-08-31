@@ -3,8 +3,10 @@ import { useAppSelector } from "../../../app/hooks"
 import { KycDocumentUpload } from "../components/KycDocumentUpload";
 import { KycLayout } from "../../../shared/components/layouts/KycLayout";
 import { KycSuccess } from "../components/KycSuccess";
+import { DeviceSelection } from "../components/DeviceSelection";
 
-const LivenessCheck = () => <div>Liveness Biometric Check(Coming soon) </div>
+const LivenessCheck = () => <div>Liveness Biometric Check (Desktop Camera)</div>;
+const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
 export const KycPage = () => {
     // 1. Verify the user is actually authenticated before they can access onboarding
@@ -23,8 +25,14 @@ export const KycPage = () => {
         switch(currentStep){
             case 'DOCUMENT_UPLOAD':
                 return <KycDocumentUpload/>;
-            case 'SUCCESS':
+            case 'DOCUMENT_SUCCESS':
                 return <KycSuccess/>;
+            case 'DEVICE_SELECTION':
+                return <DeviceSelection/>
+            case 'LIVENESS_CHECK':
+                return <LivenessCheck/>
+            case 'SUCCESS':
+                return <OnboardingComplete/>
             default:
                 return <KycDocumentUpload/>;
         }

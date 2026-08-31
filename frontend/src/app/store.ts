@@ -3,6 +3,7 @@ import authReducer from "../features/auth/slices/authSlice";
 import kycReducer from "../features/onboarding/slices/kycSlice";
 import { authApi } from "../features/auth/api/authApi";
 import { kycApi } from "../features/onboarding/api/kycApi";
+import { handoffApi } from "../features/onboarding/api/handoffApi";
 
 
 export const store = configureStore({
@@ -16,12 +17,17 @@ export const store = configureStore({
 
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
+        [handoffApi.reducerPath]: handoffApi.reducer,
     },
 
     // 3. The Middleware
     // We take the default Redux middleware and add the RTK Query middleware on top of it.
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(authApi.middleware, kycApi.middleware)
+        getDefaultMiddleware().concat(
+            authApi.middleware,
+            kycApi.middleware,
+            handoffApi.middleware
+        )
 })
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,0 +1,78 @@
+.wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background-color: #fafafa;
+  box-sizing: border-box;
+}
+
+.title {
+  color: #18181b;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.subtitle {
+  color: #71717a;
+  font-size: 1rem;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.errorTitle {
+  color: #ef4444;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.cameraPlaceholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background-color: #e4e4e7;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #71717a;
+  margin-bottom: 2rem;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #6200ea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loadingText {
+  color: #71717a;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

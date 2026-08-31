@@ -2,11 +2,11 @@ import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import { RegisterPage } from './features/auth/pages/RegisterPage'
 import { LoginPage } from './features/auth/pages/LoginPage'
 import { KycPage } from './features/onboarding/Pages/KycPage'
+import { MobileHandoff } from './features/onboarding/Pages/MobileHandoff'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
 // const KycOnboardingPage = () => <div>KYC Onboarding (Coming Soon)</div>
-
 
 export const App = () => {
     return(
@@ -36,6 +36,8 @@ export const App = () => {
 
             {/* Users will be redirected here after successful OTP verification */}
             <Route path="/onboarding/kyc" element={<KycPage />} />
+
+            <Route path='/handoff' element={<MobileHandoff/>} />
 
             {/* Catch-all for 404 Not Found */}
             <Route path='*' element={<div>404 - Page Not Found</div>} />
