@@ -19,12 +19,9 @@ export class UserPersistenceMapper{
                 verificationStatus: raw.kycVerification.verificationStatus,
                 documentType: raw.kycVerification.documentType,
                 issuingCountry: raw.kycVerification.issuingCountry,
-                documentFrontS3: raw.kycVerification.documentFrontS3,
-                documentBackS3: raw.kycVerification.documentBackS3,
                 legalName: raw.kycVerification.legalName,
                 verifiedDOB: raw.kycVerification.verifiedDOB,
                 hashedDocumentNumber: raw.kycVerification.hashedDocumentNumber,
-                ocrConfidence: raw.kycVerification.ocrConfidence
             })
         }
 
@@ -76,11 +73,9 @@ export class UserPersistenceMapper{
                 verificationStatus: data.kycVerification.verificationStatus,
                 documentType: data.kycVerification.documentType,
                 issuingCountry: data.kycVerification.issuingCountry,
-                documentFrontS3: data.kycVerification.documentFrontS3,
-                documentBackS3: data.kycVerification.documentBackS3,
                 legalName: data.kycVerification.legalName,
                 verifiedDOB: data.kycVerification.verifiedDOB,
-                ocrConfidence: data.kycVerification.ocrConfidence,
+                hashedDocumentNumber: data.kycVerification.hashedDocumentNumber
             }: null,
         }
     }
