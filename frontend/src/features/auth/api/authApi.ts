@@ -11,6 +11,8 @@ export const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
     credentials: 'include',
     prepareHeaders: (headers, {getState}) => {
+        // Bypasses the free-trier Ngrok HTML warning screen
+        headers.set('ngrok-skip-browser-warning','true');
         const token = (getState() as RootState).auth.accessToken;
 
         if(token){
