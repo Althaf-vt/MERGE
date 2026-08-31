@@ -28,7 +28,7 @@ interface AuthState{
 // Payload contract for setting authenticated session credentials
 interface SetCredentialsPayload{
     accessToken: string;
-    user: AuthUser;
+    user?: AuthUser;
 }
 
 // Initial state of the registration flow
@@ -63,11 +63,12 @@ const authSlice = createSlice({
         },
 
         setCredentials: (state, action: PayloadAction<SetCredentialsPayload>) => {
-            const {accessToken, user} = action.payload;
 
-            state.accessToken = accessToken;
-            state.user = user;
+            state.accessToken = action.payload.accessToken;
             state.isAuthenticated = true;
+            if(action.payload.user){
+                state.user = action.payload.user;
+            }
         },
 
         logout: (state) => {
