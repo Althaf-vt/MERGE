@@ -1,4 +1,4 @@
-import { AuthProvider, UserStatus } from "../enums/user.enums";
+import { AuthProvider, BlockReason, UserStatus } from "../enums/user.enums";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { UserKyc } from "./kyc-verification.entity";
 import { UserPreference } from "./user-preference.entity";
@@ -13,6 +13,9 @@ import { PhotoVerificationStatus } from "../enums/profile.enums";
 import { UserMedical } from "./user-medical.entity";
 import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
+import { BlockedRelationship } from "./blocked-relationship.entity";
+import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
+import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
 
 export enum UserRole {
     USER = 'USER',
@@ -77,7 +80,7 @@ export class UserAggregate extends AggregateRoot {
             profileCompleted: props.profileCompleted ?? false,
             castingDirectorCompleted: props.castingDirectorCompleted ?? false,
             personalityVector: props.personalityVector ?? [],
-            
+
             photos: props.photos ?? [],
             medicalRecord: props.medicalRecord ?? undefined,
             privacySettings: props.privacySettings ?? undefined,
@@ -141,6 +144,10 @@ export class UserAggregate extends AggregateRoot {
             }
         }
 
+        if (this._props.accountStatus === UserStatus.DEACTIVATED) {
+            this.reactivateAccount();
+        }
+
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
             throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Inactive account cannot login');
         }
@@ -167,8 +174,8 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    completeCastingDirector(vector: number[]): void{
-        if(!vector || vector.length === 0){
+    completeCastingDirector(vector: number[]): void {
+        if (!vector || vector.length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector cannot be empty.');
         }
 
@@ -303,38 +310,38 @@ export class UserAggregate extends AggregateRoot {
     }
 
 
-    attachMedicalRecord(medical: UserMedical): void{
+    attachMedicalRecord(medical: UserMedical): void {
         this._props.medicalRecord = medical;
         this.markUpdatedAt();
     }
 
-    attachPrivacySettings(privacy: UserPrivacy): void{
+    attachPrivacySettings(privacy: UserPrivacy): void {
         this._props.privacySettings = privacy;
         this.markUpdatedAt();
     }
 
-    addPhoto(photo: UserPhoto): void{
-        if(this._props.photos && this._props.photos.length >= 6){
+    addPhoto(photo: UserPhoto): void {
+        if (this._props.photos && this._props.photos.length >= 6) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum of 6 photos allowed.');
         }
         this._props.photos?.push(photo);
         this.markUpdatedAt();
     }
 
-    setPrimaryPhoto(photoId: string): void{
-        if(!this._props.photos) return;
+    setPrimaryPhoto(photoId: string): void {
+        if (!this._props.photos) return;
 
         const photoExists = this._props.photos.find(p => p.id === photoId);
         if (!photoExists) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Photo not found.');
 
-        if(photoExists.status !== PhotoVerificationStatus.APPROVED){
+        if (photoExists.status !== PhotoVerificationStatus.APPROVED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only approved photos can be set as primary.');
         }
 
         this._props.photos.forEach(p => {
-            if(p.id === photoId){
+            if (p.id === photoId) {
                 p.markAsPrimary();
-            }else{
+            } else {
                 p.removePrimaryStatus();
             }
         })
@@ -342,8 +349,8 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    removePhoto(photoId: string): void{
-        if(!this._props.photos) return;
+    removePhoto(photoId: string): void {
+        if (!this._props.photos) return;
         this._props.photos = this._props.photos.filter(p => p.id !== photoId);
         this.markUpdatedAt();
     }
@@ -354,11 +361,19 @@ export class UserAggregate extends AggregateRoot {
         }
     }
 
-    deactivateAccount(): void{
-        if(this._props.accountStatus === UserStatus.DELETED){
+    deactivateAccount(): void {
+        if (this._props.accountStatus === UserStatus.DELETED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot deactivate a deleted account.");
         }
         this._props.accountStatus = UserStatus.DEACTIVATED;
+        this.markUpdatedAt();
+    }
+
+    reactivateAccount(): void {
+        if (this._props.accountStatus !== UserStatus.DEACTIVATED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only deactivated accounts can be reactivated.');
+        }
+        this._props.accountStatus = UserStatus.ACTIVE;
         this.markUpdatedAt();
     }
 
@@ -372,8 +387,37 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.FORBIDDEN, "Google-authenticated accounts cannot change their email address.");
         }
         this._props.email = newEmail;
-        this._props.isEmailVerified = true; 
+        this._props.isEmailVerified = true;
         this.markUpdatedAt();
+    }
+
+    blockUser(targetUserId: string, reason: BlockReason = BlockReason.PERSONAL_PREFERENCE): BlockedRelationship {
+        if (!this.id) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot block users from an unsaved account.");
+        }
+        if (this.id === targetUserId) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot block yourself.");
+        }
+
+        // Emit event to trigger side-effects (e.g., severing active chats/matches asynchronously)
+        this.addDomainEvent(new UserBlockedDomainEvent(this.id, targetUserId, reason));
+
+        return new BlockedRelationship({
+            blockerId: this.id,
+            blockedId: targetUserId,
+            reason,
+        });
+    }
+
+    unblockUser(targetUserId: string): void {
+        if (!this.id) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot perform unblock actions on an unsaved account.");
+        }
+        if (this.id === targetUserId) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot unblock yourself.");
+        }
+
+        this.addDomainEvent(new UserUnblockDomainEvent(this.id, targetUserId))
     }
 
     //3. LUMEN AGENT SCHEDULING & QUOTAS
