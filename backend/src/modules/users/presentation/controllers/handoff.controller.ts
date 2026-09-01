@@ -1,4 +1,4 @@
-import { BadGatewayException, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { BadGatewayException, Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { GenerateHandoffSessionUseCase } from "../../application/use-cases/generate-handoff-session.use-case";
 import { ValidateHandoffUseCase } from "../../application/use-cases/validate-handoff.use-case";
 import { HandoffGateway } from "../gateways/handoff.gateway";
@@ -25,10 +25,13 @@ export class HandoffController{
     @Post('session')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
-    async generateSession(@Req() req: any){
+    async generateSession(
+        @Req() req: any,
+        @Headers('origin') origin: string // Capture the exact URL frontent is currenlty using
+    ){
         // req.user is populated by your JwtAuthGuard
         const userId = req.user.userId;
-        return await this.generateSessionUseCase.execute(userId);
+        return await this.generateSessionUseCase.execute(userId, origin);
     }
 
     // Called by the Mobie Phone after scanning the QR code.

@@ -10,7 +10,7 @@ export class GenerateHandoffSessionUseCase{
         @Inject(HANDOFF_SERVICE) private readonly handoffService: IHandoffSessionService
     ){}
 
-    async execute(userId: string){
+    async execute(userId: string, clientOrigin?: string){
         const TTL_SECONDS = 300 // 5min
 
         // 1. Create the secure session in Redis
@@ -20,7 +20,7 @@ export class GenerateHandoffSessionUseCase{
         const expiresAt = new Date(Date.now() + TTL_SECONDS * 1000);
 
         // 3. construct the exact URL the mobile device needs to hit
-        const baseUrl = process.env.FRONTENT_URL || 'http://localhost:5173';
+        const baseUrl = clientOrigin || process.env.FRONTEND_URL || 'http://localhost:5173';
         const qrCodeUrl = `${baseUrl}/handoff?token=${sessionId}`;
 
         return {

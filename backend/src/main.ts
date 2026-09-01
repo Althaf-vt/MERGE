@@ -12,7 +12,11 @@ async function bootstrap() {
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   // Core security Headers
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: {policy: 'cross-origin'}
+    })
+  );
 
   // strick no-chache middleware for all API routes
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -26,13 +30,35 @@ async function bootstrap() {
   // Enable cookie parsing
   app.use(cookieParser())
 
-  // Enable CORS for both local testing and Ngrok mobile tunneling
+  // Dynamic CORS configuration
   app.enableCors({
-    origin: [
-      process.env.FRONTEND_URL, 
-      'http://localhost:5173',
-    ].filter(Boolean) as string[], // Filters out undefined if ENV is missing
-    credentials: true
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (eg: postman, server-to-server, mobile native calls)
+      if(!origin) return callback(null, true);
+
+      const isAllowed = 
+        origin === process.env.FRONTEND_URL ||
+        origin.includes('localhost') ||
+        origin.endsWith('.ngrok-free.app') ||
+        origin.endsWith('.ngrok.io');
+
+      if(isAllowed){
+        callback(null, true);
+      }else{
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'ngrok-skip-browser-warning',
+      'Origin',
+      'Accept',
+      'X-Requested-With'
+    ]
   })
 
   // Global validation pipe for DTOs
