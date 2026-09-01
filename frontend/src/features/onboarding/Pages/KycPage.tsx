@@ -6,8 +6,8 @@ import { KycSuccess } from "../components/KycSuccess";
 import { DeviceSelection } from "../components/DeviceSelection";
 import { useEffect } from "react";
 import { setKycStep } from "../slices/kycSlice";
+import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
 
-const LivenessCheck = () => <div>Liveness Biometric Check (Desktop Camera)</div>;
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
 export const KycPage = () => {
@@ -45,7 +45,7 @@ export const KycPage = () => {
             case 'DEVICE_SELECTION':
                 return <DeviceSelection/>
             case 'LIVENESS_CHECK':
-                return <LivenessCheck/>
+                return <LiveSelfieCapture onSuccess={() => dispatch(setKycStep('SUCCESS'))}/>
             case 'SUCCESS':
                 return <OnboardingComplete/>
             default:

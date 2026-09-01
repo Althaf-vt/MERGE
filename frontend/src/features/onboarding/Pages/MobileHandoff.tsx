@@ -1,14 +1,17 @@
 import { useSearchParams } from "react-router-dom"
 import { useAppDispatch } from "../../../app/hooks";
-import { useValidateMobileSessionQuery } from "../api/handoffApi";
+import { useCompleteMobileSessionMutation, useValidateMobileSessionQuery } from "../api/handoffApi";
 import { useEffect, useState } from "react";
 import { setCredentials } from "../../auth/slices/authSlice";
 import styles from './MobileHandoff.module.css';
+import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
 
 export const MobileHandoff = () => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
     const dispatch = useAppDispatch();
+
+    const [completeMobileSession] = useCompleteMobileSessionMutation();
 
     // Automatically trigger the silent authentication token if a token exists
     const {data, error, isLoading} = useValidateMobileSessionQuery(token || '', {
@@ -59,8 +62,11 @@ export const MobileHandoff = () => {
             <p className={styles.subtitle}>Your phone is linked. We will now capture your baseline identity selfie.</p>
             
             {/* Placeholder for Phase 8: Liveness Camera Component */}
-            <div className={styles.cameraPlaceholder}>
-                [ Camera Interface Loading... ]
+            <div className={styles.wrapper}>
+                <LiveSelfieCapture onSuccess={async () => {
+                // Tell the backend we are done, which pings the desktop WebSocket
+                await completeMobileSession(token).unwrap();
+                }} />
             </div>
 
             <button 

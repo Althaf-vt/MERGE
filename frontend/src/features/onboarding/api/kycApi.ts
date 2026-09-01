@@ -17,8 +17,15 @@ export const kycApi = createApi({
                 body: formData,
             })
         }),
+        submitLiveSelfie: builder.mutation<{success: boolean, message: string}, FormData>({
+            query: (formData) => ({
+                url: '/kyc/selfie',
+                method: 'POST',
+                body: formData
+            })
+        }),
 
     })
 })
 
-export const { useSubmitKycMutation } = kycApi;
+export const { useSubmitKycMutation, useSubmitLiveSelfieMutation } = kycApi;
