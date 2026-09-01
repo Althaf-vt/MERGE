@@ -1,0 +1,72 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.title {
+  color: #18181b;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #71717a;
+  font-size: 0.95rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.videoContainer {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background-color: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.videoStream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Mirrors the camera like a standard phone selfie */
+}
+
+.captureBtn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.captureBtn:disabled {
+  background-color: #a78bfa;
+  cursor: not-allowed;
+}
+
+.errorBox {
+  padding: 1rem;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  text-align: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
