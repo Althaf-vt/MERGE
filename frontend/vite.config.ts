@@ -9,5 +9,18 @@ export default defineConfig({
     port: 5173,
     // Allows any ngrok-free subdomain or pass true to allow all hosts
     allowedHosts: ['.ngrok-free.app'],
+    proxy: {
+      // Proxy all HTTP API requests to NestJS
+      '/api': {
+        target: 'http://localhost:3110',
+        changeOrigin: true
+      },
+      // Proxy real-time WebSocket connections for the device handoff
+      '/socket.io': {
+        target: 'http://localhost:3110',
+        ws: true,
+        changeOrigin: true
+      }
+    }
   }
 })

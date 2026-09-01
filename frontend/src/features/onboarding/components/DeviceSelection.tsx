@@ -20,7 +20,7 @@ export const DeviceSelection = () => {
 
         if(mode === 'QR_WAITING' && sessionData){
             // Connect to the NestJs Websocket Gateway
-            const backendUrl = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3110';
+            const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || '';
             socket = io(backendUrl, {withCredentials: true});
 
             // Join the private session room
