@@ -1,4 +1,4 @@
-import { DocumentType, ReviewDecision, VerificationDevice, VerificationStatus } from "../enums/user.enums";
+import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
 
 export interface UserKycProps{
     id?: string;
@@ -15,9 +15,9 @@ export interface UserKycProps{
     hashedDocumentNumber?: string;
     liveSelfieS3?: string;
     selfieFaceEmbedding?: number[];
+    selfieConfidence?: number;
+    selfieVerificationStatus?: SelfieVerificationStatus;
     livenessScore?: number;
-    duplicateDetected?: boolean;
-    duplicateUserId?: string;
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
     rejectionReason?: string;
@@ -36,12 +36,16 @@ export interface SubmitPkiDocumentsPayload{
     hashedDocumentNumber: string;
 }
 
-export interface RecordBiometricResultPayload{
+export interface RecordSelfiePayload{
     liveSelfieS3: string;
     selfieFaceEmbedding: number[];
+    selfieConfidence: number;
+    rejectionReason?: string;
+}
+
+export interface RecordLivenessPayload{
     livenessScore: number;
-    duplicateDetected: boolean;
-    duplicateUserId?: string;
+    rejectionReason?: string;
 }
 
 export interface ApproveManualReviewPayload{
@@ -65,6 +69,7 @@ export class UserKyc{
             verificationAttempt: props.verificationAttempt ?? 0,
             verificationDevice: props.verificationDevice ?? VerificationDevice.CURRENT_DEVICE,
             selfieFaceEmbedding: props.selfieFaceEmbedding ?? [],
+            selfieVerificationStatus: props.selfieVerificationStatus ?? SelfieVerificationStatus.NOT_STARTED,
         }
     }
 
@@ -82,9 +87,10 @@ export class UserKyc{
     get hashedDocumentNumber(): string | undefined {return this.props.hashedDocumentNumber};
     get liveSelfieS3(): string | undefined {return this.props.liveSelfieS3};
     get selfieFaceEmbedding(): number[] | undefined {return this.props.selfieFaceEmbedding};
+    get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this.props.selfieVerificationStatus};
+    get selfieConfidence(): number | undefined {return this.props.selfieConfidence};
+    get manualReviewRequired(): boolean | undefined {return this.props.manualReviewRequired};
     get livenessScore(): number | undefined {return this.props.livenessScore};
-    get duplicateFaceDetected(): boolean | undefined {return this.props.duplicateDetected};
-    get duplicateUserId(): string | undefined {return this.props.duplicateUserId};
     get adminReviewedBy(): string | undefined {return this.props.adminReviewedBy};
     get rejectionReason(): string | undefined {return this.props.rejectionReason};
     get submittedAt(): Date | undefined {return this.props.submittedAt};
@@ -108,31 +114,45 @@ export class UserKyc{
         this.props.updatedAt = new Date();
     }
 
-    recordBiometricsAndEvaluate(
-        payload: RecordBiometricResultPayload,
-        livenessThreshold = 0.8
-    ): void{
+    // Live Selfie
+    recordSelfie(payload: RecordSelfiePayload, selfieThreshold = 85): void{
+        
+        // Always save the S3 link and confidence, regardless of pass/fail, for audit logs
         this.props.liveSelfieS3 = payload.liveSelfieS3;
-        this.props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
+        this.props.selfieConfidence = payload.selfieConfidence;
+        this.props.updatedAt = new Date();
+        
+        if(payload.selfieConfidence >= selfieThreshold){
+            this.props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
+            this.props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
+        }else{
+            this.props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
+            this.props.verificationStatus = VerificationStatus.REJECTED;
+            this.props.rejectionReason = payload.rejectionReason;
+        }
+        
+    }
+
+    // Liveness Test
+    recordLiveness(payload: RecordLivenessPayload, livenessThreshold = 0.80, rejectThreashold = 0.30): void{
         this.props.livenessScore = payload.livenessScore;
-        this.props.duplicateDetected = payload.duplicateDetected;
-        this.props.duplicateUserId = payload.duplicateUserId;
+        this.props.updatedAt = new Date();
 
-        const passedLiveness = payload.livenessScore >= livenessThreshold;
-        const noDuplicate = !payload.duplicateDetected;
-
-        if(passedLiveness && noDuplicate){
+        if(payload.livenessScore >= livenessThreshold){
             this.props.verificationStatus = VerificationStatus.APPROVED;
             this.props.reviewDecision = ReviewDecision.AUTO_APPROVED;
             this.props.approvedAt = new Date();
+            this.props.manualReviewRequired = false;
+        }else if(payload.livenessScore < rejectThreashold){
+            this.props.verificationStatus = VerificationStatus.REJECTED;
+            this.props.reviewDecision = ReviewDecision.AUTO_REJECTED;
+            this.props.rejectionReason = payload.rejectionReason;
             this.props.manualReviewRequired = false;
         }else{
             this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
             this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
             this.props.manualReviewRequired = true;
         }
-
-        this.props.updatedAt = new Date();
     }
 
     approveManualReview(payload: ApproveManualReviewPayload){

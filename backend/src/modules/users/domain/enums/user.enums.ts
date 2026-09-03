@@ -10,6 +10,12 @@ export enum UserStatus {
   DELETED = 'DELETED',
 }
 
+export enum SelfieVerificationStatus {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  NOT_STARTED = 'NOT_STARTED',
+}
+
 export enum VerificationStatus {
   NOT_STARTED = 'NOT_STARTED',
   PENDING = 'PENDING',
