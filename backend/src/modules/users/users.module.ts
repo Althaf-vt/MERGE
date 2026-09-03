@@ -26,6 +26,10 @@ import { ValidateHandoffUseCase } from "./application/use-cases/validate-handoff
 import { GenerateHandoffSessionUseCase } from "./application/use-cases/generate-handoff-session.use-case";
 import { HANDOFF_SERVICE } from "./domain/interfaces/handoff-service.interface";
 import { RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
+import { HttpModule } from "@nestjs/axios";
+import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-selfie.use-case";
+import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
+import { HttpBiometricService } from "./infrastructure/services/http-biometric.service";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -39,6 +43,8 @@ import { RedisHandoffService } from "./infrastructure/services/redis-handoff.ser
         JwtModule.register({
             secret: process.env.JWT_SECRET || 'super-secret-fallback',
         }),
+
+        HttpModule, // Required for axios request to the ML worker
     ],
 
     // Registers the controllers that handle HTTP requests for this module.
@@ -61,6 +67,7 @@ import { RedisHandoffService } from "./infrastructure/services/redis-handoff.ser
         SubmitKycDocumentUseCase,
         ValidateHandoffUseCase,
         GenerateHandoffSessionUseCase,
+        SubmitLiveSelfieUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -97,6 +104,10 @@ import { RedisHandoffService } from "./infrastructure/services/redis-handoff.ser
         {
             provide: HANDOFF_SERVICE,
             useClass: RedisHandoffService
+        },
+        {
+            provide: BIOMETRIC_SERVICE,
+            useClass: HttpBiometricService
         }
     ],
 
