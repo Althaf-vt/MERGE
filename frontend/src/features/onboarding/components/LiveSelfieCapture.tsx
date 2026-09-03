@@ -1,6 +1,6 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { useSubmitKycMutation } from "../api/kycApi";
+import { useSubmitLiveSelfieMutation } from "../api/kycApi";
 import styles from './LiveSelfieCapture.module.css';
 
 interface LiveSelfieCaptureProps{
@@ -15,7 +15,7 @@ export const LiveSelfieCapture: React.FC<LiveSelfieCaptureProps> = ({onSuccess})
     const [error, setError] = useState<string | null>(null);
     const [isCapturing, setIsCapturing] = useState(false);
 
-    const [submitSelfie, {isLoading}] = useSubmitKycMutation();
+    const [submitSelfie, {isLoading}] = useSubmitLiveSelfieMutation();
 
     // Initialize the camera when the component mounts
     useEffect(() => {
