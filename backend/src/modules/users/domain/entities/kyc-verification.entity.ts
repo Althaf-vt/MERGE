@@ -17,6 +17,7 @@ export interface UserKycProps{
     selfieFaceEmbedding?: number[];
     selfieConfidence?: number;
     selfieVerificationStatus?: SelfieVerificationStatus;
+    livenessVideoS3?: string;
     livenessScore?: number;
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
@@ -46,6 +47,7 @@ export interface RecordSelfiePayload{
 export interface RecordLivenessPayload{
     livenessScore: number;
     rejectionReason?: string;
+    livenessVideoS3?: string;
 }
 
 export interface ApproveManualReviewPayload{
@@ -89,6 +91,7 @@ export class UserKyc{
     get selfieFaceEmbedding(): number[] | undefined {return this.props.selfieFaceEmbedding};
     get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this.props.selfieVerificationStatus};
     get selfieConfidence(): number | undefined {return this.props.selfieConfidence};
+    get livenessVideoS3(): string | undefined { return this.props.livenessVideoS3};
     get manualReviewRequired(): boolean | undefined {return this.props.manualReviewRequired};
     get livenessScore(): number | undefined {return this.props.livenessScore};
     get adminReviewedBy(): string | undefined {return this.props.adminReviewedBy};
@@ -137,6 +140,7 @@ export class UserKyc{
     recordLiveness(payload: RecordLivenessPayload, livenessThreshold = 0.80, rejectThreashold = 0.30): void{
         this.props.livenessScore = payload.livenessScore;
         this.props.updatedAt = new Date();
+        this.props.livenessVideoS3 = payload.livenessVideoS3;
 
         if(payload.livenessScore >= livenessThreshold){
             this.props.verificationStatus = VerificationStatus.APPROVED;

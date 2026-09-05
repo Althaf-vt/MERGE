@@ -97,7 +97,7 @@ export class UserAggregate {
 
     get profile(): UserProfile | undefined {return this.props.profile}
     get preference(): UserPreference | undefined {return this.props.preferences}
-    get kycVerfication(): UserKyc | undefined {return this.props.kycVerification};
+    get kycVerification(): UserKyc | undefined {return this.props.kycVerification};
 
     
     //1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS

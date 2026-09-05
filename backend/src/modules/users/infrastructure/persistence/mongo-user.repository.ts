@@ -43,7 +43,7 @@ export class MongoUserRepository implements IUserRepository{
         const userAggregate = UserPersistenceMapper.toDomain(document);
 
         // Extract and return just the KYC portion
-        return userAggregate.kycVerfication || null;
+        return userAggregate.kycVerification || null;
     }
 
     // Converts the domain entity into persistence data and creates a new MongoDB document.
