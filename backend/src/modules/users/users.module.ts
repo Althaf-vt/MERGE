@@ -30,6 +30,7 @@ import { HttpModule } from "@nestjs/axios";
 import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-selfie.use-case";
 import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
 import { HttpBiometricService } from "./infrastructure/services/http-biometric.service";
+import { s3StorageService } from "./infrastructure/services/s3-storage.service";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -58,6 +59,7 @@ import { HttpBiometricService } from "./infrastructure/services/http-biometric.s
         BcryptService,
         JwtAuthGuard,
         HandoffGateway,
+        s3StorageService,
 
         // 2. Standard Providers (Gateways & Use Cases)
         RegisterUserUseCase,
