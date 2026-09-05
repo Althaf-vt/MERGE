@@ -31,10 +31,16 @@ export class HttpBiometricService implements IBiometricService{
             }
 
         } catch (error: any) {
-            if(error.response?.status === 400){
-                throw new BadRequestException(error.response.data.detail || "Face not found or invalid image format.");
+            // Axios wraps the response under error.response
+            const status = error.response?.status;
+            const detail = error.response?.data?.detail;
+
+            if (status === 400) {
+                throw new BadRequestException(detail || 'Face validation failed.');
             }
-            throw new InternalServerErrorException('Failed to communicate with the biometric ML worker.')
+            
+            console.error('ML Worker Error Details:', error.message, error.response?.data);
+            throw new InternalServerErrorException(detail || 'Failed to communicate with the biometric ML worker.');
         }
     }
 }
