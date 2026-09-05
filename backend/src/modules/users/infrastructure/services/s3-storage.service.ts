@@ -51,4 +51,23 @@ export class s3StorageService{
             throw new InternalServerErrorException('Failed to securely store identity baseline.');
         }
     }
+
+    async uploadVideo(userId: string, fileBuffer: Buffer, mimeType = 'video/webm'): Promise<string>{
+        const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const uniqueFilename = `liveness-video/${userId}-${uuidv4()}.${extension}`;
+
+        try {
+            await this.s3Client.send(new PutObjectCommand({
+                Bucket: this.bucketName,
+                Key: uniqueFilename,
+                Body: fileBuffer,
+                ContentType: mimeType
+            }));
+
+            return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${uniqueFilename}`;
+        } catch (error) {
+            console.error('S3 Video Upload Error: ', error);
+            throw new InternalServerErrorException("Failed to securely store liveness video audit.");
+        }
+    }
 }
