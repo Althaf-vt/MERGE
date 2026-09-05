@@ -27,7 +27,8 @@ export class s3StorageService{
             credentials: {
                 accessKeyId,
                 secretAccessKey,
-            }
+            },
+            maxAttempts: 2,
         })
 
     }
