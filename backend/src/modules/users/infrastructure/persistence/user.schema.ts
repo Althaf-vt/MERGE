@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole, KycStatus } from '../../domain/entities/user.entity';
-import { AuthProvider, DocumentType, UserStatus, VerificationStatus } from '../../domain/enums/user.enums';
+import { AuthProvider, DocumentType, ReviewDecision, SelfieVerificationStatus, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
 // Mongoose document type combining the User schema with a MongoDb document.
@@ -14,30 +14,78 @@ class KycVerificationSchema{
     @Prop({type: String, enum: VerificationStatus, default: VerificationStatus.NOT_STARTED})
     verificationStatus: VerificationStatus;
 
-    @Prop({type: String, enum: DocumentType})
-    documentType: DocumentType;
+    @Prop({ type: String, enum: ReviewDecision })
+    reviewDecision?: ReviewDecision;
 
+    @Prop({ default: 0 })
+    verificationAttempt?: number;
+
+    @Prop({type: String, enum: DocumentType})
+    documentType?: DocumentType;
+    
     @Prop()
     issuingCountry: string;
 
-    @Prop()
-    documentFrontS3: string;
+    @Prop({ type: String, enum: VerificationDevice, default: VerificationDevice.CURRENT_DEVICE })
+    verificationDevice?: VerificationDevice;
 
     @Prop()
-    documentBackS3: string;
+    qrSessionId?: string;
 
     @Prop()
-    legalName: string;
+    documentFrontS3?: string;
 
     @Prop()
-    verifiedDOB: Date;
+    documentBackS3?: string;
+
+    @Prop()
+    legalName?: string;
+
+    @Prop()
+    verifiedDOB?: Date;
 
     // This is the critical field we query against for duplicated
     @Prop({index: true})
-    hashedDocumentNumber: string;
+    hashedDocumentNumber?: string;
 
     @Prop()
-    ocrConfidence: number;
+    ocrConfidence?: number;
+
+    // --- Phase 8A: Identity Baseline ---
+
+    @Prop()
+    liveSelfieS3?: string;
+
+    @Prop({ type: [Number], default: [] })
+    selfieFaceEmbedding?: number[];
+
+    @Prop()
+    selfieConfidence?: number;
+
+    @Prop({ type: String, enum: SelfieVerificationStatus, default: SelfieVerificationStatus.NOT_STARTED })
+    selfieVerificationStatus?: SelfieVerificationStatus;
+
+    // --- Phase 8B: Active Liveness Challenge ---
+    @Prop()
+    livenessScore?: number;
+
+    @Prop({ default: false })
+    manualReviewRequired?: boolean;
+
+    @Prop()
+    adminReviewedBy?: string;
+
+    @Prop()
+    rejectionReason?: string;
+
+    @Prop()
+    submittedAt?: Date;
+
+    @Prop()
+    approvedAt?: Date;
+
+    @Prop()
+    rejectedAt?: Date;
 }
 
 // export type UserDocument = User & Document;

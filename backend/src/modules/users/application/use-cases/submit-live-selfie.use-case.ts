@@ -2,12 +2,14 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, type IBiometricService } from "../../domain/interfaces/biometric-service.interface";
 import { SelfieVerificationStatus } from "../../domain/enums/user.enums";
+import { s3StorageService } from "../../infrastructure/services/s3-storage.service";
 
 @Injectable()
 export class SubmitLiveSelfieUseCase{
     constructor(
         @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(BIOMETRIC_SERVICE) private readonly biometricService: IBiometricService
+        @Inject(BIOMETRIC_SERVICE) private readonly biometricService: IBiometricService,
+        private readonly s3Service: s3StorageService
     ){}
 
     async execute(userId: string, fileBuffer: Buffer){
@@ -23,11 +25,11 @@ export class SubmitLiveSelfieUseCase{
         const {faceEmbedding, confidence} = await this.biometricService.extractEmbedding(fileBuffer);
         
         // 2. Mock S3 Upload (To be replaces with actual S3 service later)
-        const mockS3Url = `https://s3.aws.com/merge/selfies/${userId}.jpg`;
+        const liveSelfieS3 = await this.s3Service.uploadSelfie(userId, fileBuffer);
 
         // 3. Save the vector for future continues Authentication
         user.kycVerfication.recordSelfie({
-            liveSelfieS3: mockS3Url,
+            liveSelfieS3,
             selfieFaceEmbedding: faceEmbedding, // 512-dimension array
             selfieConfidence: confidence,
             // reason if confidence is low

@@ -1,6 +1,6 @@
 import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
 import { UserAggregate, UserRole, KycStatus } from "../../../domain/entities/user.entity";
-import { AuthProvider, UserStatus } from "../../../domain/enums/user.enums";
+import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";
 
@@ -22,6 +22,21 @@ export class UserPersistenceMapper{
                 legalName: raw.kycVerification.legalName,
                 verifiedDOB: raw.kycVerification.verifiedDOB,
                 hashedDocumentNumber: raw.kycVerification.hashedDocumentNumber,
+
+                // Selfie Identity Baseline
+                liveSelfieS3: raw.kycVerification.liveSelfieS3,
+                selfieFaceEmbedding: raw.kycVerification.selfieFaceEmbedding,
+                selfieConfidence: raw.kycVerification.selfieConfidence,
+                selfieVerificationStatus: raw.kycVerification.selfieVerificationStatus as SelfieVerificationStatus,
+
+                // Liveness & Review
+                livenessScore: raw.kycVerification.livenessScore,
+                manualReviewRequired: raw.kycVerification.manualReviewRequired,
+                adminReviewedBy: raw.kycVerification.adminReviewedBy,
+                rejectionReason: raw.kycVerification.rejectionReason,
+                submittedAt: raw.kycVerification.submittedAt,
+                approvedAt: raw.kycVerification.approvedAt,
+                rejectedAt: raw.kycVerification.rejectedAt,
             })
         }
 
@@ -75,7 +90,22 @@ export class UserPersistenceMapper{
                 issuingCountry: data.kycVerification.issuingCountry,
                 legalName: data.kycVerification.legalName,
                 verifiedDOB: data.kycVerification.verifiedDOB,
-                hashedDocumentNumber: data.kycVerification.hashedDocumentNumber
+                hashedDocumentNumber: data.kycVerification.hashedDocumentNumber,
+
+                // Selfie Identity Baseline
+                liveSelfieS3: data.kycVerification.liveSelfieS3,
+                selfieFaceEmbedding: data.kycVerification.selfieFaceEmbedding,
+                selfieConfidence: data.kycVerification.selfieConfidence,
+                selfieVerificationStatus: data.kycVerification.selfieVerificationStatus,
+
+                // Liveness & Review
+                livenessScore: data.kycVerification.livenessScore,
+                manualReviewRequired: data.kycVerification.manualReviewRequired,
+                adminReviewedBy: data.kycVerification.adminReviewedBy,
+                rejectionReason: data.kycVerification.rejectionReason,
+                submittedAt: data.kycVerification.submittedAt,
+                approvedAt: data.kycVerification.approvedAt,
+                rejectedAt: data.kycVerification.rejectedAt,
             }: null,
         }
     }
