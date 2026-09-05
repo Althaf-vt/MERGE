@@ -31,6 +31,8 @@ import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-sel
 import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
 import { HttpBiometricService } from "./infrastructure/services/http-biometric.service";
 import { s3StorageService } from "./infrastructure/services/s3-storage.service";
+import { SubmitLivenessCheckUseCase } from "./application/use-cases/submit-liveness-check.use-case";
+import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-liveness-check.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -70,6 +72,7 @@ import { s3StorageService } from "./infrastructure/services/s3-storage.service";
         ValidateHandoffUseCase,
         GenerateHandoffSessionUseCase,
         SubmitLiveSelfieUseCase,
+        SubmitLivenessCheckUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -110,6 +113,9 @@ import { s3StorageService } from "./infrastructure/services/s3-storage.service";
         {
             provide: BIOMETRIC_SERVICE,
             useClass: HttpBiometricService
+        },
+        {provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
+            useClass: SubmitLivenessCheckUseCase
         }
     ],
 
