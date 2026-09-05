@@ -85,7 +85,7 @@ export class KycController{
             throw new BadRequestException("Liveness video payload is required.");
         }
 
-        const userId = req.user.id; //Extract from JWT payload
+        const userId = req.userId; //Extract from JWT payload
         return await this.submitLivenessCheckUseCase.execute(userId, file.buffer);
     }
 }
