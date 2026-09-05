@@ -5,6 +5,7 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-aut
 import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer'
 import { SubmitLiveSelfieUseCase } from "../../application/use-cases/submit-live-selfie.use-case";
+import { ISubmitLivenessCheckUseCase } from "../../application/interfaces/submit-liveness-check.use-case.interface";
 
 @Controller('kyc')
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
@@ -12,6 +13,7 @@ export class KycController{
     constructor(
         private readonly submitKycDocumentUseCase: SubmitKycDocumentUseCase,
         private readonly submitLiveSelfieUseCase: SubmitLiveSelfieUseCase,
+        private readonly submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
     ){}
 
     @Post('submit')
@@ -61,5 +63,29 @@ export class KycController{
         }
 
         return await this.submitLiveSelfieUseCase.execute(userId, file.buffer)
+    }
+
+    @Post('liveness')
+    @UseInterceptors(FileInterceptor('video', {
+        limits: {
+            fileSize: 10 * 1042 * 1024 // 10MB limit for a 3-5 second liveness clip
+        },
+        fileFilter(req, file, cb) {
+            if(!file.mimetype.match(/^video\/(webm|mp4)$/)){
+                return cb(new BadRequestException("Only webm and mp4 video formats are allowed!"), false);
+            }
+            cb(null, true);
+        },
+    }))
+    async submitLiveness(
+        @Req() req: any,
+        @UploadedFile() file: Express.Multer.File
+    ){
+        if(!file){
+            throw new BadRequestException("Liveness video payload is required.");
+        }
+
+        const userId = req.user.id; //Extract from JWT payload
+        return await this.submitLivenessCheckUseCase.execute(userId, file.buffer);
     }
 }
