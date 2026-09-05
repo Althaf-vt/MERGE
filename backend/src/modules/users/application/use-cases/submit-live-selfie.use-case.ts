@@ -17,7 +17,7 @@ export class SubmitLiveSelfieUseCase{
         if(!user) throw new BadRequestException('User not found');
 
         // Ensure phase 3-7 (Document PKI) is actually finished first
-        if(user.kycVerfication?.verificationStatus !== 'APPROVED'){
+        if(user.kycVerification?.verificationStatus !== 'APPROVED'){
             throw new BadRequestException('Document verification must be completed first.');
         }
 
@@ -28,7 +28,7 @@ export class SubmitLiveSelfieUseCase{
         const liveSelfieS3 = await this.s3Service.uploadSelfie(userId, fileBuffer);
 
         // 3. Save the vector for future continues Authentication
-        user.kycVerfication.recordSelfie({
+        user.kycVerification.recordSelfie({
             liveSelfieS3,
             selfieFaceEmbedding: faceEmbedding, // 512-dimension array
             selfieConfidence: confidence,
@@ -40,7 +40,7 @@ export class SubmitLiveSelfieUseCase{
         await this.userRepository.update(user)
         
         // 5. If the entity rejected the selfie, throw an error to trigger the UI retry state
-        if(user.kycVerfication.selfieVerificationStatus === SelfieVerificationStatus.REJECTED){
+        if(user.kycVerification.selfieVerificationStatus === SelfieVerificationStatus.REJECTED){
             throw new BadRequestException('Selfie rejected: Face not clearly visible or poor lighting. Please try again.');
         }
 
