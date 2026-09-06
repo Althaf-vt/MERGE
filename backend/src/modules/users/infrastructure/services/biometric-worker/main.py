@@ -67,6 +67,41 @@ def evaluate_quality_and_occlusion(img: np.ndarray, facial_area: dict):
     if len(eyes) < 2:
         raise HTTPException(status_code=400, detail="Both eyes must be clearly visible. Remove pens, objects, or hair covering your eyes.")
 
+def detect_screen_replay(frame: np.ndarray) -> bool:
+    """Returns True if the frame exhibits screen-replay artifacts (Moiré or Glare)"""
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # 1. Specular Glare Detection (Screen Reflection)
+    # Screens reflect harsh point-lights as pure white #FFFFFF.
+    _, thresh = cv2.threshold(gray, 245, 255, cv2.THRESH_BINARY)
+    glare_ratio = cv2.countNonZero(thresh) / (gray.shape[0] * gray.shape[1])
+    
+    # If more than 1.5% of the frame is purely blown-out white, it's likely a glass screen reflecting a room light
+    if glare_ratio > 0.015:
+        return True
+
+    # 2. Moiré Pattern Detection via Fast Fourier Transform (FFT)
+    # Convert image to frequency domain to find artificial pixel grid patterns
+    f = np.fft.fft2(gray)
+    fshift = np.fft.fftshift(f)
+    magnitude_spectrum = 20 * np.log(np.abs(fshift) + 1)
+
+    # Mask out the low frequencies (natural shapes/colors in the center)
+    rows, cols = gray.shape
+    crow, ccol = rows // 2, cols // 2
+    r = 40 # Radius for natural low frequencies
+    mask = np.ones((rows, cols), np.uint8)
+    cv2.circle(mask, (ccol, crow), r, 0, -1)
+
+    # Calculate the average magnitude of the high frequencies (edges and grids)
+    high_freq_magnitude = np.mean(magnitude_spectrum * mask)
+
+    # High frequency spikes indicate unnatural grid lines (Moiré)
+    if high_freq_magnitude > 145.0:
+        return True
+
+    return False
+
 @app.post("/extract-embedding")
 async def extract_embedding(file: UploadFile = File(...)):
     try:
@@ -111,81 +146,72 @@ async def extract_embedding(file: UploadFile = File(...)):
 
 @app.post('/analyze-liveness')
 async def analyze_liveness(file: UploadFile = File(...)):
-    # 1. OpenCV cannot read video byte streams directly from memory
-    # We must write the WebM/MP4 buffer to an isolated temporary file.
     with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
         temp_video.write(await file.read())
         temp_video_path = temp_video.name
 
     try:
         cap = cv2.VideoCapture(temp_video_path)
-
         face_centers = []
         frame_count = 0
+        spoof_flags = 0
 
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
 
-            # 2. Frame Sampling:  Process 1 in every 5 frames to bypass CPU bottlenecks
             if frame_count % 5 == 0:
-                # Use MTCNN for fast bounding box extraction
+                # Run the screen replay detection immediately on the raw frame
+                if detect_screen_replay(frame):
+                    spoof_flags += 1
+
                 faces = DeepFace.extract_faces(
                     img_path=frame,
                     detector_backend="mtcnn",
                     enforce_detection=False
                 )
 
-                # Ensure exactly one high-confidence face is in the frame
                 if len(faces) == 1 and faces[0].get("confidence", 0) > 0.85:
                     area = faces[0]["facial_area"]
-
-                    # Track the geometric center of the bounding box
                     center_x = area["x"] + (area["w"] / 2.0)
                     center_y = area["y"] + (area["h"] / 2.0)
                     face_centers.append((center_x, center_y))
 
             frame_count += 1
-
         cap.release()
 
-        # 3. Validation Gates
-        if len(face_centers) < 3:
-            raise HTTPException(status_code=400, detail="Insufficient valid face frames. Keep you face clearly in the camera.")
+        # Hard Gate: If multiple frames exhibited screen artifacts, reject immediately
+        if spoof_flags >= 2:
+            raise HTTPException(status_code=400, detail="Digital screen spoofing detected (Replay Attack). Use a live camera.")
 
-        # 4. Micro-Movement Variance Heuristic (Anti-Spoofing)
-        # A statis printed photo held in front of a camera has virtually zero geometric variance.
-        # A live human attempting to hold still naturally produces micro-movements (breathing, pulse, subtle shifts).
+        if len(face_centers) < 3:
+            raise HTTPException(status_code=400, detail="Insufficient valid face frames. Keep your face clearly in the camera.")
+
         centers_np = np.array(face_centers)
         variance_x = np.var(centers_np[:, 0])
         variance_y = np.var(centers_np[:, 1])
         total_variance = variance_x + variance_y
 
-        # 5. Score calculation
         if total_variance < 1.5:
-            # Rigid, mathematically perfect stillness implies a statis printed photo or paused screen
-            liveness_score = 0.15
+            liveness_score = 0.15 # Static printed photo
         elif total_variance > 800.0:
-            # Extremely erratic movement implies shaking a photo or swiping a digital screen
-            liveness_score = 0.35
+            liveness_score = 0.35 # Erratic shaking
         else:
-            # Natural micro-movements detected within acceptable organic thresholds
-            liveness_score = 0.94
-        
+            liveness_score = 0.94 # Natural micro-movements
+
         passed = liveness_score >= 0.80
 
         return {
             "livenessScore": liveness_score,
             "passed": passed,
         }
-    
+
     except HTTPException as he:
         raise he
     except Exception as e: 
         print(f"Liveness Processing Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal liveness ML worker error.")
     finally: 
-        # 6. Critical memory Management: Delete the temp file so Docker storage doesnt fill up
         if os.path.exists(temp_video_path):
             os.remove(temp_video_path)
