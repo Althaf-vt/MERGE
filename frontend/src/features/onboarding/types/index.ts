@@ -12,3 +12,10 @@ export interface SubmitKycPayload{
     issuingCountry: string;
     sharedCode?: string // Required for password-protected formats like Aadhaar XML
 }
+
+export interface LivenessResponse{
+    success: boolean;
+    message: string;
+    livenessScore: number;
+    status: 'APPROVED' | 'REJECTED' | 'UNDER_REVIEW';
+}

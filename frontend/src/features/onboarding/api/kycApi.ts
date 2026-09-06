@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "../../auth/api/authApi";
+import type { LivenessResponse } from "../types";
 
 // use the new wrapper in your API
 export const kycApi = createApi({
@@ -25,7 +26,15 @@ export const kycApi = createApi({
             })
         }),
 
+        submitLiveness: builder.mutation<LivenessResponse, FormData>({
+            query: (formData) => ({
+                url: '/kyc/liveness',
+                method: 'POST',
+                body: formData
+            })
+        })
+
     })
 })
 
-export const { useSubmitKycMutation, useSubmitLiveSelfieMutation } = kycApi;
+export const { useSubmitKycMutation, useSubmitLiveSelfieMutation, useSubmitLivenessMutation } = kycApi;

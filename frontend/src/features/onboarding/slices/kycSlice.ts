@@ -5,7 +5,8 @@ export type KycStep =
   | 'DOCUMENT_UPLOAD' 
   | 'DOCUMENT_SUCCESS' 
   | 'DEVICE_SELECTION' 
-  | 'LIVENESS_CHECK' 
+  | 'LIVE_SELFIE' 
+  | 'LIVENESS_CHALLENGE' 
   | 'SUCCESS';
 
 interface ExtractedKycData{
