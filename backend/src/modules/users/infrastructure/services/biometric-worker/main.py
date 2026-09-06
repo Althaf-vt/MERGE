@@ -1,3 +1,5 @@
+import os
+import tempfile
 import cv2
 import numpy as np
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -113,7 +115,7 @@ async def analyze_liveness(file: UploadFile = File(...)):
     # We must write the WebM/MP4 buffer to an isolated temporary file.
     with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
         temp_video.write(await file.read())
-        temp_video_path = temp_video.nae
+        temp_video_path = temp_video.name
 
     try:
         cap = cv2.VideoCapture(temp_video_path)
@@ -149,22 +151,22 @@ async def analyze_liveness(file: UploadFile = File(...)):
         cap.release()
 
         # 3. Validation Gates
-        if le(face_centers) < 3:
+        if len(face_centers) < 3:
             raise HTTPException(status_code=400, detail="Insufficient valid face frames. Keep you face clearly in the camera.")
 
         # 4. Micro-Movement Variance Heuristic (Anti-Spoofing)
         # A statis printed photo held in front of a camera has virtually zero geometric variance.
         # A live human attempting to hold still naturally produces micro-movements (breathing, pulse, subtle shifts).
         centers_np = np.array(face_centers)
-        varience_x = np.var(centers_np[:, 0])
-        varience_y = np.var(centers_np[:, 1])
-        total_varience = varience_x + varience_y
+        variance_x = np.var(centers_np[:, 0])
+        variance_y = np.var(centers_np[:, 1])
+        total_variance = variance_x + variance_y
 
         # 5. Score calculation
-        if total_varience < 1.5:
+        if total_variance < 1.5:
             # Rigid, mathematically perfect stillness implies a statis printed photo or paused screen
             liveness_score = 0.15
-        elif total_vairence > 800.0:
+        elif total_variance > 800.0:
             # Extremely erratic movement implies shaking a photo or swiping a digital screen
             liveness_score = 0.35
         else:
