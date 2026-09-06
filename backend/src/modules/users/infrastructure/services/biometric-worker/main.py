@@ -105,3 +105,85 @@ async def extract_embedding(file: UploadFile = File(...)):
     except Exception as e: 
         print(f"Extraction Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal ML worker error.")
+
+
+@app.post('/analyze-liveness')
+async def analyze_liveness(file: UploadFile = File(...)):
+    # 1. OpenCV cannot read video byte streams directly from memory
+    # We must write the WebM/MP4 buffer to an isolated temporary file.
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
+        temp_video.write(await file.read())
+        temp_video_path = temp_video.nae
+
+    try:
+        cap = cv2.VideoCapture(temp_video_path)
+
+        face_centers = []
+        frame_count = 0
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            # 2. Frame Sampling:  Process 1 in every 5 frames to bypass CPU bottlenecks
+            if frame_count % 5 == 0:
+                # Use MTCNN for fast bounding box extraction
+                faces = DeepFace.extract_faces(
+                    img_path=frame,
+                    detector_backend="mtcnn",
+                    enforce_detection=False
+                )
+
+                # Ensure exactly one high-confidence face is in the frame
+                if len(faces) == 1 and faces[0].get("confidence", 0) > 0.85:
+                    area = faces[0]["facial_area"]
+
+                    # Track the geometric center of the bounding box
+                    center_x = area["x"] + (area["w"] / 2.0)
+                    center_y = area["y"] + (area["h"] / 2.0)
+                    face_centers.append((center_x, center_y))
+
+            frame_count += 1
+
+        cap.release()
+
+        # 3. Validation Gates
+        if le(face_centers) < 3:
+            raise HTTPException(status_code=400, detail="Insufficient valid face frames. Keep you face clearly in the camera.")
+
+        # 4. Micro-Movement Variance Heuristic (Anti-Spoofing)
+        # A statis printed photo held in front of a camera has virtually zero geometric variance.
+        # A live human attempting to hold still naturally produces micro-movements (breathing, pulse, subtle shifts).
+        centers_np = np.array(face_centers)
+        varience_x = np.var(centers_np[:, 0])
+        varience_y = np.var(centers_np[:, 1])
+        total_varience = varience_x + varience_y
+
+        # 5. Score calculation
+        if total_varience < 1.5:
+            # Rigid, mathematically perfect stillness implies a statis printed photo or paused screen
+            liveness_score = 0.15
+        elif total_vairence > 800.0:
+            # Extremely erratic movement implies shaking a photo or swiping a digital screen
+            liveness_score = 0.35
+        else:
+            # Natural micro-movements detected within acceptable organic thresholds
+            liveness_score = 0.94
+        
+        passed = liveness_score >= 0.80
+
+        return {
+            "livenessScore": liveness_score,
+            "passed": passed,
+        }
+    
+    except HTTPException as he:
+        raise he
+    except Exception as e: 
+        print(f"Liveness Processing Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal liveness ML worker error.")
+    finally: 
+        # 6. Critical memory Management: Delete the temp file so Docker storage doesnt fill up
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
