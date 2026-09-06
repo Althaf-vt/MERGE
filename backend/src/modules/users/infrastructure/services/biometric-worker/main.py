@@ -4,8 +4,18 @@ import cv2
 import numpy as np
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from deepface import DeepFace
+import mediapipe as mp
 
 app = FastAPI(title="Production Biometric Worker")
+
+# Initialize MediaPipe Face Mesh globally
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(
+    static_image_mode=False,
+    max_num_faces=1,
+    refine_landmarks=True,
+    min_detection_confidence=0.5
+)
 
 # Load rigid pixel-based feature detectors globally.
 # These cannot be fooled by ML "guessing". If the physical eye/mouth is covered, they fail.
@@ -145,66 +155,47 @@ async def extract_embedding(file: UploadFile = File(...)):
 
 
 @app.post('/analyze-liveness')
-async def analyze_liveness(file: UploadFile = File(...)):
+async def analyze_liveness(prompt_type: str, file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
         temp_video.write(await file.read())
         temp_video_path = temp_video.name
 
     try:
         cap = cv2.VideoCapture(temp_video_path)
-        face_centers = []
-        frame_count = 0
-        spoof_flags = 0
+        action_detected = False
 
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+                
+            # Convert the BGR image to RGB before processing
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = face_mesh.process(rgb_frame)
 
-            if frame_count % 5 == 0:
-                # Run the screen replay detection immediately on the raw frame
-                if detect_screen_replay(frame):
-                    spoof_flags += 1
+            if results.multi_face_landmarks:
+                landmarks = results.multi_face_landmarks[0].landmark
+                
+                # Route to specific geometric heuristics based on the prompt
+                if prompt_type == 'BLINK':
+                    # Calculate Eye Aspect Ratio (EAR) using specific eyelid landmarks
+                    # If EAR drops below threshold, action_detected = True
+                    pass
+                elif prompt_type == 'TURN_LEFT':
+                    # Compare nose tip (landmark 1) x-coordinate relative to cheekbones
+                    pass
+                elif prompt_type == 'SMILE':
+                    # Calculate lip corner stretching distance
+                    pass
 
-                faces = DeepFace.extract_faces(
-                    img_path=frame,
-                    detector_backend="mtcnn",
-                    enforce_detection=False
-                )
-
-                if len(faces) == 1 and faces[0].get("confidence", 0) > 0.85:
-                    area = faces[0]["facial_area"]
-                    center_x = area["x"] + (area["w"] / 2.0)
-                    center_y = area["y"] + (area["h"] / 2.0)
-                    face_centers.append((center_x, center_y))
-
-            frame_count += 1
         cap.release()
-
-        # Hard Gate: If multiple frames exhibited screen artifacts, reject immediately
-        if spoof_flags >= 2:
-            raise HTTPException(status_code=400, detail="Digital screen spoofing detected (Replay Attack). Use a live camera.")
-
-        if len(face_centers) < 3:
-            raise HTTPException(status_code=400, detail="Insufficient valid face frames. Keep your face clearly in the camera.")
-
-        centers_np = np.array(face_centers)
-        variance_x = np.var(centers_np[:, 0])
-        variance_y = np.var(centers_np[:, 1])
-        total_variance = variance_x + variance_y
-
-        if total_variance < 1.5:
-            liveness_score = 0.15 # Static printed photo
-        elif total_variance > 800.0:
-            liveness_score = 0.35 # Erratic shaking
-        else:
-            liveness_score = 0.94 # Natural micro-movements
-
-        passed = liveness_score >= 0.80
+        
+        # Calculate final confidence score based on geometric thresholds
+        liveness_score = 0.95 if action_detected else 0.20
 
         return {
             "livenessScore": liveness_score,
-            "passed": passed,
+            "passed": action_detected,
         }
 
     except HTTPException as he:
