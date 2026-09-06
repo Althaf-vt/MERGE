@@ -7,6 +7,7 @@ import { DeviceSelection } from "../components/DeviceSelection";
 import { useEffect } from "react";
 import { setKycStep } from "../slices/kycSlice";
 import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
+import { LivenessChallenge } from "../components/liveness-challenge.component";
 
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
@@ -43,11 +44,16 @@ export const KycPage = () => {
             case 'DOCUMENT_SUCCESS':
                 return <KycSuccess/>;
             case 'DEVICE_SELECTION':
-                return <DeviceSelection/>
-            case 'LIVENESS_CHECK':
-                return <LiveSelfieCapture onSuccess={() => dispatch(setKycStep('SUCCESS'))}/>
+                return <DeviceSelection/>;
+            
+            // Sequential Biometric Flow (Desktop)
+            case 'LIVE_SELFIE':
+                return <LiveSelfieCapture onSuccess={() => dispatch(setKycStep('LIVENESS_CHALLENGE'))}/>;
+            case 'LIVENESS_CHALLENGE':
+                return <LivenessChallenge onSuccess={() => dispatch(setKycStep('SUCCESS'))}/>;
+            
             case 'SUCCESS':
-                return <OnboardingComplete/>
+                return <OnboardingComplete/>;
             default:
                 return <KycDocumentUpload/>;
         }

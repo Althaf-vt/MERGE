@@ -2,7 +2,7 @@ import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import { RegisterPage } from './features/auth/pages/RegisterPage'
 import { LoginPage } from './features/auth/pages/LoginPage'
 import { KycPage } from './features/onboarding/Pages/KycPage'
-import { MobileHandoff } from './features/onboarding/Pages/MobileHandoff'
+import { MobileHandoff } from './features/onboarding/Pages/mobile-handoff.component'
 import { PersistLogin } from './features/auth/components/PersistLogin'
 import { PublicRoute } from './features/auth/components/PublicRoute'
 
