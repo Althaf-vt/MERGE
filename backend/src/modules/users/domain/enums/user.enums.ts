@@ -108,3 +108,16 @@ export enum HealthConditionPreference {
   PREFER_PARTNER_WITHOUT = 'prefer_partner_without',
   PREFER_NOT_TO_SPECIFY = 'prefer_not_to_specify',
 }
+
+export enum LivenessPrompt {
+  BLINK = 'BLINK',
+  TURN_LEFT = 'TURN_LEFT',
+  TURN_RIGHT = 'TURN_RIGHT',
+  SMILE = 'SMILE',
+}
+
+export enum PromptVerificationStatus {
+  PENDING = 'PENDING',
+  PASSED = 'PASSED',
+  FAILED = 'FAILED',
+}

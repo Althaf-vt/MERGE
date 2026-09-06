@@ -17,8 +17,13 @@ export interface UserKycProps{
     selfieFaceEmbedding?: number[];
     selfieConfidence?: number;
     selfieVerificationStatus?: SelfieVerificationStatus;
-    livenessVideoS3?: string;
-    livenessScore?: number;
+    livenessResults?: Array<{
+        prompt: string;
+        score: number;
+        status: string;
+        videoS3?: string;
+    }>;
+    verificationSubmitted?: boolean;
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
     rejectionReason?: string;
@@ -45,9 +50,9 @@ export interface RecordSelfiePayload{
 }
 
 export interface RecordLivenessPayload{
-    livenessScore: number;
-    rejectionReason?: string;
-    livenessVideoS3?: string;
+    prompt: string;
+    score: number;
+    videoS3?: string;
 }
 
 export interface ApproveManualReviewPayload{
@@ -91,9 +96,15 @@ export class UserKyc{
     get selfieFaceEmbedding(): number[] | undefined {return this.props.selfieFaceEmbedding};
     get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this.props.selfieVerificationStatus};
     get selfieConfidence(): number | undefined {return this.props.selfieConfidence};
-    get livenessVideoS3(): string | undefined { return this.props.livenessVideoS3};
+    get livenessResults(): any[] | undefined { return this.props.livenessResults; }
+    get verificationSubmitted(): boolean | undefined { return this.props.verificationSubmitted; }
+    // Returns an array of prompt names that have successfully passed
+    get passedPrompts(): string[] {
+        return this.props.livenessResults
+            ?.filter(r => r.status === 'PASSED')
+            .map(r => r.prompt) ?? [];
+    }
     get manualReviewRequired(): boolean | undefined {return this.props.manualReviewRequired};
-    get livenessScore(): number | undefined {return this.props.livenessScore};
     get adminReviewedBy(): string | undefined {return this.props.adminReviewedBy};
     get rejectionReason(): string | undefined {return this.props.rejectionReason};
     get submittedAt(): Date | undefined {return this.props.submittedAt};
@@ -136,27 +147,57 @@ export class UserKyc{
         
     }
 
-    // Liveness Test
-    recordLiveness(payload: RecordLivenessPayload, livenessThreshold = 0.80, rejectThreashold = 0.30): void{
-        this.props.livenessScore = payload.livenessScore;
+    // Liveness Test : Evaluates a single liveness prompt incrementally
+    recordLivenessPrompt(payload: RecordLivenessPayload, threshold = 0.80): void {
+        if (!this.props.livenessResults) this.props.livenessResults = [];
+        
+        const passed = payload.score >= threshold;
+        
+        this.props.livenessResults.push({
+            prompt: payload.prompt,
+            score: payload.score,
+            status: passed ? 'PASSED' : 'FAILED',
+            videoS3: payload.videoS3
+        });
+        
         this.props.updatedAt = new Date();
-        this.props.livenessVideoS3 = payload.livenessVideoS3;
+    }
+    
+    // Resets liveness state to allow users to retake the challenge
+    resetLiveness(): void {
+        this.props.livenessResults = [];
+        this.props.verificationSubmitted = false;
+        this.props.verificationStatus = VerificationStatus.PENDING;
+        this.props.reviewDecision = undefined;
+        this.props.rejectionReason = undefined;
+        this.props.updatedAt = new Date();
+    }
 
-        if(payload.livenessScore >= livenessThreshold){
-            this.props.verificationStatus = VerificationStatus.APPROVED;
-            this.props.reviewDecision = ReviewDecision.AUTO_APPROVED;
-            this.props.approvedAt = new Date();
-            this.props.manualReviewRequired = false;
-        }else if(payload.livenessScore < rejectThreashold){
+    // submission gate 
+    submitVerification(requiredPromptsCount = 3): void {
+        const results = this.props.livenessResults ?? [];
+        const hasFailedPrompts = results.some(r => r.status === 'FAILED');
+        const passedCount = results.filter(r => r.status === 'PASSED').length;
+
+        // Ensure all required steps were actually performed
+        if (passedCount < requiredPromptsCount) {
+            throw new Error("Cannot submit verification: Incomplete liveness prompts.");
+        }
+
+        if (hasFailedPrompts) {
             this.props.verificationStatus = VerificationStatus.REJECTED;
             this.props.reviewDecision = ReviewDecision.AUTO_REJECTED;
-            this.props.rejectionReason = payload.rejectionReason;
-            this.props.manualReviewRequired = false;
-        }else{
+            this.props.rejectionReason = "One or more liveness prompts failed verification.";
+        } else {
+            // Forward to manual review queue or auto-approve based on system thresholds[cite: 5]
             this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
             this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
             this.props.manualReviewRequired = true;
         }
+
+        this.props.verificationSubmitted = true;
+        this.props.submittedAt = new Date();
+        this.props.updatedAt = new Date();
     }
 
     approveManualReview(payload: ApproveManualReviewPayload){

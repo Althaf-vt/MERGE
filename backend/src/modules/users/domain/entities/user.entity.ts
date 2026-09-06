@@ -10,14 +10,6 @@ export enum UserRole{
     SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
-export enum KycStatus {
-    NOT_STARTED = 'NOT_STARTED',
-    PENDING = 'PENDING',
-    VERIFIED = 'VERIFIED',
-    REJECTED = 'REJECTED',
-    UNDER_REVIEW = 'UNDER_REVIEW'
-}
-
 // Defines the data structure and properties required to create and manage User entity.
 export interface UserAggregateProps {
     id?: string;
@@ -128,6 +120,16 @@ export class UserAggregate {
         // Update KYC verification
     updateKycVerification(kycEntity: UserKyc): void{
         this.props.kycVerification = kycEntity;
+    }
+
+    // Resets KYC verification state for retries after failure
+    resetKycVerification(): void {
+        if (this.props.kycVerification) {
+            this.props.kycVerification.resetLiveness();
+        }
+        this.props.kycCompleted = false;
+        this.props.onboardingStep = 3;
+        this.markUpdatedAt();
     }
 
     //2. ONBOARDING & PIPELINE PROGRESSION
