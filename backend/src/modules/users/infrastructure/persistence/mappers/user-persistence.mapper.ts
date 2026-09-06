@@ -29,8 +29,10 @@ export class UserPersistenceMapper{
                 selfieConfidence: raw.kycVerification.selfieConfidence,
                 selfieVerificationStatus: raw.kycVerification.selfieVerificationStatus as SelfieVerificationStatus,
 
+                livenessResults: raw.kycVerification.livenessResults,
+                verificationSubmitted: raw.kycVerification.verificationSubmitted,
+
                 // Liveness & Review
-                livenessScore: raw.kycVerification.livenessScore,
                 manualReviewRequired: raw.kycVerification.manualReviewRequired,
                 adminReviewedBy: raw.kycVerification.adminReviewedBy,
                 rejectionReason: raw.kycVerification.rejectionReason,
@@ -98,8 +100,10 @@ export class UserPersistenceMapper{
                 selfieConfidence: data.kycVerification.selfieConfidence,
                 selfieVerificationStatus: data.kycVerification.selfieVerificationStatus,
 
+                livenessResults: data.kycVerification.livenessResults,
+                verificationSubmitted: data.kycVerification.verificationSubmitted,
+
                 // Liveness & Review
-                livenessScore: data.kycVerification.livenessScore,
                 manualReviewRequired: data.kycVerification.manualReviewRequired,
                 adminReviewedBy: data.kycVerification.adminReviewedBy,
                 rejectionReason: data.kycVerification.rejectionReason,

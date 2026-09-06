@@ -66,8 +66,11 @@ class KycVerificationSchema{
     selfieVerificationStatus?: SelfieVerificationStatus;
 
     // --- Phase 8B: Active Liveness Challenge ---
-    @Prop()
-    livenessScore?: number;
+    @Prop({ type: [{ prompt: String, score: Number, status: String, videoS3: String }], default: [] })
+    livenessResults?: any[];
+
+    @Prop({ default: false })
+    verificationSubmitted?: boolean;
 
     @Prop({ default: false })
     manualReviewRequired?: boolean;
