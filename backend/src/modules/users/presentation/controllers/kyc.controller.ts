@@ -72,7 +72,12 @@ export class KycController{
             fileSize: 10 * 1042 * 1024 // 10MB limit for a 3-5 second liveness clip
         },
         fileFilter(req, file, cb) {
-            if(!file.mimetype.match(/^video\/(webm|mp4)$/)){
+
+            const allowedMimeTypes = ['video/webm', 'video/mp4', 'video/quicktime', 'application/octet-stream'];
+            const isExtensionAllowed = /\.(mp4|webm)$/i.test(file.originalname);
+            const isMimeAllowed = allowedMimeTypes.includes(file.mimetype);
+            
+            if (!isExtensionAllowed && !isMimeAllowed) {
                 return cb(new BadRequestException("Only webm and mp4 video formats are allowed!"), false);
             }
             cb(null, true);
@@ -86,7 +91,7 @@ export class KycController{
             throw new BadRequestException("Liveness video payload is required.");
         }
 
-        const userId = req.userId; //Extract from JWT payload
+        const userId = req.user?.userId; //Extract from JWT payload
         return await this.submitLivenessCheckUseCase.execute(userId, file.buffer);
     }
 }
