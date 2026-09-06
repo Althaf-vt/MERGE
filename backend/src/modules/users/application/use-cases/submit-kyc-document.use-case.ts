@@ -42,7 +42,7 @@ export class SubmitKycDocumentUseCase{
         }
 
         // 4. Initialize ot update the UserKyc entity
-        const kycEntity = user.kycVerfication || new UserKyc({userId});
+        const kycEntity = user.kycVerification || new UserKyc({userId});
 
         kycEntity.recordPkiValidation({
             documentType: payload.documentType,
