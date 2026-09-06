@@ -85,6 +85,7 @@ export class KycController{
     }))
     async submitLiveness(
         @Req() req: any,
+        @Body('promptType') promptType: string,
         @UploadedFile() file: Express.Multer.File
     ){
         if(!file){
@@ -92,6 +93,6 @@ export class KycController{
         }
 
         const userId = req.user?.userId; //Extract from JWT payload
-        return await this.submitLivenessCheckUseCase.execute(userId, file.buffer);
+        return await this.submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
     }
 }
