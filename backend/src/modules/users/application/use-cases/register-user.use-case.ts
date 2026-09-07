@@ -1,7 +1,7 @@
 import { Injectable, Inject, ConflictException } from "@nestjs/common";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
-import { UserAggregate, UserRole, KycStatus } from "../../domain/entities/user.entity";
+import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
 import { EmailVO } from "../../domain/value-objects/email.vo";
 import { RegisterUserDto } from "../dtos/register-user.dto";
 import { BcryptService } from "../../../../shared/infrastructure/security/bcrypt.service";
