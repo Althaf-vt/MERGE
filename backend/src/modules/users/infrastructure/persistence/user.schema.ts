@@ -1,6 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { UserRole, KycStatus } from '../../domain/entities/user.entity';
+import { UserRole } from '../../domain/entities/user.entity';
 import { AuthProvider, DocumentType, ReviewDecision, SelfieVerificationStatus, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 

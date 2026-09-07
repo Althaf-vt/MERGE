@@ -1,5 +1,5 @@
 import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
-import { UserAggregate, UserRole, KycStatus } from "../../../domain/entities/user.entity";
+import { UserAggregate, UserRole } from "../../../domain/entities/user.entity";
 import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";
