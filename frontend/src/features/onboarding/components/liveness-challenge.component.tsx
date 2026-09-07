@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSubmitLivenessMutation } from "../api/kycApi";
 import styles from './liveness-challenge.module.css';
+import { useAppDispatch } from "../../../app/hooks";
+import { addLivenessResult } from "../slices/kycSlice";
 
 // Helper function to find the best supported video format for the current device
 const getSupportedMimeType = () => {
@@ -13,133 +15,96 @@ const getSupportedMimeType = () => {
     for (const type of types) {
         if (MediaRecorder.isTypeSupported(type)) return type;
     }
-    return ''; // Falls back to the browser's default if none match
+    return 'video/webm'; // Falls back to the browser's default if none match
 };
+const LIVENESS_PROMPTS = ['BLINK', 'TURN_LEFT', 'SMILE'];
 
 export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
-    const [submitLiveness, { isLoading }] = useSubmitLivenessMutation();
+    const dispatch = useAppDispatch();
+    const [submitLiveness] = useSubmitLivenessMutation();
     
     const videoRef = useRef<HTMLVideoElement>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const chunksRef = useRef<BlobPart[]>([]);
-    
-    const [isRecording, setIsRecording] = useState(false);
     const [streamReady, setStreamReady] = useState(false);
+    
+    // State machine for tracking prompts
+    const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+    const [isRecording, setIsRecording] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // 1. Initialize Camera Stream
-    useEffect(() => {
-        let activeStream: MediaStream | null = null;
+    // Keep your existing useEffect for initializing the camera stream here...
 
-        const startCamera = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-                    audio: false 
-                });
-                activeStream = stream;
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                    setStreamReady(true);
-                }
-            } catch (err) {
-                setError("Camera access is required for the liveness check.");
-            }
-        };
-
-        startCamera();
-
-        // Strict cleanup to turn off the camera light on unmount
-        return () => {
-            if (activeStream) {
-                activeStream.getTracks().forEach(track => track.stop());
-            }
-        };
-    }, []);
-
-    // 2. Automated 4-Second Capture Sequence
-    const startLivenessCheck = () => {
+    const startRecordingPrompt = () => {
         if (!videoRef.current?.srcObject) return;
         
         setError(null);
         setIsRecording(true);
-        chunksRef.current = [];
-
+        const chunks: BlobPart[] = [];
+        
         const stream = videoRef.current.srcObject as MediaStream;
         const mimeType = getSupportedMimeType();
-        
         const mediaRecorder = new MediaRecorder(stream, { mimeType });
-        mediaRecorderRef.current = mediaRecorder;
 
         mediaRecorder.ondataavailable = (e) => {
-            if (e.data.size > 0) chunksRef.current.push(e.data);
+            if (e.data.size > 0) chunks.push(e.data);
         };
 
         mediaRecorder.onstop = async () => {
             setIsRecording(false);
-            const blob = new Blob(chunksRef.current, { type: mimeType });
-            await handleSubmission(blob, mimeType);
+            const blob = new Blob(chunks, { type: mimeType });
+            await handlePromptSubmission(blob, mimeType, LIVENESS_PROMPTS[currentPromptIndex]);
         };
 
-        mediaRecorder.start(200); // Collect chunks every 200ms
+        mediaRecorder.start(200);
 
-        // Auto-stop after exactly 4 seconds
+        // Record a short 3-second clip for the specific action
         setTimeout(() => {
-            if (mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-        }, 4000);
+            if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        }, 3000);
     };
 
-    // 3. Payload Transmission
-    const handleSubmission = async (videoBlob: Blob, mimeType: string) => {
+    const handlePromptSubmission = async (videoBlob: Blob, mimeType: string, promptType: string) => {
         const formData = new FormData();
-        
-        // Dynamically set extension so the NestJS backend knows how to handle it
         const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
         formData.append('video', videoBlob, `liveness.${extension}`);
+        formData.append('promptType', promptType); // Pass the specific prompt to the backend
 
         try {
-            const result = await submitLiveness(formData).unwrap();
+            // Optimistically mark as completed in Redux for the review screen
+            dispatch(addLivenessResult({ prompt: promptType, completed: true }));
             
-            if (result.status === 'APPROVED') {
-                onSuccess(); // Triggers Redux on Desktop, or WebSocket ping on Mobile
-            } else if (result.status === 'UNDER_REVIEW') {
-                setError("Verification flagged for manual review. Our team will update you shortly.");
+            // Push to backend asynchronously
+            await submitLiveness(formData).unwrap();
+            
+            // Move to the next prompt, or finish if all are done
+            if (currentPromptIndex + 1 < LIVENESS_PROMPTS.length) {
+                setCurrentPromptIndex(prev => prev + 1);
+            } else {
+                onSuccess(); // Triggers the move to the Review screen
             }
         } catch (err: any) {
-            setError(err?.data?.message || "Liveness check failed. Please ensure you are in a well-lit area.");
+            setError(err?.data?.message || "Liveness check failed. Please try again.");
         }
     };
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>Active Liveness Check</h2>
+            <h2 className={styles.title}>Liveness Challenge</h2>
             <p className={styles.subtitle}>
-                Hold the camera steady and look directly at the lens. 
-                The recording will stop automatically.
+                {/* Dynamically instruct the user based on the current prompt */}
+                Action {currentPromptIndex + 1} of {LIVENESS_PROMPTS.length}: 
+                <strong> Please {LIVENESS_PROMPTS[currentPromptIndex].replace('_', ' ')}</strong>
             </p>
 
             {error && <div className={styles.errorText}>{error}</div>}
 
             <div className={styles.videoWrapper}>
-                <video 
-                    ref={videoRef} 
-                    autoPlay 
-                    playsInline 
-                    muted 
+                <video ref={videoRef} autoPlay playsInline muted 
                     className={`${styles.videoFeed} ${isRecording ? styles.recordingPulse : ''}`}
                 />
             </div>
 
-            <button 
-                onClick={startLivenessCheck} 
-                className={styles.primaryBtn} 
-                disabled={!streamReady || isRecording || isLoading}
-            >
-                {isLoading ? "Analyzing Biometrics..." : 
-                 isRecording ? "Recording..." : 
-                 "Start Liveness Check"}
+            <button onClick={startRecordingPrompt} className={styles.primaryBtn} disabled={!streamReady || isRecording}>
+                {isRecording ? "Recording Action..." : `Record ${LIVENESS_PROMPTS[currentPromptIndex].replace('_', ' ')}`}
             </button>
         </div>
     );
