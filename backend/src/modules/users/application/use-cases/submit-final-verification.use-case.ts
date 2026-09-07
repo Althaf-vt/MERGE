@@ -1,0 +1,42 @@
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { ISubmitFinalVerificationUseCase } from "../interfaces/submit-final-verification.use-case.interface";
+import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
+import { VerificationStatus } from "../../domain/enums/user.enums";
+
+
+@Injectable()
+export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationUseCase{
+    constructor(
+        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
+    ){}
+
+    async execute(userId: string): Promise<{ success: boolean; status: VerificationStatus; message: string; }> {
+        const user = await this.userRepository.findById(userId);
+
+        if(!user || !user.kycVerification){
+            throw new BadRequestException("User or Kyc record not found.");
+        }
+
+        const kyc = user.kycVerification;
+
+        // Trigger the phase 7 domain gate
+        try {
+            kyc.submitVerification(3) // Expects exactly 3 propmts (BLINK, TURN_LEFT, SMILE)
+        } catch (error: any) {
+            throw new BadRequestException(error.messages)
+        }
+
+        // If the system auto-approves based on thresholds, update the aggregate
+        if(kyc.verificationStatus === VerificationStatus.APPROVED){
+            user.completeKyc();
+        }
+
+        await this.userRepository.update(user);
+
+        return{
+            success: true, 
+            status: kyc.verificationStatus!,
+            message: "Verification submitted successfully."
+        }
+    }
+}
