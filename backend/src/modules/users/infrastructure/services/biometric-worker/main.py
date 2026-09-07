@@ -2,7 +2,7 @@ import os
 import tempfile
 import cv2
 import numpy as np
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from deepface import DeepFace
 import mediapipe as mp
 
@@ -155,7 +155,7 @@ async def extract_embedding(file: UploadFile = File(...)):
 
 
 @app.post('/analyze-liveness')
-async def analyze_liveness(prompt_type: str, file: UploadFile = File(...)):
+async def analyze_liveness(promptType: str = Form(...), file: UploadFile = File(...)):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
         temp_video.write(await file.read())
         temp_video_path = temp_video.name
@@ -177,14 +177,14 @@ async def analyze_liveness(prompt_type: str, file: UploadFile = File(...)):
                 landmarks = results.multi_face_landmarks[0].landmark
                 
                 # Route to specific geometric heuristics based on the prompt
-                if prompt_type == 'BLINK':
+                if promptType == 'BLINK':
                     # Calculate Eye Aspect Ratio (EAR) using specific eyelid landmarks
                     # If EAR drops below threshold, action_detected = True
                     pass
-                elif prompt_type == 'TURN_LEFT':
+                elif promptType == 'TURN_LEFT':
                     # Compare nose tip (landmark 1) x-coordinate relative to cheekbones
                     pass
-                elif prompt_type == 'SMILE':
+                elif promptType == 'SMILE':
                     # Calculate lip corner stretching distance
                     pass
 

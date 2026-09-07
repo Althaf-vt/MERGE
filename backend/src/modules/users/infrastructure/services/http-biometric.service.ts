@@ -44,12 +44,12 @@ export class HttpBiometricService implements IBiometricService{
         }
     }
 
-    async analyzeLiveness(videoBuffer: Buffer): Promise<ILivenessResult> {
+    async analyzeLiveness(videoBuffer: Buffer, promptType: string): Promise<ILivenessResult> {
         try {
             const formData = new FormData();
 
-            // Attach the video buffer (commonly WebM from browser MediaRecorder)
             formData.append('file', videoBuffer, {filename: 'liveness.webm'});
+            formData.append('promptType', promptType); // ADD THIS LINE
 
             const baseUrl = process.env.ML_SERVICE_URL?.replace('/extract-embedding', '') || 'http://biometric-worker:8000';
             const mlLivenessUrl = `${baseUrl}/analyze-liveness`;
