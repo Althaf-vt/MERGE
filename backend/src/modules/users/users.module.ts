@@ -33,6 +33,8 @@ import { HttpBiometricService } from "./infrastructure/services/http-biometric.s
 import { s3StorageService } from "./infrastructure/services/s3-storage.service";
 import { SubmitLivenessCheckUseCase } from "./application/use-cases/submit-liveness-check.use-case";
 import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-liveness-check.use-case.interface";
+import { SUBMIT_FINAL_VERIFICATION_USE_CASE } from "./application/interfaces/submit-final-verification.use-case.interface";
+import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-final-verification.use-case";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -116,6 +118,10 @@ import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-
         },
         {provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
             useClass: SubmitLivenessCheckUseCase
+        },
+        {
+            provide: SUBMIT_FINAL_VERIFICATION_USE_CASE,
+            useClass: SubmitFinalVerificationUseCase
         }
     ],
 

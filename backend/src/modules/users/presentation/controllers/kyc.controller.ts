@@ -6,6 +6,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer'
 import { SubmitLiveSelfieUseCase } from "../../application/use-cases/submit-live-selfie.use-case";
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE } from "../../application/interfaces/submit-liveness-check.use-case.interface";
+import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE } from "../../application/interfaces/submit-final-verification.use-case.interface";
 
 @Controller('kyc')
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
@@ -15,6 +16,8 @@ export class KycController{
         private readonly submitLiveSelfieUseCase: SubmitLiveSelfieUseCase,
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE)
         private readonly submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
+        @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE)
+        private readonly submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
     ){}
 
     @Post('submit')
@@ -94,5 +97,13 @@ export class KycController{
 
         const userId = req.user?.userId; //Extract from JWT payload
         return await this.submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
+    }
+
+    @Post('submit-verification')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    async submitFinalVerification(@Req() req: any){
+        const userId = req.user?.userId;
+        return await this.submitFinalVerificationUseCase.execute(userId);
     }
 }
