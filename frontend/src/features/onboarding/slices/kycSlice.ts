@@ -7,6 +7,7 @@ export type KycStep =
   | 'DEVICE_SELECTION' 
   | 'LIVE_SELFIE' 
   | 'LIVENESS_CHALLENGE' 
+  | 'REVIEW_VERIFICATION'
   | 'SUCCESS';
 
 interface ExtractedKycData{
@@ -14,14 +15,21 @@ interface ExtractedKycData{
     dateOfBirth: string;
 }
 
+interface LivenessPromptResult {
+    prompt: string;
+    completed: boolean;
+}
+
 interface KycState{
     currentStep: KycStep;
     extractedData: ExtractedKycData | null;
+    livenessResults: LivenessPromptResult[];
 }
 
 const initialState: KycState = {
     currentStep: "DOCUMENT_UPLOAD",
-    extractedData: null
+    extractedData: null,
+    livenessResults: []
 }
 
 const kycSlice = createSlice({
@@ -34,12 +42,16 @@ const kycSlice = createSlice({
         setExtractedData: (state, action: PayloadAction<ExtractedKycData>) => {
             state.extractedData = action.payload;
         },
+        addLivenessResult: (state, action: PayloadAction<LivenessPromptResult>) => {
+            state.livenessResults.push(action.payload);
+        },
         resetKyc: (state) => {
             state.currentStep = 'DOCUMENT_UPLOAD';
             state.extractedData = null;
+            state.livenessResults = [];
         }
     }
 })
 
-export const {setKycStep, setExtractedData, resetKyc} = kycSlice.actions;
+export const {setKycStep, setExtractedData,addLivenessResult, resetKyc} = kycSlice.actions;
 export default kycSlice.reducer;
