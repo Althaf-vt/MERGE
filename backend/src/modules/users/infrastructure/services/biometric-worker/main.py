@@ -1,4 +1,5 @@
 import os
+import math
 import tempfile
 import cv2
 import numpy as np
@@ -153,44 +154,112 @@ async def extract_embedding(file: UploadFile = File(...)):
         print(f"Extraction Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal ML worker error.")
 
+def euclidean_distance(p1, p2) -> float:
+    """Calculates normalized 2D Euclidean distance between two landmarks."""
+    return math.hypot(p1.x - p2.x, p1.y - p2.y)
+
+def calculate_ear(landmarks) -> float:
+    """Computes Eye Aspect Ratio (EAR) across both eyes."""
+    # Left eye: vertical (159, 145), horizontal (33, 133)
+    left_v = euclidean_distance(landmarks[159], landmarks[145])
+    left_h = euclidean_distance(landmarks[33], landmarks[133])
+    left_ear = left_v / left_h if left_h > 0 else 0.0
+
+    # Right eye: vertical (386, 374), horizontal (362, 263)
+    right_v = euclidean_distance(landmarks[386], landmarks[374])
+    right_h = euclidean_distance(landmarks[362], landmarks[263])
+    right_ear = right_v / right_h if right_h > 0 else 0.0
+
+    return (left_ear + right_ear) / 2.0
+
+def calculate_yaw_ratio(landmarks) -> float:
+    """Calculates horizontal head rotation relative to cheek boundaries."""
+    nose_x = landmarks[1].x
+    right_cheek_x = landmarks[234].x
+    left_cheek_x = landmarks[454].x
+    total_span = abs(left_cheek_x - right_cheek_x)
+    return (nose_x - min(right_cheek_x, left_cheek_x)) / total_span if total_span > 0 else 0.5
+
+def calculate_smile_ratio(landmarks) -> float:
+    """Computes mouth width normalized by outer eye distance."""
+    mouth_width = euclidean_distance(landmarks[61], landmarks[291])
+    eye_span = euclidean_distance(landmarks[33], landmarks[263])
+    return mouth_width / eye_span if eye_span > 0 else 0.0
+
+def calculate_pitch_ratio(landmarks) -> float:
+    """Computes vertical head tilt relative to forehead and chin."""
+    nose_y = landmarks[1].y
+    forehead_y = landmarks[10].y
+    chin_y = landmarks[152].y
+    span = abs(chin_y - forehead_y)
+    return (nose_y - min(forehead_y, chin_y)) / span if span > 0 else 0.5
+
 
 @app.post('/analyze-liveness')
 async def analyze_liveness(promptType: str = Form(...), file: UploadFile = File(...)):
+    # Write incoming payload to temporary file for OpenCV decoding
     with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_video:
         temp_video.write(await file.read())
         temp_video_path = temp_video.name
 
     try:
         cap = cv2.VideoCapture(temp_video_path)
-        action_detected = False
+        metric_series = []
 
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
-                
-            # Convert the BGR image to RGB before processing
+
+            # Convert BGR to RGB for MediaPipe inference
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = face_mesh.process(rgb_frame)
 
             if results.multi_face_landmarks:
                 landmarks = results.multi_face_landmarks[0].landmark
-                
-                # Route to specific geometric heuristics based on the prompt
+
+                # Extract metric per frame according to requested prompt
                 if promptType == 'BLINK':
-                    # Calculate Eye Aspect Ratio (EAR) using specific eyelid landmarks
-                    # If EAR drops below threshold, action_detected = True
-                    pass
-                elif promptType == 'TURN_LEFT':
-                    # Compare nose tip (landmark 1) x-coordinate relative to cheekbones
-                    pass
+                    metric_series.append(calculate_ear(landmarks))
+                elif promptType in ['TURN_LEFT', 'TURN_RIGHT']:
+                    metric_series.append(calculate_yaw_ratio(landmarks))
                 elif promptType == 'SMILE':
-                    # Calculate lip corner stretching distance
-                    pass
+                    metric_series.append(calculate_smile_ratio(landmarks))
+                elif promptType == 'NOD':
+                    metric_series.append(calculate_pitch_ratio(landmarks))
 
         cap.release()
-        
-        # Calculate final confidence score based on geometric thresholds
+
+        # Insufficient frame data rejects the attempt
+        if len(metric_series) < 5:
+            raise HTTPException(status_code=400, detail="Insufficient video frames detected.")
+
+        action_detected = False
+
+        # Evaluate movement series against threshold criteria
+        if promptType == 'BLINK':
+            # Detect transition: eyes open -> eyes closed -> eyes open
+            has_closed = min(metric_series) < 0.18
+            has_open = max(metric_series) > 0.24
+            action_detected = has_closed and has_open
+
+        elif promptType in ['TURN_LEFT', 'TURN_RIGHT']:
+            # Detect horizontal yaw deviation from initial baseline
+            baseline_yaw = metric_series[0]
+            max_deviation = max(abs(y - baseline_yaw) for y in metric_series)
+            action_detected = max_deviation > 0.10
+
+        elif promptType == 'SMILE':
+            # Detect expansion of lip corners relative to resting baseline
+            baseline_smile = min(metric_series[:3]) if len(metric_series) >= 3 else metric_series[0]
+            max_expansion = max(metric_series) - baseline_smile
+            action_detected = max_expansion > 0.08 or max(metric_series) > 0.95
+
+        elif promptType == 'NOD':
+            # Detect vertical pitch variance
+            pitch_variance = max(metric_series) - min(metric_series)
+            action_detected = pitch_variance > 0.08
+
         liveness_score = 0.95 if action_detected else 0.20
 
         return {
@@ -200,9 +269,10 @@ async def analyze_liveness(promptType: str = Form(...), file: UploadFile = File(
 
     except HTTPException as he:
         raise he
-    except Exception as e: 
+    except Exception as e:
         print(f"Liveness Processing Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal liveness ML worker error.")
-    finally: 
+    finally:
+        # Prevent disk accumulation
         if os.path.exists(temp_video_path):
             os.remove(temp_video_path)
