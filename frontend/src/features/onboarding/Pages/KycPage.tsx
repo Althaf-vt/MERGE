@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { setKycStep } from "../slices/kycSlice";
 import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
 import { LivenessChallenge } from "../components/liveness-challenge.component";
+import { ReviewVerification } from "../components/ReviewVerification";
 
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
@@ -50,7 +51,10 @@ export const KycPage = () => {
             case 'LIVE_SELFIE':
                 return <LiveSelfieCapture onSuccess={() => dispatch(setKycStep('LIVENESS_CHALLENGE'))}/>;
             case 'LIVENESS_CHALLENGE':
-                return <LivenessChallenge onSuccess={() => dispatch(setKycStep('SUCCESS'))}/>;
+                return <LivenessChallenge onSuccess={() => dispatch(setKycStep('REVIEW_VERIFICATION'))}/>;
+
+            case 'REVIEW_VERIFICATION': 
+                return <ReviewVerification/> 
             
             case 'SUCCESS':
                 return <OnboardingComplete/>;

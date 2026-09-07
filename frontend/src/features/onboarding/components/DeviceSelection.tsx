@@ -32,7 +32,7 @@ export const DeviceSelection = () => {
                     setSocketStatus('Phone connected! Complete the step on your mobile screen.');
                 }else if(data.status === 'COMPLETED'){
                     // Mobile finished, auto advance the desktop ui
-                    dispatch(setKycStep('SUCCESS'));
+                    dispatch(setKycStep('REVIEW_VERIFICATION'));
                 }
             })
         }
@@ -85,8 +85,8 @@ export const DeviceSelection = () => {
             <button onClick={handleMobileSelect} className={styles.primaryBtn} disabled={isLoading}>
             {isLoading ? "Generating..." : "Use Mobile Phone (Recommended)"}
             </button>
-            <button onClick={() => dispatch(setKycStep('LIVENESS_CHECK'))} className={styles.secondaryBtn}>
-            Continue on this device
+            <button onClick={() => dispatch(setKycStep('LIVE_SELFIE'))} className={styles.secondaryBtn}>
+                Continue on this device
             </button>
         </div>
         </div>
