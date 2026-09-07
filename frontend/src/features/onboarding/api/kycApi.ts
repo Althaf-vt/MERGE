@@ -32,9 +32,21 @@ export const kycApi = createApi({
                 method: 'POST',
                 body: formData
             })
+        }),
+
+        submitFinalVerification: builder.mutation<{success: boolean, status: string}, void>({
+            query: () => ({
+                url: '/kyc/submit-verification',
+                method: 'POST'
+            })
         })
 
     })
 })
 
-export const { useSubmitKycMutation, useSubmitLiveSelfieMutation, useSubmitLivenessMutation } = kycApi;
+export const { 
+    useSubmitKycMutation,
+    useSubmitLiveSelfieMutation, 
+    useSubmitLivenessMutation,
+    useSubmitFinalVerificationMutation
+} = kycApi;
