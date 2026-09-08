@@ -37,7 +37,12 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
         });
 
         // 4. Persist aggregate root atomically
-        await this.userRepository.update(user);
+        await this.userRepository.addLivenessResult(userId, {
+            promt: promptType,
+            score: livenessScore,
+            status: passed ? 'PASSED' : 'FAILED',
+            videoS3: livenessVideoS3
+        });
 
         if (!passed) {
             throw new BadRequestException(`Liveness check failed for prompt: ${promptType}.`);
