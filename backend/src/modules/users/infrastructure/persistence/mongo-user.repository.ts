@@ -58,7 +58,7 @@ export class MongoUserRepository implements IUserRepository{
     async update(user: UserAggregate): Promise<UserAggregate> {
         const persistenceData = UserPersistenceMapper.toPersistence(user);
         const document = await this.userModel
-            .findByIdAndUpdate(user.id, persistenceData, {new: true})
+            .findByIdAndUpdate(user.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if(!document) throw new Error("User not found");
