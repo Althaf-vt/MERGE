@@ -5,7 +5,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
 import { Model } from "mongoose";
-import { UserKyc } from "../../domain/entities/kyc-verification.entity";
+import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
 
 
 // MongoDB implementation of the UserRepository.
@@ -63,5 +63,17 @@ export class MongoUserRepository implements IUserRepository{
 
         if(!document) throw new Error("User not found");
         return UserPersistenceMapper.toDomain(document);
+    }
+
+    // Atomic operation: Appends result directly without serializing/overwriting the entire aggregate
+    async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
+        await this.userModel.updateOne(
+            {_id: userId},
+            {
+                $push:{
+                    'kycVerification.livenessResults': record
+                }
+            }
+        ).exec();
     }
 }
