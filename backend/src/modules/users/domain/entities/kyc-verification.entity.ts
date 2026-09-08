@@ -1,5 +1,14 @@
 import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
 
+// Encapsulates individual liveness challenge evaluations within 
+// the KYC aggregate to prevent primitive obsession.
+export interface LivenessEvaluationRecord{
+    prompt: string;
+    score: number;
+    status: string;
+    videoS3: string;
+}
+
 export interface UserKycProps{
     id?: string;
     userId?: string;

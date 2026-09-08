@@ -1,4 +1,4 @@
-import { UserKyc } from "../entities/kyc-verification.entity";
+import { LivenessEvaluationRecord, UserKyc } from "../entities/kyc-verification.entity";
 import { UserAggregate } from "../entities/user.entity";
 
 // Unique DI token used to identify the UserRepository implementation.
@@ -12,4 +12,6 @@ export interface IUserRepository{
     findByDocumentHash(documentHash: string): Promise<UserKyc | null>;
     create(user: UserAggregate): Promise<UserAggregate>;
     update(user: UserAggregate): Promise<UserAggregate>;
+
+    addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void>;
 }
