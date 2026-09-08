@@ -29,7 +29,11 @@ export const calculateYawRatio = (landmarks: NormalizedLandmark[]): number => {
     const totalSpan = Math.abs(leftCheek - rightCheek);
     if(totalSpan === 0) return 0.5;
 
-    return (nose - Math.min(rightCheek, leftCheek)) / totalSpan;
+    const rawRatio = (nose - Math.min(rightCheek, leftCheek)) / totalSpan;
+
+    // Invert the ratio to synchronize the raw camera matrix with the mirrored UI.
+    // Physical Left turn now correctly outputs < 0.35, Physical Right outputs > 0.65.
+    return 1.0 - rawRatio;
 }
 
 // Computes mouth width normalized by outer eye distance to detect smiling
