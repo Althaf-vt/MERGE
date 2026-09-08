@@ -128,7 +128,11 @@ export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
                 actionDetected = calculateYawRatio(landmarks) > 0.65;
                 break;
             case 'SMILE':
-                actionDetected = calculateSmileRatio(landmarks) > 0.45;
+                // Mouth corner spread expands relative to the rigid eye anchor distance.
+                // ADDED: Geometric Guard - Only evaluate smile if the head is facing perfectly straight (Yaw between 0.4 and 0.6) to prevent 2D perspective distortion.
+                const yaw = calculateYawRatio(landmarks);
+                const isLookingForward = yaw > 0.40 && yaw < 0.60;
+                actionDetected = isLookingForward && calculateSmileRatio(landmarks) > 0.45;
                 break;
         }
 
@@ -155,7 +159,7 @@ export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
             stopBuffering();
             onSuccess(); 
         }else{
-            setTimeout(() => {isProcessingRef.current = false;}, 800);
+            setTimeout(() => {isProcessingRef.current = false;}, 1500);
         }
 
         try {
