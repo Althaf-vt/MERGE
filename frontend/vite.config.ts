@@ -4,6 +4,9 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+  exclude: ["@mediapipe/face_mesh", "@mediapipe/camera_utils"]
+},
   server: {
     host: true,
     port: 5173,
