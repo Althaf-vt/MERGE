@@ -38,7 +38,7 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
 
         // 4. Persist aggregate root atomically
         await this.userRepository.addLivenessResult(userId, {
-            promt: promptType,
+            prompt: promptType,
             score: livenessScore,
             status: passed ? 'PASSED' : 'FAILED',
             videoS3: livenessVideoS3
