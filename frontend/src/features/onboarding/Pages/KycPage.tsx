@@ -9,6 +9,9 @@ import { setKycStep } from "../slices/kycSlice";
 import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
 import { LivenessChallenge } from "../components/liveness-challenge.component";
 import { ReviewVerification } from "../components/ReviewVerification";
+import { KycVerified } from "../components/KycVerified";
+import { KycUnderReview } from "../components/KycUnderReview";
+import { KycFailed } from "../components/KycFailed";
 
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
@@ -55,6 +58,13 @@ export const KycPage = () => {
 
             case 'REVIEW_VERIFICATION': 
                 return <ReviewVerification/> 
+            
+            case 'VERIFIED':
+                return <KycVerified/>;
+            case 'UNDER_REVIEW':
+                return <KycUnderReview/>;
+            case 'FAILED':
+                return <KycFailed/>;
             
             case 'SUCCESS':
                 return <OnboardingComplete/>;

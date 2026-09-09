@@ -8,6 +8,9 @@ export type KycStep =
   | 'LIVE_SELFIE' 
   | 'LIVENESS_CHALLENGE' 
   | 'REVIEW_VERIFICATION'
+  | 'VERIFIED'          
+  | 'UNDER_REVIEW'      
+  | 'FAILED'
   | 'SUCCESS';
 
 interface ExtractedKycData{
