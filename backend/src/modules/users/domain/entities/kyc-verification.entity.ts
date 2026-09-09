@@ -150,7 +150,6 @@ export class UserKyc{
             this.props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
         }else{
             this.props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
-            this.props.verificationStatus = VerificationStatus.REJECTED;
             this.props.rejectionReason = payload.rejectionReason;
         }
         
@@ -176,7 +175,7 @@ export class UserKyc{
     resetLiveness(): void {
         this.props.livenessResults = [];
         this.props.verificationSubmitted = false;
-        this.props.verificationStatus = VerificationStatus.PENDING;
+        this.props.verificationStatus = VerificationStatus.APPROVED;
         this.props.reviewDecision = undefined;
         this.props.rejectionReason = undefined;
         this.props.updatedAt = new Date();

@@ -15,6 +15,10 @@ export class UserResponseMapper{
             kycVerification: entity.kycVerification? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,
+                selfieVerificationStatus: entity.kycVerification.selfieVerificationStatus,
+                verificationSubmitted: entity.kycVerification.verificationSubmitted,
+                passedPrompts: entity.kycVerification.passedPrompts,
+                reviewDecision: entity.kycVerification.reviewDecision,
             } : null,
             createdAt: entity.createdAt
         }
