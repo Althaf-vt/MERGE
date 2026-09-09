@@ -68,3 +68,18 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .topBar {
+    padding: 1rem 1.5rem;
+  }
+  
+  .navLinks {
+    display: none; /* Hide secondary links on mobile to save space */
+  }
+  
+  .mainContent {
+    padding: 1.5rem 1rem;
+  }
+}
