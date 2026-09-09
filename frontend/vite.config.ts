@@ -11,7 +11,7 @@ export default defineConfig({
     host: true,
     port: 5173,
     // Allows any ngrok-free subdomain or pass true to allow all hosts
-    allowedHosts: ['.ngrok-free.app'],
+    allowedHosts: ['.ngrok-free.app', '.ngrok-free.dev'],
     proxy: {
       // Proxy all HTTP API requests to NestJS
       '/api': {

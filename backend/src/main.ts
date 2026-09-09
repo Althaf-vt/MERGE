@@ -40,6 +40,7 @@ async function bootstrap() {
         origin === process.env.FRONTEND_URL ||
         origin.includes('localhost') ||
         origin.endsWith('.ngrok-free.app') ||
+        origin.endsWith('.ngrok-free.dev') ||
         origin.endsWith('.ngrok.io');
 
       if(isAllowed){
