@@ -277,3 +277,35 @@
 }
 
 @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* Selection Cards */
+  .selectionWrapper {
+    padding: 32px 24px;
+  }
+  
+  .cardsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  /* QR Modal */
+  .qrModal {
+    padding: 32px 24px;
+  }
+  
+  .instructionSteps {
+    grid-template-columns: 1fr;
+  }
+  
+  .stepCard {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+  }
+  
+  .stepNumber {
+    margin-bottom: 0;
+  }
+}
