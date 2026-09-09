@@ -183,14 +183,24 @@ export class UserKyc{
     }
 
     // submission gate 
-    submitVerification(requiredPromptsCount = 3): void {
+    submitVerification(requiredPromptsCount = 4): void {
         const results = this.props.livenessResults ?? [];
-        const hasFailedPrompts = results.some(r => r.status === 'FAILED');
-        const passedCount = results.filter(r => r.status === 'PASSED').length;
+        
+        // DDD Encapsulation: The entity decides how to interpret historical data.
+        // Group by prompt so we only evaluate the user's most recent attempt for each action.
+        const latestResultsMap = new Map<string, any>();
+        for (const record of results) {
+            latestResultsMap.set(record.prompt, record);
+        }
+        
+        const latestResults = Array.from(latestResultsMap.values());
+        
+        const hasFailedPrompts = latestResults.some(r => r.status === 'FAILED');
+        const passedCount = latestResults.filter(r => r.status === 'PASSED').length;
 
         // Ensure all required steps were actually performed
         if (passedCount < requiredPromptsCount) {
-            throw new Error("Cannot submit verification: Incomplete liveness prompts.");
+            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${requiredPromptsCount}, got ${passedCount}.`);
         }
 
         if (hasFailedPrompts) {
@@ -198,7 +208,7 @@ export class UserKyc{
             this.props.reviewDecision = ReviewDecision.AUTO_REJECTED;
             this.props.rejectionReason = "One or more liveness prompts failed verification.";
         } else {
-            // Forward to manual review queue or auto-approve based on system thresholds[cite: 5]
+            // Forward to manual review queue or auto-approve based on system thresholds
             this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
             this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
             this.props.manualReviewRequired = true;

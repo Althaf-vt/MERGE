@@ -21,9 +21,9 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
 
         // Trigger the phase 7 domain gate
         try {
-            kyc.submitVerification(3) // Expects exactly 3 propmts (BLINK, TURN_LEFT, SMILE)
+            kyc.submitVerification(4); // Must match the 4 prompts (BLINK, TURN_LEFT, TURN_RIGHT, SMILE)
         } catch (error: any) {
-            throw new BadRequestException(error.messages)
+            throw new BadRequestException(error.message);
         }
 
         // If the system auto-approves based on thresholds, update the aggregate
