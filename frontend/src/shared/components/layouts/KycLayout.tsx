@@ -13,8 +13,12 @@ export const KycLayout: React.FC<KycLayoutProps> = ({ children }) => {
   // Calculate progress based on the current step
   const getProgress = () => {
     switch (currentStep) {
-      case 'DOCUMENT_UPLOAD': return '33%';
-      case 'LIVENESS_CHECK': return '66%';
+      case 'DOCUMENT_UPLOAD': return '15%';
+      case 'DOCUMENT_SUCCESS': return '30%';
+      case 'DEVICE_SELECTION': return '45%';
+      case 'LIVE_SELFIE': return '60%';
+      case 'LIVENESS_CHALLENGE': return '75%'; // FIXED: Replaced 'LIVENESS_CHECK'
+      case 'REVIEW_VERIFICATION': return '90%';
       case 'SUCCESS': return '100%';
       default: return '0%';
     }
