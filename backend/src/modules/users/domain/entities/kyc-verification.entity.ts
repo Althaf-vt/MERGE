@@ -78,6 +78,12 @@ export interface RejectManualReviewPayload{
 export class UserKyc{
     private props: UserKycProps;
 
+    private readonly REQUIRED_PROMPTS_COUNT = 4;
+    private readonly SELFIE_MIN_PASS_THRESHOLD = 80;
+    private readonly SELFIE_AUTO_APPROVE_THRESHOLD = 90;
+    private readonly LIVENESS_MIN_PASS_THRESHOLD = 0.80;
+    private readonly LIVENESS_AUTO_APPROVE_THRESHOLD = 0.88;
+
     constructor(props: UserKycProps){
         this.props = {
             ...props,
@@ -138,28 +144,28 @@ export class UserKyc{
     }
 
     // Live Selfie
-    recordSelfie(payload: RecordSelfiePayload, selfieThreshold = 85): void{
+    recordSelfie(payload: RecordSelfiePayload): void{
         
         // Always save the S3 link and confidence, regardless of pass/fail, for audit logs
         this.props.liveSelfieS3 = payload.liveSelfieS3;
         this.props.selfieConfidence = payload.selfieConfidence;
         this.props.updatedAt = new Date();
         
-        if(payload.selfieConfidence >= selfieThreshold){
+        if(payload.selfieConfidence >= this.SELFIE_MIN_PASS_THRESHOLD){
             this.props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
             this.props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
         }else{
             this.props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
-            this.props.rejectionReason = payload.rejectionReason;
+            this.props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
         }
         
     }
 
     // Liveness Test : Evaluates a single liveness prompt incrementally
-    recordLivenessPrompt(payload: RecordLivenessPayload, threshold = 0.80): void {
+    recordLivenessPrompt(payload: RecordLivenessPayload): void {
         if (!this.props.livenessResults) this.props.livenessResults = [];
         
-        const passed = payload.score >= threshold;
+        const passed = payload.score >= this.LIVENESS_MIN_PASS_THRESHOLD;
         
         this.props.livenessResults.push({
             prompt: payload.prompt,
@@ -182,7 +188,7 @@ export class UserKyc{
     }
 
     // submission gate 
-    submitVerification(requiredPromptsCount = 4): void {
+    submitVerification(): void {
         const results = this.props.livenessResults ?? [];
         
         // DDD Encapsulation: The entity decides how to interpret historical data.
@@ -198,8 +204,8 @@ export class UserKyc{
         const passedCount = latestResults.filter(r => r.status === 'PASSED').length;
 
         // Ensure all required steps were actually performed
-        if (passedCount < requiredPromptsCount) {
-            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${requiredPromptsCount}, got ${passedCount}.`);
+        if (passedCount < this.REQUIRED_PROMPTS_COUNT) {
+            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${this.REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
         }
 
         if (hasFailedPrompts) {
@@ -207,10 +213,23 @@ export class UserKyc{
             this.props.reviewDecision = ReviewDecision.AUTO_REJECTED;
             this.props.rejectionReason = "One or more liveness prompts failed verification.";
         } else {
-            // Forward to manual review queue or auto-approve based on system thresholds
-            this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
-            this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
-            this.props.manualReviewRequired = true;
+
+            // Calculate aggregate scores to determine if we can bypass manual review
+            const averageLivenessScore = latestResults.reduce((acc,curr) => acc + curr.score, 0) / passedCount;
+            const selfieConfidence = this.props.selfieConfidence ?? 0;
+
+            // Auto approve if both metrics exceed our strict trust threshold
+            if(averageLivenessScore >= this.LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this.SELFIE_AUTO_APPROVE_THRESHOLD){
+                this.props.verificationStatus = VerificationStatus.APPROVED;
+                this.props.reviewDecision = ReviewDecision.AUTO_APPROVED;
+                this.props.manualReviewRequired = false;
+            }else{
+                // Forward to manual review queue or auto-approve based on system thresholds
+                this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
+                this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
+                this.props.manualReviewRequired = true;
+            }
+
         }
 
         this.props.verificationSubmitted = true;
