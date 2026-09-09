@@ -49,3 +49,32 @@
 .captureBtn:disabled { color: #a1a1aa; border-color: #e4e4e7; cursor: not-allowed; }
 
 .errorBox { padding: 16px; background: #fef2f2; color: #dc2626; border: 1px solid #f87171; border-radius: 8px; width: 100%; text-align: center; }
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .guidelineGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .guidelineGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .videoContainer {
+    /* Scale width to 100% of the mobile screen while maintaining the 3/4 oval ratio */
+    width: 100%;
+    max-width: none; 
+  }
+  
+  .faceGuideOval {
+    width: 65%;
+    height: 75%;
+  }
+}

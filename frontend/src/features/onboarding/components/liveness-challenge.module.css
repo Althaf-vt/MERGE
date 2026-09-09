@@ -262,3 +262,26 @@
     font-size: 0.95rem;
     cursor: not-allowed;
 }
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .layoutWrapper {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .rightPanel {
+    /* Swap visual order on mobile: Camera first, instructions below */
+    order: -1; 
+  }
+}
+
+@media (max-width: 640px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .promptAction h2 {
+    font-size: 2rem;
+  }
+}
