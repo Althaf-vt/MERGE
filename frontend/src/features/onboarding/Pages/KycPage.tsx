@@ -27,13 +27,38 @@ export const KycPage = () => {
     // 2. Fast-forward logic: if the user reloads the page, Redux resets to "DOCUMENT_UPLOAD".
     // We check the DB state (user.kycVerification) to restore their progress instantly.
     useEffect(()=> {
-        if(user?.kycCompleted){
+        if(!user) return;
+
+        const kyc = user.kycVerification;
+
+        // 1. Fully completed
+        if(user.kycCompleted){
             navigate('/onboarding/profile', {replace: true});
-        }else if(user?.kycVerification?.verificationStatus === 'APPROVED' && currentStep === 'DOCUMENT_UPLOAD'){
-            // Document is done, but Redux reset on relaod. Fast-forward to device selection.
-            dispatch(setKycStep('DEVICE_SELECTION'));
+            return;
         }
-    }, [user, currentStep, dispatch, navigate]);
+
+        if(!kyc) return;
+
+        // 2. Terminal review states
+        if(kyc.verificationSubmitted){
+            if(kyc.verificationStatus === 'UNDER_REVIEW') dispatch(setKycStep('UNDER_REVIEW'));
+            else if(kyc.verificationStatus === 'APPROVED') dispatch(setKycStep('VERIFIED'));
+            else if(kyc.verificationStatus === 'REJECTED') dispatch(setKycStep('FAILED'));
+            return;
+        }
+
+        // 3. Granular step restoration (skip completed phases)
+        if(kyc.documentType && kyc.selfieVerificationStatus !== 'APPROVED'){
+            // Document is verified but selfie is missing
+            dispatch(setKycStep('DEVICE_SELECTION'));
+        }else if(kyc.selfieVerificationStatus === 'APPROVED' && (kyc.passedPrompts?.length ?? 0) < 4){
+            // selfie is approved, but liveness prompts are incomplete/failed
+            dispatch(setKycStep('LIVENESS_CHALLENGE'));
+        }else if((kyc.passedPrompts?.length ?? 0) === 4 && !kyc.verificationSubmitted){
+            // Liveness is done, ready for final review
+            dispatch(setKycStep('REVIEW_VERIFICATION'));
+        }
+    }, [user, dispatch, navigate]);
 
     // 3, Unauthenticated safeguard 
     if(!isAuthenticated){

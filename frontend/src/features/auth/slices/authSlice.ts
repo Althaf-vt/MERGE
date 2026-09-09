@@ -14,6 +14,10 @@ export interface AuthUser{
     kycVerification?: {
         verificationStatus: string;
         documentType?: string;
+        selfieVerificationStatus?: string;
+        verificationSubmitted?: boolean;
+        passedPrompts?: string[];
+        reviewDecision?: string;
     }
     createdAt?: Date | string
 }
