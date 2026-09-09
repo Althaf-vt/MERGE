@@ -28,7 +28,11 @@ export const KycLayout: React.FC<KycLayoutProps> = ({ children }) => {
     <div className={styles.layoutContainer}>
       <header className={styles.topBar}>
         <div className={styles.brand}>MERGE</div>
-        <Link to="/support" className={styles.helpLink}>Need help?</Link>
+        <div className={styles.navLinks}>
+            <Link to="/features" className={styles.navLink}>Features</Link>
+            <Link to="/safety" className={styles.navLink}>Safety</Link>
+        </div>
+        <Link to="/login" className={styles.loginBtn}>Login</Link>
       </header>
       
       {/* Dynamic Progress Indicator */}
