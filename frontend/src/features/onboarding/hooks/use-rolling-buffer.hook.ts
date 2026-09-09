@@ -8,7 +8,7 @@ const getSupportedMimeType = (): string => {
     return 'video/webm';
 }
 
-export const useRollingBuffer = (maxDurationMs: number = 3000) => {
+export const useRollingBuffer = () => {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<BlobPart[]>([]);
     const mimeTypeRef = useRef<string>(getSupportedMimeType());
@@ -19,22 +19,16 @@ export const useRollingBuffer = (maxDurationMs: number = 3000) => {
         chunksRef.current = [];
         const recorder = new MediaRecorder(stream, {mimeType: mimeTypeRef.current});
 
-        // Calculate max chunks based on a 200ms recording interval
-        const maxChunks = Math.ceil(maxDurationMs / 200);
-
         recorder.ondataavailable = (e) => {
             if(e.data.size > 0){
+                // We no longer splice. We continuously accumulate clean chunks for the duration of the prompt.
                 chunksRef.current.push(e.data);
-                // Evict the oldest chunk if we exceed the time boundary
-                if(chunksRef.current.length > maxChunks){
-                    chunksRef.current.splice(1, 1); // keep [0] (header), drop oldest media chunk
-                }
             }
         }
         
         recorder.start(200);
         mediaRecorderRef.current = recorder;
-    },[maxDurationMs]);
+    },[]);
 
     const stopBuffering = useCallback(() => {
         if(mediaRecorderRef.current?.state !== 'inactive'){
@@ -42,11 +36,31 @@ export const useRollingBuffer = (maxDurationMs: number = 3000) => {
         }
     },[]);
 
-    const extractBuffer = useCallback((): {blob: Blob; mimeType: string} => {
-        // Compile the current temporal window into a single Blob
-        const blob = new Blob(chunksRef.current, {type: mimeTypeRef.current});
-        return {blob, mimeType: mimeTypeRef.current};
+    // Asynchronously stops the recording to compile a clean video file, then instantly restarts it for the next prompt
+    const extractAndResetBuffer = useCallback(async (): Promise<{blob: Blob; mimeType: string}> => {
+        return new Promise((resolve) => {
+            const recorder = mediaRecorderRef.current;
+            if (!recorder || recorder.state === 'inactive') {
+                resolve({ blob: new Blob(chunksRef.current, {type: mimeTypeRef.current}), mimeType: mimeTypeRef.current });
+                return;
+            }
+
+            const onStop = () => {
+                // Compile the clean, uncorrupted byte stream
+                const blob = new Blob(chunksRef.current, {type: mimeTypeRef.current});
+                
+                // Clear memory and restart the recorder immediately for the next action
+                chunksRef.current = [];
+                recorder.removeEventListener('stop', onStop);
+                recorder.start(200);
+                
+                resolve({blob, mimeType: mimeTypeRef.current});
+            };
+
+            recorder.addEventListener('stop', onStop);
+            recorder.stop(); // Force flush the final chunks
+        });
     }, []);
 
-    return {startBuffering, stopBuffering, extractBuffer}
+    return { startBuffering, stopBuffering, extractAndResetBuffer }
 }

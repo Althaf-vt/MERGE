@@ -20,7 +20,7 @@ const LIVENESS_PROMPTS = [
 export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
     const dispatch = useAppDispatch();
     const [submitLiveness] = useSubmitLivenessMutation();
-    const { startBuffering, stopBuffering, extractBuffer } = useRollingBuffer(3000);
+    const { startBuffering, stopBuffering, extractAndResetBuffer } = useRollingBuffer();
 
     const videoRef = useRef<HTMLVideoElement>(null);
     
@@ -142,33 +142,37 @@ export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
     const executeAsynchronousDispatch = async (promptId: string) => {
         isProcessingRef.current = true;
 
-        const {blob, mimeType} = extractBuffer();
+        const {blob, mimeType} = await extractAndResetBuffer();
         const extension = mimeType.includes('mp4') ? 'mp4' : 'webm';
 
         const formData = new FormData();
         formData.append('video', blob, `liveness.${extension}`);
         formData.append('promptType', promptId);
 
-        dispatch(addLivenessResult({prompt: promptId, completed: true}));
-
-        const nextIndex = promptIndexRef.current + 1;
-        promptIndexRef.current = nextIndex;
-        setDisplayIndex(nextIndex);
-
-        if(nextIndex >= LIVENESS_PROMPTS.length){
-            stopBuffering();
-            onSuccess(); 
-        }else{
-            setTimeout(() => {isProcessingRef.current = false;}, 1500);
-        }
-
         try {
+            // Wait for the Python worker's authoritative verdict
             await submitLiveness(formData).unwrap();
+
+            // Only update Redux and advance UI if the backend confirm the motion
+            dispatch(addLivenessResult({prompt: promptId, completed: true}));
+
+            const nextIndex = promptIndexRef.current + 1;
+            promptIndexRef.current = nextIndex;
+            setDisplayIndex(nextIndex);
+
+            if(nextIndex >= LIVENESS_PROMPTS.length){
+                stopBuffering();
+                onSuccess();
+            }else{
+                setTimeout(() => {isProcessingRef.current = false;}, 1500);
+            }
         } catch (error: any) {
+            // Unlock the pipeline so the user can try the failed prompt again
+            isProcessingRef.current = false;
             const errorMsg = typeof error?.data?.message === 'string'
-                ? error.data.message
+                ? error.data.message 
                 : "Background liveness synchronization failed.";
-            setError(errorMsg);
+            setError(errorMsg)
         }
     }
 
