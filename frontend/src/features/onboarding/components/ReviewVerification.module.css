@@ -1,3 +1,4 @@
+/* ==== Layout ==== */
 .container {
   display: grid;
   grid-template-columns: 1fr 1.3fr;
@@ -6,8 +7,10 @@
 }
 
 .leftPanel { display: flex; flex-direction: column; }
+.rightPanel { display: flex; flex-direction: column; gap: 16px; }
 
-.stepIndicator {
+/* ==== Typography ==== */
+.stepIndicatorHeader {
   display: flex;
   justify-content: space-between;
   font-size: 0.85rem;
@@ -18,13 +21,14 @@
   padding-bottom: 12px;
   position: relative;
 }
-.stepIndicator::after {
+.stepIndicatorHeader::after {
   content: ''; position: absolute; left: 0; bottom: -3px; width: 80%; height: 3px; background-color: #6200ea;
 }
 
 .mainTitle { font-size: 2.2rem; font-weight: 800; color: #18181b; margin: 0 0 16px 0; }
 .subtitle { font-size: 1rem; color: #52525b; margin: 0 0 32px 0; line-height: 1.5; }
 
+/* ==== Left Panel ==== */
 .checklistCard {
   background-color: #ffffff;
   border: 1px solid #e4e4e7;
@@ -35,14 +39,7 @@
   flex-direction: column;
   gap: 16px;
 }
-
-.checklistItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 600;
-  color: #18181b;
-}
+.checklistItem { display: flex; align-items: center; gap: 12px; font-weight: 600; color: #18181b; }
 
 .securityCard {
   background-color: #fafafa;
@@ -50,29 +47,21 @@
   border-radius: 12px;
   padding: 24px;
 }
-
-.securityHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+.securityHeader { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .securityHeader h3 { margin: 0; font-size: 1.1rem; color: #18181b; }
 
 .securityList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .securityList li { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; color: #52525b; }
 
-.rightPanel { display: flex; flex-direction: column; gap: 16px; }
-
+/* ==== Right Panel ==== */
 .summaryCard {
   background-color: #ffffff;
   border: 1px solid #e4e4e7;
   border-radius: 12px;
   padding: 24px;
 }
-
 .cardHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.cardEyebrow { font-size: 0.75rem; font-weight: 700; color: #71717a; letter-spacing: 0.5px; }
+.cardEyebrow { font-size: 0.75rem; font-weight: 700; color: #71717a; letter-spacing: 0.5px; text-transform: uppercase; }
 .headerActions { display: flex; gap: 16px; }
 .textBtn { background: none; border: none; font-size: 0.85rem; font-weight: 600; color: #3f3f46; cursor: pointer; }
 
@@ -133,34 +122,179 @@
 .primaryBtn:not(:disabled) { background-color: #6200ea; }
 .errorText { color: #ef4444; margin-bottom: 16px; font-weight: 500; }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .container {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  
-  .rightPanel {
-    order: -1; /* Display the summary cards above the security features on mobile */
-  }
+
+/* ==== Modal Overlay & Animation ==== */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease forwards;
 }
 
-@media (max-width: 640px) {
-  .summaryCardSmall {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .livenessGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .actionFooter {
-    flex-direction: column-reverse;
-    gap: 16px;
-  }
-  
-  .primaryBtn, .backBtn {
+.modalContainer {
+    background: #ffffff;
     width: 100%;
-  }
+    max-width: 440px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modalTopBar {
+    height: 6px;
+    background: linear-gradient(to right, #e9d5ff, #c084fc, #6200ea);
+    width: 100%;
+}
+
+.modalContent {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalTitle {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #18181b;
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.modalSubtitle {
+    font-size: 0.95rem;
+    color: #71717a;
+    margin: 0 0 32px 0;
+    text-align: center;
+    line-height: 1.4;
+    max-width: 80%;
+}
+
+/* Spinner */
+.loaderIconWrapper {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 24px;
+}
+
+.spinnerRing {
+    position: absolute;
+    inset: 0;
+    border: 8px solid #f3e8ff;
+    border-top-color: #6200ea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.spinnerShield {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6200ea;
+}
+
+/* Stepper inside Modal */
+.stepperContainer {
+    width: 100%;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 32px;
+}
+
+.stepperItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 48px; 
+    position: relative;
+}
+
+.stepIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 24px;
+}
+
+.stepIcon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #ffffff;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.stepLine {
+    width: 2px;
+    flex-grow: 1;
+    background-color: #e4e4e7;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.stepText {
+    font-size: 0.9rem;
+    padding-top: 3px;
+    transition: color 0.3s ease;
+}
+
+/* Stepper States */
+.stepperItem.completed .stepIcon { background-color: #6200ea; color: #ffffff; border: none; }
+.stepperItem.completed .stepLine { background-color: #e9d5ff; }
+.stepperItem.completed .stepText { color: #3f3f46; font-weight: 500; }
+
+.stepperItem.active .stepIcon { border: 2px solid #6200ea; }
+.stepperItem.active .stepDot { width: 10px; height: 10px; background-color: #6200ea; border-radius: 50%; }
+.stepperItem.active .stepText { color: #6200ea; font-weight: 700; }
+
+.stepperItem.pending .stepIcon { border: 2px solid #e4e4e7; }
+.stepperItem.pending .stepText { color: #a1a1aa; font-weight: 500; }
+
+/* Modal Bottom Badge */
+.encryptionBadge {
+    background-color: #f4f4f5;
+    color: #52525b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 8px 20px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.encryptionBadge svg { color: #6200ea; }
+
+/* Animations */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
