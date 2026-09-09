@@ -1,126 +1,160 @@
+/* ==== Layout ==== */
 .container {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 48px;
-    max-width: 1100px;
-    margin: 0 auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #1a1a1a;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: #18181b;
 }
 
+.layoutWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 64px;
+    width: 100%;
+}
+
+/* ==== Typography ==== */
 .mainTitle {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: #18181b;
 }
 
 .subtitle {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     color: #52525b;
-    margin-bottom: 32px;
+    margin: 0 0 32px 0;
+    line-height: 1.5;
 }
 
 .sectionTitle {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 16px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: #18181b;
 }
 
-.infoGrid {
+/* ==== Left Panel: General ==== */
+.leftPanel {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==== Left Panel: Features Grid ==== */
+.featuresGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 32px;
+    gap: 16px;
+    margin-bottom: 40px;
 }
 
-.infoCard {
+.featureCard {
+    background-color: #ffffff;
     border: 1px solid #e4e4e7;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 16px;
-    font-size: 0.9rem;
-    font-weight: 500;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #18181b;
 }
 
-.infoCard span {
-    color: #6d28d9;
-    font-size: 1.2rem;
-}
-
+/* ==== Left Panel: Progress Box ==== */
 .progressBox {
+    background-color: #ffffff;
     border: 1px solid #e4e4e7;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 24px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
+}
+
+.progressTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: #18181b;
 }
 
 .progressList {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .progressList li {
     display: flex;
     align-items: center;
-    padding: 10px 0;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.radioCircle {
-    width: 18px;
-    height: 18px;
+/* Custom Radio Indicator */
+.radioIndicator {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    border: 2px solid #a1a1aa;
-    margin-right: 12px;
-    display: inline-block;
+    border: 2px solid #18181b;
+    margin-right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.activeStep { color: #6d28d9; font-weight: 600; }
-.activeStep .radioCircle { border-color: #6d28d9; border-width: 5px; }
+.radioDot {
+    width: 10px;
+    height: 10px;
+    background-color: #6200ea;
+    border-radius: 50%;
+}
+
+/* Progress States */
+.activeStep { color: #6200ea; font-weight: 700 !important; }
+.activeStep .radioIndicator { border-color: #6200ea; }
 
 .completedStep { color: #52525b; }
-.completedStep .radioCircle { border-color: #52525b; background-color: white; }
+.completedStep .radioIndicator { border-color: #18181b; }
 
-.pendingStep { color: #a1a1aa; }
+.pendingStep { color: #52525b; }
+.pendingStep .radioIndicator { border-color: #18181b; }
 
+/* ==== Left Panel: Checklist ==== */
 .checklist {
     list-style: none;
     padding: 0;
-    font-size: 0.95rem;
-    color: #3f3f46;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .checklist li {
-    margin-bottom: 12px;
     display: flex;
     align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: #18181b;
 }
 
-.checklist li::before {
-    content: "✓";
-    color: #6d28d9;
-    font-weight: bold;
-    margin-right: 10px;
-}
-
+/* ==== Right Panel: Video & Overlays ==== */
 .rightPanel {
     display: flex;
     flex-direction: column;
+    gap: 16px;
 }
 
-.cameraCard {
-    background-color: white;
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid #e4e4e7;
+.videoCard {
+    width: 100%;
 }
 
 .videoContainer {
     position: relative;
-    background-color: #e5e7eb;
+    background-color: #e4e4e7;
     border-radius: 16px;
     aspect-ratio: 3/4;
     overflow: hidden;
@@ -149,66 +183,54 @@
 
 .dashedOval {
     position: absolute;
-    width: 65%;
+    width: 70%;
     height: 85%;
-    border: 8px dashed rgba(109, 40, 217, 0.4);
+    border: 8px dashed #c084fc;
     border-radius: 50%;
 }
 
 .promptAction {
     z-index: 20;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 16px;
 }
 
 .promptAction h2 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 800;
-    color: #6d28d9;
-    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9);
-    margin-bottom: 24px;
+    color: #6200ea;
+    margin: 0;
+    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.9);
 }
 
-.recordBtn {
-    background-color: white;
-    color: #1a1a1a;
-    border: 1px solid #e4e4e7;
-    padding: 12px 24px;
+.waitingPill {
+    background-color: #ffffff;
+    color: #18181b;
+    padding: 10px 20px;
     border-radius: 24px;
+    font-size: 0.85rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.feedbackFooter {
-    margin-top: 16px;
-    text-align: center;
-    padding: 16px;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
-    color: #a1a1aa;
-    font-size: 0.9rem;
-}
-
-.footerActions {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 24px;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.continueBtn {
-    background-color: #e4e4e7;
+/* ==== Right Panel: Feedback Box ==== */
+.feedbackBox {
+    background-color: #ffffff;
+    border: 1px dashed #d4d4d8;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: #a1a1aa;
-    padding: 12px 32px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    cursor: not-allowed;
 }
 
+/* ==== Error Banner ==== */
 .errorBanner {
     background-color: #fef2f2;
     color: #b91c1c;
@@ -217,4 +239,26 @@
     margin-bottom: 16px;
     text-align: center;
     font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ==== Footer ==== */
+.footerBar {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 32px;
+    margin-top: 32px;
+    border-top: 1px solid #e4e4e7;
+}
+
+.continueBtn {
+    background-color: #e4e4e7;
+    color: #18181b;
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: not-allowed;
 }
