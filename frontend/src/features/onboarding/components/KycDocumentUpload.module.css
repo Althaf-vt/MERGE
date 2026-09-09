@@ -1,40 +1,142 @@
-.wrapper {
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
   width: 100%;
-  max-width: 450px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
 }
 
-.title {
-  color: #18181b;
-  font-size: 1.75rem;
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainTitle {
+  font-size: 2.2rem;
   font-weight: 800;
+  color: #18181b;
   margin: 0 0 0.5rem 0;
 }
 
 .subtitle {
-  color: #71717a;
+  font-size: 1rem;
+  color: #52525b;
+  margin: 0 0 2.5rem 0;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #18181b;
+  margin: 0 0 1rem 0;
+}
+
+.descriptionText {
+  color: #52525b;
   font-size: 0.95rem;
+  line-height: 1.5;
   margin: 0 0 2rem 0;
-  text-align: center;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 2.5rem;
+}
+
+.featureCard {
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.iconWrapper {
+  background-color: #f3e8ff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featureCard h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #18181b;
+}
+
+.featureCard p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #71717a;
+  line-height: 1.4;
+}
+
+.securityBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #f4f4f5;
+  padding: 16px;
+  border-radius: 8px;
+  color: #3f3f46;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.formCard {
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #18181b;
+  margin: 0 0 1.5rem 0;
 }
 
 .form {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .inputGroup {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.helperText {
+  font-size: 0.8rem;
+  color: #71717a;
+  margin: 0 0 8px 0;
 }
 
 .input {
   width: 100%;
-  padding: 1rem;
+  padding: 12px 16px;
   border: 1px solid #e4e4e7;
   border-radius: 8px;
   font-size: 0.95rem;
@@ -42,51 +144,87 @@
   outline: none;
   box-sizing: border-box;
   color: #18181b;
+  appearance: auto;
 }
 
 .fileUploadBox {
-  border: 2px dashed #e4e4e7;
+  border: 2px dashed #d8b4fe;
   border-radius: 8px;
   background-color: #fafafa;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .fileUploadBox:hover {
+  background-color: #f3e8ff;
   border-color: #6200ea;
 }
 
 .fileLabel {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
   cursor: pointer;
-  color: #71717a;
-  font-weight: 500;
-  text-align: center;
   box-sizing: border-box;
+}
+
+.uploadIcon {
+  background-color: #f3e8ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.uploadTextTitle {
+  color: #18181b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.uploadTextSubtitle {
+  color: #71717a;
+  font-size: 0.85rem;
 }
 
 .hiddenInput {
   display: none;
 }
 
-.primaryBtn {
-  width: 100%;
-  padding: 1rem;
-  background-color: #6200ea;
-  color: #ffffff;
-  border: none;
+.formFooterBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #f4f4f5;
+  padding: 16px;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
+  color: #52525b;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
   margin-top: 1rem;
 }
 
+.primaryBtn {
+  padding: 12px 32px;
+  background-color: #6200ea;
+  color: #ffffff;
+  border: none;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
 .primaryBtn:disabled {
-  background-color: #a78bfa;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -94,19 +232,7 @@
   color: #ef4444;
   font-size: 0.875rem;
   margin-bottom: 1rem;
-  text-align: center;
-}
-
-.dataCard {
-  width: 100%;
-  background-color: #f4f4f5;
+  background-color: #fef2f2;
+  padding: 12px;
   border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  color: #3f3f46;
-}
-
-.dataCard p {
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
 }
