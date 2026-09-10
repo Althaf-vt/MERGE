@@ -1,0 +1,187 @@
+.landingContainer {
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #111827;
+  overflow-x: hidden;
+}
+
+.hero {
+  text-align: center;
+  padding: 8rem 1rem 6rem;
+  background-color: #FAFAFA;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.highlight {
+  color: #6D28D9;
+}
+
+.heroSubtitle {
+  font-size: 1.125rem;
+  color: #4B5563;
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+.primaryBtn {
+  background-color: #6D28D9;
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(109, 40, 217, 0.39);
+}
+
+.primaryBtn:hover {
+  background-color: #5B21B6;
+  transform: translateY(-1px);
+}
+
+.journeySection {
+  text-align: center;
+  padding: 6rem 1rem;
+  background-color: #FFFFFF;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.sectionSubtitle {
+  color: #6B7280;
+  margin-bottom: 4rem;
+}
+
+.journeySteps {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.journeySteps::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background-color: #F3F4F6;
+  z-index: 0;
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 140px;
+}
+
+.stepIcon {
+  width: 64px;
+  height: 64px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #6D28D9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  border: 4px solid #F3F4F6;
+}
+
+.stepTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stepDesc {
+  font-size: 0.875rem;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.featuresSection {
+  padding: 6rem 1rem;
+  background-color: #FAFAFA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 4rem auto 1.5rem;
+}
+
+.featureCard {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F3F4F6;
+}
+
+.featureCardWide {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.iconBox {
+  width: 48px;
+  height: 48px;
+  background-color: #F3E8FF;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.featureCardWide .iconBox {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.featureTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.featureDesc {
+  color: #6B7280;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.ctaSection {
+  text-align: center;
+  padding: 6rem 1rem;
+  background-color: #F5F3FF;
+}
