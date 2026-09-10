@@ -12,9 +12,11 @@ export class UserResponseMapper{
             kycCompleted: entity.kycCompleted,
             accountStatus: entity.accountStatus,
             onboardingStep: entity.onboardingStep,
+            profile: entity.profile ? entity.profile.toJSON() : null,
             kycVerification: entity.kycVerification? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,
+                verifiedDOB: entity.kycVerification.verifiedDOB,
                 selfieVerificationStatus: entity.kycVerification.selfieVerificationStatus,
                 verificationSubmitted: entity.kycVerification.verificationSubmitted,
                 passedPrompts: entity.kycVerification.passedPrompts,

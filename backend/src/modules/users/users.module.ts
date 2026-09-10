@@ -35,6 +35,9 @@ import { SubmitLivenessCheckUseCase } from "./application/use-cases/submit-liven
 import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-liveness-check.use-case.interface";
 import { SUBMIT_FINAL_VERIFICATION_USE_CASE } from "./application/interfaces/submit-final-verification.use-case.interface";
 import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-final-verification.use-case";
+import { UpdatePersonaUseCase } from "./application/use-cases/update-persona.use-case";
+import { ProfileController } from "./presentation/controllers/profile.controller";
+import { UPDATE_PERSONA_USE_CASE } from "./application/interfaces/update-persona.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -57,6 +60,7 @@ import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-f
         AuthController,
         KycController,
         HandoffController,
+        ProfileController,
     ],
     providers: [
         // 1. Shared Services & Guards
@@ -75,6 +79,7 @@ import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-f
         GenerateHandoffSessionUseCase,
         SubmitLiveSelfieUseCase,
         SubmitLivenessCheckUseCase,
+        UpdatePersonaUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -122,6 +127,10 @@ import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-f
         {
             provide: SUBMIT_FINAL_VERIFICATION_USE_CASE,
             useClass: SubmitFinalVerificationUseCase
+        },
+        {
+            provide: UPDATE_PERSONA_USE_CASE,
+            useClass: UpdatePersonaUseCase
         }
     ],
 
