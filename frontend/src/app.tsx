@@ -1,68 +1,58 @@
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
-import { RegisterPage } from './features/auth/pages/RegisterPage'
-import { LoginPage } from './features/auth/pages/LoginPage'
-import { KycPage } from './features/onboarding/Pages/KycPage'
-import { MobileHandoff } from './features/onboarding/Pages/mobile-handoff.component'
-import { PersistLogin } from './features/auth/components/PersistLogin'
-import { PublicRoute } from './features/auth/components/PublicRoute'
-import { PersonaPage } from './features/onboarding/Pages/PersonaPage'
-import { LifestylePage } from './features/onboarding/Pages/LifestylePage'
-import { PreferencesPage } from './features/onboarding/Pages/PreferencesPage'
-import { GenerateBioPage } from './features/onboarding/Pages/generate-bio.page'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { RegisterPage } from './features/auth/pages/RegisterPage';
+import { LoginPage } from './features/auth/pages/LoginPage';
+import { KycPage } from './features/onboarding/Pages/KycPage';
+import { MobileHandoff } from './features/onboarding/Pages/mobile-handoff.component';
+import { PersistLogin } from './features/auth/components/PersistLogin';
+import { PublicRoute } from './features/auth/components/PublicRoute';
+import { PersonaPage } from './features/onboarding/Pages/PersonaPage';
+import { LifestylePage } from './features/onboarding/Pages/LifestylePage';
+import { PreferencesPage } from './features/onboarding/Pages/PreferencesPage';
+import { GenerateBioPage } from './features/onboarding/Pages/generate-bio.page';
 
-// Placeholder components for future routes we will build
-// const LoginPage = () => <div>Login Page (Coming Soon)</div>
-// const KycOnboardingPage = () => <div>KYC Onboarding (Coming Soon)</div>
+// Guards & Post-Onboarding Pages
+import { OnboardingGuard } from './features/onboarding/components/onboarding-guard.component';
+import { LandingPage } from './features/onboarding/components/landing.page';
+import { ProfileLivePage } from './features/onboarding/components/profile-live.page';
 
 export const App = () => {
-    return(
+    return (
         <BrowserRouter>
-        {/* 
-            This is where you could place a global layout wrapper,
-            persistent navigation bars, or toast notification providers
-        */}
+            <Routes>
+                {/* Landing Page as default root */}
+                <Route path="/" element={<LandingPage />} />
 
-        <Routes>
-            {/* Redirect the roor URL to login or register by default */}
-            <Route path='/' element={<Navigate to='/register' replace />}/>
+                {/* AUTHENTICATION ROUTES */}
+                <Route element={<PublicRoute />}>
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                </Route>
 
-            {/* ---AUTHENTICATION ROUTES--- */}
+                {/* Public Mobile Handoff */}
+                <Route path="/handoff" element={<MobileHandoff />} />
 
-            {/* 
-                RegisterPage internally handles the switch between
-                the Email/Password from the OTP Verification screen
-                using the Redux authSlice we built.
-            */}
-            {/* 1. Public-Only routes (redirects authenticated user away from login/register) */}
-            <Route element={<PublicRoute/>}>
-                <Route path='/register' element={<RegisterPage/>}/>
-                <Route path='/login' element={<LoginPage/>}/>
-            </Route>
+                {/* PROTECTED ROUTES */}
+                <Route element={<PersistLogin />}>
+                    {/* Post-onboarding success page */}
+                    <Route path="/profile-live" element={<ProfileLivePage />} />
 
-            {/* 2. Public Mobile Handoff (Self-authenticating token endpoint) */}
-            <Route path='/handoff' element={<MobileHandoff/>} />
+                    {/* 
+                        ONBOARDING ROUTES
+                        Nested inside OnboardingGuard so completed users 
+                        are automatically redirected to /profile-live
+                    */}
+                    <Route element={<OnboardingGuard />}>
+                        <Route path="/onboarding/kyc" element={<KycPage />} />
+                        <Route path="/onboarding/profile" element={<PersonaPage />} />
+                        <Route path="/onboarding/lifestyle" element={<LifestylePage />} />
+                        <Route path="/onboarding/preferences" element={<PreferencesPage />} />
+                        <Route path="/onboarding/bio" element={<GenerateBioPage />} />
+                    </Route>
+                </Route>
 
-            {/* 3. Protected Routes (Wrapped in PersistLogin for session restoration) */}
-            <Route element={<PersistLogin/>}>
-
-                {/* --- ONBOARDING ROUTES --- */}
-
-                {/* Users will be redirected here after successful OTP verification */}
-                <Route path="/onboarding/kyc" element={<KycPage />} />
-
-                <Route path='/onboarding/profile' element={<PersonaPage />} />
-
-                <Route path='/onboarding/lifestyle' element={<LifestylePage/>} />
-
-                <Route path='/onboarding/preferences' element={<PreferencesPage/>} />
-
-                <Route path='/onboarding/bio' element={<GenerateBioPage/>} />
-
-            </Route>
-
-            {/* Catch-all for 404 Not Found */}
-            <Route path='*' element={<div>404 - Page Not Found</div>} />
-        </Routes>
+                {/* Catch-all */}
+                <Route path="*" element={<div>404 - Page Not Found</div>} />
+            </Routes>
         </BrowserRouter>
-    )
-}
+    );
+};
