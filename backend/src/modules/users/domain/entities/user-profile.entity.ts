@@ -55,6 +55,19 @@ export interface UpdatePersonaPayload{
     immigrationReady?: ImmigrationReadiness;
 }
 
+export interface UpdateLifestylePayload {
+    education?: string[];
+    occupation?: string;
+    incomeRange?: string[];
+    religion?: string;
+    disability?: DisabilityOption;
+    diet?: DietType;
+    smokingHabit?: SmokingHabit;
+    drinkingHabit?: DrinkingHabit;
+    relationshipStatus?: RelationshipStatus;
+    maritalStatus?: MaritalStatus;
+}
+
 export interface UpdateBasicInfoPayload{
     displayName?: string;
     phoneNumber?: string;
@@ -153,6 +166,21 @@ export class UserProfile{
 
         this.recalculateCompletion();
     }
+        // for updating lifestyle & background from screen 2
+    updateLifestyle(payload: UpdateLifestylePayload): void {
+        if (payload.education !== undefined) this.props.education = payload.education;
+        if (payload.occupation !== undefined) this.props.occupation = payload.occupation;
+        if (payload.incomeRange !== undefined) this.props.incomeRange = payload.incomeRange;
+        if (payload.religion !== undefined) this.props.religion = payload.religion;
+        if (payload.disability !== undefined) this.props.disability = payload.disability;
+        if (payload.diet !== undefined) this.props.diet = payload.diet;
+        if (payload.smokingHabit !== undefined) this.props.smokingHabit = payload.smokingHabit;
+        if (payload.drinkingHabit !== undefined) this.props.drinkingHabit = payload.drinkingHabit;
+        if (payload.relationshipStatus !== undefined) this.props.relationshipStatus = payload.relationshipStatus;
+        if (payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
+
+        this.recalculateCompletion();
+    }
 
     updateBasicInfo(payload: UpdateBasicInfoPayload): void{
         if(payload.displayName !== undefined) this.props.displayName = payload.displayName;
@@ -170,14 +198,14 @@ export class UserProfile{
         this.recalculateCompletion();
     }
 
-    updateLifeStyle(payload: UpdateLifeStylePayload): void{
-        if(payload.diet !== undefined) this.props.diet = payload.diet;
-        if(payload.smoking !== undefined) this.props.smokingHabit = payload.smoking;
-        if(payload.drinking !== undefined) this.props.drinkingHabit = payload.drinking;
-        if(payload.disability !== undefined) this.props.disability = payload.disability;
+    // updateLifeStyle(payload: UpdateLifeStylePayload): void{
+    //     if(payload.diet !== undefined) this.props.diet = payload.diet;
+    //     if(payload.smoking !== undefined) this.props.smokingHabit = payload.smoking;
+    //     if(payload.drinking !== undefined) this.props.drinkingHabit = payload.drinking;
+    //     if(payload.disability !== undefined) this.props.disability = payload.disability;
 
-        this.recalculateCompletion();
-    }
+    //     this.recalculateCompletion();
+    // }
 
     updateIndentity(payload: UpdateIdentityPayload): void{
         if(payload.pronouns !== undefined) this.props.pronouns = payload.pronouns;
