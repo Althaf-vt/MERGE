@@ -14,6 +14,7 @@ import { GenerateBioPage } from './features/onboarding/Pages/generate-bio.page';
 import { OnboardingGuard } from './features/onboarding/components/onboarding-guard.component';
 import { LandingPage } from './features/onboarding/components/landing.page';
 import { ProfileLivePage } from './features/onboarding/components/profile-live.page';
+import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
 
 export const App = () => {
     return (
@@ -26,6 +27,7 @@ export const App = () => {
                 <Route element={<PublicRoute />}>
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path='/forgot-password' element={<ForgotPasswordPage/>} />
                 </Route>
 
                 {/* Public Mobile Handoff */}

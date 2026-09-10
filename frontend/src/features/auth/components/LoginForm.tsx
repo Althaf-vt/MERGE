@@ -98,6 +98,11 @@ export const LoginForm = () => {
                     </span>
                 </div>
 
+                <div style={{ textAlign: 'right', marginBottom: '1rem' }}>
+                    <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: '#6D28D9', textDecoration: 'none' }}>
+                        Forgot Password?
+                    </Link>
+                </div>
                 <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
                     {isLoading ? "Logging in...." : "Login"}
                 </button>
