@@ -4,6 +4,7 @@ import kycReducer from "../features/onboarding/slices/kycSlice";
 import { authApi } from "../features/auth/api/authApi";
 import { kycApi } from "../features/onboarding/api/kycApi";
 import { handoffApi } from "../features/onboarding/api/handoffApi";
+import { profileApi } from "../features/onboarding/api/profileApi";
 
 
 export const store = configureStore({
@@ -18,6 +19,7 @@ export const store = configureStore({
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
         [handoffApi.reducerPath]: handoffApi.reducer,
+        [profileApi.reducerPath]: profileApi.reducer
     },
 
     // 3. The Middleware
@@ -26,7 +28,8 @@ export const store = configureStore({
         getDefaultMiddleware().concat(
             authApi.middleware,
             kycApi.middleware,
-            handoffApi.middleware
+            handoffApi.middleware,
+            profileApi.middleware
         )
 })
 

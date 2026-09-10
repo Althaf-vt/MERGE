@@ -18,6 +18,7 @@ export interface AuthUser{
         verificationSubmitted?: boolean;
         passedPrompts?: string[];
         reviewDecision?: string;
+        verifiedDOB?: Date | string
     }
     createdAt?: Date | string
 }
