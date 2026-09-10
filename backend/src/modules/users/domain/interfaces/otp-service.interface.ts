@@ -10,4 +10,6 @@ export interface IOtpService {
     verifyAndRetrieveDraft(email: string, otp: string): Promise<{passwordHash: string} | null>;
     
     deleteDraft(email: string): Promise<void>;
+
+    refreshRegistrationDraft(email: string, newOtp: string, ttlSeconds: number): Promise<void>;
 }

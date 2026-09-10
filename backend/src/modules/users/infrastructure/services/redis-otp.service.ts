@@ -48,4 +48,24 @@ export class RedisOtpService implements IOtpService{
     async deleteDraft(email: string): Promise<void> {
         await this.redis.del(this.getKey(email))
     }
+
+    async refreshRegistrationDraft(email: string, newOtp: string, ttlSeconds: number): Promise<void> {
+        const key = this.getKey(email);
+        const storedData = await this.redis.get(key);
+
+        if(!storedData){
+            throw new Error('Registration session expired. Please register again.');
+        }
+
+        const parsedData = JSON.parse(storedData);
+
+        // Re-save with the new OTP but the existing password hash
+        const payload = JSON.stringify({
+            otp: newOtp,
+            passwordHash: parsedData.passwordHash
+        })
+
+        await this.redis.set(key, payload, 'EX', ttlSeconds);
+
+    }
 }
