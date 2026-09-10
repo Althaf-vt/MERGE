@@ -18,7 +18,7 @@ export class SaveBioUseCase implements ISaveBioUseCase{
 
         user.profile.updateBio(
             payload.bio,
-            payload.seletedTraits,
+            payload.selectedTraits,
             payload.interests
         )
 

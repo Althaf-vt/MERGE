@@ -36,8 +36,8 @@ export class GenerateBioUseCase implements IGenerateBioUseCase{
             genderIdentity: user.profile.genderIdentity,
             city: user.profile.city,
             relationshipGoal: user.profile.relationshipGoal,
-            selectedTraits: user.profile.selectedTraits,
-            interests: user.profile.interests,
+            selectedTraits: payload.selectedTraits,
+            interests: payload.interests,
         })
         
         user.profile.incrementBioAttemps();

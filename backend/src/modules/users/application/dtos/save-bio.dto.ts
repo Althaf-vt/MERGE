@@ -8,7 +8,7 @@ export class SaveBioDto{
     @IsArray()
     @ArrayMaxSize(5)
     @IsString({each: true})
-    seletedTraits: string[];
+    selectedTraits: string[];
 
     @IsArray()
     @ArrayMaxSize(5)
