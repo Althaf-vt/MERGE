@@ -7,6 +7,7 @@ import { PersistLogin } from './features/auth/components/PersistLogin'
 import { PublicRoute } from './features/auth/components/PublicRoute'
 import { PersonaPage } from './features/onboarding/Pages/PersonaPage'
 import { LifestylePage } from './features/onboarding/Pages/LifestylePage'
+import { PreferencesPage } from './features/onboarding/Pages/PreferencesPage'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
@@ -51,6 +52,8 @@ export const App = () => {
                 <Route path='/onboarding/profile' element={<PersonaPage />} />
 
                 <Route path='/onboarding/lifestyle' element={<LifestylePage/>} />
+
+                <Route path='/onboarding/preferences' element={<PreferencesPage/>} />
 
             </Route>
 
