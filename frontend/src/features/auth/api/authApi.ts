@@ -97,6 +97,14 @@ export const authApi = createApi({
             })
         }),
 
+        resendOtp: builder.mutation<any, { email: string }>({
+            query: (data) => ({
+                url: '/auth/resend-otp',
+                method: 'POST',
+                body: data
+            })
+        }),
+
         // Sends the login credentials to the backend for verification
         loginUser: builder.mutation<any, LoginUserDto>({
             query: (credentials) => ({
@@ -116,4 +124,10 @@ export const authApi = createApi({
 })
 
 // RTK Query automatically generates hooks for calling these endpoints
-export const {useRegisterUserMutation, useVerifyOtpMutation, useLoginUserMutation, useRefreshMutation} = authApi;
+export const {
+    useRegisterUserMutation, 
+    useVerifyOtpMutation,
+    useResendOtpMutation, 
+    useLoginUserMutation, 
+    useRefreshMutation
+} = authApi;
