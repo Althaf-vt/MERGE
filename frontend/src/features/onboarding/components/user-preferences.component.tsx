@@ -283,7 +283,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                     onClick={handleSubmit}
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Saving...' : 'Complete Profile'}
+                    {isLoading ? 'Saving Preference...' : 'Save & Continue →'}
                 </button>
             </div>
         </div>
