@@ -5,6 +5,7 @@ import { KycPage } from './features/onboarding/Pages/KycPage'
 import { MobileHandoff } from './features/onboarding/Pages/mobile-handoff.component'
 import { PersistLogin } from './features/auth/components/PersistLogin'
 import { PublicRoute } from './features/auth/components/PublicRoute'
+import { PersonaPage } from './features/onboarding/Pages/PersonaPage'
 
 // Placeholder components for future routes we will build
 // const LoginPage = () => <div>Login Page (Coming Soon)</div>
@@ -45,6 +46,8 @@ export const App = () => {
 
                 {/* Users will be redirected here after successful OTP verification */}
                 <Route path="/onboarding/kyc" element={<KycPage />} />
+
+                <Route path='/onboarding/profile' element={<PersonaPage />} />
 
             </Route>
 
