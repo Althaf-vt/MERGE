@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { useUpdateLifestyleMutation } from "../api/profileApi";
 import { setCredentials } from "../../auth/slices/authSlice";
@@ -14,34 +14,66 @@ import {
     MARITAL_STATUS_OPTIONS,
 } from "../constants/lifestyle-options.constant";
 import styles from "./lifestyle-background.module.css";
+import { useNavigate } from "react-router-dom";
 
 interface LifestyleBackgroundProps {
     onSuccess: () => void;
 }
 
 export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSuccess }) => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const accessToken = useAppSelector((state) => state.auth.accessToken);
+    // Reference previously saved profile fields if user returns to this screen
+    const savedProfile = user?.profile;
 
     const [updateLifestyle, { isLoading }] = useUpdateLifestyleMutation();
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-    const [educationTags, setEducationTags] = useState<string[]>([]);
+    // Pre-populate education tags from saved data if present
+    const [educationTags, setEducationTags] = useState<string[]>(
+        savedProfile?.education || []
+    );
     const [educationInput, setEducationInput] = useState("");
 
+    // Initialize state directly from savedProfile fallbacking to defaults
     const [formData, setFormData] = useState({
-        occupation: "",
-        incomeRange: "",
-        religion: "",
-        disability: "NO",
-        diet: "VEGETARIAN",
-        smokingHabit: "NO",
-        drinkingHabit: "NO",
-        relationshipStatus: "SINGLE",
-        maritalStatus: "NEVER_MARRIED",
+        occupation: savedProfile?.occupation || "",
+        incomeRange: Array.isArray(savedProfile?.incomeRange) 
+            ? savedProfile.incomeRange[0] || "" 
+            : savedProfile?.incomeRange || "",
+        religion: savedProfile?.religion || "",
+        disability: savedProfile?.disability || "NO",
+        diet: savedProfile?.diet || "VEGETARIAN",
+        smokingHabit: savedProfile?.smokingHabit || "NO",
+        drinkingHabit: savedProfile?.drinkingHabit || "NO",
+        relationshipStatus: savedProfile?.relationshipStatus || "SINGLE",
+        maritalStatus: savedProfile?.maritalStatus || "NEVER_MARRIED",
     });
+
+    // Sync whenever user context changes/rehydrates
+    useEffect(() => {
+        if (savedProfile) {
+            if (savedProfile.education) {
+                setEducationTags(savedProfile.education);
+            }
+            setFormData({
+                occupation: savedProfile.occupation || "",
+                incomeRange: Array.isArray(savedProfile.incomeRange)
+                    ? savedProfile.incomeRange[0] || ""
+                    : savedProfile.incomeRange || "",
+                religion: savedProfile.religion || "",
+                disability: savedProfile.disability || "NO",
+                diet: savedProfile.diet || "VEGETARIAN",
+                smokingHabit: savedProfile.smokingHabit || "NO",
+                drinkingHabit: savedProfile.drinkingHabit || "NO",
+                relationshipStatus: savedProfile.relationshipStatus || "SINGLE",
+                maritalStatus: savedProfile.maritalStatus || "NEVER_MARRIED",
+            });
+        }
+    }, [savedProfile]);
 
     const validateForm = (): boolean => {
         const errors: Record<string, string> = {};
@@ -120,13 +152,17 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                 incomeRange: [formData.incomeRange],
             };
 
-            await updateLifestyle(payload).unwrap();
+            const res = await updateLifestyle(payload).unwrap();
 
             if (user && accessToken) {
                 dispatch(
                     setCredentials({
                         accessToken,
-                        user: { ...user, onboardingStep: 4 },
+                        user: { 
+                            ...user, 
+                            onboardingStep: Math.max(user.onboardingStep ?? 0, 4),
+                            profile: res.profile,
+                        },
                     })
                 );
             }
@@ -365,6 +401,13 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                 </div>
 
                 <div className={styles.footer}>
+                    <button
+                        type="button"
+                        className={styles.backBtn}
+                        onClick={() => navigate('/onboarding/profile')}
+                    >
+                        ← Back
+                    </button>
                     <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
                         {isLoading ? "Saving Background..." : "Save & Continue →"}
                     </button>
