@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { RegisterUserUseCase } from "../../application/use-cases/register-user.use-case";
 import { VerifyOtpUseCase } from "../../application/use-cases/verify-otp.use-case";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
@@ -9,6 +9,8 @@ import {LoginUserUseCase} from '../../application/use-cases/login-user.use-case'
 import { RefreshTokenDto } from "../../application/dtos/refresh-token.dto";
 import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 import type { Request, Response } from "express";
+import { ResendOtpDto } from "../../application/dtos/resend-otp.dto";
+import { IResendOtpUseCase, RESEND_OTP_USE_CASE } from "../../application/interfaces/resend-otp.use-case.interface";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -19,7 +21,9 @@ export class AuthController{
         private  readonly registerUserUseCase: RegisterUserUseCase,
         private readonly verifyOtpUseCase: VerifyOtpUseCase,
         private readonly loginUserUseCase: LoginUserUseCase,
-        private readonly refreshTokenUseCase: RefreshTokenUseCase
+        private readonly refreshTokenUseCase: RefreshTokenUseCase,
+        @Inject(RESEND_OTP_USE_CASE) 
+        private readonly resendOtpUseCase: IResendOtpUseCase
 
         // Inject login and forgot pass use cases here later....
     ){}
@@ -45,6 +49,13 @@ export class AuthController{
             message: "Email verified successfully",
             user: UserResponseMapper.toResponse(user),
         }
+    }
+
+    @Post('resend-otp')
+    @HttpCode(HttpStatus.OK)
+    async resendOtp(@Body() dto: ResendOtpDto){
+        await this.resendOtpUseCase.execute(dto);
+        return {message: "A new verification code has been sent."}
     }
 
     // Handle User Login Requests

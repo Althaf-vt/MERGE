@@ -48,6 +48,8 @@ import { AI_SERVICE } from "./domain/interfaces/ai-service.interface";
 import { GENERATE_BIO_USE_CASE } from "./application/interfaces/generate-bio.use-case.interface";
 import { SAVE_BIO_USE_CASE } from "./application/interfaces/save-bio.use-case.interface";
 import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.service";
+import { ResendOtpUseCase } from "./application/use-cases/resend-otp.use-case";
+import { RESEND_OTP_USE_CASE } from "./application/interfaces/resend-otp.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -83,6 +85,7 @@ import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.ser
         // 2. Standard Providers (Gateways & Use Cases)
         RegisterUserUseCase,
         VerifyOtpUseCase,
+        ResendOtpUseCase,
         LoginUserUseCase,
         RefreshTokenUseCase,
         SubmitKycDocumentUseCase,
@@ -116,6 +119,11 @@ import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.ser
             useClass: RedisOtpService,
         },
 
+        {
+            provide: RESEND_OTP_USE_CASE,
+            useClass: ResendOtpUseCase
+        },
+
         // KYC Service bindings
         {
             provide: KYC_HASH_SERVICE,
@@ -136,7 +144,8 @@ import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.ser
             provide: BIOMETRIC_SERVICE,
             useClass: HttpBiometricService
         },
-        {provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
+        {
+            provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
             useClass: SubmitLivenessCheckUseCase
         },
         {
