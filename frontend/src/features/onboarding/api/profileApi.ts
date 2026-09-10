@@ -11,8 +11,16 @@ export const profileApi = createApi({
                 method: 'PATCH',
                 body: payload
             })
+        }),
+
+        updateLifestyle: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: '/profile/lifestyle',
+                method: 'PATCH',
+                body: payload
+            })
         })
     })
 })
 
-export const {useUpdatePersonaMutation} = profileApi
+export const {useUpdatePersonaMutation, useUpdateLifestyleMutation} = profileApi
