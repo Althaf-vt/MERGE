@@ -12,6 +12,7 @@ export interface AuthUser{
     kycCompleted?: boolean;
     onboardingStep?: number;
     profileCompleted?: boolean;
+    onboardingCompleted?: boolean;
     profile?: Record<string, any> | null;
     preference?: Record<string, any> | null;
     kycVerification?: {

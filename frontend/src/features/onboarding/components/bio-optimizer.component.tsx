@@ -70,7 +70,12 @@ export const BioOptimizer = () => {
             if (user && accessToken) {
                 dispatch(setCredentials({
                     accessToken,
-                    user: { ...user, onboardingStep: 14, profileCompleted: true }
+                    user: { 
+                        ...user, 
+                        onboardingStep: 14, 
+                        profileCompleted: true,
+                        onboardingCompleted: true 
+                    }
                 }));
             }
             
