@@ -23,6 +23,17 @@ export interface UserPreferenceProps{
     updatedAt?: Date;
 }
 
+export interface UpdatePreferencesPayload {
+    preferredGender?: string[];
+    preferredAgeMin?: number;
+    preferredAgeMax?: number;
+    relationShipGoals?: RelationshipGoal;
+    minimumOutnessLevel?: number;
+    openToAdoption?: boolean;
+    immigrationReady?: boolean;
+    partnerExpectations?: string;
+}
+
 export interface UpdateAgePreferencePayload{
     minAge?: number;
     maxAge?: number;
@@ -85,6 +96,18 @@ export class UserPreference{
     // get geneticPreference(): HealthConditionPreference | undefined { return this.props.geneticPreference; }
     // get infectiousPreference(): HealthConditionPreference | undefined { return this.props.infectiousPreference; }
     // get disabilityPreference(): HealthConditionPreference | undefined { return this.props.disablilityPreferece; }
+    
+    updatePreferences(payload: UpdatePreferencesPayload): void {
+    if (payload.preferredGender !== undefined) this.props.preferredGender = payload.preferredGender;
+    if (payload.preferredAgeMin !== undefined) this.props.preferredAgeMin = payload.preferredAgeMin;
+    if (payload.preferredAgeMax !== undefined) this.props.prefferedAgeMax = payload.preferredAgeMax;
+    if (payload.relationShipGoals !== undefined) this.props.relationShipGoals = payload.relationShipGoals;
+    if (payload.minimumOutnessLevel !== undefined) this.props.minimumOutnessLevel = payload.minimumOutnessLevel;
+    if (payload.openToAdoption !== undefined) this.props.openToAdoption = payload.openToAdoption;
+    if (payload.immigrationReady !== undefined) this.props.immigrationReady = payload.immigrationReady;
+    if (payload.partnerExpectations !== undefined) this.props.partnerExpectations = payload.partnerExpectations;
+    this.props.updatedAt = new Date();
+}
     
     updateAgePreference(payload: UpdateAgePreferencePayload): void{
         if(payload.maxAge !== undefined) this.props.prefferedAgeMax = payload.maxAge;
