@@ -11,6 +11,8 @@ export interface AuthUser{
     isEmailVerified: boolean;
     kycCompleted?: boolean;
     onboardingStep?: number;
+    profile?: Record<string, any> | null;
+    preference?: Record<string, any> | null;
     kycVerification?: {
         verificationStatus: string;
         documentType?: string;
