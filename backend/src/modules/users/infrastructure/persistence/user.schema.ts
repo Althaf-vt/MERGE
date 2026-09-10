@@ -1,14 +1,110 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { UserRole } from '../../domain/entities/user.entity';
-import { AuthProvider, DocumentType, ReviewDecision, SelfieVerificationStatus, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
+import { AdoptionPreference, AuthProvider, DietType, DisabilityOption, DocumentType, DrinkingHabit, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, ReviewDecision, SelfieVerificationStatus, SmokingHabit, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
 // Mongoose document type combining the User schema with a MongoDb document.
 export type UserDocument = User & Document;
 
-// Defining a sub-schema for the KYC data
+// Sub-schema for user profile data
+@Schema({_id: false})
+export class UserProfileSchema{
+    @Prop()
+    displayName?: string;
 
+    @Prop()
+    customLabel?: string;
+
+    @Prop()
+    bio?: string;
+
+    @Prop()
+    phoneNumber?: string;
+
+    @Prop()
+    pronouns?: string;
+
+    @Prop()
+    genderIdentity?: string;
+
+    @Prop()
+    sexualOrientation?: string;
+
+    @Prop({ type: String, enum: IntersexOption })
+    intersex?: IntersexOption;
+
+    @Prop()
+    outnessLevel?: number;
+
+    @Prop()
+    city?: string;
+
+    @Prop()
+    state?: string;
+
+    @Prop()
+    country?: string;
+
+    @Prop()
+    heightCm?: number;
+
+    @Prop({ type: [String], default: [] })
+    languages: string[];
+
+    @Prop({ type: [String], default: [] })
+    selectedTraits: string[];
+
+    @Prop({ type: [String], default: [] })
+    interests: string[];
+
+    @Prop({ type: [String], default: [] })
+    education: string[];
+
+    @Prop()
+    occupation?: string;
+
+    @Prop({ type: [String], default: [] })
+    incomeRange: string[];
+
+    @Prop()
+    religion?: string;
+
+    @Prop({ type: String, enum: DisabilityOption })
+    disability?: DisabilityOption;
+
+    @Prop({ type: String, enum: DietType })
+    diet?: DietType;
+
+    @Prop({ type: String, enum: SmokingHabit })
+    smokingHabit?: SmokingHabit;
+
+    @Prop({ type: String, enum: DrinkingHabit })
+    drinkingHabit?: DrinkingHabit;
+
+    @Prop({ type: String, enum: RelationshipGoal })
+    relationshipGoal?: RelationshipGoal;
+
+    @Prop({ type: String, enum: RelationshipStatus })
+    relationshipStatus?: RelationshipStatus;
+
+    @Prop({ type: String, enum: MaritalStatus })
+    maritalStatus?: MaritalStatus;
+
+    @Prop({ type: String, enum: ImmigrationReadiness })
+    immigrationReady?: ImmigrationReadiness;
+
+    @Prop({ type: String, enum: AdoptionPreference })
+    openToAdoption?: AdoptionPreference;
+
+    @Prop({ default: 0 })
+    profileCompletion: number;
+
+    @Prop({ default: true })
+    isProfileVisible: boolean;
+}
+
+// Defining a sub-schema for the KYC data
 @Schema({_id: false}) // _id is false coz it belongs to the parent User document
 class KycVerificationSchema{
     @Prop({type: String, enum: VerificationStatus, default: VerificationStatus.NOT_STARTED})
@@ -144,6 +240,9 @@ export class User{
     // Embed the KYC schema
     @Prop({type: KycVerificationSchema, default: null})
     kycVerification: KycVerificationSchema;
+
+    @Prop({type: UserProfileSchema, default: null})
+    profile: UserProfileSchema;
 
     createdAt: Date;
     updatedAt: Date;

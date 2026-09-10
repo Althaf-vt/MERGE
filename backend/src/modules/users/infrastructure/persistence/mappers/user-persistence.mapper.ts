@@ -1,4 +1,6 @@
+import { profile } from "console";
 import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
+import { UserProfile } from "../../../domain/entities/user-profile.entity";
 import { UserAggregate, UserRole } from "../../../domain/entities/user.entity";
 import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../domain/value-objects/email.vo";
@@ -42,6 +44,45 @@ export class UserPersistenceMapper{
             })
         }
 
+        // Reconstruct the UserProfile entity if profile data exists
+        let profileEntity: UserProfile | undefined;
+
+        if(raw.profile){
+            profileEntity = new UserProfile({
+                displayName: raw.profile.displayName,
+                customLabel: raw.profile.customLabel,
+                bio: raw.profile.bio,
+                phoneNumber: raw.profile.phoneNumber,
+                pronouns: raw.profile.pronouns,
+                genderIdentity: raw.profile.genderIdentity,
+                sexualOrientation: raw.profile.sexualOrientation,
+                intersex: raw.profile.intersex,
+                outnessLevel: raw.profile.outnessLevel,
+                city: raw.profile.city,
+                state: raw.profile.state,
+                country: raw.profile.country,
+                heightCm: raw.profile.heightCm,
+                languages: raw.profile.languages,
+                selectedTraits: raw.profile.selectedTraits,
+                interests: raw.profile.interests,
+                education: raw.profile.education,
+                occupation: raw.profile.occupation,
+                incomeRange: raw.profile.incomeRange,
+                religion: raw.profile.religion,
+                disability: raw.profile.disability,
+                diet: raw.profile.diet,
+                smokingHabit: raw.profile.smokingHabit,
+                drinkingHabit: raw.profile.drinkingHabit,
+                relationshipGoal: raw.profile.relationshipGoal,
+                relationshipStatus: raw.profile.relationshipStatus,
+                maritalStatus: raw.profile.maritalStatus,
+                immigrationReady: raw.profile.immigrationReady,
+                openToAdoption: raw.profile.openToAdoption,
+                profileCompletion: raw.profile.profileCompletion,
+                isProfileVisible: raw.profile.isProfileVisible,
+            })
+        }
+
         return new UserAggregate({
             id: raw._id.toString(),
             email: new EmailVO(raw.email),
@@ -59,6 +100,7 @@ export class UserPersistenceMapper{
             lumenRecommendationGeneratedToday: raw.lumenRecommendationGeneratedToday ?? 0,
             lastLumenReset: raw.lastLumenReset ?? new Date(),
             lastLogin: raw.lastLogin,
+            profile: profileEntity,
             kycVerification: kycEntity, //  Attach to the root aggregate
             createdAt: raw['createdAt'],
             updatedAt: raw['updatedAt']
@@ -84,6 +126,41 @@ export class UserPersistenceMapper{
             lumenRecommendationGeneratedToday: data.lumenRecommendationGeneratedToday,
             lastLumenReset: data.lastLumenReset,
             lastLogin: data.lastLogin,
+
+            // Flatten profile for persistance
+            profile: data.profile? {
+                displayName: data.profile.displayName,
+                customLabel: data.profile.customLabel,
+                bio: data.profile.bio,
+                phoneNumber: data.profile.phoneNumber,
+                pronouns: data.profile.pronouns,
+                genderIdentity: data.profile.genderIdentity,
+                sexualOrientation: data.profile.sexualOrientation,
+                intersex: data.profile.intersex,
+                outnessLevel: data.profile.outnessLevel,
+                city: data.profile.city,
+                state: data.profile.state,
+                country: data.profile.country,
+                heightCm: data.profile.heightCm,
+                languages: data.profile.languages,
+                selectedTraits: data.profile.selectedTraits,
+                interests: data.profile.interests,
+                education: data.profile.education,
+                occupation: data.profile.occupation,
+                incomeRange: data.profile.incomeRange,
+                religion: data.profile.religion,
+                disability: data.profile.disability,
+                diet: data.profile.diet,
+                smokingHabit: data.profile.smokingHabit,
+                drinkingHabit: data.profile.drinkingHabit,
+                relationshipGoal: data.profile.relationshipGoal,
+                relationshipStatus: data.profile.relationshipStatus,
+                maritalStatus: data.profile.maritalStatus,
+                immigrationReady: data.profile.immigrationReady,
+                openToAdoption: data.profile.openToAdoption,
+                profileCompletion: data.profile.profileCompletion,
+                isProfileVisible: data.profile.isProfileVisible,
+            }: null,
 
             // Flatten the KYC entity for MongoDB storage
             kycVerification: data.kycVerification ? {
