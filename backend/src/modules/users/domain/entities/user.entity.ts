@@ -102,6 +102,19 @@ export class UserAggregate {
         this.markUpdatedAt();
     }
 
+    updatePassword(newPasswordHash: string): void {
+        if (!newPasswordHash || newPasswordHash.trim().length === 0) {
+            throw new Error('Password hash cannot be empty.');
+        }
+
+        if (this.props.accountStatus !== UserStatus.ACTIVE) {
+            throw new Error(`Cannot update password for ${this.props.accountStatus.toLowerCase()} account.`);
+        }
+
+        this.props.passwordHash = newPasswordHash;
+        this.markUpdatedAt();
+    }
+
     markEmailVerified():void{
         this.props.isEmailVerified = true;
         this.markUpdatedAt();

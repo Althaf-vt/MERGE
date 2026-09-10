@@ -8,8 +8,10 @@ export interface IOtpService {
     
     // Verifies the OTP and returns the temporary data if successful
     verifyAndRetrieveDraft(email: string, otp: string): Promise<{passwordHash: string} | null>;
-    
     deleteDraft(email: string): Promise<void>;
-
     refreshRegistrationDraft(email: string, newOtp: string, ttlSeconds: number): Promise<void>;
+
+    storePasswordResetOtp(email: string, otp: string, ttlSeconds: number): Promise<void>;
+    verifyPasswordResetOtp(email: string, otp: string): Promise<boolean>;
+    deletePasswordResetOtp(email: string): Promise<void>;
 }

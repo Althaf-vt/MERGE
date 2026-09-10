@@ -68,4 +68,21 @@ export class RedisOtpService implements IOtpService{
         await this.redis.set(key, payload, 'EX', ttlSeconds);
 
     }
+
+    private getResetKey(email: string): string {
+        return `otp:reset:${email.toLowerCase().trim()}`;
+    }
+
+    async storePasswordResetOtp(email: string, otp: string, ttlSeconds: number): Promise<void> {
+        await this.redis.set(this.getResetKey(email), otp, 'EX', ttlSeconds);
+    }
+
+    async verifyPasswordResetOtp(email: string, otp: string): Promise<boolean> {
+        const storedOtp = await this.redis.get(this.getResetKey(email));
+        return storedOtp === otp;
+    }
+
+    async deletePasswordResetOtp(email: string): Promise<void> {
+        await this.redis.del(this.getResetKey(email));
+    }
 }
