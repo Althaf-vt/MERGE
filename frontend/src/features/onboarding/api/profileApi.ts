@@ -27,8 +27,30 @@ export const profileApi = createApi({
                 method: 'PATCH',
                 body: payload
             })
+        }),
+
+        generateBio: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: '/profile/bio/generate',
+                method: 'POST',
+                body: payload
+            })
+        }),
+
+        saveFinalBio: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: '/profile/bio/save',
+                method: 'PATCH',
+                body: payload
+            })
         })
     })
 })
 
-export const {useUpdatePersonaMutation, useUpdateLifestyleMutation, useUpdatePreferencesMutation} = profileApi
+export const {
+    useUpdatePersonaMutation, 
+    useUpdateLifestyleMutation, 
+    useUpdatePreferencesMutation,
+    useGenerateBioMutation,
+    useSaveFinalBioMutation
+} = profileApi
