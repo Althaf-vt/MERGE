@@ -164,7 +164,8 @@ export class UserAggregate {
         if(!this.props.isEmailVerified) throw new Error('Email must verified first');
         if(!this.props.kycCompleted) throw new Error('KYC verification must be completed first');
         if(!this.props.profileCompleted) throw new Error('User profile must be completed first');
-        if(!this.props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
+        // Temporarily comment out until the feature is built
+        // if(!this.props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
 
         this.props.onboardingCompleted = true;
         this.props.onboardingStep = 14;

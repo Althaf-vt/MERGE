@@ -22,6 +22,9 @@ export class SaveBioUseCase implements ISaveBioUseCase{
             payload.interests
         )
 
+        user.attachProfile(user.profile);
+        user.finalizeOnboarding()
+
         await this.userRepository.update(user);
 
         return {
