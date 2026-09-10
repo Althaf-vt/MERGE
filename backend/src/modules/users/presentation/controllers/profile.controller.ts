@@ -4,6 +4,8 @@ import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE } from "../../applicatio
 import { UpdatePersonaDto } from "../../application/dtos/update-persona.dto";
 import { IUpdateLifestyleUseCase, UPDATE_LIFESTYLE_USE_CASE } from "../../application/interfaces/update-lifestyle.use-case.interface";
 import { UpdateLifestyleDto } from "../../application/dtos/update-lifestyle.dto";
+import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
+import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -12,7 +14,9 @@ export class ProfileController{
         @Inject(UPDATE_PERSONA_USE_CASE)
         private readonly updatePersonaUseCase: IUpdatePersonaUseCase,
         @Inject(UPDATE_LIFESTYLE_USE_CASE) 
-        readonly updateLifestyleUseCase: IUpdateLifestyleUseCase,
+        private readonly updateLifestyleUseCase: IUpdateLifestyleUseCase,
+        @Inject(UPDATE_PREFERENCES_USE_CASE)
+        private readonly updatePreferencesUseCase: IUpdatePreferencesUseCase,
     ){}
 
     @Patch('persona')
@@ -33,5 +37,15 @@ export class ProfileController{
     ){
         const userId = req.user.userId;
         return await this.updateLifestyleUseCase.execute(userId, dto)
+    }
+
+    @Patch('preferences')
+    @HttpCode(HttpStatus.OK)
+    async updatePreferences(
+        @Req() req: any,
+        @Body() dto: UpdatePreferencesDto
+    ){
+        const userId = req.user.userId;
+        return await this.updatePreferencesUseCase.execute(userId, dto)
     }
 }

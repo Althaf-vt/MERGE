@@ -40,6 +40,8 @@ import { ProfileController } from "./presentation/controllers/profile.controller
 import { UPDATE_PERSONA_USE_CASE } from "./application/interfaces/update-persona.use-case.interface";
 import { UpdateLifeStyleUseCase } from "./application/use-cases/update-lifestyle.use-case";
 import { UPDATE_LIFESTYLE_USE_CASE } from "./application/interfaces/update-lifestyle.use-case.interface";
+import { UpdatePreferencesUseCase } from "./application/use-cases/update-preferences.use-case";
+import { UPDATE_PREFERENCES_USE_CASE } from "./application/interfaces/update-preferences.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -83,6 +85,7 @@ import { UPDATE_LIFESTYLE_USE_CASE } from "./application/interfaces/update-lifes
         SubmitLivenessCheckUseCase,
         UpdatePersonaUseCase,
         UpdateLifeStyleUseCase,
+        UpdatePreferencesUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -137,7 +140,11 @@ import { UPDATE_LIFESTYLE_USE_CASE } from "./application/interfaces/update-lifes
         },
         {
             provide: UPDATE_LIFESTYLE_USE_CASE,
-            useClass: UpdateLifeStyleUseCase,
+            useClass: UpdateLifeStyleUseCase
+        },
+        {
+            provide: UPDATE_PREFERENCES_USE_CASE,
+            useClass: UpdatePreferencesUseCase
         }
     ],
 
