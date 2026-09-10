@@ -5,6 +5,7 @@ export interface UserProfileProps{
     displayName?: string;
     customLabel?: string;
     bio?: string;
+    bioGenerationAttempts?: number;
     phoneNumber?: string;
     pronouns?: string;
     genderIdentity?: string;
@@ -121,6 +122,8 @@ export interface UpdateInterestsAndPersonalityTriatsPayload{
     selectedTriats?: string[];
 }
 
+export const MAX_BIO_GENERATION_ATTEMPTS = 3;
+
 export class UserProfile{
     private props: UserProfileProps;
 
@@ -133,7 +136,8 @@ export class UserProfile{
             education: props.education ?? [],
             incomeRange: props.incomeRange ?? [],
             isProfileVisible: props.isProfileVisible ?? true,
-            profileCompletion: props.profileCompletion ?? 0
+            profileCompletion: props.profileCompletion ?? 0,
+            bioGenerationAttempts: props.bioGenerationAttempts ?? 0
         }
     }
 
@@ -141,7 +145,16 @@ export class UserProfile{
     get isProfileVisible(): boolean | undefined {return this.props.isProfileVisible}
     get profileCompletion(): number | undefined {return this.props.profileCompletion}
     get customLabel(): string | undefined {return this.props.customLabel};
-
+    get bioGenerationAttempts(): number {return this.props.bioGenerationAttempts || 0}
+    get genderIdentity(): string | undefined {return this.props.genderIdentity}
+    get city(): string | undefined {return this.props.city}
+    get relationshipGoal(): string | undefined {return this.props.relationshipGoal}
+    get selectedTraits(): string[] | undefined {return this.props.selectedTraits}
+    get interests(): string[] | undefined {return this.props.interests}
+    get remainingBioAttempts(): number{
+        const used = this.props.bioGenerationAttempts || 0;
+        return Math.max(0, MAX_BIO_GENERATION_ATTEMPTS - used);
+    }
     // Encapsulated behavior
 
         // for updating persona details from screen 1
@@ -180,6 +193,21 @@ export class UserProfile{
         if (payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
 
         this.recalculateCompletion();
+    }
+
+    incrementBioAttemps(): void{
+        this.props.bioGenerationAttempts = (this.props.bioGenerationAttempts || 0) + 1;
+    }
+
+    updateBio(bio: string, selectedTraits: string[], interests: string[]): void{
+        this.props.bio = bio;
+        this.props.selectedTraits = selectedTraits;
+        this.props.interests = interests;
+        this.recalculateCompletion();
+    }
+
+    canGenerateBio(): boolean {
+        return (this.props.bioGenerationAttempts || 0) < MAX_BIO_GENERATION_ATTEMPTS;
     }
 
     updateBasicInfo(payload: UpdateBasicInfoPayload): void{
