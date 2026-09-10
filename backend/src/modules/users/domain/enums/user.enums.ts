@@ -121,3 +121,15 @@ export enum PromptVerificationStatus {
   PASSED = 'PASSED',
   FAILED = 'FAILED',
 }
+
+export enum AdoptionPreference {
+    YES = 'YES',
+    NO = 'NO',
+    MAYBE = 'MAYBE',
+}
+
+export enum ImmigrationReadiness {
+    YES = 'YES',
+    NO = 'NO',
+    OPEN_TO_DISCUSSION = 'OPEN_TO_DISCUSSION',
+}

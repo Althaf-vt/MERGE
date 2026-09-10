@@ -1,4 +1,4 @@
-import { DietType, DisabilityOption, DrinkingHabit, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, SmokingHabit } from "../enums/user.enums";
+import { AdoptionPreference, DietType, DisabilityOption, DrinkingHabit, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, SmokingHabit } from "../enums/user.enums";
 
 export interface UserProfileProps{
     id?:string;
@@ -29,10 +29,30 @@ export interface UserProfileProps{
     relationshipGoal?: RelationshipGoal;
     relationshipStatus?: RelationshipStatus;
     maritalStatus?: MaritalStatus;
-    immigrationReady?: boolean;
-    openToAdoption?: boolean;
+    immigrationReady?: ImmigrationReadiness;
+    openToAdoption?: AdoptionPreference;
     profileCompletion?: number;
     isProfileVisible?: boolean;
+}
+
+export interface UpdatePersonaPayload{
+    displayName?: string;
+    phoneNumber?: string;
+    pronouns?: string;
+    genderIdentity?: string;
+    customLabel?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    heightCm?: number;
+    languages?: string[];
+    intersex?: IntersexOption;
+    outnessLevel?: number;
+    relationshipStatus?: RelationshipStatus;
+    relationshipGoal?: RelationshipGoal;
+    maritalStatus?: MaritalStatus;
+    openToAdoption?: AdoptionPreference;
+    immigrationReady?: ImmigrationReadiness;
 }
 
 export interface UpdateBasicInfoPayload{
@@ -73,8 +93,8 @@ export interface UpdatePersonalInfoPayload{
 }
 
 export interface UpdateLifeLogisticPayload{
-    immigrationReady?: boolean;
-    openToAdoption?: boolean;
+    immigrationReady?: ImmigrationReadiness;
+    openToAdoption?: AdoptionPreference;
 }
 
 export interface UpdateRelationshipStatusAndGoal{
@@ -110,6 +130,30 @@ export class UserProfile{
     get customLabel(): string | undefined {return this.props.customLabel};
 
     // Encapsulated behavior
+
+        // for updating persona details from screen 1
+    updatePersona(payload: UpdatePersonaPayload): void {
+        if(payload.displayName !== undefined) this.props.displayName = payload.displayName;
+        if(payload.phoneNumber !== undefined) this.props.phoneNumber = payload.phoneNumber;
+        if(payload.pronouns !== undefined) this.props.pronouns = payload.pronouns;
+        if(payload.genderIdentity !== undefined) this.props.genderIdentity = payload.genderIdentity;
+        if(payload.customLabel !== undefined) this.props.customLabel = payload.customLabel;
+        if(payload.city !== undefined) this.props.city = payload.city;
+        if(payload.state !== undefined) this.props.state = payload.state;
+        if(payload.country !== undefined) this.props.country = payload.country;
+        if(payload.heightCm !== undefined) this.props.heightCm = payload.heightCm;
+        if(payload.languages !== undefined) this.props.languages = payload.languages;
+        if(payload.intersex !== undefined) this.props.intersex = payload.intersex;
+        if(payload.outnessLevel !== undefined) this.props.outnessLevel = payload.outnessLevel;
+        if(payload.relationshipStatus !== undefined) this.props.relationshipStatus = payload.relationshipStatus;
+        if(payload.relationshipGoal !== undefined) this.props.relationshipGoal = payload.relationshipGoal;
+        if(payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
+        if(payload.openToAdoption !== undefined) this.props.openToAdoption = payload.openToAdoption;
+        if(payload.immigrationReady !== undefined) this.props.immigrationReady = payload.immigrationReady;
+
+        this.recalculateCompletion();
+    }
+
     updateBasicInfo(payload: UpdateBasicInfoPayload): void{
         if(payload.displayName !== undefined) this.props.displayName = payload.displayName;
         if(payload.phoneNumber !== undefined) this.props.phoneNumber = payload.phoneNumber;
