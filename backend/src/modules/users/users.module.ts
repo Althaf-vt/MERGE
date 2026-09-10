@@ -50,6 +50,9 @@ import { SAVE_BIO_USE_CASE } from "./application/interfaces/save-bio.use-case.in
 import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.service";
 import { ResendOtpUseCase } from "./application/use-cases/resend-otp.use-case";
 import { RESEND_OTP_USE_CASE } from "./application/interfaces/resend-otp.use-case.interface";
+import { ForgotPasswordUseCase } from "./application/use-cases/forgot-password.use-case";
+import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use-case";
+import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application/interfaces/forgot-password.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -87,6 +90,8 @@ import { RESEND_OTP_USE_CASE } from "./application/interfaces/resend-otp.use-cas
         VerifyOtpUseCase,
         ResendOtpUseCase,
         LoginUserUseCase,
+        ForgotPasswordUseCase,
+        ResetPasswordUseCase,
         RefreshTokenUseCase,
         SubmitKycDocumentUseCase,
         ValidateHandoffUseCase,
@@ -122,6 +127,14 @@ import { RESEND_OTP_USE_CASE } from "./application/interfaces/resend-otp.use-cas
         {
             provide: RESEND_OTP_USE_CASE,
             useClass: ResendOtpUseCase
+        },
+        {
+            provide: FORGOT_PASSWORD_USE_CASE,
+            useClass: ForgotPasswordUseCase
+        },
+        {
+            provide: RESET_PASSWORD_USE_CASE,
+            useClass: ResetPasswordUseCase
         },
 
         // KYC Service bindings

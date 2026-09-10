@@ -11,6 +11,8 @@ import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.u
 import type { Request, Response } from "express";
 import { ResendOtpDto } from "../../application/dtos/resend-otp.dto";
 import { IResendOtpUseCase, RESEND_OTP_USE_CASE } from "../../application/interfaces/resend-otp.use-case.interface";
+import { FORGOT_PASSWORD_USE_CASE, IForgotPasswordUseCase, IResetPasswordUseCase, RESET_PASSWORD_USE_CASE } from "../../application/interfaces/forgot-password.use-case.interface";
+import { ForgotPasswordDto, ResetPasswordDto } from "../../application/dtos/forgot-password.dto";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -23,9 +25,11 @@ export class AuthController{
         private readonly loginUserUseCase: LoginUserUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         @Inject(RESEND_OTP_USE_CASE) 
-        private readonly resendOtpUseCase: IResendOtpUseCase
-
-        // Inject login and forgot pass use cases here later....
+        private readonly resendOtpUseCase: IResendOtpUseCase,
+        @Inject(FORGOT_PASSWORD_USE_CASE)
+        private readonly forgotPasswordUseCase: IForgotPasswordUseCase,
+        @Inject(RESET_PASSWORD_USE_CASE)
+        private readonly resetPasswordUseCase: IResetPasswordUseCase
     ){}
 
     // Handles user registration requests. 
@@ -78,6 +82,20 @@ export class AuthController{
             accessToken: result.accessToken,
             user: UserResponseMapper.toResponse(result.user)
         }
+    }
+
+    @Post('forgot-password')
+    @HttpCode(HttpStatus.OK)
+    async forgotPassword(@Body() dto: ForgotPasswordDto) {
+        await this.forgotPasswordUseCase.execute(dto);
+        return { message: 'If an account exists, a reset code has been sent.' };
+    }
+
+    @Post('reset-password')
+    @HttpCode(HttpStatus.OK)
+    async resetPassword(@Body() dto: ResetPasswordDto) {
+        await this.resetPasswordUseCase.execute(dto);
+        return { message: 'Password has been successfully reset.' };
     }
 
     @Post('refresh')
