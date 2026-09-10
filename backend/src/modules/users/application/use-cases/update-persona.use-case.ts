@@ -3,6 +3,7 @@ import { IUpdatePersonaUseCase } from "../interfaces/update-persona.use-case.int
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
+import { INDIAN_LOCATION_DATA } from "../../domain/constants/location-data.constant";
 
 @Injectable()
 export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
@@ -19,6 +20,14 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
 
         // 1. Initialize profile if it doesnt exist yet, or use the existing sub-entity
         const profile = user.profile || new UserProfile({});
+
+        const validCities = INDIAN_LOCATION_DATA[payload.state];
+        if (!validCities) {
+        throw new BadRequestException(`Invalid state: ${payload.state}`);
+        }
+        if (!validCities.includes(payload.city)) {
+        throw new BadRequestException(`City '${payload.city}' does not belong to state '${payload.state}'`);
+        }
 
         profile.updatePersona({
             displayName: payload.displayName,
