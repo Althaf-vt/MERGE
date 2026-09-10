@@ -42,12 +42,12 @@ import { UpdateLifeStyleUseCase } from "./application/use-cases/update-lifestyle
 import { UPDATE_LIFESTYLE_USE_CASE } from "./application/interfaces/update-lifestyle.use-case.interface";
 import { UpdatePreferencesUseCase } from "./application/use-cases/update-preferences.use-case";
 import { UPDATE_PREFERENCES_USE_CASE } from "./application/interfaces/update-preferences.use-case.interface";
-import { GeminiService } from "./infrastructure/services/gemini.service";
 import { GenerateBioUseCase } from "./application/use-cases/generate-bio.use-case";
 import { SaveBioUseCase } from "./application/use-cases/save-bio.use-case";
 import { AI_SERVICE } from "./domain/interfaces/ai-service.interface";
 import { GENERATE_BIO_USE_CASE } from "./application/interfaces/generate-bio.use-case.interface";
 import { SAVE_BIO_USE_CASE } from "./application/interfaces/save-bio.use-case.interface";
+import { OpenRouterAiService } from "./infrastructure/services/openrouter-ai.service";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -78,7 +78,7 @@ import { SAVE_BIO_USE_CASE } from "./application/interfaces/save-bio.use-case.in
         JwtAuthGuard,
         HandoffGateway,
         s3StorageService,
-        GeminiService,
+        OpenRouterAiService,
 
         // 2. Standard Providers (Gateways & Use Cases)
         RegisterUserUseCase,
@@ -157,7 +157,7 @@ import { SAVE_BIO_USE_CASE } from "./application/interfaces/save-bio.use-case.in
         },
         {
             provide: AI_SERVICE,
-            useClass: GeminiService
+            useClass: OpenRouterAiService
         },
         {
             provide: GENERATE_BIO_USE_CASE,

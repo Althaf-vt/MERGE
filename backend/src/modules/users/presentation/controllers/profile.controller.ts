@@ -67,7 +67,7 @@ export class ProfileController{
         return await this.generateBioUseCase.execute(userId, dto);
     }
 
-    @Post('bio/save')
+    @Patch('bio/save')
     @HttpCode(HttpStatus.OK)
     async saveFinalBio(
         @Req() req: any,
