@@ -1,0 +1,256 @@
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    color: #18181b;
+}
+
+.header {
+    margin-bottom: 36px;
+}
+
+.title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #52525b;
+    margin: 0;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: #18181b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cardDescription {
+    font-size: 0.85rem;
+    color: #71717a;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.pillGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.pillBtn {
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #3f3f46;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pillBtnActive {
+    background: #6200ea;
+    border-color: #6200ea;
+    color: #ffffff;
+}
+
+.searchInputWrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    gap: 10px;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.suggestedArea {
+    margin-top: 14px;
+}
+
+.suggestedLabel {
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.sliderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.sliderTrack {
+    position: relative;
+    width: 100%;
+}
+
+.rangeInput {
+    width: 100%;
+    accent-color: #6200ea;
+}
+
+.sliderLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #71717a;
+    padding: 0 4px;
+}
+
+.toggleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f4f4f5;
+}
+
+.toggleRow:last-child {
+    border-bottom: none;
+}
+
+.toggleLabel {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #18181b;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.sliderRound {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #e4e4e7;
+    border-radius: 34px;
+    transition: 0.2s;
+}
+
+.sliderRound:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+input:checked + .sliderRound {
+    background-color: #6200ea;
+}
+
+input:checked + .sliderRound:before {
+    transform: translateX(22px);
+}
+
+.textarea {
+    width: 100%;
+    height: 120px;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+}
+
+.textarea:focus {
+    border-color: #6200ea;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e4e4e7;
+    padding-top: 24px;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #18181b;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primaryBtn {
+    background-color: #6200ea;
+    color: #ffffff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.errorBanner {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .cardGrid {
+        grid-template-columns: 1fr;
+    }
+}
