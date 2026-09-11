@@ -65,7 +65,7 @@ export class OpenRouterAiService implements IAiService{
                 if (lines.length >= 3) {
                     return lines.slice(0, 3);
                 }
-                throw new Error('LLM response did not contain a valid JSON array or extractable bios.');
+                throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'LLM response did not contain a valid JSON array or extractable bios.');
             }
 
             const parsed = JSON.parse(jsonMatch[0]);
