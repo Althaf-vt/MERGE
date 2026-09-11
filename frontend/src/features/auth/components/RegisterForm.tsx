@@ -22,12 +22,59 @@ export const RegisterForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    // Realtime password criteria verification
+    const passwordChecks = {
+        length: password.length >= 8 && password.length <= 128,
+        hasUpper: /[A-Z]/.test(password),
+        hasLower: /[a-z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+        hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password),
+        noSpaces: password.length > 0 && !/\s/.test(password),
+    };
+
+    const passedCount = Object.values(passwordChecks).filter(Boolean).length;
+
+    // Strength tier calculations
+    const getStrengthTier = () => {
+        if (passedCount <= 2) return { text: 'Weak', className: styles.meterWeak, color: '#ef4444', activeBars: 1 };
+        if (passedCount <= 4) return { text: 'Fair', className: styles.meterFair, color: '#f59e0b', activeBars: 2 };
+        if (passedCount === 5) return { text: 'Good', className: styles.meterGood, color: '#3b82f6', activeBars: 3 };
+        return { text: 'Strong', className: styles.meterStrong, color: '#10b981', activeBars: 4 };
+    };
+
+    const strength = getStrengthTier();
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setClientError(null);
 
-        if (password.length < 8) {
-            setClientError("Password must be at least 8 characters long");
+        if (!passwordChecks.length) {
+            setClientError("Password must be between 8 and 128 characters long");
+            return;
+        }
+
+        if (!passwordChecks.hasUpper) {
+            setClientError("Password must contain at least one uppercase letter");
+            return;
+        }
+
+        if (!passwordChecks.hasLower) {
+            setClientError("Password must contain at least one lowercase letter");
+            return;
+        }
+
+        if (!passwordChecks.hasNumber) {
+            setClientError("Password must contain at least one number");
+            return;
+        }
+
+        if (!passwordChecks.hasSpecial) {
+            setClientError("Password must contain at least one special character");
+            return;
+        }
+
+        if (!passwordChecks.noSpaces) {
+            setClientError("Password cannot contain spaces");
             return;
         }
 
@@ -43,8 +90,9 @@ export const RegisterForm = () => {
             // If successful, save the email to global state and move to OTP screen
             dispatch(setRegisteredEmail(email));
             dispatch(setRegistrationStep("OTP"));
-        } catch (err) {
+        } catch (err: any) {
             console.error('Registration failed: ', err);
+            setClientError(err?.data?.message || 'Registration failed');
         }
     };
 
@@ -71,7 +119,6 @@ export const RegisterForm = () => {
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                
                 {clientError && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{clientError}</div>}
                 {/* Error handling from NestJS backend */}
                 {error && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>Registration failed. Please check the credentials.</div>}
@@ -101,11 +148,48 @@ export const RegisterForm = () => {
                     </span>
                 </div>
 
+                {/* Realtime Password Strength & Rule Checklist (Compact) */}
                 {password.length > 0 && (
-                    <div className={styles.passwordMeter}>
-                        <div className={`${styles.meterBar} ${password.length > 0 ? styles.meterBarActive : ''}`}></div>
-                        <div className={`${styles.meterBar} ${password.length >= 8 ? styles.meterBarActive : ''}`}></div>
-                        <div className={`${styles.meterBar} ${password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) ? styles.meterBarActive : ''}`}></div>
+                    <div className={styles.passwordMeterContainer}>
+                        <div className={styles.meterRow}>
+                            <div className={styles.passwordMeter}>
+                                {[1, 2, 3, 4].map((index) => (
+                                    <div
+                                        key={index}
+                                        className={`${styles.meterBar} ${
+                                            index <= strength.activeBars ? strength.className : ''
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                            <span className={styles.meterLabel} style={{ color: strength.color }}>
+                                {strength.text}
+                            </span>
+                        </div>
+
+                        {/* Collapses once all conditions are satisfied */}
+                        {passedCount < 6 && (
+                            <div className={styles.rulesList}>
+                                <span className={`${styles.ruleItem} ${passwordChecks.length ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+ chars
+                                </span>
+                                <span className={`${styles.ruleItem} ${passwordChecks.hasUpper ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> 1 uppercase
+                                </span>
+                                <span className={`${styles.ruleItem} ${passwordChecks.hasLower ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> 1 lowercase
+                                </span>
+                                <span className={`${styles.ruleItem} ${passwordChecks.hasNumber ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> 1 number
+                                </span>
+                                <span className={`${styles.ruleItem} ${passwordChecks.hasSpecial ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> 1 symbol
+                                </span>
+                                <span className={`${styles.ruleItem} ${passwordChecks.noSpaces ? styles.rulePassed : ''}`}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> no spaces
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
 
