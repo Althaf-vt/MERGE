@@ -1,4 +1,6 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { DomainException } from "../../../modules/users/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../modules/users/domain/enums/error-code.enum";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 
@@ -20,7 +22,7 @@ export class JwtAuthGuard implements CanActivate{
         const token = this.extractTokenFromHeader(request);
 
         if(!token){
-            throw new UnauthorizedException("Authentication token is missing");
+            throw new DomainException(ErrorCode.TOKEN_INVALID, "Authentication token is missing");
         }
 
         try {
@@ -34,7 +36,7 @@ export class JwtAuthGuard implements CanActivate{
             request.user = payload;
 
         } catch (error) {
-            throw new UnauthorizedException('Invalid or expired access token');
+            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
         }
 
         // 5. Green light. Let the request proceed to the route handler
