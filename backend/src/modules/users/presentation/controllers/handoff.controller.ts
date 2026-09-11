@@ -12,12 +12,12 @@ import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/u
 @Controller('verification/phone-handoff')
 export class HandoffController{
     constructor(
-        private readonly generateSessionUseCase: GenerateHandoffSessionUseCase,
-        private readonly validateHandoffUseCase: ValidateHandoffUseCase,
-        private readonly handoffGateway: HandoffGateway,
-        @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenservice,
-        @Inject(HANDOFF_SERVICE) private readonly handoffService: IHandoffSessionService, 
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository
+        private readonly _generateSessionUseCase: GenerateHandoffSessionUseCase,
+        private readonly _validateHandoffUseCase: ValidateHandoffUseCase,
+        private readonly _handoffGateway: HandoffGateway,
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
+        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService, 
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
     // Called by the desktop to generate the QR code token.
@@ -31,7 +31,7 @@ export class HandoffController{
     ){
         // req.user is populated by your JwtAuthGuard
         const userId = req.user.userId;
-        return await this.generateSessionUseCase.execute(userId, origin);
+        return await this._generateSessionUseCase.execute(userId, origin);
     }
 
     // Called by the Mobie Phone after scanning the QR code.
@@ -42,10 +42,10 @@ export class HandoffController{
         @Res({passthrough: true}) res: Response
     ){
         //1. Retrives the userId from Redis and notifies the desktop
-        const userId = await this.validateHandoffUseCase.execute(sessionId);
+        const userId = await this._validateHandoffUseCase.execute(sessionId);
 
         // 2.Fetch the user from MongoDB to contruct the required ITokenPayload
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
         if(!user){
             throw new BadGatewayException('User associated with this session is no longer exists.');
         }
@@ -58,8 +58,8 @@ export class HandoffController{
         }
 
         // 4. Generate the specific tokens using your defined methods
-        const accessToken = await this.tokenService.generateAccessToken(tokenPayload);
-        const refreshToken = await this.tokenService.generateRefreshToken(tokenPayload);
+        const accessToken = await this._tokenService.generateAccessToken(tokenPayload);
+        const refreshToken = await this._tokenService.generateRefreshToken(tokenPayload);
 
         // 5. Set the HttpOnly cookie so the mobile phon enow fully authenticated
         res.cookie('refreshToken', refreshToken, {
@@ -86,10 +86,10 @@ export class HandoffController{
     @HttpCode(HttpStatus.OK)
     async completeSession(@Param('sessionId') sessionId: string){
         // Notify desktop to redirect to the next phase
-        this.handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
+        this._handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
 
         // Destroy the Redis token so it cannot be reused
-        await this.handoffService.deleteSession(sessionId);
+        await this._handoffService.deleteSession(sessionId);
         
         return {success: true, message: 'Phone handoff completed successfully'};
     }
@@ -99,7 +99,7 @@ export class HandoffController{
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
     async cancelSession(@Param('sessionId') sessionId: string){
-        await this.handoffService.deleteSession(sessionId);
+        await this._handoffService.deleteSession(sessionId);
         return {success: true, message: "Session cancelled"};
     }
 

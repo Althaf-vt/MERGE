@@ -12,12 +12,12 @@ import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE } f
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
 export class KycController{
     constructor(
-        private readonly submitKycDocumentUseCase: SubmitKycDocumentUseCase,
-        private readonly submitLiveSelfieUseCase: SubmitLiveSelfieUseCase,
+        private readonly _submitKycDocumentUseCase: SubmitKycDocumentUseCase,
+        private readonly _submitLiveSelfieUseCase: SubmitLiveSelfieUseCase,
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE)
-        private readonly submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
+        private readonly _submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
         @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE)
-        private readonly submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
+        private readonly _submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
     ){}
 
     @Post('submit')
@@ -35,7 +35,7 @@ export class KycController{
         }
 
         // Executes the OCR extraction, hashing, duplicate check, and DB save
-        return await this.submitKycDocumentUseCase.execute(userId, {
+        return await this._submitKycDocumentUseCase.execute(userId, {
             ...dto,
             fileBuffer: file.buffer,
         }) 
@@ -66,7 +66,7 @@ export class KycController{
             throw new BadRequestException("Live Selfie file is required.");
         }
 
-        return await this.submitLiveSelfieUseCase.execute(userId, file.buffer)
+        return await this._submitLiveSelfieUseCase.execute(userId, file.buffer)
     }
 
     @Post('liveness')
@@ -96,7 +96,7 @@ export class KycController{
         }
 
         const userId = req.user?.userId; //Extract from JWT payload
-        return await this.submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
+        return await this._submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
     }
 
     @Post('submit-verification')
@@ -104,6 +104,6 @@ export class KycController{
     @HttpCode(HttpStatus.OK)
     async submitFinalVerification(@Req() req: any){
         const userId = req.user?.userId;
-        return await this.submitFinalVerificationUseCase.execute(userId);
+        return await this._submitFinalVerificationUseCase.execute(userId);
     }
 }

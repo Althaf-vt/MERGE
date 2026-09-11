@@ -10,7 +10,7 @@ interface AuthenticatedRequest extends Request{
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate{
-    constructor(private readonly jwtService: JwtService){}
+    constructor(private readonly _jwtService: JwtService){}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
 
@@ -26,7 +26,7 @@ export class JwtAuthGuard implements CanActivate{
 
         try {
             // 3. Cryptographically verify the token hasn't been tampered with or expired
-            const payload = await this.jwtService.verifyAsync(token, {
+            const payload = await this._jwtService.verifyAsync(token, {
                 secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret'
             });
 

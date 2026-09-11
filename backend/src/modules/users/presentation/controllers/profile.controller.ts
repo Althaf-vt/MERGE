@@ -16,15 +16,15 @@ import { SaveBioDto } from "../../application/dtos/save-bio.dto";
 export class ProfileController{
     constructor(
         @Inject(UPDATE_PERSONA_USE_CASE)
-        private readonly updatePersonaUseCase: IUpdatePersonaUseCase,
+        private readonly _updatePersonaUseCase: IUpdatePersonaUseCase,
         @Inject(UPDATE_LIFESTYLE_USE_CASE) 
-        private readonly updateLifestyleUseCase: IUpdateLifestyleUseCase,
+        private readonly _updateLifestyleUseCase: IUpdateLifestyleUseCase,
         @Inject(UPDATE_PREFERENCES_USE_CASE)
-        private readonly updatePreferencesUseCase: IUpdatePreferencesUseCase,
+        private readonly _updatePreferencesUseCase: IUpdatePreferencesUseCase,
         @Inject(GENERATE_BIO_USE_CASE)
-        private readonly generateBioUseCase: IGenerateBioUseCase,
+        private readonly _generateBioUseCase: IGenerateBioUseCase,
         @Inject(SAVE_BIO_USE_CASE)
-        private readonly saveBioUseCase: ISaveBioUseCase
+        private readonly _saveBioUseCase: ISaveBioUseCase
     ){}
 
     @Patch('persona')
@@ -34,7 +34,7 @@ export class ProfileController{
         @Body() dto: UpdatePersonaDto
     ){
         const userId = req.user.userId;
-        return await this.updatePersonaUseCase.execute(userId, dto)
+        return await this._updatePersonaUseCase.execute(userId, dto)
     }
 
     @Patch('lifestyle')
@@ -44,7 +44,7 @@ export class ProfileController{
         @Body() dto: UpdateLifestyleDto
     ){
         const userId = req.user.userId;
-        return await this.updateLifestyleUseCase.execute(userId, dto)
+        return await this._updateLifestyleUseCase.execute(userId, dto)
     }
 
     @Patch('preferences')
@@ -54,7 +54,7 @@ export class ProfileController{
         @Body() dto: UpdatePreferencesDto
     ){
         const userId = req.user.userId;
-        return await this.updatePreferencesUseCase.execute(userId, dto)
+        return await this._updatePreferencesUseCase.execute(userId, dto)
     }
 
     @Post('bio/generate')
@@ -64,7 +64,7 @@ export class ProfileController{
         @Body() dto: GenerateBioDto
     ){
         const userId = req.user.userId;
-        return await this.generateBioUseCase.execute(userId, dto);
+        return await this._generateBioUseCase.execute(userId, dto);
     }
 
     @Patch('bio/save')
@@ -74,6 +74,6 @@ export class ProfileController{
         @Body() dto: SaveBioDto
     ){
         const userId = req.user.userId;
-        return await this.saveBioUseCase.execute(userId, dto);
+        return await this._saveBioUseCase.execute(userId, dto);
     }
 }

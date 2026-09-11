@@ -22,25 +22,25 @@ export class AuthController{
 
     // Injects the use-cases responsible for registration and OTP verification.
     constructor(
-        private  readonly registerUserUseCase: RegisterUserUseCase,
-        private readonly verifyOtpUseCase: VerifyOtpUseCase,
-        private readonly loginUserUseCase: LoginUserUseCase,
-        private readonly refreshTokenUseCase: RefreshTokenUseCase,
+        private readonly _registerUserUseCase: RegisterUserUseCase,
+        private readonly _verifyOtpUseCase: VerifyOtpUseCase,
+        private readonly _loginUserUseCase: LoginUserUseCase,
+        private readonly _refreshTokenUseCase: RefreshTokenUseCase,
         @Inject(RESEND_OTP_USE_CASE) 
-        private readonly resendOtpUseCase: IResendOtpUseCase,
+        private readonly _resendOtpUseCase: IResendOtpUseCase,
         @Inject(FORGOT_PASSWORD_USE_CASE)
-        private readonly forgotPasswordUseCase: IForgotPasswordUseCase,
+        private readonly _forgotPasswordUseCase: IForgotPasswordUseCase,
         @Inject(RESET_PASSWORD_USE_CASE)
-        private readonly resetPasswordUseCase: IResetPasswordUseCase,
+        private readonly _resetPasswordUseCase: IResetPasswordUseCase,
         @Inject(GOOGLE_LOGIN_USE_CASE)
-        private readonly googleLoginUseCase: IGoogleLoginUseCase
+        private readonly _googleLoginUseCase: IGoogleLoginUseCase
     ){}
 
     // Handles user registration requests. 
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() dto: RegisterUserDto){
-        await this.registerUserUseCase.execute(dto);
+        await this._registerUserUseCase.execute(dto);
 
         return{
             message: "Registration started. Please check you mail for the OTP"
@@ -51,7 +51,7 @@ export class AuthController{
     @Post('verify-otp')
     @HttpCode(HttpStatus.OK)
     async verifyOtp(@Body() dto: VerifyOtpDto){
-        const user = await this.verifyOtpUseCase.execute(dto);
+        const user = await this._verifyOtpUseCase.execute(dto);
 
         return {
             message: "Email verified successfully",
@@ -62,7 +62,7 @@ export class AuthController{
     @Post('resend-otp')
     @HttpCode(HttpStatus.OK)
     async resendOtp(@Body() dto: ResendOtpDto){
-        await this.resendOtpUseCase.execute(dto);
+        await this._resendOtpUseCase.execute(dto);
         return {message: "A new verification code has been sent."}
     }
 
@@ -70,7 +70,7 @@ export class AuthController{
     @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() dto: LoginUserDto, @Res({passthrough: true}) res: Response){
-        const result = await this.loginUserUseCase.execute(dto);
+        const result = await this._loginUserUseCase.execute(dto);
 
         // Aet the refresh token as an HttpOnly, Secure cookie
         res.cookie('refreshToken', result.refreshToken, {
@@ -91,14 +91,14 @@ export class AuthController{
     @Post('forgot-password')
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() dto: ForgotPasswordDto) {
-        await this.forgotPasswordUseCase.execute(dto);
+        await this._forgotPasswordUseCase.execute(dto);
         return { message: 'If an account exists, a reset code has been sent.' };
     }
 
     @Post('reset-password')
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() dto: ResetPasswordDto) {
-        await this.resetPasswordUseCase.execute(dto);
+        await this._resetPasswordUseCase.execute(dto);
         return { message: 'Password has been successfully reset.' };
     }
 
@@ -108,7 +108,7 @@ export class AuthController{
         @Body() dto: GoogleLoginDto,
         @Res({passthrough: true}) res: Response
     ){
-        const result = await this.googleLoginUseCase.execute(dto);
+        const result = await this._googleLoginUseCase.execute(dto);
 
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
@@ -134,7 +134,7 @@ export class AuthController{
         }
 
         // Execute the use case by passing the extracted string directly
-        const result = await this.refreshTokenUseCase.execute({refreshToken});
+        const result = await this._refreshTokenUseCase.execute({refreshToken});
 
         // Rotate the refresh token by setting a fresh cookie
         res.cookie('refreshToken', result.refreshToken, {

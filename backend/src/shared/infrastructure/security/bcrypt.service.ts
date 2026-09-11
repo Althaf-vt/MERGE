@@ -6,10 +6,10 @@ import { IPasswordHasher } from "../../interfaces/password-hasher.interface";
 // Marks this service as available for dependency injection in NestJs. 
 @Injectable()
 export class BcryptService implements IPasswordHasher{
-    private readonly saltRounds = 10;
+    private readonly _saltRounds = 10;
 
     async hash(plainText: string): Promise<string>{
-        return bcrypt.hash(plainText, this.saltRounds);
+        return bcrypt.hash(plainText, this._saltRounds);
     }
 
     async compare(plainText: string, hashedText: string): Promise<boolean>{
