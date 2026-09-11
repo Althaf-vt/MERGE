@@ -1,7 +1,6 @@
-import { profile } from "console";
 import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
 import { UserProfile } from "../../../domain/entities/user-profile.entity";
-import { UserAggregate, UserRole } from "../../../domain/entities/user.entity";
+import { UserAggregate } from "../../../domain/entities/user.entity";
 import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";

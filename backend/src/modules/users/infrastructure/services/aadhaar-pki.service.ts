@@ -5,9 +5,6 @@ import AdmZip from "adm-zip";
 import { DOMParser } from "@xmldom/xmldom";
 import * as fs from 'fs';
 import { SignedXml } from "xml-crypto";
-import { Warning$ } from "@aws-sdk/client-textract";
-import { error } from "console";
-
 
 @Injectable()
 export class AadharPkiService implements IPkiVerificationService{

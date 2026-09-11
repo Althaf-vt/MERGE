@@ -2,8 +2,6 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { IHandoffSessionService } from "../../domain/interfaces/handoff-service.interface";
 import Redis from "ioredis";
 import { randomUUID } from 'crypto';
-import { InternalServerError } from "@aws-sdk/client-textract";
-
 
 @Injectable()
 export class RedisHandoffService implements IHandoffSessionService{

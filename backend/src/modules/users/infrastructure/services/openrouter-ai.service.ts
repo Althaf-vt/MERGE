@@ -1,6 +1,5 @@
-import { Inject, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { BioGenerationContext, IAiService } from "../../domain/interfaces/ai-service.interface";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 
 @Injectable()
