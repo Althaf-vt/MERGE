@@ -3,6 +3,8 @@ import { EmailVO } from "../value-objects/email.vo";
 import { UserKyc } from "./kyc-verification.entity";
 import { UserPreference } from "./user-preference.entity";
 import { UserProfile } from "./user-profile.entity";
+import { DomainException } from "../exceptions/domain.exception";
+import { ErrorCode } from "../enums/error-code.enum";
 
 export enum UserRole{
     USER = 'USER',
@@ -95,7 +97,7 @@ export class UserAggregate {
     //1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
     recordLogin(): void{
         if(this._props.accountStatus !== UserStatus.ACTIVE){
-            throw new Error('Inactive account cannot login');
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Inactive account cannot login');
         }
 
         this._props.lastLogin = new Date();
@@ -104,11 +106,11 @@ export class UserAggregate {
 
     updatePassword(newPasswordHash: string): void {
         if (!newPasswordHash || newPasswordHash.trim().length === 0) {
-            throw new Error('Password hash cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Password hash cannot be empty.');
         }
 
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
-            throw new Error(`Cannot update password for ${this._props.accountStatus.toLowerCase()} account.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot update password for ${this._props.accountStatus.toLowerCase()} account.`);
         }
 
         this._props.passwordHash = newPasswordHash;
@@ -174,9 +176,9 @@ export class UserAggregate {
     }
 
     finalizeOnboarding():void{
-        if(!this._props.isEmailVerified) throw new Error('Email must verified first');
-        if(!this._props.kycCompleted) throw new Error('KYC verification must be completed first');
-        if(!this._props.profileCompleted) throw new Error('User profile must be completed first');
+        if(!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, 'Email must be verified first');
+        if(!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification must be completed first');
+        if(!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User profile must be completed first');
         // Temporarily comment out until the feature is built
         // if(!this._props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
 
@@ -194,11 +196,11 @@ export class UserAggregate {
 
     incrementLumenRecommendations(maxDailyQuota: number): void{
         if(!this._props.lumenEnabled){
-            throw new Error('Lumen is not enabled for this user');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Lumen is not enabled for this user');
         }
 
         if(this._props.lumenRecommendationGeneratedToday >= maxDailyQuota){
-            throw new Error('Daily lumen quota reached');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Daily lumen quota reached');
         }
 
         this._props.lumenRecommendationGeneratedToday += 1;

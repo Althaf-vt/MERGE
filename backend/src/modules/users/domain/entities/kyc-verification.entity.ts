@@ -1,4 +1,6 @@
 import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
+import { DomainException } from "../exceptions/domain.exception";
+import { ErrorCode } from "../enums/error-code.enum";
 
 // Encapsulates individual liveness challenge evaluations within 
 // the KYC aggregate to prevent primitive obsession.
@@ -205,7 +207,7 @@ export class UserKyc{
 
         // Ensure all required steps were actually performed
         if (passedCount < this._REQUIRED_PROMPTS_COUNT) {
-            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${this._REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Cannot submit verification: Incomplete liveness prompts. Expected ${this._REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
         }
 
         if (hasFailedPrompts) {
@@ -239,7 +241,7 @@ export class UserKyc{
 
     approveManualReview(payload: ApproveManualReviewPayload){
         if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
-            throw new Error('KYC verification is not in a reviewable state');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
 
         this._props.verificationStatus = VerificationStatus.APPROVED;
@@ -253,11 +255,11 @@ export class UserKyc{
 
     rejectManualReview(payload: RejectManualReviewPayload){
         if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
-            throw new Error('KYC verification is not in a reviewable state');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
 
         if(!payload.rejectionReason || payload.rejectionReason.trim().length === 0){
-            throw new Error('Rejection reason is requires when rejecting KYC');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Rejection reason is required when rejecting KYC');
         }
 
 
