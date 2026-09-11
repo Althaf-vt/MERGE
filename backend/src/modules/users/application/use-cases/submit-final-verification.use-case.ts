@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { ISubmitFinalVerificationUseCase } from "../interfaces/submit-final-verification.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { VerificationStatus } from "../../domain/enums/user.enums";
@@ -14,7 +16,7 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
         const user = await this._userRepository.findById(userId);
 
         if(!user || !user.kycVerification){
-            throw new BadRequestException("User or Kyc record not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User or Kyc record not found.");
         }
 
         const kyc = user.kycVerification;
@@ -23,7 +25,7 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
         try {
             kyc.submitVerification(); // Must match the 4 prompts (BLINK, TURN_LEFT, TURN_RIGHT, SMILE)
         } catch (error: any) {
-            throw new BadRequestException(error.message);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, error.message);
         }
 
         // If the system auto-approves based on thresholds, update the aggregate

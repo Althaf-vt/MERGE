@@ -1,4 +1,6 @@
-import { BadRequestException, ConflictException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { DocumentType } from "../../domain/enums/user.enums";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { type IKycHashService, type IPkiVerificationService, KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "../../domain/interfaces/kyc-service.interface";
@@ -18,14 +20,14 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
 
         let extractedData;
 
-        if (!user) throw new BadRequestException("User not found");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found");
 
         // 1. Route to the correct cryptographic engine
         if (payload.documentType === DocumentType.AADHAAR_XML) {
-            if (!payload.shareCode) throw new BadRequestException("Share code required for XML validation");
+            if (!payload.shareCode) throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Share code required for XML validation");
             extractedData = await this._pkiService.verifyAadhaarXml(payload.fileBuffer, payload.shareCode);
         } else {
-            throw new BadRequestException('Document type engine not yet implemented.');
+            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Document type engine not yet implemented.');
         }
 
         // 2. Hash the extracted documnet number deterministically
@@ -34,7 +36,7 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
         // 3. Prevent duplicate accounts/ban evasions
         const existingKyc = await this._userRepository.findByDocumentHash(hashedDocumentNumber);
         if (existingKyc && existingKyc.userId !== userId) {
-            throw new ConflictException("This government ID is already registered to another account.");
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "This government ID is already registered to another account.");
         }
 
         // 4. Initialize ot update the UserKyc entity

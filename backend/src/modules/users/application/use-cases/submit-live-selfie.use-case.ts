@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, type IBiometricService } from "../../domain/interfaces/biometric-service.interface";
 import { SelfieVerificationStatus } from "../../domain/enums/user.enums";
@@ -15,11 +17,11 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
 
     async execute(userId: string, fileBuffer: Buffer) {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new BadRequestException('User not found');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found');
 
         // Ensure phase 3-7 (Document PKI) is actually finished first
         if (user.kycVerification?.verificationStatus !== 'APPROVED') {
-            throw new BadRequestException('Document verification must be completed first.');
+            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Document verification must be completed first.');
         }
 
         // 1. Offload the heavy vector math to the Python (Only requesting embedding, no liveness ye)
@@ -42,7 +44,7 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
 
         // 5. If the entity rejected the selfie, throw an error to trigger the UI retry state
         if (user.kycVerification.selfieVerificationStatus === SelfieVerificationStatus.REJECTED) {
-            throw new BadRequestException('Selfie rejected: Face not clearly visible or poor lighting. Please try again.');
+            throw new DomainException(ErrorCode.FACE_MISMATCH, 'Selfie rejected: Face not clearly visible or poor lighting. Please try again.');
         }
 
         return { success: true, message: "Golden identity baseline established." };

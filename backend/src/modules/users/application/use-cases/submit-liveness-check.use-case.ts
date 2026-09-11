@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { ISubmitLivenessCheckUseCase } from "../interfaces/submit-liveness-check.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, IBiometricService } from "../../domain/interfaces/biometric-service.interface";
@@ -15,12 +17,12 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
 
     async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<{ success: boolean; message: string; livenessScore: number; status: VerificationStatus }> {
         const user = await this._userRepository.findById(userId);
-        if(!user) throw new BadRequestException("User not found.");
+        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
 
         const kyc = user.kycVerification;
 
         if(!kyc || !kyc.selfieFaceEmbedding || kyc.selfieFaceEmbedding.length === 0){
-            throw new BadRequestException("Live Selfie is missing. Please complete the live selfie step first.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Live Selfie is missing. Please complete the live selfie step first.");
         }
 
         // 1. Pass the target prompt to the ML worker for specific landmark analysis
@@ -45,7 +47,7 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
         });
 
         if (!passed) {
-            throw new BadRequestException(`Liveness check failed for prompt: ${promptType}.`);
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Liveness check failed for prompt: ${promptType}.`);
         }
 
         return {
