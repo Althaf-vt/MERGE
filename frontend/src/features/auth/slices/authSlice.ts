@@ -36,6 +36,7 @@ interface AuthState{
     accessToken: string | null;
     user: AuthUser | null;
     isAuthenticated: boolean;
+    isInitializing: boolean;
 }
 
 // Payload contract for setting authenticated session credentials
@@ -52,7 +53,8 @@ const initialState: AuthState = {
     // Default unauthenticated session values
     accessToken: null,
     user: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    isInitializing: true,
 }
 
 const authSlice = createSlice({
@@ -82,6 +84,11 @@ const authSlice = createSlice({
             if(action.payload.user){
                 state.user = action.payload.user;
             }
+            state.isInitializing = false;
+        },
+
+        setInitialized: (state) => {
+            state.isInitializing = false;
         },
 
         logout: (state) => {
@@ -99,6 +106,7 @@ export const {
     setRegisteredEmail, 
     resetRegistration,
     setCredentials,
+    setInitialized,
     logout,
 
 } = authSlice.actions;

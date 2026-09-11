@@ -53,7 +53,7 @@ export const GoogleAuthButton: React.FC = () => {
                     theme="outline"
                     size="large"
                     shape="pill"
-                    width="100%"
+                    width="350"
                     text="continue_with"
                 />
             </div>
