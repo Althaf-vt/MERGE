@@ -1,35 +1,43 @@
 .container {
-    max-width: 1000px;
+    max-width: 1140px;
     margin: 0 auto;
-    color: #18181b;
+    padding: 24px 20px 60px;
+    color: #111827;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .header {
-    margin-bottom: 40px;
+    margin-bottom: 36px;
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 800;
-    margin: 0 0 8px 0;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+    margin: 0 0 10px 0;
 }
 
 .subtitle {
-    color: #52525b;
-    font-size: 1rem;
+    color: #475569;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    max-width: 600px;
     margin: 0;
 }
 
 .layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.05fr;
     gap: 32px;
+    align-items: start;
 }
 
 .card {
     background: #ffffff;
-    border: 1px solid #e4e4e7;
-    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
     padding: 32px;
 }
 
@@ -37,102 +45,138 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .sectionTitle {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
+    color: #0f172a;
     margin: 0;
 }
 
 .counter {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #6200ea;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6d28d9;
 }
 
 .pillGrid {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 32px;
+    gap: 10px;
+    margin-bottom: 28px;
 }
 
 .pill {
-    background: #f4f4f5;
-    border: 1px solid transparent;
-    padding: 10px 20px;
-    border-radius: 24px;
+    background: #f1f5f9;
+    border: 1.5px solid transparent;
+    padding: 9px 20px;
+    border-radius: 9999px;
     font-size: 0.9rem;
-    color: #3f3f46;
+    font-weight: 500;
+    color: #334155;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
+}
+
+.pill:hover {
+    background: #e2e8f0;
 }
 
 .pillActive {
-    background: #f3e8ff;
-    border-color: #6200ea;
-    color: #6200ea;
-    font-weight: 500;
+    background: #f5f3ff;
+    border-color: #6d28d9;
+    color: #6d28d9;
+    font-weight: 600;
 }
 
 .generateBtn {
     width: 100%;
-    background: #6200ea;
-    color: white;
+    background: #6d28d9;
+    color: #ffffff;
     border: none;
-    padding: 16px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.generateBtn:hover:not(:disabled) {
+    background: #5b21b6;
+}
+
+.generateBtn:active:not(:disabled) {
+    transform: scale(0.99);
 }
 
 .generateBtn:disabled {
-    background: #a78bfa;
+    background: #c4b5fd;
     cursor: not-allowed;
 }
 
 .remainingText {
     text-align: center;
-    font-size: 0.8rem;
-    color: #71717a;
+    font-size: 0.825rem;
+    color: #64748b;
     margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.emptyPlaceholder {
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 20px;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 24px;
 }
 
 .bioOptionCard {
-    border: 1px solid #e4e4e7;
-    border-radius: 12px;
-    padding: 20px;
+    border: 1.5px solid #f1f5f9;
+    border-radius: 16px;
+    padding: 24px 24px;
     margin-bottom: 16px;
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     position: relative;
     background: #ffffff;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #3f3f46;
+    font-size: 0.975rem;
+    line-height: 1.6;
+    color: #334155;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+}
+
+.bioOptionCard:hover {
+    border-color: #cbd5e1;
 }
 
 .bioOptionSelected {
-    border: 2px solid #6200ea;
-    background: #fdfcff;
+    border: 2px solid #6d28d9;
+    background: #ffffff;
+    box-shadow: 0 4px 12px -2px rgba(109, 40, 217, 0.08);
 }
 
 .checkIcon {
     position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #6200ea;
-    color: white;
+    top: 18px;
+    right: 18px;
+    background: #6d28d9;
+    color: #ffffff;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -148,47 +192,75 @@
     font-size: inherit;
     line-height: inherit;
     color: inherit;
+    padding: 0;
 }
 
 .editLink {
     text-align: center;
     display: block;
-    color: #6200ea;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-decoration: underline;
+    color: #6d28d9;
+    font-size: 0.925rem;
+    font-weight: 600;
     cursor: pointer;
     margin-top: 24px;
     background: none;
     border: none;
     width: 100%;
+    transition: opacity 0.15s ease;
+}
+
+.editLink:hover {
+    text-decoration: underline;
 }
 
 .footer {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 1px solid #e4e4e7;
+    align-items: center;
+    margin-top: 60px;
+    padding-top: 28px;
 }
 
 .backBtn {
     background: none;
     border: none;
     font-weight: 600;
+    font-size: 0.95rem;
+    color: #0f172a;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.backBtn:hover {
+    color: #334155;
 }
 
 .saveBtn {
-    background: #6200ea;
-    color: white;
+    background: #6d28d9;
+    color: #ffffff;
     border: none;
-    padding: 14px 32px;
-    border-radius: 8px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.15s ease;
 }
 
-@media (max-width: 768px) {
-    .layout { grid-template-columns: 1fr; }
+.saveBtn:hover:not(:disabled) {
+    background: #5b21b6;
+}
+
+.saveBtn:disabled {
+    background: #c4b5fd;
+    cursor: not-allowed;
+}
+
+@media (max-width: 840px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
 }

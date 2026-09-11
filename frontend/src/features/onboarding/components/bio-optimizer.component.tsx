@@ -93,7 +93,7 @@ export const BioOptimizer = () => {
                 <p className={styles.subtitle}>Select up to 5 traits. Our AI will craft your perfect bio based on your unique personality mix.</p>
             </div>
 
-            {error && <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>}
+            {error && <div style={{ color: '#ef4444', marginBottom: '20px', fontSize: '0.875rem' }}>{error}</div>}
 
             <div className={styles.layout}>
                 {/* Left Column: Selections */}
@@ -106,6 +106,7 @@ export const BioOptimizer = () => {
                         {BIO_TRAITS.map(trait => (
                             <button
                                 key={trait}
+                                type="button"
                                 onClick={() => toggleSelection(trait, selectedTraits, setSelectedTraits)}
                                 className={`${styles.pill} ${selectedTraits.includes(trait) ? styles.pillActive : ''}`}
                             >
@@ -122,6 +123,7 @@ export const BioOptimizer = () => {
                         {BIO_INTERESTS.map(interest => (
                             <button
                                 key={interest}
+                                type="button"
                                 onClick={() => toggleSelection(interest, selectedInterests, setSelectedInterests)}
                                 className={`${styles.pill} ${selectedInterests.includes(interest) ? styles.pillActive : ''}`}
                             >
@@ -134,8 +136,14 @@ export const BioOptimizer = () => {
                         onClick={handleGenerate} 
                         disabled={isGenerating || remainingGenerations === 0}
                         className={styles.generateBtn}
+                        type="button"
                     >
-                        ✨ {isGenerating ? 'Generating...' : 'Generate Bio'}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 3l1.912 5.886a2 2 0 0 0 1.272 1.272L21 12l-5.816 1.842a2 2 0 0 0-1.272 1.272L12 21l-1.912-5.886a2 2 0 0 0-1.272-1.272L3 12l5.816-1.842a2 2 0 0 0 1.272-1.272L12 3z"/>
+                            <path d="M5 3v4"/>
+                            <path d="M3 5h4"/>
+                        </svg>
+                        {isGenerating ? 'Generating...' : 'Generate Bio'}
                     </button>
                     <p className={styles.remainingText}>{remainingGenerations} generations remaining</p>
                 </div>
@@ -143,7 +151,7 @@ export const BioOptimizer = () => {
                 {/* Right Column: AI Results */}
                 <div>
                     {generatedBios.length === 0 ? (
-                        <div className={styles.card} style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a1a1aa' }}>
+                        <div className={styles.emptyPlaceholder}>
                             Your AI-crafted bios will appear here.
                         </div>
                     ) : (
@@ -155,7 +163,11 @@ export const BioOptimizer = () => {
                                     className={`${styles.bioOptionCard} ${selectedBioIndex === idx ? styles.bioOptionSelected : ''}`}
                                 >
                                     {selectedBioIndex === idx && (
-                                        <div className={styles.checkIcon}>✓</div>
+                                        <div className={styles.checkIcon}>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="20 6 9 17 4 12" />
+                                            </svg>
+                                        </div>
                                     )}
                                     {selectedBioIndex === idx ? (
                                         <textarea 
@@ -169,8 +181,8 @@ export const BioOptimizer = () => {
                                     )}
                                 </div>
                             ))}
-                            <button onClick={() => setGeneratedBios([])} className={styles.editLink}>
-                                Regenerate Options
+                            <button onClick={() => setGeneratedBios([])} className={styles.editLink} type="button">
+                                Edit Manually or Regenerate
                             </button>
                         </>
                     )}
@@ -178,13 +190,17 @@ export const BioOptimizer = () => {
             </div>
 
             <div className={styles.footer}>
-                <button onClick={() => navigate('/onboarding/preferences')} className={styles.backBtn}>
-                    ← Back
+                <button onClick={() => navigate('/onboarding/preferences')} className={styles.backBtn} type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back
                 </button>
                 <button 
                     onClick={handleSave} 
                     disabled={isSaving || selectedBioIndex === null} 
                     className={styles.saveBtn}
+                    type="button"
                 >
                     {isSaving ? 'Completing...' : 'Save & Complete Profile'}
                 </button>
