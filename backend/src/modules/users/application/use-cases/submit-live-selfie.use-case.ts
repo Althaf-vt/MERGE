@@ -2,15 +2,15 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, type IBiometricService } from "../../domain/interfaces/biometric-service.interface";
 import { SelfieVerificationStatus } from "../../domain/enums/user.enums";
-import { s3StorageService } from "../../infrastructure/services/s3-storage.service";
 import { ISubmitLiveSelfieUseCase } from "../interfaces/submit-live-selfie.use-case.interface";
+import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
 
 @Injectable()
 export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(BIOMETRIC_SERVICE) private readonly _biometricService: IBiometricService,
-        private readonly _s3Service: s3StorageService,
+        @Inject(STORAGE_SERVICE) private readonly _s3Service: IStorageService,
     ) { };
 
     async execute(userId: string, fileBuffer: Buffer) {

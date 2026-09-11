@@ -3,14 +3,14 @@ import { ISubmitLivenessCheckUseCase } from "../interfaces/submit-liveness-check
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, IBiometricService } from "../../domain/interfaces/biometric-service.interface";
 import { VerificationStatus } from "../../domain/enums/user.enums";
-import { s3StorageService } from "../../infrastructure/services/s3-storage.service";
+import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
 
 @Injectable()
 export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(BIOMETRIC_SERVICE) private readonly _biometricService: IBiometricService,
-        private readonly _s3Service: s3StorageService,
+        @Inject(STORAGE_SERVICE) private readonly _s3Service: IStorageService,
     ){}
 
     async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<{ success: boolean; message: string; livenessScore: number; status: VerificationStatus }> {
