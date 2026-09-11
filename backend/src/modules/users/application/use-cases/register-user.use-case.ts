@@ -1,4 +1,6 @@
-import { Injectable, Inject, ConflictException } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { RegisterUserDto } from "../dtos/register-user.dto";
@@ -27,7 +29,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   async execute(dto: RegisterUserDto): Promise<void> {
     const existingUser = await this._userRepository.findByEmail(dto.email);
     if (existingUser) {
-      throw new ConflictException("User with this email already exists");
+      throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
     }
 
     const passwordHash = await this._passwordHasher.hash(dto.password);

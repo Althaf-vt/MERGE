@@ -1,4 +1,6 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { PASSWORD_HASHER } from "../../../../shared/interfaces/password-hasher.interface";
@@ -21,17 +23,17 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         const user = await this._userRepository.findByEmail(dto.email);
 
         if (!user) {
-            throw new NotFoundException("User with this email is not exists. Please register first");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
         }
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
 
         if (!isPasswordValid) {
-            throw new UnauthorizedException("Invalid Email or Password");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid Email or Password");
         }
 
         if (!user.isEmailVerified) {
-            throw new ForbiddenException("Please verify your email before logging in");
+            throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, "Please verify your email before logging in");
         }
 
         user.recordLogin();

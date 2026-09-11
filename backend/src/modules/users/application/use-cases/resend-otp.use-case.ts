@@ -1,4 +1,6 @@
-import { BadRequestException, ConflictException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IResendOtpUseCase } from "../interfaces/resend-otp.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
@@ -22,7 +24,7 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
 
             const existingUser = await this._userRepository.findByEmail(dto.email);
             if(existingUser){
-                throw new ConflictException("User with this email already exists");
+                throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
             }
 
             const emailVo = new EmailVO(dto.email);
@@ -37,9 +39,9 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
 
         } catch (error: any) {
             if (error.message.includes('expired')) {
-                throw new BadRequestException('Session expired. Please restart registration.');
+                throw new DomainException(ErrorCode.OTP_EXPIRED, 'Session expired. Please restart registration.');
             }
-            throw new BadRequestException(error.message || 'Failed to resend OTP.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, error.message || 'Failed to resend OTP.');
         }
     }
 }

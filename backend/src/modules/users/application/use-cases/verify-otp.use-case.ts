@@ -1,4 +1,6 @@
-import { Injectable, Inject, BadRequestException, ConflictException } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { VerifyOtpDto } from "../dtos/verify-otp.dto";
@@ -25,13 +27,13 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         const draftData = await this._otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
 
         if (!draftData) {
-            throw new BadRequestException('Invalid or expired OTP');
+            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired OTP');
         }
 
         const existingUser = await this._userRepository.findByEmail(dto.email);
 
         if (existingUser) {
-            throw new ConflictException("User already verified");
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User already verified");
         }
 
         // Create the Domain Entity 

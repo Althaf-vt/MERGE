@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IResetPasswordUseCase } from "../interfaces/forgot-password.use-case.interface";
 import { ResetPasswordDto } from "../dtos/forgot-password.dto";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
@@ -18,12 +20,12 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
         const isValid = await this._otpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp);
 
         if (!isValid) {
-            throw new BadRequestException('Invalid or expired reset code.');
+            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired reset code.');
         }
 
         const user = await this._userRepository.findByEmail(emailVo.getValue());
         if (!user) {
-            throw new BadRequestException('User not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
         }
 
         const salt = await bcrypt.genSalt(10);

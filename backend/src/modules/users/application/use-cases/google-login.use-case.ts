@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IGoogleLoginResult, IGoogleLoginUseCase } from "../interfaces/google-login.use-case.interface";
 import { OAuth2Client } from "google-auth-library";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
@@ -32,11 +34,11 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
 
             payload = ticket.getPayload();
         } catch (error: any) {
-            throw new UnauthorizedException("Google token verification failed.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Google token verification failed.");
         }
 
         if (!payload || !payload.email) {
-            throw new BadRequestException("Invalid Google token payload.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Invalid Google token payload.");
         }
 
         const emailVo = new EmailVO(payload.email);
@@ -69,7 +71,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         }else{
             // Existing User login 
             if(user.accountStatus !== UserStatus.ACTIVE){
-                throw new UnauthorizedException(`Cannot login: account is ${user.accountStatus.toLowerCase()}.`)
+                throw new DomainException(ErrorCode.INVALID_CREDENTIALS, `Cannot login: account is ${user.accountStatus.toLowerCase()}.`)
             }
 
             user.recordLogin();
@@ -77,7 +79,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         }
 
         if(!user.id){
-            throw new InternalServerErrorException("User identification failed.");
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "User identification failed.");
         }
 
         // Generate tokens
