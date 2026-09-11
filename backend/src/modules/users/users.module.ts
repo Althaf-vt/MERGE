@@ -24,8 +24,8 @@ import { HandoffController } from "./presentation/controllers/handoff.controller
 import { HandoffGateway } from "./presentation/gateways/handoff.gateway";
 import { ValidateHandoffUseCase } from "./application/use-cases/validate-handoff.use-case";
 import { GenerateHandoffSessionUseCase } from "./application/use-cases/generate-handoff-session.use-case";
-import { HANDOFF_SERVICE } from "./domain/interfaces/handoff-service.interface";
-import { RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
+import { HANDOFF_SERVICE } from "./application/interfaces/handoff-service.interface";
+import { REDIS_CLIENT, RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
 import { HttpModule } from "@nestjs/axios";
 import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-selfie.use-case";
 import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
@@ -65,6 +65,7 @@ import { VALIDATE_HANDOFF_USE_CASE } from "./application/interfaces/validate-han
 import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-case.interface";
 import { HANDOFF_NOTIFICATION_SERVICE } from "./application/interfaces/handoff-notification.service.interface";
 import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interface";
+import Redis from "ioredis";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -96,35 +97,18 @@ import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interf
         HandoffGateway,
         s3StorageService,
         OpenRouterAiService,
-        s3StorageService,
+        {
+            provide: REDIS_CLIENT,
+            useFactory: () => {
+                return new Redis({
+                    host: process.env.REDIS_HOST || 'localhost',
+                    port: Number(process.env.REDIS_PORT) || 6379,
+                });
+            },
+        },
 
         // 2. Standard Providers (Gateways & Use Cases)
-        RegisterUserUseCase,
-        VerifyOtpUseCase,
-        ResendOtpUseCase,
-        LoginUserUseCase,
-        ForgotPasswordUseCase,
-        ResetPasswordUseCase,
-        RefreshTokenUseCase,
-        SubmitKycDocumentUseCase,
-        ValidateHandoffUseCase,
-        GenerateHandoffSessionUseCase,
-        SubmitLiveSelfieUseCase,
-        SubmitLivenessCheckUseCase,
-        UpdatePersonaUseCase,
-        UpdateLifeStyleUseCase,
-        UpdatePreferencesUseCase,
-        GenerateBioUseCase,
-        SaveBioUseCase,
-        GoogleLoginUseCase,
-        GenerateHandoffSessionUseCase,
-        LoginUserUseCase,
-        RefreshTokenUseCase,
-        RegisterUserUseCase,
-        SubmitKycDocumentUseCase,
-        SubmitLiveSelfieUseCase,
-        ValidateHandoffUseCase,
-        VerifyOtpUseCase,
+        // Handled via interface bindings in section 3
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -207,7 +191,7 @@ import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interf
         },
         {
             provide: HANDOFF_NOTIFICATION_SERVICE,
-            useClass: HandoffGateway,
+            useExisting: HandoffGateway,
         },
         {
             provide: BIOMETRIC_SERVICE,
@@ -252,7 +236,7 @@ import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interf
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE, JwtAuthGuard],
+    exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE],
 })
 
 export class UserModule {}
