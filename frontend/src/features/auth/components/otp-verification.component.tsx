@@ -1,7 +1,7 @@
-import { useVerifyOtpMutation, useResendOtpMutation } from "../api/authApi";
+import { useVerifyOtpMutation, useResendOtpMutation } from "../api/auth.api";
 import React, { useState, useEffect } from "react";
 import { useAppSelector } from "../../../app/hooks";
-import styles from './OtpVerification.module.css';
+import styles from './otp-verification.module.css';
 import { useNavigate } from "react-router-dom";
 
 export const OtpVerification = () => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { useRefreshMutation } from "../api/authApi";
-import { setCredentials, setInitialized } from "../slices/authSlice";
+import { useRefreshMutation } from "../api/auth.api";
+import { setCredentials, setInitialized } from "../slices/auth.slice";
 import { Outlet } from "react-router-dom";
 
 export const SessionInitializer = () => {

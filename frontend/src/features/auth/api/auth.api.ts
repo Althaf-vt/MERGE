@@ -4,7 +4,7 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import type { LoginUserDto, RegisterUserDto, VerifyOtpDto } from '../types';
 import type { RootState } from '../../../app/store'
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { logout, setCredentials } from '../slices/authSlice';
+import { logout, setCredentials } from '../slices/auth.slice';
 
 // 1. Define the standard base query with the outgoing token injector
 export const baseQuery = fetchBaseQuery({

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useForgotPasswordMutation, useResetPasswordMutation } from "../api/authApi";
-import styles from './LoginForm.module.css';
+import { useForgotPasswordMutation, useResetPasswordMutation } from "../api/auth.api";
+import styles from './login-form.module.css';
 
 export const ForgotPassword = () => {
     const navigate = useNavigate();

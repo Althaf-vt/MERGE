@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useRegisterUserMutation } from "../api/authApi";
-import { setRegisteredEmail, setRegistrationStep } from "../slices/authSlice";
+import { useRegisterUserMutation } from "../api/auth.api";
+import { setRegisteredEmail, setRegistrationStep } from "../slices/auth.slice";
 import { useAppDispatch } from "../../../app/hooks";
-import styles from './RegisterForm.module.css';
+import styles from './register-form.module.css';
 import { GoogleAuthButton } from "./google-auth.component";
 
 export const RegisterForm = () => {

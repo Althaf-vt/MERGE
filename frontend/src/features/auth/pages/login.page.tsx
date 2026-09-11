@@ -1,10 +1,10 @@
 import { AuthLayout } from "../../../shared/components/layouts/auth.layout.component"
-import { ForgotPassword } from "../components/forgot-password.module"
+import { LoginForm } from "../components/login-form.component"
 
-export const ForgotPasswordPage = () => {
+export const LoginPage = () => {
     return(
         <AuthLayout>
-            <ForgotPassword/>
+            <LoginForm/>
         </AuthLayout>
     )
 }

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../app/hooks';
-import { useGoogleLoginMutation } from '../api/authApi';
-import { setCredentials } from '../slices/authSlice';
+import { useGoogleLoginMutation } from '../api/auth.api';
+import { setCredentials } from '../slices/auth.slice';
 import styles from './google-auth.module.css';
 
 export const GoogleAuthButton: React.FC = () => {

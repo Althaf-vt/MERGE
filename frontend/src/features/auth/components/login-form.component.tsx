@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../../app/hooks";
-import { useLoginUserMutation } from "../api/authApi";
+import { useLoginUserMutation } from "../api/auth.api";
 import { Link, useNavigate } from "react-router-dom";
-import styles from './LoginForm.module.css';
-import { setCredentials } from "../slices/authSlice";
+import styles from './login-form.module.css';
+import { setCredentials } from "../slices/auth.slice";
 import { GoogleAuthButton } from "./google-auth.component";
 
 export const LoginForm = () => {
