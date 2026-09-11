@@ -112,8 +112,8 @@ export class UserPersistenceMapper{
         const data = entity.toJSON();
         return{
             email: data.email,
-            passwordHash: data.passwordHash,
-            authProvider: data.authProvider,
+            passwordHash: data.passwordHash ?? null,
+            authProvider: data.authProvider || AuthProvider.EMAIL,
             isEmailVerified: data.isEmailVerified,
             kycCompleted: data.kycCompleted,
             accountStatus: data.accountStatus,

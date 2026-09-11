@@ -195,8 +195,22 @@ export class User{
     @Prop({required: true, unique: true, lowercase: true, trim: true})
     email: string;
 
-    @Prop({required: true})
-    passwordHash: string;
+    @Prop({
+        type: String,
+        default: null,
+        validate: {
+            validator: function(this: any, val: string | null) {
+                // If authProvider is EMAIL, passwordHash must be a valid non-empty string
+                if (this.authProvider === AuthProvider.EMAIL) {
+                    return typeof val === 'string' && val.trim().length > 0;
+                }
+                // For OAuth (Google, etc.), null or undefined is completely valid
+                return true;
+            },
+            message: 'Path `passwordHash` is required for email registration.'
+        }
+    })
+    passwordHash?: string | null;
 
     @Prop({type: String, enum: AuthProvider, default: AuthProvider.EMAIL})
     authProvider: string;

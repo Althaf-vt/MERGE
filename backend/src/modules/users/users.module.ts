@@ -53,6 +53,8 @@ import { RESEND_OTP_USE_CASE } from "./application/interfaces/resend-otp.use-cas
 import { ForgotPasswordUseCase } from "./application/use-cases/forgot-password.use-case";
 import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use-case";
 import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application/interfaces/forgot-password.use-case.interface";
+import { GoogleLoginUseCase } from "./application/use-cases/google-login.use-case";
+import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -103,6 +105,7 @@ import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application
         UpdatePreferencesUseCase,
         GenerateBioUseCase,
         SaveBioUseCase,
+        GoogleLoginUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -135,6 +138,10 @@ import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application
         {
             provide: RESET_PASSWORD_USE_CASE,
             useClass: ResetPasswordUseCase
+        },
+        {
+            provide: GOOGLE_LOGIN_USE_CASE,
+            useClass: GoogleLoginUseCase
         },
 
         // KYC Service bindings

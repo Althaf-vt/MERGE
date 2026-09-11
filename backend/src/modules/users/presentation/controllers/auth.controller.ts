@@ -13,6 +13,8 @@ import { ResendOtpDto } from "../../application/dtos/resend-otp.dto";
 import { IResendOtpUseCase, RESEND_OTP_USE_CASE } from "../../application/interfaces/resend-otp.use-case.interface";
 import { FORGOT_PASSWORD_USE_CASE, IForgotPasswordUseCase, IResetPasswordUseCase, RESET_PASSWORD_USE_CASE } from "../../application/interfaces/forgot-password.use-case.interface";
 import { ForgotPasswordDto, ResetPasswordDto } from "../../application/dtos/forgot-password.dto";
+import { GoogleLoginDto } from "../../application/dtos/google-login.dto";
+import { GOOGLE_LOGIN_USE_CASE, IGoogleLoginUseCase } from "../../application/interfaces/google-login.use-case.interface";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -29,7 +31,9 @@ export class AuthController{
         @Inject(FORGOT_PASSWORD_USE_CASE)
         private readonly forgotPasswordUseCase: IForgotPasswordUseCase,
         @Inject(RESET_PASSWORD_USE_CASE)
-        private readonly resetPasswordUseCase: IResetPasswordUseCase
+        private readonly resetPasswordUseCase: IResetPasswordUseCase,
+        @Inject(GOOGLE_LOGIN_USE_CASE)
+        private readonly googleLoginUseCase: IGoogleLoginUseCase
     ){}
 
     // Handles user registration requests. 
@@ -96,6 +100,27 @@ export class AuthController{
     async resetPassword(@Body() dto: ResetPasswordDto) {
         await this.resetPasswordUseCase.execute(dto);
         return { message: 'Password has been successfully reset.' };
+    }
+
+    @Post('google')
+    @HttpCode(HttpStatus.OK)
+    async googleLogin(
+        @Body() dto: GoogleLoginDto,
+        @Res({passthrough: true}) res: Response
+    ){
+        const result = await this.googleLoginUseCase.execute(dto);
+
+        res.cookie('refreshToken', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        })
+
+        return {
+            accessToken: result.accessToken,
+            user: result.user
+        }
     }
 
     @Post('refresh')
