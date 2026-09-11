@@ -11,8 +11,8 @@ import { error } from "console";
 
 @Injectable()
 export class AadharPkiService implements IPkiVerificationService{
-    private readonly logger = new Logger(AadharPkiService.name);
-    private readonly rootCertPath = path.join(process.cwd(), 'assets', 'kyc-docs-public-keys', 'uidai_offline_publickey.cer');
+    private readonly _logger = new Logger(AadharPkiService.name);
+    private readonly _rootCertPath = path.join(process.cwd(), 'assets', 'kyc-docs-public-keys', 'uidai_offline_publickey.cer');
 
     private parseAadhaarDate(dobStr: string): Date{
         if(!dobStr){
@@ -105,12 +105,12 @@ export class AadharPkiService implements IPkiVerificationService{
             }).parseFromString(xmlString, 'text/xml');
 
             // 3. Load the official UIDAI public root certificate
-            if (!fs.existsSync(this.rootCertPath)) {
-                this.logger.error(`Root certificate not found at path: ${this.rootCertPath}`);
+            if (!fs.existsSync(this._rootCertPath)) {
+                this._logger.error(`Root certificate not found at path: ${this._rootCertPath}`);
                 throw new BadRequestException('Root verification certificate is missing on the server.');
             }
 
-            const rawCert = fs.readFileSync(this.rootCertPath, 'utf-8');
+            const rawCert = fs.readFileSync(this._rootCertPath, 'utf-8');
 
             const {pem: publicKeyPem, base64: publicKeyBase64} = this.normalizePem(rawCert)
 
@@ -142,7 +142,7 @@ export class AadharPkiService implements IPkiVerificationService{
 
             if(!isValid){
                 const validationErrors = sig.validationErrors?.join(', ') || 'Unknown signature mismatch';
-                this.logger.warn(`Signature validation failed: ${validationErrors}`);
+                this._logger.warn(`Signature validation failed: ${validationErrors}`);
                 throw new BadRequestException('Cryptographic signature verification failed. File may be tempered with.');
             }
 
@@ -171,7 +171,7 @@ export class AadharPkiService implements IPkiVerificationService{
             }
 
         } catch (error: any) {
-            this.logger.error(`Aadhaar XML verification error: ${error.message}`, error.stack);
+            this._logger.error(`Aadhaar XML verification error: ${error.message}`, error.stack);
             if(error instanceof BadRequestException) throw error;
             throw new BadRequestException("Failed to process Offline e-KYC document.");
         }

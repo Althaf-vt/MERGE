@@ -4,12 +4,12 @@ import { IEmailService } from "../../domain/interfaces/email-service.interface";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService{
-    private transporter: nodemailer.Transporter;
-    private readonly logger = new Logger(NodeMailerEmailService.name);
+    private _transporter: nodemailer.Transporter;
+    private readonly _logger = new Logger(NodeMailerEmailService.name);
 
     constructor(){
         // In Production, these should be pulled from a ConfigService or process.env
-        this.transporter = nodemailer.createTransport({
+        this._transporter = nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: parseInt(process.env.SMTP_PORT || '587', 10),
             secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
@@ -44,10 +44,10 @@ export class NodeMailerEmailService implements IEmailService{
         };
 
         try {
-            await this.transporter.sendMail(mailOptions);
-            this.logger.log(`OTP email send successfully to ${to}`);
+            await this._transporter.sendMail(mailOptions);
+            this._logger.log(`OTP email send successfully to ${to}`);
         } catch (error: any) {
-            this.logger.error(`Failed to send OTP email to ${to}`, error.stack);
+            this._logger.error(`Failed to send OTP email to ${to}`, error.stack);
             throw new Error('Falied to dispatch verification email. Please try again later.')
         }
     }

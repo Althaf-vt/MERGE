@@ -7,11 +7,11 @@ import Redis from "ioredis";
 export class RedisOtpService implements IOtpService{
 
     // Redis client used to store and retrieve OTPs 
-    private readonly redis: Redis;
+    private readonly _redis: Redis;
 
     // Create a connection to the Redis server
     constructor(){
-        this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+        this._redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
     }
 
     // Generate a consistent Redis key for each user's registration OTP
@@ -22,13 +22,13 @@ export class RedisOtpService implements IOtpService{
     // Stores an OTP in Redis with a time-to-live to expire it automatically
     async storeRegistrationDraft(email: string, otp: string, passwordHash: string, ttlSeconds: number): Promise<void> {
         const payload = JSON.stringify({otp,passwordHash});
-        await this.redis.set(this.getKey(email), payload, 'EX', ttlSeconds);
+        await this._redis.set(this.getKey(email), payload, 'EX', ttlSeconds);
     }
 
     // Checks whether the provided OTP matched the stored OTP
     async verifyAndRetrieveDraft(email: string, otp: string): Promise<{passwordHash: string} | null> {
         const key = this.getKey(email);
-        const storedData = await this.redis.get(key);
+        const storedData = await this._redis.get(key);
 
         if(!storedData){
             return null;
@@ -46,12 +46,12 @@ export class RedisOtpService implements IOtpService{
 
     // Removed the user's OTP form Redis
     async deleteDraft(email: string): Promise<void> {
-        await this.redis.del(this.getKey(email))
+        await this._redis.del(this.getKey(email))
     }
 
     async refreshRegistrationDraft(email: string, newOtp: string, ttlSeconds: number): Promise<void> {
         const key = this.getKey(email);
-        const storedData = await this.redis.get(key);
+        const storedData = await this._redis.get(key);
 
         if(!storedData){
             throw new Error('Registration session expired. Please register again.');
@@ -65,7 +65,7 @@ export class RedisOtpService implements IOtpService{
             passwordHash: parsedData.passwordHash
         })
 
-        await this.redis.set(key, payload, 'EX', ttlSeconds);
+        await this._redis.set(key, payload, 'EX', ttlSeconds);
 
     }
 
@@ -74,15 +74,15 @@ export class RedisOtpService implements IOtpService{
     }
 
     async storePasswordResetOtp(email: string, otp: string, ttlSeconds: number): Promise<void> {
-        await this.redis.set(this.getResetKey(email), otp, 'EX', ttlSeconds);
+        await this._redis.set(this.getResetKey(email), otp, 'EX', ttlSeconds);
     }
 
     async verifyPasswordResetOtp(email: string, otp: string): Promise<boolean> {
-        const storedOtp = await this.redis.get(this.getResetKey(email));
+        const storedOtp = await this._redis.get(this.getResetKey(email));
         return storedOtp === otp;
     }
 
     async deletePasswordResetOtp(email: string): Promise<void> {
-        await this.redis.del(this.getResetKey(email));
+        await this._redis.del(this.getResetKey(email));
     }
 }

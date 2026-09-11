@@ -7,17 +7,17 @@ import { JwtService } from "@nestjs/jwt";
 export class JwtTokenService implements ITokenservice{
 
     // Injects NestJS's JwtService for JWT operations.
-    constructor(private readonly jwtService: JwtService){}
+    constructor(private readonly _jwtService: JwtService){}
 
     generateAccessToken(payload: ITokenPayload): string {
-        return this.jwtService.sign(payload, {
+        return this._jwtService.sign(payload, {
             secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
             expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as any
         })
     }
 
     generateRefreshToken(payload: ITokenPayload): string {
-        return this.jwtService.sign(payload, {
+        return this._jwtService.sign(payload, {
             secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret',
             expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as any
         });
@@ -25,7 +25,7 @@ export class JwtTokenService implements ITokenservice{
 
     verifyAccessToken(token: string): ITokenPayload {
         try {
-            return this.jwtService.verify<ITokenPayload>(token, {
+            return this._jwtService.verify<ITokenPayload>(token, {
                 secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
             });
         } catch (error) {
@@ -35,7 +35,7 @@ export class JwtTokenService implements ITokenservice{
 
     verifyRefreshToken(token: string): ITokenPayload {
         try {
-            return this.jwtService.verify<ITokenPayload>(token, {
+            return this._jwtService.verify<ITokenPayload>(token, {
                 secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret'
             });
         } catch (error) {

@@ -3,7 +3,7 @@ import { IKycHashService } from "../../domain/interfaces/kyc-service.interface";
 import * as crypto from "crypto";
 @Injectable()
 export class KycHashService implements IKycHashService{
-    private readonly pepper = process.env.KYC_HASH_PEPPER || 'default-prepper-string';
+    private readonly _pepper = process.env.KYC_HASH_PEPPER || 'default-prepper-string';
 
     hashDocumentNumber(documentNumber: string, country: string): string {
         // We use SHA-256 for deterministic hashing.
@@ -12,7 +12,7 @@ export class KycHashService implements IKycHashService{
         const normalizedId = documentNumber.replace(/\s+/g, '').toUpperCase();
         const normalizeCountry = country.toUpperCase();
 
-        const payload = `${normalizeCountry}:${normalizedId}:${this.pepper}`;
+        const payload = `${normalizeCountry}:${normalizedId}:${this._pepper}`;
 
         return crypto.createHash('sha256').update(payload).digest('hex');
     }

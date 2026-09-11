@@ -5,17 +5,17 @@ import OpenAI from "openai";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService{
-    private readonly client: OpenAI;
-    private readonly logger = new Logger(OpenRouterAiService.name);
+    private readonly _client: OpenAI;
+    private readonly _logger = new Logger(OpenRouterAiService.name);
 
     constructor(){
         const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) {
-            this.logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
+            this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
         }
         
         // Configure standart OpenAi client to route through OpenRouter
-        this.client = new OpenAI({
+        this._client = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
             apiKey: apiKey || "",
             defaultHeaders: {
@@ -37,7 +37,7 @@ export class OpenRouterAiService implements IAiService{
             `;
 
             // openrouter/free automatically selects an active free model with available quota
-            const completion = await this.client.chat.completions.create({
+            const completion = await this._client.chat.completions.create({
                 model: "openrouter/free",
                 messages: [
                     {role: "system", content: systemInstruction},

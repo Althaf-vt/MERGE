@@ -16,25 +16,25 @@ export class MongoUserRepository implements IUserRepository{
     // Injects the Mongoose User model used to perform database operations.
     constructor(
         @InjectModel(User.name)
-        private readonly userModel: Model<UserDocument>
+        private readonly _userModel: Model<UserDocument>
     ){}
 
     // Finds a user by email and converts the document into a domain entity.
     async findByEmail(email: string): Promise<UserAggregate | null> {
-        const document = await this.userModel.findOne({email}).exec();
+        const document = await this._userModel.findOne({email}).exec();
         if(!document) return null;
         return UserPersistenceMapper.toDomain(document);
     }
 
     // Finds a user by ID and converts the database document into a domain entity.
     async findById(id: string): Promise<UserAggregate | null> {
-        const document = await this.userModel.findById(id).exec();
+        const document = await this._userModel.findById(id).exec();
         if(!document) return null;
         return UserPersistenceMapper.toDomain(document);
     }
 
     async findByDocumentHash(documentHash: string): Promise<UserKyc | null> {
-        const document = await this.userModel.findOne({
+        const document = await this._userModel.findOne({
             'kycVerification.hashedDocumentNumber': documentHash
         }).exec();
         if(!document) return null;
@@ -49,7 +49,7 @@ export class MongoUserRepository implements IUserRepository{
     // Converts the domain entity into persistence data and creates a new MongoDB document.
     async create(user: UserAggregate): Promise<UserAggregate> {
         const persistenceData = UserPersistenceMapper.toPersistence(user);
-        const created = new this.userModel(persistenceData);
+        const created = new this._userModel(persistenceData);
         const document = await created.save();
         return UserPersistenceMapper.toDomain(document);
     }
@@ -57,7 +57,7 @@ export class MongoUserRepository implements IUserRepository{
     // Updates the existing MongoDB document and returns the updated domain entity.
     async update(user: UserAggregate): Promise<UserAggregate> {
         const persistenceData = UserPersistenceMapper.toPersistence(user);
-        const document = await this.userModel
+        const document = await this._userModel
             .findByIdAndUpdate(user.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
@@ -67,7 +67,7 @@ export class MongoUserRepository implements IUserRepository{
 
     // Atomic operation: Appends result directly without serializing/overwriting the entire aggregate
     async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
-        await this.userModel.updateOne(
+        await this._userModel.updateOne(
             {_id: userId},
             {
                 $push:{

@@ -6,7 +6,7 @@ import FormData from "form-data";
 
 @Injectable()
 export class HttpBiometricService implements IBiometricService{
-    constructor(private readonly httpService: HttpService){}
+    constructor(private readonly _httpService: HttpService){}
 
     async extractEmbedding(imageBuffer: Buffer): Promise<IExtractionResult> {
         try {
@@ -20,7 +20,7 @@ export class HttpBiometricService implements IBiometricService{
 
             // lastValueFrom converts the Axios Observable into a standard Promise
             const response = await lastValueFrom(
-                this.httpService.post(mlServiceUrl, formData, {
+                this._httpService.post(mlServiceUrl, formData, {
                     headers: formData.getHeaders()
                 })
             )
@@ -55,7 +55,7 @@ export class HttpBiometricService implements IBiometricService{
             const mlLivenessUrl = `${baseUrl}/analyze-liveness`;
 
             const response = await lastValueFrom(
-                this.httpService.post(mlLivenessUrl, formData, {
+                this._httpService.post(mlLivenessUrl, formData, {
                     headers: formData.getHeaders()
                 })
             )

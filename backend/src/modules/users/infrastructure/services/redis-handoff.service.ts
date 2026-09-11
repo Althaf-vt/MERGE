@@ -7,13 +7,13 @@ import { InternalServerError } from "@aws-sdk/client-textract";
 
 @Injectable()
 export class RedisHandoffService implements IHandoffSessionService{
-    private readonly redisClient: Redis;
-    private readonly PREFIX = 'handoff:';
+    private readonly _redisClient: Redis;
+    private readonly _PREFIX = 'handoff:';
 
     constructor(){
         // Connects to the existing Docker Redis instance.
         // Uses env variables with sensible fallbacks.
-        this.redisClient = new Redis({
+        this._redisClient = new Redis({
             host: process.env.REDIS_HOST || 'localhost',
             port: Number(process.env.REDIS_PORT) || 6379
         });
@@ -26,7 +26,7 @@ export class RedisHandoffService implements IHandoffSessionService{
 
             // Store it in Redis mapping the UUID to the User's ID.
             // 'EX' automatically deletes this record after ttlSeconds
-            await this.redisClient.set(`${this.PREFIX}${sessionId}`,userId, 'EX', ttlSeconds)
+            await this._redisClient.set(`${this._PREFIX}${sessionId}`,userId, 'EX', ttlSeconds)
 
             return sessionId;
         } catch (error) {
@@ -37,11 +37,11 @@ export class RedisHandoffService implements IHandoffSessionService{
     async validateSession(sessionId: string): Promise<string | null> {
         // Retrieves the userId using the session UUID
         // If the TTL has expired, Redis automatically returns null.
-        return await this.redisClient.get(`${this.PREFIX}${sessionId}`);
+        return await this._redisClient.get(`${this._PREFIX}${sessionId}`);
     }
 
     async deleteSession(sessionId: string): Promise<void> {
         // Immediately destroys the token to prevent replay attacks
-        await this.redisClient.del(`${this.PREFIX}${sessionId}`);
+        await this._redisClient.del(`${this._PREFIX}${sessionId}`);
     }
 }
