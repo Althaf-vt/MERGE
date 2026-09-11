@@ -130,6 +130,14 @@ export const authApi = createApi({
             })
         }),
 
+        googleLogin: builder.mutation<any, { idToken: string }>({
+            query: (data) => ({
+                url: '/auth/google',
+                method: 'POST',
+                body: data
+            })
+        }),
+
         refresh: builder.mutation<{accessToken: string, user: any}, void>({
             query: () => ({
                 url: '/auth/refresh',
@@ -147,5 +155,6 @@ export const {
     useLoginUserMutation, 
     useForgotPasswordMutation,
     useResetPasswordMutation,
+    useGoogleLoginMutation,
     useRefreshMutation
 } = authApi;

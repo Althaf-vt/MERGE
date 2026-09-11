@@ -1,0 +1,35 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.googleWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Forces Google's generated iframe wrapper to match the full card width */
+.googleWrapper > div {
+  width: 100% !important;
+  display: flex;
+  justify-content: center;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.8125rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.loadingText {
+  color: #6b7280;
+  font-size: 0.8125rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
