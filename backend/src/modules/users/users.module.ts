@@ -67,6 +67,7 @@ import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-cas
 import { HANDOFF_NOTIFICATION_SERVICE } from "./application/interfaces/handoff-notification.service.interface";
 import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interface";
 import Redis from "ioredis";
+import { ErrorCode } from "./domain/enums/error-code.enum";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -115,7 +116,7 @@ import Redis from "ioredis";
                 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
                 if (!region || !accessKeyId || !secretAccessKey) {
-                    throw new Error('Missing AWS credentials.');
+                    throw new DOMException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
                 }
 
                 return new S3Client({

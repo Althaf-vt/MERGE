@@ -76,7 +76,7 @@ export class AuthController{
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // True in prod (HTTPS)
             sameSite: 'strict', // Prevents CSRF attacks
-            maxAge: 7 * 24 * 60 * 60 * 100 // 7 days in ms
+            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000 // 7 days in ms
         });
 
         // Return only the access token and user data to the frontend
@@ -113,7 +113,7 @@ export class AuthController{
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000 // 7 days in ms
         })
 
         return {
@@ -140,7 +140,7 @@ export class AuthController{
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000,
         });
 
         // Return the new access token to the frontend
@@ -162,4 +162,3 @@ export class AuthController{
         return { message: "Logged out successfully" };
     }
 }
-
