@@ -39,19 +39,35 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     // A. Wait for the initial request to finish
     let result = await baseQuery(args, api, extraOptions);
 
-    // --- GLOBAL DDD ERROR HANDLING (Replaces Axios Interceptor) ---
+    // --- GLOBAL DDD ERROR HANDLING ---
     if (result.error && result.error.data) {
         const backendError = (result.error.data as ApiErrorResponse).error;
 
         if (backendError) {
             switch (backendError.code) {
                 case ErrorCode.HANDOFF_SESSION_EXPIRED:
-                    alert("QR Code expired, please generate a new one.");
+                    window.location.href = '/onboarding/kyc?session=expired';
                     break;
+
                 case ErrorCode.LIVENESS_CHECK_FAILED:
-                    // Redirect back to camera screen or show global modal
+                    window.location.href = '/onboarding/kyc/liveness';
                     break;
-                // Add other non-401 global catches here as needed
+
+                // Optional: System-wide downtime or unexpected backend crash
+                case ErrorCode.INTERNAL_SERVER_ERROR:
+                    // Only use this if you want a global banner/toast for unhandled 500s:
+                    console.error("System error occurred. Please try again later.");
+                    break;
+
+                // Optional: Suspended or deactivated account
+                case ErrorCode.USER_SUSPENDED:
+                    api.dispatch(logout());
+                    window.location.href = '/login?status=suspended';
+                    break;
+
+                default:
+                    // Do nothing: let the individual component/form catch block handle it
+                    break;
             }
         }
     }
