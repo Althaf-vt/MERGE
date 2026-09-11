@@ -6,35 +6,39 @@ import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
 import { Model } from "mongoose";
 import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
-
+import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 
 // MongoDB implementation of the UserRepository.
 // Handles User persistence and converts between domain entities and MongoDB documents.
 @Injectable()
-export class MongoUserRepository implements IUserRepository{
+export class MongoUserRepository extends BaseMongoRepository<UserAggregate, UserDocument> implements IUserRepository{
 
     // Injects the Mongoose User model used to perform database operations.
     constructor(
         @InjectModel(User.name)
-        private readonly _userModel: Model<UserDocument>
-    ){}
+        model: Model<UserDocument>
+    ){
+        super(model); // Passes the model to the BaseMongoRepository
+    }
 
-    // Finds a user by email and converts the document into a domain entity.
-    async findByEmail(email: string): Promise<UserAggregate | null> {
-        const document = await this._userModel.findOne({email}).exec();
-        if(!document) return null;
+    // Fulfill the abstract mapping requirements from the Base Class
+    protected toDomain(document: UserDocument): UserAggregate {
         return UserPersistenceMapper.toDomain(document);
     }
 
-    // Finds a user by ID and converts the database document into a domain entity.
-    async findById(id: string): Promise<UserAggregate | null> {
-        const document = await this._userModel.findById(id).exec();
+    protected toPersistence(entity: UserAggregate): any {
+        return UserPersistenceMapper.toPersistence(entity);
+    }
+
+    // Finds a user by email and converts the document into a domain entity.
+    async findByEmail(email: string): Promise<UserAggregate | null> {
+        const document = await this._model.findOne({email}).exec();
         if(!document) return null;
         return UserPersistenceMapper.toDomain(document);
     }
 
     async findByDocumentHash(documentHash: string): Promise<UserKyc | null> {
-        const document = await this._userModel.findOne({
+        const document = await this._model.findOne({
             'kycVerification.hashedDocumentNumber': documentHash
         }).exec();
         if(!document) return null;
@@ -46,28 +50,9 @@ export class MongoUserRepository implements IUserRepository{
         return userAggregate.kycVerification || null;
     }
 
-    // Converts the domain entity into persistence data and creates a new MongoDB document.
-    async create(user: UserAggregate): Promise<UserAggregate> {
-        const persistenceData = UserPersistenceMapper.toPersistence(user);
-        const created = new this._userModel(persistenceData);
-        const document = await created.save();
-        return UserPersistenceMapper.toDomain(document);
-    }
-
-    // Updates the existing MongoDB document and returns the updated domain entity.
-    async update(user: UserAggregate): Promise<UserAggregate> {
-        const persistenceData = UserPersistenceMapper.toPersistence(user);
-        const document = await this._userModel
-            .findByIdAndUpdate(user.id, persistenceData, { returnDocument: 'after' })
-            .exec();
-
-        if(!document) throw new Error("User not found");
-        return UserPersistenceMapper.toDomain(document);
-    }
-
     // Atomic operation: Appends result directly without serializing/overwriting the entire aggregate
     async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
-        await this._userModel.updateOne(
+        await this._model.updateOne(
             {_id: userId},
             {
                 $push:{
