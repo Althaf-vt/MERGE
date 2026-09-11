@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Inject, Injectable } from "@nestjs/common";
-import { IResendOtpUseCase, ResendOtpResult } from "../interfaces/resend-otp.use-case.interface";
+import { IResendOtpUseCase } from "../interfaces/resend-otp.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import { EMAIL_SERVICE, IEmailService } from "../../domain/interfaces/email-service.interface";

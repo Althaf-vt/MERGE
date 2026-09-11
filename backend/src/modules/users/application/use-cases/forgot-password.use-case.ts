@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IForgotPasswordUseCase } from "../interfaces/forgot-password.use-case.interface";
 import { ForgotPasswordDto } from "../dtos/forgot-password.dto";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";

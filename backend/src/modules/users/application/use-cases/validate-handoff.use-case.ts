@@ -1,6 +1,5 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../domain/interfaces/handoff-service.interface";
-import { HandoffGateway } from "../../presentation/gateways/handoff.gateway";
 import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interface.use-case";
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../interfaces/handoff-notification.service.interface";
 

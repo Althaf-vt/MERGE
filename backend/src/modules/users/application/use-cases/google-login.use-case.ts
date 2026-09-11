@@ -3,7 +3,6 @@ import { IGoogleLoginResult, IGoogleLoginUseCase } from "../interfaces/google-lo
 import { OAuth2Client } from "google-auth-library";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GoogleLoginDto } from "../dtos/google-login.dto";
-import { BadDocumentException } from "@aws-sdk/client-textract";
 import { EmailVO } from "../../domain/value-objects/email.vo";
 import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
