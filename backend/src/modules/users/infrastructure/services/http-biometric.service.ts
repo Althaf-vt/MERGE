@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IExtractionResult, IBiometricService, ILivenessResult } from "../../domain/interfaces/biometric-service.interface";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
@@ -36,11 +38,11 @@ export class HttpBiometricService implements IBiometricService{
             const detail = error.response?.data?.detail;
 
             if (status === 400) {
-                throw new BadRequestException(detail || 'Face validation failed.');
+                throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || 'Face validation failed.');
             }
             
             console.error('ML Worker Error Details:', error.message, error.response?.data);
-            throw new InternalServerErrorException(detail || 'Failed to communicate with the biometric ML worker.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, detail || 'Failed to communicate with the biometric ML worker.');
         }
     }
 
@@ -69,11 +71,11 @@ export class HttpBiometricService implements IBiometricService{
             const detail = error.response?.data?.detail;
 
             if (status === 400) {
-                throw new BadRequestException(detail || 'Liveness validation failed.');
+                throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || 'Liveness validation failed.');
             }
             
             console.error('ML Worker Liveness Error Details:', error.message, error.response?.data);
-            throw new InternalServerErrorException(detail || 'Failed to communicate with the liveness ML worker.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, detail || 'Failed to communicate with the liveness ML worker.');
         }
     }
 }

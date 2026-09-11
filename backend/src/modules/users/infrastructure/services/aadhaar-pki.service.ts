@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IPkiResult, IPkiVerificationService } from "../../domain/interfaces/kyc-service.interface";
 import path from "path";
 import AdmZip from "adm-zip";
@@ -13,7 +15,7 @@ export class AadharPkiService implements IPkiVerificationService{
 
     private parseAadhaarDate(dobStr: string): Date{
         if(!dobStr){
-            throw new BadRequestException("Date of Birth atttribute is missing in e-KYC XML.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Date of Birth attribute is missing in e-KYC XML.");
         }
 
         // Handles DD-MM-YYYY format
@@ -35,7 +37,7 @@ export class AadharPkiService implements IPkiVerificationService{
 
         const parsedDate = new Date(dobStr);
         if(isNaN(parsedDate.getTime())){
-            throw new BadRequestException(`Unrecognized Date of Birth format: ${dobStr}`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Unrecognized Date of Birth format: ${dobStr}`);
         }
 
         return parsedDate;
@@ -56,11 +58,11 @@ export class AadharPkiService implements IPkiVerificationService{
 
 
             if(!zipBuffer || zipBuffer.length === 0){
-                throw new BadRequestException('Zip buffer is empty or invalid.');
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Zip buffer is empty or invalid.');
             }
 
             if (!shareCode || shareCode.trim().length !== 4) {
-                throw new BadRequestException('A valid 4-digit share code is required.');
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A valid 4-digit share code is required.');
             }
 
             // 1. Unzip the password-protected file using the 4-digit share code
@@ -68,7 +70,7 @@ export class AadharPkiService implements IPkiVerificationService{
             const zipEntries = zip.getEntries();
 
             if(!zipEntries || zipEntries.length === 0){
-                throw new BadRequestException('Invalid or empty ZIP archive.');
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Invalid or empty ZIP archive.');
             }
 
             const xmlEntry = zipEntries.find(entry => entry.entryName.endsWith('.xml')) || zipEntries[0];
@@ -78,11 +80,11 @@ export class AadharPkiService implements IPkiVerificationService{
             try {
                 xmlBuffer = xmlEntry.getData(shareCode.trim());
             } catch (error) {
-                throw new BadRequestException("Invalid Share code or failed to decrypt ZIP file.");
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Invalid Share code or failed to decrypt ZIP file.");
             }
 
             if(!xmlBuffer || xmlBuffer.length === 0){
-                throw new BadRequestException('Failed to extract XML content from ZIP.');
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Failed to extract XML content from ZIP.');
             }
 
             const xmlString = xmlBuffer.toString('utf-8');
@@ -91,10 +93,10 @@ export class AadharPkiService implements IPkiVerificationService{
             const doc = new DOMParser({
                 errorHandler: (level: 'warning' | 'error' | 'fatalError', msg: string) => {
                     if(level === 'error'){
-                        throw new BadRequestException(`XML Parsing Error: ${msg}`);
+                        throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `XML Parsing Error: ${msg}`);
                     }
                     if(level === 'fatalError'){
-                        throw new BadRequestException(`Fatal XML Parsing Error: ${msg}`);
+                        throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `Fatal XML Parsing Error: ${msg}`);
                     }
 
                     // warning is ignored
@@ -104,7 +106,7 @@ export class AadharPkiService implements IPkiVerificationService{
             // 3. Load the official UIDAI public root certificate
             if (!fs.existsSync(this._rootCertPath)) {
                 this._logger.error(`Root certificate not found at path: ${this._rootCertPath}`);
-                throw new BadRequestException('Root verification certificate is missing on the server.');
+                throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Root verification certificate is missing on the server.');
             }
 
             const rawCert = fs.readFileSync(this._rootCertPath, 'utf-8');
@@ -117,7 +119,7 @@ export class AadharPkiService implements IPkiVerificationService{
                 || doc.getElementsByTagName("Signature")[0];
 
             if(!signature){
-                throw new BadRequestException('Digital signature missing from XML.');
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Digital signature missing from XML.');
             }
 
             // Extract the embedded public key from the XML itself to prevent key-rotation mismatches
@@ -140,7 +142,7 @@ export class AadharPkiService implements IPkiVerificationService{
             if(!isValid){
                 const validationErrors = sig.validationErrors?.join(', ') || 'Unknown signature mismatch';
                 this._logger.warn(`Signature validation failed: ${validationErrors}`);
-                throw new BadRequestException('Cryptographic signature verification failed. File may be tempered with.');
+                throw new DomainException(ErrorCode.AADHAAR_VERIFICATION_FAILED, 'Cryptographic signature verification failed. File may be tampered with.');
             }
 
             // 5.Extract the verified demographic data from the PoI (Proof of Identity) node
@@ -149,14 +151,14 @@ export class AadharPkiService implements IPkiVerificationService{
 
 
             if(!poiNode){
-                throw new BadRequestException('MProof of Identity (Poi) node missing in verified XML.');
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Proof of Identity (Poi) node missing in verified XML.');
             }
 
             const legalName = poiNode.getAttribute("name");
             const rawDob = poiNode.getAttribute("dob");
 
             if(!legalName || !rawDob){
-                throw new BadRequestException("Name or DOB attribute is missing in identity node.");
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Name or DOB attribute is missing in identity node.");
             }
 
             const verifiedDOB = this.parseAadhaarDate(rawDob);
@@ -169,8 +171,8 @@ export class AadharPkiService implements IPkiVerificationService{
 
         } catch (error: any) {
             this._logger.error(`Aadhaar XML verification error: ${error.message}`, error.stack);
-            if(error instanceof BadRequestException) throw error;
-            throw new BadRequestException("Failed to process Offline e-KYC document.");
+            if(error instanceof DomainException) throw error;
+            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Failed to process Offline e-KYC document.");
         }
     }
 }
