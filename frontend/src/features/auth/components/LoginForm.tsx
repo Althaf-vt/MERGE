@@ -69,10 +69,10 @@ export const LoginForm = () => {
                 <p className={styles.subtitle}>Two Souls, One Journey.</p>
             </div>
 
-            <form onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 {clientError && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{clientError}</div>}
                 {/* Error handling from NestJS backend */}
-                {error && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>Login failed. please check the credentials.</div>}
+                {error && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>Login failed. Please check the credentials.</div>}
                 
                 <div className={styles.inputGroup}>
                     <input 
@@ -81,6 +81,7 @@ export const LoginForm = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email Address" 
+                        required
                     />
                 </div>
                 <div className={styles.inputGroup}>
@@ -90,20 +91,21 @@ export const LoginForm = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Password" 
+                        required
                     />
                     <span className={styles.icon} onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <EyeOffIcon/> : <EyeIcon/>}
                     </span>
                 </div>
 
-                <div style={{ textAlign: 'right', marginBottom: '1rem' }}>
-                    <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: '#6D28D9', textDecoration: 'none' }}>
+                <div style={{ textAlign: 'right', marginTop: '-0.25rem', marginBottom: '0.25rem' }}>
+                    <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: '#6200ea', textDecoration: 'none', fontWeight: 500 }}>
                         Forgot Password?
                     </Link>
                 </div>
 
                 <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                    {isLoading ? "Logging in...." : "Login"}
+                    {isLoading ? "Logging in..." : "Login"}
                 </button>
             </form>
 
@@ -113,7 +115,7 @@ export const LoginForm = () => {
             <GoogleAuthButton />
 
             <p className={styles.footerText}>
-                Dont have an account? <Link to="/register" className={styles.footerLink}>Register.</Link>
+                Don't have an account? <Link to="/register" className={styles.footerLink}>Register.</Link>
             </p>
         </div>
     );

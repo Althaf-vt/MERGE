@@ -64,21 +64,86 @@
   cursor: pointer;
 }
 
+/* Compact Password Meter & Status */
+.passwordMeterContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: -0.65rem;
+}
+
+.meterRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .passwordMeter {
   display: flex;
-  gap: 0.5rem;
-  margin-top: -0.5rem;
+  flex: 1;
+  gap: 0.25rem;
 }
 
 .meterBar {
-  height: 4px;
+  height: 3px;
   flex: 1;
   background-color: #f3f4f6;
-  border-radius: 2px;
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
 }
 
-.meterBarActive {
-  background-color: #e0e7ff; 
+.meterWeak {
+  background-color: #ef4444;
+}
+
+.meterFair {
+  background-color: #f59e0b;
+}
+
+.meterGood {
+  background-color: #3b82f6;
+}
+
+.meterStrong {
+  background-color: #10b981;
+}
+
+.meterLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  min-width: 42px;
+  text-align: right;
+  line-height: 1;
+}
+
+/* Compact Inline Checklist */
+.rulesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.4rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.ruleItem {
+  font-size: 0.68rem;
+  line-height: 1.2;
+  color: #a1a1aa;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  transition: color 0.15s ease;
+}
+
+.rulePassed {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.ruleIcon {
+  font-size: 0.65rem;
+  line-height: 1;
 }
 
 .primaryBtn {
@@ -92,6 +157,12 @@
   font-weight: 500;
   cursor: pointer;
   margin-top: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .divider {
