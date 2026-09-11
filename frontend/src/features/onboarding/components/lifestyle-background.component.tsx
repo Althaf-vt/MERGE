@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { useUpdateLifestyleMutation } from "../api/profile.api";
 import { setCredentials } from "../../auth/slices/auth.slice";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import {
     EDUCATION_LEVELS,
     INCOME_RANGES,
@@ -169,7 +170,7 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
 
             onSuccess();
         } catch (err: any) {
-            setError(err?.data?.message || "Failed to save lifestyle and background details.");
+            setError(getErrorMessage(err, "Failed to save lifestyle and background details."));
         }
     };
 

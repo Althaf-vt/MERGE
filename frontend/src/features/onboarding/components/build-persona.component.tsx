@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { useUpdatePersonaMutation } from "../api/profile.api";
+import { useUpdatePersonaMutation } from "../api/profile.api";
 import { setCredentials } from "../../auth/slices/auth.slice";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import {
     PRONOUN_SUGGESTIONS,
     GENDER_IDENTITY_OPTIONS,
@@ -210,7 +212,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
             onSuccess();
         } catch (err: any) {
-            setError(err?.data?.message || "Failed to save persona details. Please try again.");
+            setError(getErrorMessage(err, "Failed to save persona details. Please try again."));
         }
     };
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useUpdatePreferencesMutation } from '../api/profile.api';
 import { setCredentials } from '../../auth/slices/auth.slice';
+import { getErrorMessage } from '../../.././shared/utils/error.util';
 import {
     DEFAULT_IDENTITY_TAGS,
     SUGGESTED_IDENTITY_TAGS,
@@ -117,7 +118,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
 
             onSuccess();
         } catch (err: any) {
-            setError(err?.data?.message || 'Failed to update preferences.');
+            setError(getErrorMessage(err, 'Failed to update preferences.'));
         }
     };
 

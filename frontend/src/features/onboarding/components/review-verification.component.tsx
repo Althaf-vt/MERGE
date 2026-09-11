@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setKycStep } from '../slices/kyc.slice';
+import { clearKycData, setKycStep } from "../slices/kyc.slice";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import { useSubmitFinalVerificationMutation } from '../api/kyc.api';
 import styles from './review-verification.module.css'; 
 
@@ -70,7 +71,7 @@ export const ReviewVerification = () => {
 
         } catch (err: any) {
             setShowModal(false);
-            setError(err?.data?.message || "Failed to submit verification.");
+            setError(getErrorMessage(err, "Failed to submit verification."));
         }
     };
 

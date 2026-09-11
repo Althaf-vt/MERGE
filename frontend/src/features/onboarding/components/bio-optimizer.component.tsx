@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useGenerateBioMutation, useSaveFinalBioMutation } from '../api/profile.api';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import { setCredentials } from '../../auth/slices/auth.slice';
 import { BIO_TRAITS, BIO_INTERESTS } from '../constants/bio-options.constant';
 import styles from './bio-optimizer.module.css';
@@ -45,7 +46,7 @@ export const BioOptimizer = () => {
             setRemainingGenerations(res.remainingAttempts);
             setSelectedBioIndex(null); // Reset selection on new generation
         } catch (err: any) {
-            setError(err?.data?.message || "Generation failed.");
+            setError(getErrorMessage(err, "Generation failed."));
         }
     };
 

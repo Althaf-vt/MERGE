@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSubmitLivenessMutation } from "../api/kyc.api";
 import { useAppDispatch } from "../../../app/hooks";
 import { addLivenessResult } from "../slices/kyc.slice";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import styles from './liveness-challenge.module.css';
 import { useRollingBuffer } from "../hooks/use-rolling-buffer.hook";
 import { calculateEAR, calculateSmileRatio, calculateYawRatio } from "../utils/liveness-heuristics.util";
@@ -169,10 +170,8 @@ export const LivenessChallenge = ({ onSuccess }: { onSuccess: () => void }) => {
         } catch (error: any) {
             // Unlock the pipeline so the user can try the failed prompt again
             isProcessingRef.current = false;
-            const errorMsg = typeof error?.data?.message === 'string'
-                ? error.data.message 
-                : "Background liveness synchronization failed.";
-            setError(errorMsg)
+            const errorMsg = getErrorMessage(error, "Background liveness synchronization failed.");
+            setError(errorMsg);
         }
     }
 

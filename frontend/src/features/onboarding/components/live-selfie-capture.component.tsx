@@ -1,6 +1,7 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useSubmitLiveSelfieMutation } from "../api/kyc.api";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import styles from './live-selfie-capture.module.css';
 
 interface LiveSelfieCaptureProps{
@@ -80,7 +81,7 @@ export const LiveSelfieCapture: React.FC<LiveSelfieCaptureProps> = ({onSuccess})
                     stream?.getTracks().forEach(t => t.stop());
                     onSuccess();
                 } catch (uploadError: any) {
-                    setError(uploadError?.data?.message || "Biometric validation failed. please try again.");
+                    setError(getErrorMessage(uploadError, "Biometric validation failed. please try again."));
                     setIsCapturing(false)
                 }
             }, 'image/jpeg', 0.9);

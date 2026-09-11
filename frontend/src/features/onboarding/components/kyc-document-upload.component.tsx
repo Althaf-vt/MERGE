@@ -3,6 +3,7 @@ import { useSubmitKycMutation } from "../api/kyc.api"
 import styles from './kyc-document-upload.module.css';
 import { useAppDispatch } from "../../../app/hooks";
 import { setExtractedData, setKycStep } from "../slices/kyc.slice";
+import { getErrorMessage } from "../../../shared/utils/error.util";
 
 export const KycDocumentUpload = () => {
     const dispatch = useAppDispatch()
@@ -42,7 +43,7 @@ export const KycDocumentUpload = () => {
             dispatch(setKycStep('DEVICE_SELECTION'));
         } catch (error: any) {
             console.error(error);
-            setError(error?.data?.message || "Cryptographic verification failed. Ensure the file is unmodified.");
+            setError(getErrorMessage(error, "Cryptographic verification failed. Ensure the file is unmodified."));
         }
     }
 
