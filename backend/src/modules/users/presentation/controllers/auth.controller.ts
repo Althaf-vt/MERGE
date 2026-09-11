@@ -154,10 +154,13 @@ export class AuthController{
     @Post('logout')
     @HttpCode(HttpStatus.OK)
     async logout(@Res({passthrough: true}) res: Response){
-
-        // Clear the cookie to completely terminate the session
-        res.clearCookie('refreshToken');
-        return {message: "Logged out seccessfully"};
+        // Clear the cookie matching the options used when set
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        return { message: "Logged out successfully" };
     }
 }
 
