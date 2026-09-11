@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './top-nav.module.css';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { logout } from '../../features/auth/slices/authSlice';
-import { authApi, useLogoutUserMutation } from '../../features/auth/api/authApi';
+import { logout } from '../../features/auth/slices/auth.slice';
+import { authApi, useLogoutUserMutation } from '../../features/auth/api/auth.api';
 
 export const TopNav = () => {
     const dispatch = useAppDispatch();

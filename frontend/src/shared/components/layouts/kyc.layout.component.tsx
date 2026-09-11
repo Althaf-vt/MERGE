@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppSelector } from '../../../app/hooks';
-import styles from './KycLayout.module.css';
+import styles from './kyc.layout.module.css';
 
 interface KycLayoutProps {
   children: React.ReactNode;
