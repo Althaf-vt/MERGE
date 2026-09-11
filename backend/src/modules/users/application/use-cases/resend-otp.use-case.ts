@@ -10,17 +10,17 @@ import { EmailVO } from "../../domain/value-objects/email.vo";
 export class ResendOtpUseCase implements IResendOtpUseCase{
     constructor(
         @Inject(USER_REPOSITORY)
-        private readonly userRepository: IUserRepository,
+        private readonly _userRepository: IUserRepository,
         @Inject(OTP_SERVICE)
-        private readonly otpService: IOtpService,
+        private readonly _otpService: IOtpService,
         @Inject(EMAIL_SERVICE)
-        private readonly emailService: IEmailService
+        private readonly _emailService: IEmailService
     ){}
 
     async execute(dto: ResendOtpDto): Promise<void> {
         try {
 
-            const existingUser = await this.userRepository.findByEmail(dto.email);
+            const existingUser = await this._userRepository.findByEmail(dto.email);
             if(existingUser){
                 throw new ConflictException("User with this email already exists");
             }
@@ -30,9 +30,9 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
 
             const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-            await this.otpService.refreshRegistrationDraft(standardizedEmail, newOtp, 600);
+            await this._otpService.refreshRegistrationDraft(standardizedEmail, newOtp, 600);
 
-            await this.emailService.sendOtpEmail(standardizedEmail, newOtp)
+            await this._emailService.sendOtpEmail(standardizedEmail, newOtp)
 
 
         } catch (error: any) {

@@ -7,11 +7,11 @@ import { VerificationStatus } from "../../domain/enums/user.enums";
 @Injectable()
 export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
     ){}
 
     async execute(userId: string): Promise<{ success: boolean; status: VerificationStatus; message: string; }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user || !user.kycVerification){
             throw new BadRequestException("User or Kyc record not found.");
@@ -31,7 +31,7 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
             user.completeKyc();
         }
 
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return{
             success: true, 

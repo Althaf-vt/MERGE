@@ -6,14 +6,14 @@ import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interfac
 @Injectable()
 export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
     constructor(
-        @Inject(HANDOFF_SERVICE) private readonly handoffService: IHandoffSessionService,
+        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
         // Injecting the gateway so we can trigger real-time updates from this HTTP request
         private readonly handoffGateway: HandoffGateway,
     ) { };
 
     async execute(sessionId: string): Promise<string> {
         // 1. check if the QR code is still valid in Redis
-        const userId = await this.handoffService.validateSession(sessionId);
+        const userId = await this._handoffService.validateSession(sessionId);
 
         if (!userId) {
             throw new BadRequestException('QR Code session has expired or is invalid.');

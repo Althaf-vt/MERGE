@@ -12,19 +12,19 @@ import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(PASSWORD_HASHER) private readonly passwordHasher: IPasswordHasher,
-        @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenservice,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher,
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
     ) { }
 
     async execute(dto: LoginUserDto): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
-        const user = await this.userRepository.findByEmail(dto.email);
+        const user = await this._userRepository.findByEmail(dto.email);
 
         if (!user) {
             throw new NotFoundException("User with this email is not exists. Please register first");
         }
 
-        const isPasswordValid = await this.passwordHasher.compare(dto.password, user.passwordHash!);
+        const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
 
         if (!isPasswordValid) {
             throw new UnauthorizedException("Invalid Email or Password");
@@ -35,7 +35,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         }
 
         user.recordLogin();
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         const payload = {
             userId: user.id!,
@@ -44,8 +44,8 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         }
 
         return {
-            accessToken: this.tokenService.generateAccessToken(payload),
-            refreshToken: this.tokenService.generateRefreshToken(payload),
+            accessToken: this._tokenService.generateAccessToken(payload),
+            refreshToken: this._tokenService.generateRefreshToken(payload),
             user: user,
         };
     }

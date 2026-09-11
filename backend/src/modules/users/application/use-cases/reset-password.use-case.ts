@@ -9,19 +9,19 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(OTP_SERVICE) private readonly otpService: IOtpService
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(OTP_SERVICE) private readonly _otpService: IOtpService
     ) {}
 
     async execute(dto: ResetPasswordDto): Promise<void> {
         const emailVo = new EmailVO(dto.email);
-        const isValid = await this.otpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp);
+        const isValid = await this._otpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp);
 
         if (!isValid) {
             throw new BadRequestException('Invalid or expired reset code.');
         }
 
-        const user = await this.userRepository.findByEmail(emailVo.getValue());
+        const user = await this._userRepository.findByEmail(emailVo.getValue());
         if (!user) {
             throw new BadRequestException('User not found.');
         }
@@ -32,7 +32,7 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
         // Assuming UserAggregate has an updatePassword method
         user.updatePassword(hashedPassword);
         
-        await this.userRepository.update(user);
-        await this.otpService.deletePasswordResetOtp(emailVo.getValue());
+        await this._userRepository.update(user);
+        await this._otpService.deletePasswordResetOtp(emailVo.getValue());
     }
 }

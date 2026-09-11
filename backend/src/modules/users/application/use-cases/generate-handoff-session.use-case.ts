@@ -8,14 +8,14 @@ export class GenerateHandoffSessionUseCase implements IGenerateHandoffSessionUse
     // we inject the Interface (token), not the specific Redis class.
     // This keeps the architecture clean and decoupled
     constructor(
-        @Inject(HANDOFF_SERVICE) private readonly handoffService: IHandoffSessionService,
+        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
     ) { }
 
     async execute(userId: string, clientOrigin?: string) {
         const TTL_SECONDS = 300; // 5min
 
         // 1. Create the secure session in Redis
-        const sessionId = await this.handoffService.createSession(userId, TTL_SECONDS);
+        const sessionId = await this._handoffService.createSession(userId, TTL_SECONDS);
 
         // 2. calculate the exact expiration timestamp for the frontend UI
         const expiresAt = new Date(Date.now() + TTL_SECONDS * 1000);

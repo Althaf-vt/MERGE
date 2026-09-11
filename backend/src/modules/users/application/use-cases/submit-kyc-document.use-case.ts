@@ -8,13 +8,13 @@ import { ISubmitKycDocumentUseCase, SubmitKycPayload } from "../interfaces/submi
 @Injectable()
 export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(PKI_VERIFICATION_SERVICE) private readonly pkiService: IPkiVerificationService,
-        @Inject(KYC_HASH_SERVICE) private readonly hashService: IKycHashService,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(PKI_VERIFICATION_SERVICE) private readonly _pkiService: IPkiVerificationService,
+        @Inject(KYC_HASH_SERVICE) private readonly _hashService: IKycHashService,
     ) { };
 
     async execute(userId: string, payload: SubmitKycPayload) {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         let extractedData;
 
@@ -23,16 +23,16 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
         // 1. Route to the correct cryptographic engine
         if (payload.documentType === DocumentType.AADHAAR_XML) {
             if (!payload.shareCode) throw new BadRequestException("Share code required for XML validation");
-            extractedData = await this.pkiService.verifyAadhaarXml(payload.fileBuffer, payload.shareCode);
+            extractedData = await this._pkiService.verifyAadhaarXml(payload.fileBuffer, payload.shareCode);
         } else {
             throw new BadRequestException('Document type engine not yet implemented.');
         }
 
         // 2. Hash the extracted documnet number deterministically
-        const hashedDocumentNumber = this.hashService.hashDocumentNumber(extractedData.documentNumber, payload.issuingCountry);
+        const hashedDocumentNumber = this._hashService.hashDocumentNumber(extractedData.documentNumber, payload.issuingCountry);
 
         // 3. Prevent duplicate accounts/ban evasions
-        const existingKyc = await this.userRepository.findByDocumentHash(hashedDocumentNumber);
+        const existingKyc = await this._userRepository.findByDocumentHash(hashedDocumentNumber);
         if (existingKyc && existingKyc.userId !== userId) {
             throw new ConflictException("This government ID is already registered to another account.");
         }
@@ -49,7 +49,7 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
         })
 
         user.updateKycVerification(kycEntity);
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return {
             message: "Cryptographic validation successful",

@@ -9,17 +9,17 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(TOKEN_SERVICE) private readonly tokenService: ITokenservice,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
     ) { };
 
     async execute(paylod: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
         // 1. Validate signature and expiration using the infrastructure service
         // If the token is invalid or expired, this throws an UnauthorizedException
-        const payload = this.tokenService.verifyRefreshToken(paylod.refreshToken);
+        const payload = this._tokenService.verifyRefreshToken(paylod.refreshToken);
 
         // 2. Verify the user still existis in the db
-        const user = await this.userRepository.findById(payload.userId);
+        const user = await this._userRepository.findById(payload.userId);
 
         // 3. Security check: Ensure the account wasn't suspended after the token was issued
         if (!user || user.accountStatus !== UserStatus.ACTIVE) {
@@ -34,8 +34,8 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         }
 
         return {
-            accessToken: this.tokenService.generateAccessToken(newPayload),
-            refreshToken: this.tokenService.generateRefreshToken(newPayload),
+            accessToken: this._tokenService.generateAccessToken(newPayload),
+            refreshToken: this._tokenService.generateRefreshToken(newPayload),
             user: user,
         };
     }

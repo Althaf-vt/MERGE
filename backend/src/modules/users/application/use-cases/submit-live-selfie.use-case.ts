@@ -8,13 +8,13 @@ import { ISubmitLiveSelfieUseCase } from "../interfaces/submit-live-selfie.use-c
 @Injectable()
 export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(BIOMETRIC_SERVICE) private readonly biometricService: IBiometricService,
-        private readonly s3Service: s3StorageService,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(BIOMETRIC_SERVICE) private readonly _biometricService: IBiometricService,
+        private readonly _s3Service: s3StorageService,
     ) { };
 
     async execute(userId: string, fileBuffer: Buffer) {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
         if (!user) throw new BadRequestException('User not found');
 
         // Ensure phase 3-7 (Document PKI) is actually finished first
@@ -23,10 +23,10 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
         }
 
         // 1. Offload the heavy vector math to the Python (Only requesting embedding, no liveness ye)
-        const { faceEmbedding, confidence } = await this.biometricService.extractEmbedding(fileBuffer);
+        const { faceEmbedding, confidence } = await this._biometricService.extractEmbedding(fileBuffer);
 
         // 2. Mock S3 Upload (To be replaces with actual S3 service later)
-        const liveSelfieS3 = await this.s3Service.uploadSelfie(userId, fileBuffer);
+        const liveSelfieS3 = await this._s3Service.uploadSelfie(userId, fileBuffer);
 
         // 3. Save the vector for future continues Authentication
         user.kycVerification.recordSelfie({
@@ -38,7 +38,7 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
         });
 
         // 4. Save the entity state (whether it passed or failed)
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         // 5. If the entity rejected the selfie, throw an error to trigger the UI retry state
         if (user.kycVerification.selfieVerificationStatus === SelfieVerificationStatus.REJECTED) {

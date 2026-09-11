@@ -6,11 +6,11 @@ import { SaveBioDto } from "../dtos/save-bio.dto";
 @Injectable()
 export class SaveBioUseCase implements ISaveBioUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository 
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository 
     ){}
 
     async execute(userId: string, payload: SaveBioDto): Promise<{ success: boolean; message: string; }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user || !user.profile){
             throw new BadRequestException("User or profile not found.");
@@ -25,7 +25,7 @@ export class SaveBioUseCase implements ISaveBioUseCase{
         user.attachProfile(user.profile);
         user.finalizeOnboarding()
 
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return {
             success: true,

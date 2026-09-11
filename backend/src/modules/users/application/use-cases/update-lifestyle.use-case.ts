@@ -7,11 +7,11 @@ import { UserProfile } from "../../domain/entities/user-profile.entity";
 @Injectable()
 export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
     async execute(userId: string, payload: UpdateLifestyleDto): Promise<{ success: boolean; message: string; profile: any; }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user){
             throw new BadRequestException("User not found.");
@@ -35,7 +35,7 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase{
         user.attachProfile(profile);
         user.advanceOnboardingStep(4);
 
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return{
             success: true,

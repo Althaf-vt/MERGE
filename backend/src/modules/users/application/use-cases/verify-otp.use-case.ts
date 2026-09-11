@@ -15,20 +15,20 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     // Injects the user repo for user lookup/update and the OTP service for OTP verification
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(OTP_SERVICE) private readonly otpService: IOtpService,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(OTP_SERVICE) private readonly _otpService: IOtpService,
     ) { };
 
     async execute(dto: VerifyOtpDto): Promise<UserAggregate> {
 
         // Verify OTP and retrieve temporary data from Redis
-        const draftData = await this.otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
+        const draftData = await this._otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
 
         if (!draftData) {
             throw new BadRequestException('Invalid or expired OTP');
         }
 
-        const existingUser = await this.userRepository.findByEmail(dto.email);
+        const existingUser = await this._userRepository.findByEmail(dto.email);
 
         if (existingUser) {
             throw new ConflictException("User already verified");
@@ -53,9 +53,9 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         })
 
         // Save Permanently to DB
-        const savedUser = await this.userRepository.create(newUser);
+        const savedUser = await this._userRepository.create(newUser);
 
-        await this.otpService.deleteDraft(dto.email);
+        await this._otpService.deleteDraft(dto.email);
 
         return savedUser;
     }

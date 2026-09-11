@@ -8,11 +8,11 @@ import { INDIAN_LOCATION_DATA } from "../../domain/constants/location-data.const
 @Injectable()
 export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
     async execute(userId: string, payload: UpdatePersonaDto): Promise<{ success: boolean; message: string; profile: any; verifiedDOB?: Date; }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user){
             throw new BadRequestException("User not found.");
@@ -53,7 +53,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
         user.attachProfile(profile);
         user.advanceOnboardingStep(3) 
 
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return {
             success: true,

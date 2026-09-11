@@ -7,11 +7,11 @@ import { UserPreference } from "../../domain/entities/user-preference.entity";
 @Injectable()
 export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
     async execute(userId: string, payload: UpdatePreferencesDto): Promise<{ success: boolean; message: string; preferences: any; }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user){
             throw new BadRequestException("User not found.");
@@ -37,7 +37,7 @@ export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
         user.attatchPreferences(preferences);
         user.advanceOnboardingStep(5);
 
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return {
             success: true,

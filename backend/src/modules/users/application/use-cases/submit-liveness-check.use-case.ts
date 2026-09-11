@@ -8,13 +8,13 @@ import { s3StorageService } from "../../infrastructure/services/s3-storage.servi
 @Injectable()
 export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(BIOMETRIC_SERVICE) private readonly biometricService: IBiometricService,
-        private readonly s3Service: s3StorageService,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(BIOMETRIC_SERVICE) private readonly _biometricService: IBiometricService,
+        private readonly _s3Service: s3StorageService,
     ){}
 
     async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<{ success: boolean; message: string; livenessScore: number; status: VerificationStatus }> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
         if(!user) throw new BadRequestException("User not found.");
 
         const kyc = user.kycVerification;
@@ -24,10 +24,10 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
         }
 
         // 1. Pass the target prompt to the ML worker for specific landmark analysis
-        const {livenessScore, passed} = await this.biometricService.analyzeLiveness(videoBuffer, promptType);
+        const {livenessScore, passed} = await this._biometricService.analyzeLiveness(videoBuffer, promptType);
 
         // 2. Upload liveness clip to S3
-        const livenessVideoS3 = await this.s3Service.uploadVideo(userId, videoBuffer, 'video/webm');
+        const livenessVideoS3 = await this._s3Service.uploadVideo(userId, videoBuffer, 'video/webm');
 
         // 3. Record the prompt result in the domain entity
         kyc.recordLivenessPrompt({
@@ -37,7 +37,7 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
         });
 
         // 4. Persist aggregate root atomically
-        await this.userRepository.addLivenessResult(userId, {
+        await this._userRepository.addLivenessResult(userId, {
             prompt: promptType,
             score: livenessScore,
             status: passed ? 'PASSED' : 'FAILED',

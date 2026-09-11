@@ -7,12 +7,12 @@ import { GenerateBioDto } from "../dtos/generate-bio.dto";
 @Injectable()
 export class GenerateBioUseCase implements IGenerateBioUseCase{
     constructor(
-        @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-        @Inject(AI_SERVICE) private readonly aiService: IAiService
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(AI_SERVICE) private readonly _aiService: IAiService
     ){}
 
     async execute(userId: string, payload: GenerateBioDto): Promise<GeneratebioResult> {
-        const user = await this.userRepository.findById(userId);
+        const user = await this._userRepository.findById(userId);
 
         if(!user || !user.profile){
             throw new BadRequestException("User or profile not found.");
@@ -31,7 +31,7 @@ export class GenerateBioUseCase implements IGenerateBioUseCase{
         }
 
         // 3. Generate Bios
-        const generateBios = await this.aiService.generateDatingBios({
+        const generateBios = await this._aiService.generateDatingBios({
             age,
             genderIdentity: user.profile.genderIdentity,
             city: user.profile.city,
@@ -41,7 +41,7 @@ export class GenerateBioUseCase implements IGenerateBioUseCase{
         })
         
         user.profile.incrementBioAttemps();
-        await this.userRepository.update(user);
+        await this._userRepository.update(user);
 
         return {
             success: true,
