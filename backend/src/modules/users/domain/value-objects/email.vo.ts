@@ -1,12 +1,14 @@
 // Represents an email as a value object, validating and normalizing the email
 // while keeping its value immutable and providing value-based comaprison.
 
+import { DomainException } from "../exceptions/domain.exception";
+import { ErrorCode } from "../enums/error-code.enum";
 export class EmailVO{
     private readonly _value: string;
 
     constructor(email: string){
         if(!email || !this.validate(email)){
-            throw new Error('Invalid email format');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Invalid email format');
         }
         this._value = email.toLocaleLowerCase().trim();
     }
