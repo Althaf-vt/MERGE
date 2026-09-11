@@ -1,0 +1,86 @@
+.navContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    background-color: transparent;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #6D28D9;
+    text-decoration: none;
+    letter-spacing: -0.05em;
+}
+
+.navLinks {
+    display: flex;
+    gap: 2rem;
+}
+
+.navLink {
+    color: #4B5563;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.navLink:hover {
+    color: #111827;
+}
+
+.authAction {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.loginBtn {
+    background-color: #6D28D9;
+    color: white;
+    padding: 0.6rem 1.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.loginBtn:hover {
+    background-color: #5B21B6;
+}
+
+.userMenu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.greeting {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.logoutBtn {
+    background-color: transparent;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+    background-color: #F3F4F6;
+    color: #111827;
+}

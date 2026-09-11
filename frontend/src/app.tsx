@@ -15,45 +15,48 @@ import { OnboardingGuard } from './features/onboarding/components/onboarding-gua
 import { LandingPage } from './features/onboarding/components/landing.page';
 import { ProfileLivePage } from './features/onboarding/components/profile-live.page';
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
+import { GlobalLayout } from './shared/components/layouts/global-layout.component';
 
 export const App = () => {
     return (
         <BrowserRouter>
             <Routes>
-                {/* Landing Page as default root */}
-                <Route path="/" element={<LandingPage />} />
+                <Route element={<GlobalLayout />}>
+                    {/* Landing Page as default root */}
+                    <Route path="/" element={<LandingPage />} />
 
-                {/* AUTHENTICATION ROUTES */}
-                <Route element={<PublicRoute />}>
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path='/forgot-password' element={<ForgotPasswordPage/>} />
-                </Route>
-
-                {/* Public Mobile Handoff */}
-                <Route path="/handoff" element={<MobileHandoff />} />
-
-                {/* PROTECTED ROUTES */}
-                <Route element={<PersistLogin />}>
-                    {/* Post-onboarding success page */}
-                    <Route path="/profile-live" element={<ProfileLivePage />} />
-
-                    {/* 
-                        ONBOARDING ROUTES
-                        Nested inside OnboardingGuard so completed users 
-                        are automatically redirected to /profile-live
-                    */}
-                    <Route element={<OnboardingGuard />}>
-                        <Route path="/onboarding/kyc" element={<KycPage />} />
-                        <Route path="/onboarding/profile" element={<PersonaPage />} />
-                        <Route path="/onboarding/lifestyle" element={<LifestylePage />} />
-                        <Route path="/onboarding/preferences" element={<PreferencesPage />} />
-                        <Route path="/onboarding/bio" element={<GenerateBioPage />} />
+                    {/* AUTHENTICATION ROUTES */}
+                    <Route element={<PublicRoute />}>
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path='/forgot-password' element={<ForgotPasswordPage/>} />
                     </Route>
-                </Route>
 
-                {/* Catch-all */}
-                <Route path="*" element={<div>404 - Page Not Found</div>} />
+                    {/* Public Mobile Handoff */}
+                    <Route path="/handoff" element={<MobileHandoff />} />
+
+                    {/* PROTECTED ROUTES */}
+                    <Route element={<PersistLogin />}>
+                        {/* Post-onboarding success page */}
+                        <Route path="/profile-live" element={<ProfileLivePage />} />
+
+                        {/* 
+                            ONBOARDING ROUTES
+                            Nested inside OnboardingGuard so completed users 
+                            are automatically redirected to /profile-live
+                        */}
+                        <Route element={<OnboardingGuard />}>
+                            <Route path="/onboarding/kyc" element={<KycPage />} />
+                            <Route path="/onboarding/profile" element={<PersonaPage />} />
+                            <Route path="/onboarding/lifestyle" element={<LifestylePage />} />
+                            <Route path="/onboarding/preferences" element={<PreferencesPage />} />
+                            <Route path="/onboarding/bio" element={<GenerateBioPage />} />
+                        </Route>
+                    </Route>
+
+                    {/* Catch-all */}
+                    <Route path="*" element={<div>404 - Page Not Found</div>} />
+                </Route>
             </Routes>
         </BrowserRouter>
     );

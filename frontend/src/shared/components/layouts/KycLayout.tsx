@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../app/hooks';
 import styles from './KycLayout.module.css';
 
@@ -10,14 +9,13 @@ interface KycLayoutProps {
 export const KycLayout: React.FC<KycLayoutProps> = ({ children }) => {
   const currentStep = useAppSelector((state) => state.kyc.currentStep);
 
-  // Calculate progress based on the current step
   const getProgress = () => {
     switch (currentStep) {
       case 'DOCUMENT_UPLOAD': return '15%';
       case 'DOCUMENT_SUCCESS': return '30%';
       case 'DEVICE_SELECTION': return '45%';
       case 'LIVE_SELFIE': return '60%';
-      case 'LIVENESS_CHALLENGE': return '75%'; // FIXED: Replaced 'LIVENESS_CHECK'
+      case 'LIVENESS_CHALLENGE': return '75%';
       case 'REVIEW_VERIFICATION': return '90%';
       case 'SUCCESS': return '100%';
       default: return '0%';
@@ -26,14 +24,6 @@ export const KycLayout: React.FC<KycLayoutProps> = ({ children }) => {
 
   return (
     <div className={styles.layoutContainer}>
-      <header className={styles.topBar}>
-        <div className={styles.brand}>MERGE</div>
-        <div className={styles.navLinks}>
-            <Link to="/features" className={styles.navLink}>Features</Link>
-            <Link to="/safety" className={styles.navLink}>Safety</Link>
-        </div>
-        <Link to="/login" className={styles.loginBtn}>Login</Link>
-      </header>
       
       {/* Dynamic Progress Indicator */}
       <div className={styles.progressContainer}>
