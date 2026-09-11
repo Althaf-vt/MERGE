@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IUpdatePreferencesUseCase } from "../interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../dtos/update-preferences.dto";
@@ -14,11 +16,11 @@ export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
         const user = await this._userRepository.findById(userId);
 
         if(!user){
-            throw new BadRequestException("User not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
         }
 
         if(payload.preferredAgeMin > payload.preferredAgeMax){
-            throw new BadRequestException("Minimum age cannot exceed maximum age.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Minimum age cannot exceed maximum age.");
         }
 
         const preferences = user.preference || new UserPreference({})

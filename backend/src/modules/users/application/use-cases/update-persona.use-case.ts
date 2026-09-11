@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IUpdatePersonaUseCase } from "../interfaces/update-persona.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
@@ -15,7 +17,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
         const user = await this._userRepository.findById(userId);
 
         if(!user){
-            throw new BadRequestException("User not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
         }
 
         // 1. Initialize profile if it doesnt exist yet, or use the existing sub-entity
@@ -23,10 +25,10 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase{
 
         const validCities = INDIAN_LOCATION_DATA[payload.state];
         if (!validCities) {
-        throw new BadRequestException(`Invalid state: ${payload.state}`);
+        throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid state: ${payload.state}`);
         }
         if (!validCities.includes(payload.city)) {
-        throw new BadRequestException(`City '${payload.city}' does not belong to state '${payload.state}'`);
+        throw new DomainException(ErrorCode.VALIDATION_FAILED, `City '${payload.city}' does not belong to state '${payload.state}'`);
         }
 
         profile.updatePersona({

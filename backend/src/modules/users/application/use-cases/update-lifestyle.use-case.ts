@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IUpdateLifestyleUseCase } from "../interfaces/update-lifestyle.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdateLifestyleDto } from "../dtos/update-lifestyle.dto";
@@ -14,7 +16,7 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase{
         const user = await this._userRepository.findById(userId);
 
         if(!user){
-            throw new BadRequestException("User not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
         }
 
         const profile = user.profile || new UserProfile({});

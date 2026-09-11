@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { ISaveBioUseCase } from "../interfaces/save-bio.use-case.interface";
 import { SaveBioDto } from "../dtos/save-bio.dto";
@@ -13,7 +15,7 @@ export class SaveBioUseCase implements ISaveBioUseCase{
         const user = await this._userRepository.findById(userId);
 
         if(!user || !user.profile){
-            throw new BadRequestException("User or profile not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User or profile not found.");
         }
 
         user.profile.updateBio(

@@ -1,4 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { AI_SERVICE, IAiService } from "../../domain/interfaces/ai-service.interface";
 import { GeneratebioResult, IGenerateBioUseCase } from "../interfaces/generate-bio.use-case.interface";
@@ -15,12 +17,12 @@ export class GenerateBioUseCase implements IGenerateBioUseCase{
         const user = await this._userRepository.findById(userId);
 
         if(!user || !user.profile){
-            throw new BadRequestException("User or profile not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User or profile not found.");
         }
 
         // 1. Enforce Rate Limiting to prevent API abuse
         if(!user.profile.canGenerateBio()){
-            throw new BadRequestException('Maximum bio generation attemps reached.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum bio generation attemps reached.');
         }
 
         // 2. Calculate age safely
