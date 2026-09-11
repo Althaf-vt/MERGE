@@ -125,10 +125,10 @@ export interface UpdateInterestsAndPersonalityTriatsPayload{
 export const MAX_BIO_GENERATION_ATTEMPTS = 3;
 
 export class UserProfile{
-    private props: UserProfileProps;
+    private _props: UserProfileProps;
 
     constructor(props: UserProfileProps){
-        this.props = {
+        this._props = {
             ...props,
             languages: props.languages ?? [],
             selectedTraits: props.selectedTraits ?? [],
@@ -141,157 +141,157 @@ export class UserProfile{
         }
     }
 
-    get displayName(): string | undefined {return this.props.displayName}
-    get isProfileVisible(): boolean | undefined {return this.props.isProfileVisible}
-    get profileCompletion(): number | undefined {return this.props.profileCompletion}
-    get customLabel(): string | undefined {return this.props.customLabel};
-    get bioGenerationAttempts(): number {return this.props.bioGenerationAttempts || 0}
-    get genderIdentity(): string | undefined {return this.props.genderIdentity}
-    get city(): string | undefined {return this.props.city}
-    get relationshipGoal(): string | undefined {return this.props.relationshipGoal}
-    get selectedTraits(): string[] | undefined {return this.props.selectedTraits}
-    get interests(): string[] | undefined {return this.props.interests}
+    get displayName(): string | undefined {return this._props.displayName}
+    get isProfileVisible(): boolean | undefined {return this._props.isProfileVisible}
+    get profileCompletion(): number | undefined {return this._props.profileCompletion}
+    get customLabel(): string | undefined {return this._props.customLabel};
+    get bioGenerationAttempts(): number {return this._props.bioGenerationAttempts || 0}
+    get genderIdentity(): string | undefined {return this._props.genderIdentity}
+    get city(): string | undefined {return this._props.city}
+    get relationshipGoal(): string | undefined {return this._props.relationshipGoal}
+    get selectedTraits(): string[] | undefined {return this._props.selectedTraits}
+    get interests(): string[] | undefined {return this._props.interests}
     get remainingBioAttempts(): number{
-        const used = this.props.bioGenerationAttempts || 0;
+        const used = this._props.bioGenerationAttempts || 0;
         return Math.max(0, MAX_BIO_GENERATION_ATTEMPTS - used);
     }
     // Encapsulated behavior
 
         // for updating persona details from screen 1
     updatePersona(payload: UpdatePersonaPayload): void {
-        if(payload.displayName !== undefined) this.props.displayName = payload.displayName;
-        if(payload.phoneNumber !== undefined) this.props.phoneNumber = payload.phoneNumber;
-        if(payload.pronouns !== undefined) this.props.pronouns = payload.pronouns;
-        if(payload.genderIdentity !== undefined) this.props.genderIdentity = payload.genderIdentity;
-        if(payload.customLabel !== undefined) this.props.customLabel = payload.customLabel;
-        if(payload.city !== undefined) this.props.city = payload.city;
-        if(payload.state !== undefined) this.props.state = payload.state;
-        if(payload.country !== undefined) this.props.country = payload.country;
-        if(payload.heightCm !== undefined) this.props.heightCm = payload.heightCm;
-        if(payload.languages !== undefined) this.props.languages = payload.languages;
-        if(payload.intersex !== undefined) this.props.intersex = payload.intersex;
-        if(payload.outnessLevel !== undefined) this.props.outnessLevel = payload.outnessLevel;
-        if(payload.relationshipStatus !== undefined) this.props.relationshipStatus = payload.relationshipStatus;
-        if(payload.relationshipGoal !== undefined) this.props.relationshipGoal = payload.relationshipGoal;
-        if(payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
-        if(payload.openToAdoption !== undefined) this.props.openToAdoption = payload.openToAdoption;
-        if(payload.immigrationReady !== undefined) this.props.immigrationReady = payload.immigrationReady;
+        if(payload.displayName !== undefined) this._props.displayName = payload.displayName;
+        if(payload.phoneNumber !== undefined) this._props.phoneNumber = payload.phoneNumber;
+        if(payload.pronouns !== undefined) this._props.pronouns = payload.pronouns;
+        if(payload.genderIdentity !== undefined) this._props.genderIdentity = payload.genderIdentity;
+        if(payload.customLabel !== undefined) this._props.customLabel = payload.customLabel;
+        if(payload.city !== undefined) this._props.city = payload.city;
+        if(payload.state !== undefined) this._props.state = payload.state;
+        if(payload.country !== undefined) this._props.country = payload.country;
+        if(payload.heightCm !== undefined) this._props.heightCm = payload.heightCm;
+        if(payload.languages !== undefined) this._props.languages = payload.languages;
+        if(payload.intersex !== undefined) this._props.intersex = payload.intersex;
+        if(payload.outnessLevel !== undefined) this._props.outnessLevel = payload.outnessLevel;
+        if(payload.relationshipStatus !== undefined) this._props.relationshipStatus = payload.relationshipStatus;
+        if(payload.relationshipGoal !== undefined) this._props.relationshipGoal = payload.relationshipGoal;
+        if(payload.maritalStatus !== undefined) this._props.maritalStatus = payload.maritalStatus;
+        if(payload.openToAdoption !== undefined) this._props.openToAdoption = payload.openToAdoption;
+        if(payload.immigrationReady !== undefined) this._props.immigrationReady = payload.immigrationReady;
 
         this.recalculateCompletion();
     }
         // for updating lifestyle & background from screen 2
     updateLifestyle(payload: UpdateLifestylePayload): void {
-        if (payload.education !== undefined) this.props.education = payload.education;
-        if (payload.occupation !== undefined) this.props.occupation = payload.occupation;
-        if (payload.incomeRange !== undefined) this.props.incomeRange = payload.incomeRange;
-        if (payload.religion !== undefined) this.props.religion = payload.religion;
-        if (payload.disability !== undefined) this.props.disability = payload.disability;
-        if (payload.diet !== undefined) this.props.diet = payload.diet;
-        if (payload.smokingHabit !== undefined) this.props.smokingHabit = payload.smokingHabit;
-        if (payload.drinkingHabit !== undefined) this.props.drinkingHabit = payload.drinkingHabit;
-        if (payload.relationshipStatus !== undefined) this.props.relationshipStatus = payload.relationshipStatus;
-        if (payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
+        if (payload.education !== undefined) this._props.education = payload.education;
+        if (payload.occupation !== undefined) this._props.occupation = payload.occupation;
+        if (payload.incomeRange !== undefined) this._props.incomeRange = payload.incomeRange;
+        if (payload.religion !== undefined) this._props.religion = payload.religion;
+        if (payload.disability !== undefined) this._props.disability = payload.disability;
+        if (payload.diet !== undefined) this._props.diet = payload.diet;
+        if (payload.smokingHabit !== undefined) this._props.smokingHabit = payload.smokingHabit;
+        if (payload.drinkingHabit !== undefined) this._props.drinkingHabit = payload.drinkingHabit;
+        if (payload.relationshipStatus !== undefined) this._props.relationshipStatus = payload.relationshipStatus;
+        if (payload.maritalStatus !== undefined) this._props.maritalStatus = payload.maritalStatus;
 
         this.recalculateCompletion();
     }
 
     incrementBioAttemps(): void{
-        this.props.bioGenerationAttempts = (this.props.bioGenerationAttempts || 0) + 1;
+        this._props.bioGenerationAttempts = (this._props.bioGenerationAttempts || 0) + 1;
     }
 
     updateBio(bio: string, selectedTraits: string[], interests: string[]): void{
-        this.props.bio = bio;
-        this.props.selectedTraits = selectedTraits;
-        this.props.interests = interests;
+        this._props.bio = bio;
+        this._props.selectedTraits = selectedTraits;
+        this._props.interests = interests;
         this.recalculateCompletion();
     }
 
     canGenerateBio(): boolean {
-        return (this.props.bioGenerationAttempts || 0) < MAX_BIO_GENERATION_ATTEMPTS;
+        return (this._props.bioGenerationAttempts || 0) < MAX_BIO_GENERATION_ATTEMPTS;
     }
 
     updateBasicInfo(payload: UpdateBasicInfoPayload): void{
-        if(payload.displayName !== undefined) this.props.displayName = payload.displayName;
-        if(payload.phoneNumber !== undefined) this.props.phoneNumber = payload.phoneNumber;
-        if(payload.bio !== undefined) this.props.bio = payload.bio;
+        if(payload.displayName !== undefined) this._props.displayName = payload.displayName;
+        if(payload.phoneNumber !== undefined) this._props.phoneNumber = payload.phoneNumber;
+        if(payload.bio !== undefined) this._props.bio = payload.bio;
 
         this.recalculateCompletion();
     }
 
     updateLocation(paylaod: UpdateLocationPayload): void{
-        if(paylaod.city !== undefined) this.props.city = paylaod.city;
-        if(paylaod.state !== undefined) this.props.state = paylaod.state;
-        if(paylaod.country !== undefined) this.props.country = paylaod.country;
+        if(paylaod.city !== undefined) this._props.city = paylaod.city;
+        if(paylaod.state !== undefined) this._props.state = paylaod.state;
+        if(paylaod.country !== undefined) this._props.country = paylaod.country;
 
         this.recalculateCompletion();
     }
 
     // updateLifeStyle(payload: UpdateLifeStylePayload): void{
-    //     if(payload.diet !== undefined) this.props.diet = payload.diet;
-    //     if(payload.smoking !== undefined) this.props.smokingHabit = payload.smoking;
-    //     if(payload.drinking !== undefined) this.props.drinkingHabit = payload.drinking;
-    //     if(payload.disability !== undefined) this.props.disability = payload.disability;
+    //     if(payload.diet !== undefined) this._props.diet = payload.diet;
+    //     if(payload.smoking !== undefined) this._props.smokingHabit = payload.smoking;
+    //     if(payload.drinking !== undefined) this._props.drinkingHabit = payload.drinking;
+    //     if(payload.disability !== undefined) this._props.disability = payload.disability;
 
     //     this.recalculateCompletion();
     // }
 
     updateIndentity(payload: UpdateIdentityPayload): void{
-        if(payload.pronouns !== undefined) this.props.pronouns = payload.pronouns;
-        if(payload.gender !== undefined) this.props.genderIdentity = payload.gender;
-        if(payload.sexualOrientation !== undefined) this.props.sexualOrientation = payload.sexualOrientation;
-        if(payload.intersex !== undefined) this.props.intersex = payload.intersex;
-        if(payload.outnessLevel !== undefined) this.props.outnessLevel = payload.outnessLevel;
-        if(payload.customLabel !== undefined) this.props.customLabel = payload.customLabel;
+        if(payload.pronouns !== undefined) this._props.pronouns = payload.pronouns;
+        if(payload.gender !== undefined) this._props.genderIdentity = payload.gender;
+        if(payload.sexualOrientation !== undefined) this._props.sexualOrientation = payload.sexualOrientation;
+        if(payload.intersex !== undefined) this._props.intersex = payload.intersex;
+        if(payload.outnessLevel !== undefined) this._props.outnessLevel = payload.outnessLevel;
+        if(payload.customLabel !== undefined) this._props.customLabel = payload.customLabel;
         
         this.recalculateCompletion();
     }
 
     updatePersonalInfo(payload: UpdatePersonalInfoPayload): void{
-        if(payload.education !== undefined) this.props.education = payload.education;
-        if(payload.height !== undefined) this.props.heightCm = payload.height;
-        if(payload.incomeRange !== undefined) this.props.incomeRange = payload.incomeRange;
-        if(payload.languages !== undefined) this.props.languages = payload.languages;
-        if(payload.occupation !== undefined) this.props.occupation = payload.occupation;
-        if(payload.religion !== undefined) this.props.religion = payload.religion;
+        if(payload.education !== undefined) this._props.education = payload.education;
+        if(payload.height !== undefined) this._props.heightCm = payload.height;
+        if(payload.incomeRange !== undefined) this._props.incomeRange = payload.incomeRange;
+        if(payload.languages !== undefined) this._props.languages = payload.languages;
+        if(payload.occupation !== undefined) this._props.occupation = payload.occupation;
+        if(payload.religion !== undefined) this._props.religion = payload.religion;
 
         this.recalculateCompletion();
     }
 
     updateLifeLogistics(payload: UpdateLifeLogisticPayload): void{
-        if(payload.immigrationReady !== undefined) this.props.immigrationReady = payload.immigrationReady;
-        if(payload.openToAdoption !== undefined) this.props.openToAdoption = payload.openToAdoption;
+        if(payload.immigrationReady !== undefined) this._props.immigrationReady = payload.immigrationReady;
+        if(payload.openToAdoption !== undefined) this._props.openToAdoption = payload.openToAdoption;
 
         this.recalculateCompletion();
     }
 
     updateRelationshipStatusAndGoal(payload: UpdateRelationshipStatusAndGoal): void{
-        if(payload.maritalStatus !== undefined) this.props.maritalStatus = payload.maritalStatus;
-        if(payload.relationshipGoal !== undefined) this.props.relationshipGoal = payload.relationshipGoal;
-        if(payload.relationshipStatus !== undefined) this.props.relationshipStatus = payload.relationshipStatus;
+        if(payload.maritalStatus !== undefined) this._props.maritalStatus = payload.maritalStatus;
+        if(payload.relationshipGoal !== undefined) this._props.relationshipGoal = payload.relationshipGoal;
+        if(payload.relationshipStatus !== undefined) this._props.relationshipStatus = payload.relationshipStatus;
 
         this.recalculateCompletion();
     }
 
     updateInterestAndPresonalityTriats(payload: UpdateInterestsAndPersonalityTriatsPayload): void{
-        if(payload.interests !== undefined) this.props.interests = payload.interests;
-        if(payload.selectedTriats !== undefined) this.props.selectedTraits = payload.selectedTriats;
+        if(payload.interests !== undefined) this._props.interests = payload.interests;
+        if(payload.selectedTriats !== undefined) this._props.selectedTraits = payload.selectedTriats;
 
         this.recalculateCompletion();
     }
 
     hideProfile(): void{
-        this.props.isProfileVisible = false;
+        this._props.isProfileVisible = false;
     }
 
     private recalculateCompletion(): void{
         let score = 0;
-        if(this.props.displayName) score += 10;
-        if(this.props.bio) score += 10;
+        if(this._props.displayName) score += 10;
+        if(this._props.bio) score += 10;
 
-        this.props.profileCompletion = score;
+        this._props.profileCompletion = score;
     }
 
     toJSON() {
-        return {...this.props}
+        return {...this._props}
     }
 }

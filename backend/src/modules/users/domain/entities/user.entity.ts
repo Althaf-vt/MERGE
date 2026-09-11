@@ -43,10 +43,10 @@ export interface UserAggregateProps {
 // Represents the User domain entity, managing user data and 
 // controlling how its state can change through domain-specific behaviors.
 export class UserAggregate {
-    private props: UserAggregateProps;
+    private _props: UserAggregateProps;
 
     constructor(props: UserAggregateProps){
-        this.props = {
+        this._props = {
             ...props,
             authProvider: props.authProvider ?? AuthProvider.EMAIL,
             accountStatus: props.accountStatus ?? UserStatus.ACTIVE,
@@ -67,38 +67,38 @@ export class UserAggregate {
     }
 
     // Getters : Provides read-only access to the User's provate properties.
-    get id(): string | undefined {return this.props.id}
-    get email(): EmailVO {return this.props.email}
-    get passwordHash(): string | null | undefined {return this.props.passwordHash}
-    get authProvider(): AuthProvider {return this.props.authProvider};
-    get isEmailVerified(): boolean {return this.props.isEmailVerified}
-    get accountStatus(): UserStatus {return this.props.accountStatus}
-    get kycCompleted(): boolean {return this.props.kycCompleted}
-    get onboardingStep(): number {return this.props.onboardingStep}
-    get onboardingCompleted(): boolean {return this.props.onboardingCompleted}
-    get profileCompleted(): boolean {return this.props.profileCompleted};
-    get castingDirectorCompleted(): boolean {return this.props.castingDirectorCompleted};
-    get lumenEnabled(): boolean {return this.props.lumenEnabled};
-    get dailyMatchHours(): number[] {return this.props.dailyMatchHours};
-    get lumenRecommendationsGeneratedToday(): number {return this.props.lumenRecommendationGeneratedToday};
-    get lastLumenReset(): Date | undefined {return this.props.lastLumenReset};
-    get lastLogin(): Date | undefined {return this.props.lastLogin};
-    get createdAt(): Date | undefined {return this.props.createdAt};
-    get updatedAt(): Date | undefined {return this.props.updatedAt};
+    get id(): string | undefined {return this._props.id}
+    get email(): EmailVO {return this._props.email}
+    get passwordHash(): string | null | undefined {return this._props.passwordHash}
+    get authProvider(): AuthProvider {return this._props.authProvider};
+    get isEmailVerified(): boolean {return this._props.isEmailVerified}
+    get accountStatus(): UserStatus {return this._props.accountStatus}
+    get kycCompleted(): boolean {return this._props.kycCompleted}
+    get onboardingStep(): number {return this._props.onboardingStep}
+    get onboardingCompleted(): boolean {return this._props.onboardingCompleted}
+    get profileCompleted(): boolean {return this._props.profileCompleted};
+    get castingDirectorCompleted(): boolean {return this._props.castingDirectorCompleted};
+    get lumenEnabled(): boolean {return this._props.lumenEnabled};
+    get dailyMatchHours(): number[] {return this._props.dailyMatchHours};
+    get lumenRecommendationsGeneratedToday(): number {return this._props.lumenRecommendationGeneratedToday};
+    get lastLumenReset(): Date | undefined {return this._props.lastLumenReset};
+    get lastLogin(): Date | undefined {return this._props.lastLogin};
+    get createdAt(): Date | undefined {return this._props.createdAt};
+    get updatedAt(): Date | undefined {return this._props.updatedAt};
 
 
-    get profile(): UserProfile | undefined {return this.props.profile}
-    get preference(): UserPreference | undefined {return this.props.preferences}
-    get kycVerification(): UserKyc | undefined {return this.props.kycVerification};
+    get profile(): UserProfile | undefined {return this._props.profile}
+    get preference(): UserPreference | undefined {return this._props.preferences}
+    get kycVerification(): UserKyc | undefined {return this._props.kycVerification};
 
     
     //1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
     recordLogin(): void{
-        if(this.props.accountStatus !== UserStatus.ACTIVE){
+        if(this._props.accountStatus !== UserStatus.ACTIVE){
             throw new Error('Inactive account cannot login');
         }
 
-        this.props.lastLogin = new Date();
+        this._props.lastLogin = new Date();
         this.markUpdatedAt();
     }
 
@@ -107,122 +107,122 @@ export class UserAggregate {
             throw new Error('Password hash cannot be empty.');
         }
 
-        if (this.props.accountStatus !== UserStatus.ACTIVE) {
-            throw new Error(`Cannot update password for ${this.props.accountStatus.toLowerCase()} account.`);
+        if (this._props.accountStatus !== UserStatus.ACTIVE) {
+            throw new Error(`Cannot update password for ${this._props.accountStatus.toLowerCase()} account.`);
         }
 
-        this.props.passwordHash = newPasswordHash;
+        this._props.passwordHash = newPasswordHash;
         this.markUpdatedAt();
     }
 
     markEmailVerified():void{
-        this.props.isEmailVerified = true;
+        this._props.isEmailVerified = true;
         this.markUpdatedAt();
     }
 
     suspendAccount(): void{
-        this.props.accountStatus = UserStatus.SUSPENDED;
+        this._props.accountStatus = UserStatus.SUSPENDED;
         this.markUpdatedAt();
     }
 
     banAccount(): void{
-        this.props.accountStatus = UserStatus.BANNED;
+        this._props.accountStatus = UserStatus.BANNED;
         this.markUpdatedAt();
     }
 
         // Update KYC verification
     updateKycVerification(kycEntity: UserKyc): void{
-        this.props.kycVerification = kycEntity;
+        this._props.kycVerification = kycEntity;
     }
 
     // Resets KYC verification state for retries after failure
     resetKycVerification(): void {
-        if (this.props.kycVerification) {
-            this.props.kycVerification.resetLiveness();
+        if (this._props.kycVerification) {
+            this._props.kycVerification.resetLiveness();
         }
-        this.props.kycCompleted = false;
-        this.props.onboardingStep = 3;
+        this._props.kycCompleted = false;
+        this._props.onboardingStep = 3;
         this.markUpdatedAt();
     }
 
     //2. ONBOARDING & PIPELINE PROGRESSION
 
     advanceOnboardingStep(step: number): void{
-        if(step > this.props.onboardingStep){
-            this.props.onboardingStep = step;
+        if(step > this._props.onboardingStep){
+            this._props.onboardingStep = step;
             this.markUpdatedAt();
         }
     }
 
     attachProfile(profile: UserProfile): void{
-        this.props.profile = profile;
-        this.props.profileCompleted = true;
+        this._props.profile = profile;
+        this._props.profileCompleted = true;
         this.advanceOnboardingStep(9);
         this.markUpdatedAt();
     }
 
     attatchPreferences(preferences: UserPreference): void{
-        this.props.preferences = preferences;
+        this._props.preferences = preferences;
         this.advanceOnboardingStep(13);
         this.markUpdatedAt();
     }
 
     completeKyc(): void{
-        this.props.kycCompleted = true;
+        this._props.kycCompleted = true;
         this.advanceOnboardingStep(8);
         this.markUpdatedAt();
     }
 
     finalizeOnboarding():void{
-        if(!this.props.isEmailVerified) throw new Error('Email must verified first');
-        if(!this.props.kycCompleted) throw new Error('KYC verification must be completed first');
-        if(!this.props.profileCompleted) throw new Error('User profile must be completed first');
+        if(!this._props.isEmailVerified) throw new Error('Email must verified first');
+        if(!this._props.kycCompleted) throw new Error('KYC verification must be completed first');
+        if(!this._props.profileCompleted) throw new Error('User profile must be completed first');
         // Temporarily comment out until the feature is built
-        // if(!this.props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
+        // if(!this._props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
 
-        this.props.onboardingCompleted = true;
-        this.props.onboardingStep = 14;
+        this._props.onboardingCompleted = true;
+        this._props.onboardingStep = 14;
         this.markUpdatedAt();
     }
 
     //3. LUMEN AGENT SCHEDULING & QUOTAS
 
     toggleLumen(enabled: boolean): void{
-        this.props.lumenEnabled = enabled;
+        this._props.lumenEnabled = enabled;
         this.markUpdatedAt();
     }
 
     incrementLumenRecommendations(maxDailyQuota: number): void{
-        if(!this.props.lumenEnabled){
+        if(!this._props.lumenEnabled){
             throw new Error('Lumen is not enabled for this user');
         }
 
-        if(this.props.lumenRecommendationGeneratedToday >= maxDailyQuota){
+        if(this._props.lumenRecommendationGeneratedToday >= maxDailyQuota){
             throw new Error('Daily lumen quota reached');
         }
 
-        this.props.lumenRecommendationGeneratedToday += 1;
+        this._props.lumenRecommendationGeneratedToday += 1;
         this.markUpdatedAt();
     }
 
     resetLumendailyCounters(newHours: number[]): void{
-        this.props.lumenRecommendationGeneratedToday = 0;
-        this.props.dailyMatchHours = newHours;
-        this.props.lastLumenReset = new Date();
+        this._props.lumenRecommendationGeneratedToday = 0;
+        this._props.dailyMatchHours = newHours;
+        this._props.lastLumenReset = new Date();
         this.markUpdatedAt();
     }
 
     markUpdatedAt(): void{
-        this.props.updatedAt = new Date();
+        this._props.updatedAt = new Date();
     }
 
     toJSON(){
         return {
-            ...this.props,
-            email: this.props.email.getValue(), // EmailVO needs to be unwrapped.
-            profile: this.props.profile?.toJSON(),
-            preference: this.props.preferences?.toJSON(),
-            kycVerification: this.props.kycVerification?.toJSON(),
+            ...this._props,
+            email: this._props.email.getValue(), // EmailVO needs to be unwrapped.
+            profile: this._props.profile?.toJSON(),
+            preference: this._props.preferences?.toJSON(),
+            kycVerification: this._props.kycVerification?.toJSON(),
         }
     }
     

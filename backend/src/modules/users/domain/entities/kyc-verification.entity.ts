@@ -76,16 +76,16 @@ export interface RejectManualReviewPayload{
 
 
 export class UserKyc{
-    private props: UserKycProps;
+    private _props: UserKycProps;
 
-    private readonly REQUIRED_PROMPTS_COUNT = 4;
-    private readonly SELFIE_MIN_PASS_THRESHOLD = 80;
-    private readonly SELFIE_AUTO_APPROVE_THRESHOLD = 90;
-    private readonly LIVENESS_MIN_PASS_THRESHOLD = 0.80;
-    private readonly LIVENESS_AUTO_APPROVE_THRESHOLD = 0.88;
+    private readonly _REQUIRED_PROMPTS_COUNT = 4;
+    private readonly _SELFIE_MIN_PASS_THRESHOLD = 80;
+    private readonly _SELFIE_AUTO_APPROVE_THRESHOLD = 90;
+    private readonly _LIVENESS_MIN_PASS_THRESHOLD = 0.80;
+    private readonly _LIVENESS_AUTO_APPROVE_THRESHOLD = 0.88;
 
     constructor(props: UserKycProps){
-        this.props = {
+        this._props = {
             ...props,
             verificationStatus: props.verificationStatus ?? VerificationStatus.NOT_STARTED,
             verificationAttempt: props.verificationAttempt ?? 0,
@@ -95,101 +95,101 @@ export class UserKyc{
         }
     }
 
-    get id(): string | undefined {return this.props.id};
-    get userId(): string | undefined {return this.props.userId};
-    get verificationStatus(): VerificationStatus | undefined {return this.props.verificationStatus};
-    get reviewDecision(): ReviewDecision | undefined {return this.props.reviewDecision};
-    get verificationAttempt(): number | undefined {return this.props.verificationAttempt};
-    get documentType(): DocumentType | undefined {return this.props.documentType};
-    get issuingCountry(): string | undefined {return this.props.issuingCountry};
-    get verificationDevice(): VerificationDevice | undefined {return this.props.verificationDevice};
-    get qrSessionId(): string | undefined {return this.props.qrSessionId};
-    get legalName(): string | undefined {return this.props.legalName};
-    get verifiedDOB(): Date | undefined {return this.props.verifiedDOB};
-    get hashedDocumentNumber(): string | undefined {return this.props.hashedDocumentNumber};
-    get liveSelfieS3(): string | undefined {return this.props.liveSelfieS3};
-    get selfieFaceEmbedding(): number[] | undefined {return this.props.selfieFaceEmbedding};
-    get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this.props.selfieVerificationStatus};
-    get selfieConfidence(): number | undefined {return this.props.selfieConfidence};
-    get livenessResults(): any[] | undefined { return this.props.livenessResults; }
-    get verificationSubmitted(): boolean | undefined { return this.props.verificationSubmitted; }
+    get id(): string | undefined {return this._props.id};
+    get userId(): string | undefined {return this._props.userId};
+    get verificationStatus(): VerificationStatus | undefined {return this._props.verificationStatus};
+    get reviewDecision(): ReviewDecision | undefined {return this._props.reviewDecision};
+    get verificationAttempt(): number | undefined {return this._props.verificationAttempt};
+    get documentType(): DocumentType | undefined {return this._props.documentType};
+    get issuingCountry(): string | undefined {return this._props.issuingCountry};
+    get verificationDevice(): VerificationDevice | undefined {return this._props.verificationDevice};
+    get qrSessionId(): string | undefined {return this._props.qrSessionId};
+    get legalName(): string | undefined {return this._props.legalName};
+    get verifiedDOB(): Date | undefined {return this._props.verifiedDOB};
+    get hashedDocumentNumber(): string | undefined {return this._props.hashedDocumentNumber};
+    get liveSelfieS3(): string | undefined {return this._props.liveSelfieS3};
+    get selfieFaceEmbedding(): number[] | undefined {return this._props.selfieFaceEmbedding};
+    get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this._props.selfieVerificationStatus};
+    get selfieConfidence(): number | undefined {return this._props.selfieConfidence};
+    get livenessResults(): any[] | undefined { return this._props.livenessResults; }
+    get verificationSubmitted(): boolean | undefined { return this._props.verificationSubmitted; }
     // Returns an array of prompt names that have successfully passed
     get passedPrompts(): string[] {
-        return this.props.livenessResults
+        return this._props.livenessResults
             ?.filter(r => r.status === 'PASSED')
             .map(r => r.prompt) ?? [];
     }
-    get manualReviewRequired(): boolean | undefined {return this.props.manualReviewRequired};
-    get adminReviewedBy(): string | undefined {return this.props.adminReviewedBy};
-    get rejectionReason(): string | undefined {return this.props.rejectionReason};
-    get submittedAt(): Date | undefined {return this.props.submittedAt};
-    get approvedAt(): Date | undefined {return this.props.approvedAt};
-    get rejectedAt(): Date | undefined {return this.props.rejectedAt};
-    get createdAt(): Date | undefined {return this.props.createdAt};
-    get updatedAt(): Date | undefined {return this.props.updatedAt};
+    get manualReviewRequired(): boolean | undefined {return this._props.manualReviewRequired};
+    get adminReviewedBy(): string | undefined {return this._props.adminReviewedBy};
+    get rejectionReason(): string | undefined {return this._props.rejectionReason};
+    get submittedAt(): Date | undefined {return this._props.submittedAt};
+    get approvedAt(): Date | undefined {return this._props.approvedAt};
+    get rejectedAt(): Date | undefined {return this._props.rejectedAt};
+    get createdAt(): Date | undefined {return this._props.createdAt};
+    get updatedAt(): Date | undefined {return this._props.updatedAt};
 
     // Instant PKI validation
     recordPkiValidation(payload: SubmitPkiDocumentsPayload): void{
-        this.props.documentType = payload.documentType;
-        this.props.issuingCountry = payload.issuingCountry;
-        this.props.legalName = payload.legalName;
-        this.props.verifiedDOB = payload.verifiedDOB;
-        this.props.hashedDocumentNumber = payload.hashedDocumentNumber;
+        this._props.documentType = payload.documentType;
+        this._props.issuingCountry = payload.issuingCountry;
+        this._props.legalName = payload.legalName;
+        this._props.verifiedDOB = payload.verifiedDOB;
+        this._props.hashedDocumentNumber = payload.hashedDocumentNumber;
 
         // Auto-approve upon successful cryptographic validation
-        this.props.verificationStatus = VerificationStatus.APPROVED;
-        this.props.verificationAttempt = (this.props.verificationAttempt ?? 0) + 1;
-        this.props.submittedAt = new Date();
-        this.props.updatedAt = new Date();
+        this._props.verificationStatus = VerificationStatus.APPROVED;
+        this._props.verificationAttempt = (this._props.verificationAttempt ?? 0) + 1;
+        this._props.submittedAt = new Date();
+        this._props.updatedAt = new Date();
     }
 
     // Live Selfie
     recordSelfie(payload: RecordSelfiePayload): void{
         
         // Always save the S3 link and confidence, regardless of pass/fail, for audit logs
-        this.props.liveSelfieS3 = payload.liveSelfieS3;
-        this.props.selfieConfidence = payload.selfieConfidence;
-        this.props.updatedAt = new Date();
+        this._props.liveSelfieS3 = payload.liveSelfieS3;
+        this._props.selfieConfidence = payload.selfieConfidence;
+        this._props.updatedAt = new Date();
         
-        if(payload.selfieConfidence >= this.SELFIE_MIN_PASS_THRESHOLD){
-            this.props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
-            this.props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
+        if(payload.selfieConfidence >= this._SELFIE_MIN_PASS_THRESHOLD){
+            this._props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
+            this._props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
         }else{
-            this.props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
-            this.props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
+            this._props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
+            this._props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
         }
         
     }
 
     // Liveness Test : Evaluates a single liveness prompt incrementally
     recordLivenessPrompt(payload: RecordLivenessPayload): void {
-        if (!this.props.livenessResults) this.props.livenessResults = [];
+        if (!this._props.livenessResults) this._props.livenessResults = [];
         
-        const passed = payload.score >= this.LIVENESS_MIN_PASS_THRESHOLD;
+        const passed = payload.score >= this._LIVENESS_MIN_PASS_THRESHOLD;
         
-        this.props.livenessResults.push({
+        this._props.livenessResults.push({
             prompt: payload.prompt,
             score: payload.score,
             status: passed ? 'PASSED' : 'FAILED',
             videoS3: payload.videoS3
         });
         
-        this.props.updatedAt = new Date();
+        this._props.updatedAt = new Date();
     }
     
     // Resets liveness state to allow users to retake the challenge
     resetLiveness(): void {
-        this.props.livenessResults = [];
-        this.props.verificationSubmitted = false;
-        this.props.verificationStatus = VerificationStatus.APPROVED;
-        this.props.reviewDecision = undefined;
-        this.props.rejectionReason = undefined;
-        this.props.updatedAt = new Date();
+        this._props.livenessResults = [];
+        this._props.verificationSubmitted = false;
+        this._props.verificationStatus = VerificationStatus.APPROVED;
+        this._props.reviewDecision = undefined;
+        this._props.rejectionReason = undefined;
+        this._props.updatedAt = new Date();
     }
 
     // submission gate 
     submitVerification(): void {
-        const results = this.props.livenessResults ?? [];
+        const results = this._props.livenessResults ?? [];
         
         // DDD Encapsulation: The entity decides how to interpret historical data.
         // Group by prompt so we only evaluate the user's most recent attempt for each action.
@@ -204,55 +204,55 @@ export class UserKyc{
         const passedCount = latestResults.filter(r => r.status === 'PASSED').length;
 
         // Ensure all required steps were actually performed
-        if (passedCount < this.REQUIRED_PROMPTS_COUNT) {
-            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${this.REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
+        if (passedCount < this._REQUIRED_PROMPTS_COUNT) {
+            throw new Error(`Cannot submit verification: Incomplete liveness prompts. Expected ${this._REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
         }
 
         if (hasFailedPrompts) {
-            this.props.verificationStatus = VerificationStatus.REJECTED;
-            this.props.reviewDecision = ReviewDecision.AUTO_REJECTED;
-            this.props.rejectionReason = "One or more liveness prompts failed verification.";
+            this._props.verificationStatus = VerificationStatus.REJECTED;
+            this._props.reviewDecision = ReviewDecision.AUTO_REJECTED;
+            this._props.rejectionReason = "One or more liveness prompts failed verification.";
         } else {
 
             // Calculate aggregate scores to determine if we can bypass manual review
             const averageLivenessScore = latestResults.reduce((acc,curr) => acc + curr.score, 0) / passedCount;
-            const selfieConfidence = this.props.selfieConfidence ?? 0;
+            const selfieConfidence = this._props.selfieConfidence ?? 0;
 
             // Auto approve if both metrics exceed our strict trust threshold
-            if(averageLivenessScore >= this.LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this.SELFIE_AUTO_APPROVE_THRESHOLD){
-                this.props.verificationStatus = VerificationStatus.APPROVED;
-                this.props.reviewDecision = ReviewDecision.AUTO_APPROVED;
-                this.props.manualReviewRequired = false;
+            if(averageLivenessScore >= this._LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this._SELFIE_AUTO_APPROVE_THRESHOLD){
+                this._props.verificationStatus = VerificationStatus.APPROVED;
+                this._props.reviewDecision = ReviewDecision.AUTO_APPROVED;
+                this._props.manualReviewRequired = false;
             }else{
                 // Forward to manual review queue or auto-approve based on system thresholds
-                this.props.verificationStatus = VerificationStatus.UNDER_REVIEW;
-                this.props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
-                this.props.manualReviewRequired = true;
+                this._props.verificationStatus = VerificationStatus.UNDER_REVIEW;
+                this._props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
+                this._props.manualReviewRequired = true;
             }
 
         }
 
-        this.props.verificationSubmitted = true;
-        this.props.submittedAt = new Date();
-        this.props.updatedAt = new Date();
+        this._props.verificationSubmitted = true;
+        this._props.submittedAt = new Date();
+        this._props.updatedAt = new Date();
     }
 
     approveManualReview(payload: ApproveManualReviewPayload){
-        if(this.props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
+        if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
             throw new Error('KYC verification is not in a reviewable state');
         }
 
-        this.props.verificationStatus = VerificationStatus.APPROVED;
-        this.props.reviewDecision = ReviewDecision.MANUAL_APPROVED;
-        this.props.adminReviewedBy = payload.adminId;
-        this.props.manualReviewRequired = false;
-        this.props.approvedAt = new Date();
-        this.props.rejectionReason = undefined;
-        this.props.updatedAt = new Date();
+        this._props.verificationStatus = VerificationStatus.APPROVED;
+        this._props.reviewDecision = ReviewDecision.MANUAL_APPROVED;
+        this._props.adminReviewedBy = payload.adminId;
+        this._props.manualReviewRequired = false;
+        this._props.approvedAt = new Date();
+        this._props.rejectionReason = undefined;
+        this._props.updatedAt = new Date();
     }
 
     rejectManualReview(payload: RejectManualReviewPayload){
-        if(this.props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
+        if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
             throw new Error('KYC verification is not in a reviewable state');
         }
 
@@ -261,16 +261,16 @@ export class UserKyc{
         }
 
 
-        this.props.verificationStatus = VerificationStatus.REJECTED;
-        this.props.reviewDecision = ReviewDecision.MANUAL_REJECTED;
-        this.props.adminReviewedBy = payload.adminId;
-        this.props.manualReviewRequired = false;
-        this.props.rejectionReason = payload.rejectionReason;
-        this.props.rejectedAt = new Date();
-        this.props.updatedAt = new Date();
+        this._props.verificationStatus = VerificationStatus.REJECTED;
+        this._props.reviewDecision = ReviewDecision.MANUAL_REJECTED;
+        this._props.adminReviewedBy = payload.adminId;
+        this._props.manualReviewRequired = false;
+        this._props.rejectionReason = payload.rejectionReason;
+        this._props.rejectedAt = new Date();
+        this._props.updatedAt = new Date();
     }
 
     toJSON(){
-        return {...this.props};
+        return {...this._props};
     }
 }
