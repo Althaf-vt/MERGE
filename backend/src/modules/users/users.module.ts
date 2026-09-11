@@ -55,6 +55,14 @@ import { ResetPasswordUseCase } from "./application/use-cases/reset-password.use
 import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application/interfaces/forgot-password.use-case.interface";
 import { GoogleLoginUseCase } from "./application/use-cases/google-login.use-case";
 import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use-case.interface";
+import { GENERATE_HANDOFF_SESSION_USE_CASE } from "./application/interfaces/generate-handoff-session.use-case.interface";
+import { LOGIN_USER_USE_CASE } from "./application/interfaces/login-user.use-case.interface";
+import { REFRESH_TOKEN_USE_CASE } from "./application/interfaces/refresh-token.use-case.interface";
+import { REGISTER_USER_USE_CASE } from "./application/interfaces/register-user.use-case.interface";
+import { SUBMIT_KYC_DOCUMENT_USE_CASE } from "./application/interfaces/submit-kyc-document.use-case.interface";
+import { SUBMIT_LIVE_SELFIE_USE_CASE } from "./application/interfaces/submit-live-selfie.use-case.interface";
+import { VALIDATE_HANDOFF_USE_CASE } from "./application/interfaces/validate-handoff.interface.use-case";
+import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-case.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -106,6 +114,14 @@ import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use
         GenerateBioUseCase,
         SaveBioUseCase,
         GoogleLoginUseCase,
+        GenerateHandoffSessionUseCase,
+        LoginUserUseCase,
+        RefreshTokenUseCase,
+        RegisterUserUseCase,
+        SubmitKycDocumentUseCase,
+        SubmitLiveSelfieUseCase,
+        ValidateHandoffUseCase,
+        VerifyOtpUseCase,
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -115,86 +131,112 @@ import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use
             provide: USER_REPOSITORY,
             useClass: MongoUserRepository,
         },
-
         // Maps the token service interface token its JWT implementation.
         {
             provide: TOKEN_SERVICE,
-            useClass: JwtTokenService
+            useClass: JwtTokenService,
         },
-
         {
             provide: OTP_SERVICE,
             useClass: RedisOtpService,
         },
-
+        {
+            provide: GENERATE_HANDOFF_SESSION_USE_CASE,
+            useClass: GenerateHandoffSessionUseCase,
+        },
+        {
+            provide: LOGIN_USER_USE_CASE,
+            useClass: LoginUserUseCase,
+        },
+        {
+            provide: REFRESH_TOKEN_USE_CASE,
+            useClass: RefreshTokenUseCase,
+        },
+        {
+            provide: REGISTER_USER_USE_CASE,
+            useClass: RegisterUserUseCase,
+        },
+        {
+            provide: SUBMIT_KYC_DOCUMENT_USE_CASE,
+            useClass: SubmitKycDocumentUseCase,
+        },
+        {
+            provide: SUBMIT_LIVE_SELFIE_USE_CASE,
+            useClass: SubmitLiveSelfieUseCase,
+        },
+        {
+            provide: VALIDATE_HANDOFF_USE_CASE,
+            useClass: ValidateHandoffUseCase,
+        },
+        {
+            provide: VERIFY_OTP_USE_CASE,
+            useClass: VerifyOtpUseCase,
+        },
         {
             provide: RESEND_OTP_USE_CASE,
-            useClass: ResendOtpUseCase
+            useClass: ResendOtpUseCase,
         },
         {
             provide: FORGOT_PASSWORD_USE_CASE,
-            useClass: ForgotPasswordUseCase
+            useClass: ForgotPasswordUseCase,
         },
         {
             provide: RESET_PASSWORD_USE_CASE,
-            useClass: ResetPasswordUseCase
+            useClass: ResetPasswordUseCase,
         },
         {
             provide: GOOGLE_LOGIN_USE_CASE,
-            useClass: GoogleLoginUseCase
+            useClass: GoogleLoginUseCase,
         },
-
         // KYC Service bindings
         {
             provide: KYC_HASH_SERVICE,
-            useClass: KycHashService
+            useClass: KycHashService,
         },
-
         {
             provide: PKI_VERIFICATION_SERVICE,
-            useClass: AadharPkiService
+            useClass: AadharPkiService,
         },
-
         // 
         {
             provide: HANDOFF_SERVICE,
-            useClass: RedisHandoffService
+            useClass: RedisHandoffService,
         },
         {
             provide: BIOMETRIC_SERVICE,
-            useClass: HttpBiometricService
+            useClass: HttpBiometricService,
         },
         {
             provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
-            useClass: SubmitLivenessCheckUseCase
+            useClass: SubmitLivenessCheckUseCase,
         },
         {
             provide: SUBMIT_FINAL_VERIFICATION_USE_CASE,
-            useClass: SubmitFinalVerificationUseCase
+            useClass: SubmitFinalVerificationUseCase,
         },
         {
             provide: UPDATE_PERSONA_USE_CASE,
-            useClass: UpdatePersonaUseCase
+            useClass: UpdatePersonaUseCase,
         },
         {
             provide: UPDATE_LIFESTYLE_USE_CASE,
-            useClass: UpdateLifeStyleUseCase
+            useClass: UpdateLifeStyleUseCase,
         },
         {
             provide: UPDATE_PREFERENCES_USE_CASE,
-            useClass: UpdatePreferencesUseCase
+            useClass: UpdatePreferencesUseCase,
         },
         {
             provide: AI_SERVICE,
-            useClass: OpenRouterAiService
+            useClass: OpenRouterAiService,
         },
         {
             provide: GENERATE_BIO_USE_CASE,
-            useClass: GenerateBioUseCase
+            useClass: GenerateBioUseCase,
         },
         {
             provide: SAVE_BIO_USE_CASE,
-            useClass: SaveBioUseCase
+            useClass: SaveBioUseCase,
         }
     ],
 
