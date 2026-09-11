@@ -1,5 +1,7 @@
 import { Document, Model } from "mongoose";
 import { IBaseRepository } from "../../../modules/users/domain/interfaces/base-repository.interface";
+import { DomainException } from "../../../modules/users/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../modules/users/domain/enums/error-code.enum";
 
 export abstract class BaseMongoRepository<TAggregate, TDocument extends Document> implements IBaseRepository<TAggregate> {
     
@@ -31,7 +33,7 @@ export abstract class BaseMongoRepository<TAggregate, TDocument extends Document
             .findByIdAndUpdate((entity as any).id, persistenceData, { returnDocument: 'after' })
             .exec();
 
-        if (!document) throw new Error("Entity not found");
+        if (!document) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Entity not found");
         return this.toDomain(document as TDocument);
     }
 }
