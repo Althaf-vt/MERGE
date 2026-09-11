@@ -10,7 +10,7 @@ import { ITokenservice, TOKEN_SERVICE } from "../../domain/interfaces/token-serv
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase{
-    private readonly googleClient: OAuth2Client;
+    private readonly _googleClient: OAuth2Client;
 
     constructor(
         @Inject(USER_REPOSITORY)
@@ -18,14 +18,14 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         @Inject(TOKEN_SERVICE)
         private readonly tokenService: ITokenservice
     ){
-        this.googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        this._googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
     async execute(dto: GoogleLoginDto): Promise<IGoogleLoginResult> {
         let payload;
 
         try {
-            const ticket = await this.googleClient.verifyIdToken({
+            const ticket = await this._googleClient.verifyIdToken({
                 idToken: dto.idToken,
                 audience: process.env.GOOGLE_CLIENT_ID
             })
