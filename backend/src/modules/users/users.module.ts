@@ -30,7 +30,8 @@ import { HttpModule } from "@nestjs/axios";
 import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-selfie.use-case";
 import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
 import { HttpBiometricService } from "./infrastructure/services/http-biometric.service";
-import { s3StorageService } from "./infrastructure/services/s3-storage.service";
+import { S3Client } from "@aws-sdk/client-s3";
+import { S3_CLIENT, S3StorageService } from "./infrastructure/services/s3-storage.service";
 import { SubmitLivenessCheckUseCase } from "./application/use-cases/submit-liveness-check.use-case";
 import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-liveness-check.use-case.interface";
 import { SUBMIT_FINAL_VERIFICATION_USE_CASE } from "./application/interfaces/submit-final-verification.use-case.interface";
@@ -67,13 +68,12 @@ import { HANDOFF_NOTIFICATION_SERVICE } from "./application/interfaces/handoff-n
 import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interface";
 import Redis from "ioredis";
 
-
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
 @Module({
-    imports:[
+    imports: [
         // Registers the User schema with Mongoose for database operations.
-        MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
 
         // Configures JWT support for token generation and verification.
         JwtModule.register({
@@ -90,12 +90,13 @@ import Redis from "ioredis";
         HandoffController,
         ProfileController,
     ],
+    // 2. Standard Providers (Gateways & Use Cases)
+    // Handled via interface bindings in section 3
     providers: [
-        // 1. Shared Services & Guards
+        // Shared Services & Guards
         BcryptService,
         JwtAuthGuard,
         HandoffGateway,
-        s3StorageService,
         OpenRouterAiService,
         {
             provide: REDIS_CLIENT,
@@ -106,9 +107,24 @@ import Redis from "ioredis";
                 });
             },
         },
+        {
+            provide: S3_CLIENT,
+            useFactory: () => {
+                const region = process.env.AWS_REGION;
+                const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+                const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-        // 2. Standard Providers (Gateways & Use Cases)
-        // Handled via interface bindings in section 3
+                if (!region || !accessKeyId || !secretAccessKey) {
+                    throw new Error('Missing AWS credentials.');
+                }
+
+                return new S3Client({
+                    region,
+                    credentials: { accessKeyId, secretAccessKey },
+                    maxAttempts: 2,
+                });
+            },
+        },
 
         // 3. Interface Bindings (Contracts -> Concrete Implementations)
         // Maps interface tokens to their concrete implementations.
@@ -199,7 +215,7 @@ import Redis from "ioredis";
         },
         {
             provide: STORAGE_SERVICE,
-            useClass: s3StorageService,
+            useClass: S3StorageService,
         },
         {
             provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
@@ -239,4 +255,4 @@ import Redis from "ioredis";
     exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE],
 })
 
-export class UserModule {}
+export class UserModule { }
