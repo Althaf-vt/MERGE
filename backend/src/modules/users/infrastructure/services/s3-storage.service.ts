@@ -2,6 +2,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
 import { IStorageService } from "../../application/interfaces/storage-service.interface";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 
 export const S3_CLIENT = 'S3_CLIENT';
 
@@ -18,7 +20,7 @@ export class S3StorageService implements IStorageService {
     const bucketName = process.env.AWS_S3_BUCKET_NAME;
 
     if (!region || !bucketName) {
-      throw new Error('Missing required AWS S3 configuration in environment variables.');
+      throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Missing required AWS S3 configuration in environment variables.');
     }
 
     this._region = region;
