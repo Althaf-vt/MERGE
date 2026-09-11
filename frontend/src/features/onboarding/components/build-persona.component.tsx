@@ -372,12 +372,12 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                         </div>
 
                         <div className={styles.inputGroup}>
-                            <label className={styles.label}>Outness Level (1-10)</label>
+                            <label className={styles.label}>Outness Level (1-5)</label>
                             <input
                                 name="outnessLevel"
                                 type="number"
                                 min="1"
-                                max="10"
+                                max="5"
                                 value={formData.outnessLevel}
                                 onChange={handleChange}
                                 className={styles.input}
