@@ -63,6 +63,8 @@ import { SUBMIT_KYC_DOCUMENT_USE_CASE } from "./application/interfaces/submit-ky
 import { SUBMIT_LIVE_SELFIE_USE_CASE } from "./application/interfaces/submit-live-selfie.use-case.interface";
 import { VALIDATE_HANDOFF_USE_CASE } from "./application/interfaces/validate-handoff.interface.use-case";
 import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-case.interface";
+import { HANDOFF_NOTIFICATION_SERVICE } from "./application/interfaces/handoff-notification.service.interface";
+import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interface";
 
 
 // Defines the User module and wires together its controllers, use cases,
@@ -94,6 +96,7 @@ import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-cas
         HandoffGateway,
         s3StorageService,
         OpenRouterAiService,
+        s3StorageService,
 
         // 2. Standard Providers (Gateways & Use Cases)
         RegisterUserUseCase,
@@ -203,8 +206,16 @@ import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-cas
             useClass: RedisHandoffService,
         },
         {
+            provide: HANDOFF_NOTIFICATION_SERVICE,
+            useClass: HandoffGateway,
+        },
+        {
             provide: BIOMETRIC_SERVICE,
             useClass: HttpBiometricService,
+        },
+        {
+            provide: STORAGE_SERVICE,
+            useClass: s3StorageService,
         },
         {
             provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
