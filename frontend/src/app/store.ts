@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../features/auth/slices/authSlice";
-import kycReducer from "../features/onboarding/slices/kycSlice";
-import { authApi } from "../features/auth/api/authApi";
-import { kycApi } from "../features/onboarding/api/kycApi";
-import { handoffApi } from "../features/onboarding/api/handoffApi";
-import { profileApi } from "../features/onboarding/api/profileApi";
+import authReducer from "../features/auth/slices/auth.slice";
+import kycReducer from "../features/onboarding/slices/kyc.slice";
+import { authApi } from "../features/auth/api/auth.api";
+import { kycApi } from "../features/onboarding/api/kyc.api";
+import { handoffApi } from "../features/onboarding/api/handoff.api";
+import { profileApi } from "../features/onboarding/api/profile.api";
 
 
 export const store = configureStore({
