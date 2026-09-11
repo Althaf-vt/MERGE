@@ -1,6 +1,8 @@
-import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { BioGenerationContext, IAiService } from "../../domain/interfaces/ai-service.interface";
 import OpenAI from "openai";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService{
@@ -13,15 +15,18 @@ export class OpenRouterAiService implements IAiService{
             this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
         }
         
+        const appUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
+        const appTitle = process.env.APP_NAME || 'MERGE Platform';
+        
         // Configure standart OpenAi client to route through OpenRouter
         this._client = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
-            apiKey: apiKey || "",
+            apiKey: apiKey || '',
             defaultHeaders: {
-                "HTTP-Referer": "http://localhost:5173",
-                "X-Title": "MERGE Platform",
-            }
-        })
+                'HTTP-Referer': appUrl,
+                'X-Title': appTitle,
+            },
+        });
     }
     // Sends demographic and personality context to the LLM to generate bio options.
     async generateDatingBios(promptContext: BioGenerationContext): Promise<string[]> {
@@ -75,8 +80,11 @@ export class OpenRouterAiService implements IAiService{
 
             return Object.values(parsed).filter((val): val is string => typeof val === 'string');
         } catch (error: any) {
-            console.error('OpenRouter Service Error Details:', error);
-            throw new InternalServerErrorException(error?.message || 'Failed to generate bios from AI service.');
+            this._logger.error('OpenRouter Service Error Details:', error);
+            throw new DomainException(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                error?.message || 'Failed to generate bios from AI service.'
+            );
         }
     }
 }
