@@ -57,8 +57,12 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
     }
     // --------------------------------------------------------------
 
+    // Determine if the failed request was already a refresh request
+    const isRefreshRequest = typeof args === 'string' ? args === '/auth/refresh' : args.url === '/auth/refresh';
+
     // B. If the request fails with a 401 Unauthorized, the token might be dead
-    if (result.error && result.error.status === 401) {
+    // We add !isRefreshRequest to prevent an infinite refresh loop!
+    if (result.error && result.error.status === 401 && !isRefreshRequest) {
 
         // Silently call the refresh endpoint
         const refreshResult = await baseQuery(
