@@ -5,17 +5,22 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer'
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE } from "../../application/interfaces/submit-liveness-check.use-case.interface";
 import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE } from "../../application/interfaces/submit-final-verification.use-case.interface";
-import { ISubmitLiveSelfieUseCase } from "../../application/interfaces/submit-live-selfie.use-case.interface";
-import { ISubmitKycDocumentUseCase } from "../../application/interfaces/submit-kyc-document.use-case.interface";
+import { ISubmitLiveSelfieUseCase, SUBMIT_LIVE_SELFIE_USE_CASE } from "../../application/interfaces/submit-live-selfie.use-case.interface";
+import { ISubmitKycDocumentUseCase, SUBMIT_KYC_DOCUMENT_USE_CASE } from "../../application/interfaces/submit-kyc-document.use-case.interface";
 
 @Controller('kyc')
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
 export class KycController{
     constructor(
+        @Inject(SUBMIT_KYC_DOCUMENT_USE_CASE)
         private readonly _submitKycDocumentUseCase: ISubmitKycDocumentUseCase,
+
+        @Inject(SUBMIT_LIVE_SELFIE_USE_CASE)
         private readonly _submitLiveSelfieUseCase: ISubmitLiveSelfieUseCase,
+
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE)
         private readonly _submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
+
         @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE)
         private readonly _submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
     ){}

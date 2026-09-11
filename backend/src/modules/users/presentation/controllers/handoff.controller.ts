@@ -4,20 +4,31 @@ import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../application/
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
 import { type Response } from "express";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
-import { IValidateHandoffUseCase } from "../../application/interfaces/validate-handoff.interface.use-case";
-import { IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
+import { GENERATE_HANDOFF_SESSION_USE_CASE, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
+import { IValidateHandoffUseCase, VALIDATE_HANDOFF_USE_CASE } from "../../application/interfaces/validate-handoff.interface.use-case";
+import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
 
 
 @Controller('verification/phone-handoff')
 export class HandoffController{
     constructor(
+        @Inject(GENERATE_HANDOFF_SESSION_USE_CASE)
         private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
+
+        @Inject(VALIDATE_HANDOFF_USE_CASE)
         private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
+
+        @Inject(HANDOFF_NOTIFICATION_SERVICE)
         private readonly _handoffGateway: IHandoffNotificationService,
-        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
-        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService, 
-        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
+
+        @Inject(TOKEN_SERVICE)
+        private readonly _tokenService: ITokenservice,
+
+        @Inject(HANDOFF_SERVICE)
+        private readonly _handoffService: IHandoffSessionService,
+
+        @Inject(USER_REPOSITORY)
+        private readonly _userRepository: IUserRepository,
     ){}
 
     // Called by the desktop to generate the QR code token.

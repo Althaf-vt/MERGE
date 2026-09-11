@@ -10,10 +10,10 @@ import { FORGOT_PASSWORD_USE_CASE, IForgotPasswordUseCase, IResetPasswordUseCase
 import { ForgotPasswordDto, ResetPasswordDto } from "../../application/dtos/forgot-password.dto";
 import { GoogleLoginDto } from "../../application/dtos/google-login.dto";
 import { GOOGLE_LOGIN_USE_CASE, IGoogleLoginUseCase } from "../../application/interfaces/google-login.use-case.interface";
-import { IRegisterUserUseCase } from "../../application/interfaces/register-user.use-case.interface";
-import { IVerifyOtpUseCase } from "../../application/interfaces/verify-otp.use-case.interface";
-import { ILoginUserUseCase } from "../../application/interfaces/login-user.use-case.interface";
-import { IRefreshTokenUseCase } from "../../application/interfaces/refresh-token.use-case.interface";
+import { IRegisterUserUseCase, REGISTER_USER_USE_CASE } from "../../application/interfaces/register-user.use-case.interface";
+import { IVerifyOtpUseCase, VERIFY_OTP_USE_CASE } from "../../application/interfaces/verify-otp.use-case.interface";
+import { ILoginUserUseCase, LOGIN_USER_USE_CASE } from "../../application/interfaces/login-user.use-case.interface";
+import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/interfaces/refresh-token.use-case.interface";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -21,16 +21,28 @@ export class AuthController{
 
     // Injects the use-cases responsible for registration and OTP verification.
     constructor(
+        @Inject(REGISTER_USER_USE_CASE)
         private readonly _registerUserUseCase: IRegisterUserUseCase,
+        
+        @Inject(VERIFY_OTP_USE_CASE)
+
         private readonly _verifyOtpUseCase: IVerifyOtpUseCase,
+        
+        @Inject(LOGIN_USER_USE_CASE)
         private readonly _loginUserUseCase: ILoginUserUseCase,
+        
+        @Inject(REFRESH_TOKEN_USE_CASE)
         private readonly _refreshTokenUseCase: IRefreshTokenUseCase,
+        
         @Inject(RESEND_OTP_USE_CASE) 
         private readonly _resendOtpUseCase: IResendOtpUseCase,
+        
         @Inject(FORGOT_PASSWORD_USE_CASE)
         private readonly _forgotPasswordUseCase: IForgotPasswordUseCase,
+        
         @Inject(RESET_PASSWORD_USE_CASE)
         private readonly _resetPasswordUseCase: IResetPasswordUseCase,
+        
         @Inject(GOOGLE_LOGIN_USE_CASE)
         private readonly _googleLoginUseCase: IGoogleLoginUseCase
     ){}
