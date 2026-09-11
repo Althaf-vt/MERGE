@@ -1,4 +1,4 @@
-import styles from './landing.module.css';
+import styles from './landing-page.module.css';
 
 export const LandingComponent = () => {
   return (

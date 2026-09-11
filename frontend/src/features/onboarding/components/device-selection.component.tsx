@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../../app/hooks"
-import { useCancelSessionMutation, useGenerateSessionMutation } from "../api/handoffApi";
+import { useCancelSessionMutation, useGenerateSessionMutation } from "../api/handoff.api";
 import { io, type Socket } from "socket.io-client";
-import { setKycStep } from "../slices/kycSlice";
-import styles from './DeviceSelection.module.css';
+import { setKycStep } from "../slices/kyc.slice";
+import styles from './device-selection.module.css';
 import QRCode from "react-qr-code";
 
 export const DeviceSelection = () => {

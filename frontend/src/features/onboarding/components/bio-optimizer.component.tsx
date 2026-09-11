@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { useGenerateBioMutation, useSaveFinalBioMutation } from '../api/profileApi';
-import { setCredentials } from '../../auth/slices/authSlice';
+import { useGenerateBioMutation, useSaveFinalBioMutation } from '../api/profile.api';
+import { setCredentials } from '../../auth/slices/auth.slice';
 import { BIO_TRAITS, BIO_INTERESTS } from '../constants/bio-options.constant';
 import styles from './bio-optimizer.module.css';
 

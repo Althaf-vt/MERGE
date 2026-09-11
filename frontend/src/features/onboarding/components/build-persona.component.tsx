@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
-import { useUpdatePersonaMutation } from "../api/profileApi";
-import { setCredentials } from "../../auth/slices/authSlice";
+import { useUpdatePersonaMutation } from "../api/profile.api";
+import { setCredentials } from "../../auth/slices/auth.slice";
 import {
     PRONOUN_SUGGESTIONS,
     GENDER_IDENTITY_OPTIONS,

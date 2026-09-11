@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import styles from './KycDocumentUpload.module.css';
-import { setKycStep } from '../slices/kycSlice';
+import styles from './kyc-document-upload.module.css';
+import { setKycStep } from '../slices/kyc.slice';
 
 export const KycSuccess = () => {
     const dispatch = useAppDispatch();

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setKycStep, resetKyc } from '../slices/kycSlice';
-import styles from './KycOutcome.module.css';
+import { setKycStep, resetKyc } from '../slices/kyc.slice';
+import styles from './kyc-outcome.module.css';
 
 export const KycFailed = () => {
     const dispatch = useAppDispatch();

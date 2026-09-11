@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { BuildPersona } from '../components/build-persona.component';
-import { KycLayout } from '../../../shared/components/layouts/KycLayout';
+import { KycLayout } from '../../../shared/components/layouts/kyc.layout.component';
 
 export const PersonaPage = () => {
     const navigate = useNavigate();

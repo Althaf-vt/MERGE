@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useSubmitKycMutation } from "../api/kycApi"
-import styles from './KycDocumentUpload.module.css';
+import { useSubmitKycMutation } from "../api/kyc.api"
+import styles from './kyc-document-upload.module.css';
 import { useAppDispatch } from "../../../app/hooks";
-import { setExtractedData, setKycStep } from "../slices/kycSlice";
+import { setExtractedData, setKycStep } from "../slices/kyc.slice";
 
 export const KycDocumentUpload = () => {
     const dispatch = useAppDispatch()

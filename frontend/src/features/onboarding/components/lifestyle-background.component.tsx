@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
-import { useUpdateLifestyleMutation } from "../api/profileApi";
-import { setCredentials } from "../../auth/slices/authSlice";
+import { useUpdateLifestyleMutation } from "../api/profile.api";
+import { setCredentials } from "../../auth/slices/auth.slice";
 import {
     EDUCATION_LEVELS,
     INCOME_RANGES,

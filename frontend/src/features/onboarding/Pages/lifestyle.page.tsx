@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { KycLayout } from "../../../shared/components/layouts/KycLayout";
+import { KycLayout } from "../../../shared/components/layouts/kyc.layout.component";
 import { LifestyleBackground } from "../components/lifestyle-background.component";
 
 export const LifestylePage = () => {

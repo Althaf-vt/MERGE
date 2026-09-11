@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useSubmitLivenessMutation } from "../api/kycApi";
+import { useSubmitLivenessMutation } from "../api/kyc.api";
 import { useAppDispatch } from "../../../app/hooks";
-import { addLivenessResult } from "../slices/kycSlice";
+import { addLivenessResult } from "../slices/kyc.slice";
 import styles from './liveness-challenge.module.css';
 import { useRollingBuffer } from "../hooks/use-rolling-buffer.hook";
 import { calculateEAR, calculateSmileRatio, calculateYawRatio } from "../utils/liveness-heuristics.util";

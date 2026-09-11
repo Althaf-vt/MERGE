@@ -1,17 +1,17 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
-import { KycDocumentUpload } from "../components/KycDocumentUpload";
-import { KycLayout } from "../../../shared/components/layouts/KycLayout";
-import { KycSuccess } from "../components/KycSuccess";
-import { DeviceSelection } from "../components/DeviceSelection";
+import { KycDocumentUpload } from "../components/kyc-document-upload.component";
+import { KycLayout } from "../../../shared/components/layouts/kyc.layout.component";
+import { KycSuccess } from "../components/kyc-success.component";
+import { DeviceSelection } from "../components/device-selection.component";
 import { useEffect } from "react";
-import { setKycStep } from "../slices/kycSlice";
-import { LiveSelfieCapture } from "../components/LiveSelfieCapture";
+import { setKycStep } from "../slices/kyc.slice";
+import { LiveSelfieCapture } from "../components/live-selfie-capture.component";
 import { LivenessChallenge } from "../components/liveness-challenge.component";
-import { ReviewVerification } from "../components/ReviewVerification";
-import { KycVerified } from "../components/KycVerified";
-import { KycUnderReview } from "../components/KycUnderReview";
-import { KycFailed } from "../components/KycFailed";
+import { ReviewVerification } from "../components/review-verification.component";
+import { KycVerified } from "../components/kyc-verified.component";
+import { KycUnderReview } from "../components/kyc-under-review.component";
+import { KycFailed } from "../components/kyc-failed.component";
 
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 

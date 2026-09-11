@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { setKycStep } from '../slices/kycSlice';
-import { useSubmitFinalVerificationMutation } from '../api/kycApi';
-import styles from './ReviewVerification.module.css'; 
+import { setKycStep } from '../slices/kyc.slice';
+import { useSubmitFinalVerificationMutation } from '../api/kyc.api';
+import styles from './review-verification.module.css'; 
 
 const VERIFICATION_STEPS = [
     "Uploading Documents",

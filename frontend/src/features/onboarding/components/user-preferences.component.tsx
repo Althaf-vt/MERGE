@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { useUpdatePreferencesMutation } from '../api/profileApi';
-import { setCredentials } from '../../auth/slices/authSlice';
+import { useUpdatePreferencesMutation } from '../api/profile.api';
+import { setCredentials } from '../../auth/slices/auth.slice';
 import {
     DEFAULT_IDENTITY_TAGS,
     SUGGESTED_IDENTITY_TAGS,

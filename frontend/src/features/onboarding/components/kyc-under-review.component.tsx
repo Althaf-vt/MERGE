@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import styles from './KycOutcome.module.css';
+import styles from './kyc-outcome.module.css';
 
 export const KycUnderReview = () => {
     const navigate = useNavigate();

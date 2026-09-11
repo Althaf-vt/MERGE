@@ -1,7 +1,7 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { useSubmitLiveSelfieMutation } from "../api/kycApi";
-import styles from './LiveSelfieCapture.module.css';
+import { useSubmitLiveSelfieMutation } from "../api/kyc.api";
+import styles from './live-selfie-capture.module.css';
 
 interface LiveSelfieCaptureProps{
     onSuccess: () => void // Callback to trigger when upload succeeds

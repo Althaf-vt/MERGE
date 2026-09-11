@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../../app/hooks";
-import { setCredentials } from "../../auth/slices/authSlice";
-import { useCompleteMobileSessionMutation, useValidateMobileSessionQuery } from "../api/handoffApi";
+import { setCredentials } from "../../auth/slices/auth.slice";
+import { useCompleteMobileSessionMutation, useValidateMobileSessionQuery } from "../api/handoff.api";
 
-import { LiveSelfieCapture } from "../components/LiveSelfieCapture"; // Update import if renamed
+import { LiveSelfieCapture } from "../components/live-selfie-capture.component"; // Update import if renamed
 import { LivenessChallenge } from "../components/liveness-challenge.component";
 import styles from './mobile-handoff.module.css'; // Update import if CSS file is renamed
 
