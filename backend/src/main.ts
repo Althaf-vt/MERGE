@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
+import { DomainExceptionFilter } from './shared/presentation/filters/domain-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -70,6 +71,9 @@ async function bootstrap() {
       forbidNonWhitelisted: true // Throws and error if extra fields are sent
     })
   )
+
+  // Global exception filter for mapping Domain Exceptions to HTTP responses
+  app.useGlobalFilters(new DomainExceptionFilter());
 
   // API prefix
   app.setGlobalPrefix('api/v1');
