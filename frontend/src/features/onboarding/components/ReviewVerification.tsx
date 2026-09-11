@@ -61,9 +61,9 @@ export const ReviewVerification = () => {
             setTimeout(() => {
                 if (res.status === 'APPROVED') {
                     dispatch(setKycStep('VERIFIED'));
-                }else if(res.status === 'UNDER_REVIEW'){
+                } else if (res.status === 'UNDER_REVIEW') {
                     dispatch(setKycStep('UNDER_REVIEW'));
-                }else {
+                } else {
                     dispatch(setKycStep('FAILED'));
                 }
             }, 800);
@@ -111,7 +111,7 @@ export const ReviewVerification = () => {
                                             </div>
                                             <span className={styles.stepText}>{step}</span>
                                         </div>
-                                    )
+                                    );
                                 })}
                             </div>
 
@@ -168,10 +168,6 @@ export const ReviewVerification = () => {
                     <div className={styles.summaryCard}>
                         <div className={styles.cardHeader}>
                             <span className={styles.cardEyebrow}>IDENTITY DOCUMENT</span>
-                            <div className={styles.headerActions}>
-                                <button className={styles.textBtn}>View Full Size</button>
-                                <button className={styles.textBtn}>Replace</button>
-                            </div>
                         </div>
                         <h3 className={styles.docTypeTitle}>Cryptographic e-KYC</h3>
                         <p className={styles.docSubtitle}>Verified successfully</p>
@@ -190,7 +186,6 @@ export const ReviewVerification = () => {
                                 <span className={styles.successText}><svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg> Selfie Captured Successfully</span>
                             </div>
                         </div>
-                        <button className={styles.textBtn}>Retake</button>
                     </div>
 
                     <div className={styles.summaryCardSmall}>
