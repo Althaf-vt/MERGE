@@ -1,4 +1,4 @@
-import { Injectable, Inject, BadRequestException, NotFoundException, ConflictException } from "@nestjs/common";
+import { Injectable, Inject, BadRequestException, ConflictException } from "@nestjs/common";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { VerifyOtpDto } from "../dtos/verify-otp.dto";
@@ -7,29 +7,30 @@ import { OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import type { IOtpService } from "../../domain/interfaces/otp-service.interface";
 import { EmailVO } from "../../domain/value-objects/email.vo";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
+import { IVerifyOtpUseCase } from "../interfaces/verify-otp.use-case.interface";
 
 // Handles the OTP verification process and marks the user's email as verified
 @Injectable()
-export class VerifyOtpUseCase{
+export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     // Injects the user repo for user lookup/update and the OTP service for OTP verification
     constructor(
         @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
         @Inject(OTP_SERVICE) private readonly otpService: IOtpService,
-    ){}
+    ) { };
 
-    async execute(dto: VerifyOtpDto): Promise<UserAggregate>{
+    async execute(dto: VerifyOtpDto): Promise<UserAggregate> {
 
         // Verify OTP and retrieve temporary data from Redis
         const draftData = await this.otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
 
-        if(!draftData){
+        if (!draftData) {
             throw new BadRequestException('Invalid or expired OTP');
         }
 
         const existingUser = await this.userRepository.findByEmail(dto.email);
 
-        if(existingUser){
+        if (existingUser) {
             throw new ConflictException("User already verified");
         }
 
