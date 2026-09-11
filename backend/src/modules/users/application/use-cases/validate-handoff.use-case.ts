@@ -1,20 +1,21 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../domain/interfaces/handoff-service.interface";
 import { HandoffGateway } from "../../presentation/gateways/handoff.gateway";
+import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interface.use-case";
 
 @Injectable()
-export class ValidateHandoffUseCase{
+export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
     constructor(
         @Inject(HANDOFF_SERVICE) private readonly handoffService: IHandoffSessionService,
         // Injecting the gateway so we can trigger real-time updates from this HTTP request
         private readonly handoffGateway: HandoffGateway,
-    ){}
+    ) { };
 
-    async execute(sessionId: string): Promise<string>{
+    async execute(sessionId: string): Promise<string> {
         // 1. check if the QR code is still valid in Redis
         const userId = await this.handoffService.validateSession(sessionId);
 
-        if(!userId){
+        if (!userId) {
             throw new BadRequestException('QR Code session has expired or is invalid.');
         }
 
@@ -22,6 +23,6 @@ export class ValidateHandoffUseCase{
         this.handoffGateway.notifyDesktop(sessionId, 'PHONE_CONNECTED');
 
         // 3. Return the userId so the controller can issue authenticated cookies
-        return userId
+        return userId;
     }
 }
