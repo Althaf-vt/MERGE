@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../domain/interfaces/handoff-service.interface";
+import { HANDOFF_SERVICE, type IHandoffSessionService } from "../interfaces/handoff-service.interface";
 import { IGenerateHandoffSessionUseCase } from "../interfaces/generate-handoff-session.use-case.interface";
 
 

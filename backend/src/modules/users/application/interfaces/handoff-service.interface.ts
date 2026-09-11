@@ -1,6 +1,6 @@
-export const HANDOFF_SERVICE = Symbol('HANDOFF_SERVICE');
+export const HANDOFF_SERVICE = 'HANDOFF_SERVICE';
 
-export interface IHandoffSessionService{
+export interface IHandoffSessionService {
     // Generate a temp, expiring UUID linked to the desktop user's account
     createSession(userId: string, ttlSeconds: number): Promise<string>;
 
