@@ -40,16 +40,16 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
     // Synchronize state when Redux user rehydrates or updates
     useEffect(() => {
         if (savedPrefs) {
-        if (savedPrefs.preferredGender) {
-            setSelectedGenders(savedPrefs.preferredGender);
-        }
-        setRelationshipGoal(savedPrefs.relationshipGoals || savedPrefs.relationShipGoals || 'LONG_TERM_RELATIONSHIP');
-        setAgeMin(savedPrefs.preferredAgeMin ?? 24);
-        setAgeMax(savedPrefs.preferredAgeMax ?? savedPrefs.prefferedAgeMax ?? 35);
-        setOutnessTolerance(savedPrefs.minimumOutnessLevel ?? 3);
-        setOpenToAdoption(savedPrefs.openToAdoption ?? true);
-        setImmigrationReady(savedPrefs.immigrationReady ?? false);
-        setPartnerExpectations(savedPrefs.partnerExpectations || '');
+            if (savedPrefs.preferredGender) {
+                setSelectedGenders(savedPrefs.preferredGender);
+            }
+            setRelationshipGoal(savedPrefs.relationshipGoals || savedPrefs.relationShipGoals || 'LONG_TERM_RELATIONSHIP');
+            setAgeMin(savedPrefs.preferredAgeMin ?? 24);
+            setAgeMax(savedPrefs.preferredAgeMax ?? savedPrefs.prefferedAgeMax ?? 35);
+            setOutnessTolerance(savedPrefs.minimumOutnessLevel ?? 3);
+            setOpenToAdoption(savedPrefs.openToAdoption ?? true);
+            setImmigrationReady(savedPrefs.immigrationReady ?? false);
+            setPartnerExpectations(savedPrefs.partnerExpectations || '');
         }
     }, [savedPrefs]);
 
@@ -67,6 +67,18 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
             }
             setCustomGenderInput('');
         }
+    };
+
+    const handleMinAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = Number(e.target.value);
+        // Ensure min age does not cross max age
+        setAgeMin(Math.min(val, ageMax));
+    };
+
+    const handleMaxAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = Number(e.target.value);
+        // Ensure max age does not drop below min age
+        setAgeMax(Math.max(val, ageMin));
     };
 
     const handleSubmit = async () => {
@@ -187,17 +199,41 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                         <span style={{ color: '#6200ea', fontSize: '0.95rem' }}>{ageMin} - {ageMax}</span>
                     </div>
                     <div className={styles.sliderContainer}>
-                        <input
-                            type="range"
-                            min="18"
-                            max="70"
-                            value={ageMax}
-                            onChange={(e) => setAgeMax(Math.max(Number(e.target.value), ageMin))}
-                            className={styles.rangeInput}
-                        />
-                        <div className={styles.sliderLabels}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#71717a', marginBottom: '4px' }}>
+                                    <span>Min Age</span>
+                                    <span>{ageMin}</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="18"
+                                    max="70"
+                                    value={ageMin}
+                                    onChange={handleMinAgeChange}
+                                    className={styles.rangeInput}
+                                />
+                            </div>
+
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#71717a', marginBottom: '4px' }}>
+                                    <span>Max Age</span>
+                                    <span>{ageMax}</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="18"
+                                    max="70"
+                                    value={ageMax}
+                                    onChange={handleMaxAgeChange}
+                                    className={styles.rangeInput}
+                                />
+                            </div>
+                        </div>
+
+                        <div className={styles.sliderLabels} style={{ marginTop: '8px' }}>
                             <span>18</span>
-                            <span>{ageMax}</span>
+                            <span>{ageMin} - {ageMax}</span>
                             <span>70+</span>
                         </div>
                     </div>
