@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForgotPasswordMutation, useResetPasswordMutation } from "../api/auth.api";
 import styles from './login-form.module.css';
+import { getErrorMessage } from "../../../shared/utils/error.util";
 
 export const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export const ForgotPassword = () => {
             await forgotPassword({ email: email.trim() }).unwrap();
             setStep(2);
         } catch (err: any) {
-            setError(err?.data?.message || "Failed to send reset code. Try again.");
+            setError(getErrorMessage(err, "Failed to send reset code. Try again."));
         }
     };
 
@@ -94,7 +95,7 @@ export const ForgotPassword = () => {
             await resetPassword({ email: email.trim(), otp: otp.trim(), newPassword }).unwrap();
             navigate('/login', { replace: true });
         } catch (err: any) {
-            setError(err?.data?.message || "Failed to reset password.");
+            setError(getErrorMessage(err, "Failed to reset password."));
         }
     };
 

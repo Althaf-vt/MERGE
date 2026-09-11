@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../app/hooks';
 import { useGoogleLoginMutation } from '../api/auth.api';
 import { setCredentials } from '../slices/auth.slice';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './google-auth.module.css';
 
 export const GoogleAuthButton: React.FC = () => {
@@ -39,7 +40,7 @@ export const GoogleAuthButton: React.FC = () => {
             }
         } catch (err: any) {
             console.error('Google backend authentication error:', err);
-            setErrorMessage(err?.data?.message || 'Google authentication failed.');
+            setErrorMessage(getErrorMessage(err, 'Google authentication failed.'));
         }
     };
 

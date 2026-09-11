@@ -3,13 +3,17 @@ import React, { useState, useEffect } from "react";
 import { useAppSelector } from "../../../app/hooks";
 import styles from './otp-verification.module.css';
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../../../shared/utils/error.util";
+import { ErrorCode } from "../../../shared/enums/ErrorCode";
 
 export const OtpVerification = () => {
     const navigate = useNavigate();
     const email = useAppSelector((state: any) => state.auth.registeredEmail);
 
-    const [verifyOtp, { isLoading, error }] = useVerifyOtpMutation();
+    const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
     const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
+    
+    const [clientError, setClientError] = useState<string | null>(null);
     
     const [otp, setOtp] = useState('');
     const [countdown, setCountdown] = useState(60); // 60 seconds timer
@@ -26,11 +30,21 @@ export const OtpVerification = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setClientError(null);
         try {
             await verifyOtp({ email, otp }).unwrap();
             navigate('/login');
-        } catch (error) {
-            console.error('OTP Verification failed: ', error);
+        } catch (err: any) {
+            console.error('OTP Verification failed: ', err);
+            
+            const errorCode = err?.data?.error?.code;
+            if (errorCode === ErrorCode.OTP_EXPIRED) {
+                setClientError("OTP Expired. Please request a new one.");
+            } else if (errorCode === ErrorCode.OTP_INVALID) {
+                setClientError("Invalid OTP. Please check the code and try again.");
+            } else {
+                setClientError(getErrorMessage(err, "OTP Verification failed."));
+            }
         }
     }
 
@@ -43,7 +57,7 @@ export const OtpVerification = () => {
             setCountdown(60); // Reset timer on success
             setResendMessage({ type: 'success', text: 'A new code has been sent to your email.' });
         } catch (err: any) {
-            setResendMessage({ type: 'error', text: err?.data?.message || 'Failed to resend OTP. Please try again.' });
+            setResendMessage({ type: 'error', text: getErrorMessage(err, 'Failed to resend OTP. Please try again.') });
         }
     }
 
@@ -62,7 +76,7 @@ export const OtpVerification = () => {
             )}
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                {error && <div className={styles.errorText}>Invalid or expired code.</div>}
+                {clientError && <div className={styles.errorText}>{clientError}</div>}
 
                 <div className={styles.inputGroup}>
                     <input

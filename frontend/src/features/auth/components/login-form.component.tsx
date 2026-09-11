@@ -5,13 +5,14 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from './login-form.module.css';
 import { setCredentials } from "../slices/auth.slice";
 import { GoogleAuthButton } from "./google-auth.component";
+import { ErrorCode } from "../../../shared/enums/ErrorCode";
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    // RTK Query hook
-    const [login, { isLoading, error }] = useLoginUserMutation();
+    // 1. We only need isLoading here; errors will be handled inside handleSubmit
+    const [login, { isLoading }] = useLoginUserMutation();
 
     // Form State
     const [email, setEmail] = useState('');
@@ -42,12 +43,23 @@ export const LoginForm = () => {
             // 3. Redirect the user to the KYC onboarding screen
             navigate('/onboarding/kyc', { replace: true });
             
-        } catch (error) {
-            console.error("Login failed: ", error);
+        } catch (err: any) {
+            console.error("Login failed: ", err);
+
+            const errorCode = err?.data?.error?.code;
+            const errorMessage = err?.data?.error?.message;
+
+            // Route unverified accounts directly to OTP verification
+            if (errorCode === ErrorCode.EMAIL_NOT_VERIFIED) {
+                navigate('/verify-otp', { state: { email } });
+                return;
+            }
+
+            // Fallback to domain error message, then generic message
+            setClientError(errorMessage || "Login failed. Please check your credentials.");
         }
     };
 
-    // SVG Icons for the password toggle - Fixed SVG path spacing
     const EyeIcon = () => (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8 -4 8 -11 8 -11 -8z"></path>
@@ -70,15 +82,18 @@ export const LoginForm = () => {
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                {clientError && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{clientError}</div>}
-                {/* Error handling from NestJS backend */}
-                {error && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>Login failed. Please check the credentials.</div>}
+                {/* Dynamically renders the backend domain error or validation message */}
+                {clientError && (
+                    <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>
+                        {clientError}
+                    </div>
+                )}
                 
                 <div className={styles.inputGroup}>
                     <input 
                         className={styles.input}
                         type="email" 
-                        value={email}
+                        value={email} 
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email Address" 
                         required
@@ -88,7 +103,7 @@ export const LoginForm = () => {
                     <input 
                         className={styles.input}
                         type={showPassword ? "text" : "password"} 
-                        value={password}
+                        value={password} 
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Password" 
                         required
@@ -111,7 +126,6 @@ export const LoginForm = () => {
 
             <div className={styles.divider}>OR</div>
             
-            {/* Integrated Google OAuth Button */}
             <GoogleAuthButton />
 
             <p className={styles.footerText}>

@@ -4,6 +4,7 @@ import { useRegisterUserMutation } from "../api/auth.api";
 import { setRegisteredEmail, setRegistrationStep } from "../slices/auth.slice";
 import { useAppDispatch } from "../../../app/hooks";
 import styles from './register-form.module.css';
+import { getErrorMessage } from "../../../shared/utils/error.util";
 import { GoogleAuthButton } from "./google-auth.component";
 
 export const RegisterForm = () => {
@@ -92,7 +93,7 @@ export const RegisterForm = () => {
             dispatch(setRegistrationStep("OTP"));
         } catch (err: any) {
             console.error('Registration failed: ', err);
-            setClientError(err?.data?.message || 'Registration failed');
+            setClientError(getErrorMessage(err, 'Registration failed'));
         }
     };
 
