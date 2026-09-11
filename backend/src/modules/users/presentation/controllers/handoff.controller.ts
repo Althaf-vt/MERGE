@@ -1,20 +1,20 @@
 import { BadGatewayException, Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { GenerateHandoffSessionUseCase } from "../../application/use-cases/generate-handoff-session.use-case";
-import { ValidateHandoffUseCase } from "../../application/use-cases/validate-handoff.use-case";
-import { HandoffGateway } from "../gateways/handoff.gateway";
 import { ITokenPayload, type ITokenservice, TOKEN_SERVICE } from "../../domain/interfaces/token-service.interface";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../domain/interfaces/handoff-service.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
 import { type Response } from "express";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
+import { IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
+import { IValidateHandoffUseCase } from "../../application/interfaces/validate-handoff.interface.use-case";
+import { IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
 
 
 @Controller('verification/phone-handoff')
 export class HandoffController{
     constructor(
-        private readonly _generateSessionUseCase: GenerateHandoffSessionUseCase,
-        private readonly _validateHandoffUseCase: ValidateHandoffUseCase,
-        private readonly _handoffGateway: HandoffGateway,
+        private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
+        private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
+        private readonly _handoffGateway: IHandoffNotificationService,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService, 
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository

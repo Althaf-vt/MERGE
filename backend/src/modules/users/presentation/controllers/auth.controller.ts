@@ -1,13 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
-import { RegisterUserUseCase } from "../../application/use-cases/register-user.use-case";
-import { VerifyOtpUseCase } from "../../application/use-cases/verify-otp.use-case";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
 import { LoginUserDto } from "../../application/dtos/login-user.dto";
-import {LoginUserUseCase} from '../../application/use-cases/login-user.use-case'
-import { RefreshTokenDto } from "../../application/dtos/refresh-token.dto";
-import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
 import type { Request, Response } from "express";
 import { ResendOtpDto } from "../../application/dtos/resend-otp.dto";
 import { IResendOtpUseCase, RESEND_OTP_USE_CASE } from "../../application/interfaces/resend-otp.use-case.interface";
@@ -15,6 +10,10 @@ import { FORGOT_PASSWORD_USE_CASE, IForgotPasswordUseCase, IResetPasswordUseCase
 import { ForgotPasswordDto, ResetPasswordDto } from "../../application/dtos/forgot-password.dto";
 import { GoogleLoginDto } from "../../application/dtos/google-login.dto";
 import { GOOGLE_LOGIN_USE_CASE, IGoogleLoginUseCase } from "../../application/interfaces/google-login.use-case.interface";
+import { IRegisterUserUseCase } from "../../application/interfaces/register-user.use-case.interface";
+import { IVerifyOtpUseCase } from "../../application/interfaces/verify-otp.use-case.interface";
+import { ILoginUserUseCase } from "../../application/interfaces/login-user.use-case.interface";
+import { IRefreshTokenUseCase } from "../../application/interfaces/refresh-token.use-case.interface";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -22,10 +21,10 @@ export class AuthController{
 
     // Injects the use-cases responsible for registration and OTP verification.
     constructor(
-        private readonly _registerUserUseCase: RegisterUserUseCase,
-        private readonly _verifyOtpUseCase: VerifyOtpUseCase,
-        private readonly _loginUserUseCase: LoginUserUseCase,
-        private readonly _refreshTokenUseCase: RefreshTokenUseCase,
+        private readonly _registerUserUseCase: IRegisterUserUseCase,
+        private readonly _verifyOtpUseCase: IVerifyOtpUseCase,
+        private readonly _loginUserUseCase: ILoginUserUseCase,
+        private readonly _refreshTokenUseCase: IRefreshTokenUseCase,
         @Inject(RESEND_OTP_USE_CASE) 
         private readonly _resendOtpUseCase: IResendOtpUseCase,
         @Inject(FORGOT_PASSWORD_USE_CASE)

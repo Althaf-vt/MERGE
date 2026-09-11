@@ -1,19 +1,19 @@
 import { BadRequestException, Body, Controller, FileTypeValidator, HttpCode, HttpStatus, Inject, MaxFileSizeValidator, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { SubmitKycDocumentUseCase } from "../../application/use-cases/submit-kyc-document.use-case";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer'
-import { SubmitLiveSelfieUseCase } from "../../application/use-cases/submit-live-selfie.use-case";
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE } from "../../application/interfaces/submit-liveness-check.use-case.interface";
 import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE } from "../../application/interfaces/submit-final-verification.use-case.interface";
+import { ISubmitLiveSelfieUseCase } from "../../application/interfaces/submit-live-selfie.use-case.interface";
+import { ISubmitKycDocumentUseCase } from "../../application/interfaces/submit-kyc-document.use-case.interface";
 
 @Controller('kyc')
 @UseGuards(JwtAuthGuard) // Protects all endpoints below, requiring a valid access token
 export class KycController{
     constructor(
-        private readonly _submitKycDocumentUseCase: SubmitKycDocumentUseCase,
-        private readonly _submitLiveSelfieUseCase: SubmitLiveSelfieUseCase,
+        private readonly _submitKycDocumentUseCase: ISubmitKycDocumentUseCase,
+        private readonly _submitLiveSelfieUseCase: ISubmitLiveSelfieUseCase,
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE)
         private readonly _submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
         @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE)
