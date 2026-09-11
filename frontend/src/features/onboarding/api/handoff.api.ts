@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../../auth/api/authApi";
+import { baseQueryWithReauth } from "../../auth/api/auth.api";
 
 interface HandoffSessionResponse{
     success: boolean;
