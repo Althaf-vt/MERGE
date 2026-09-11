@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, FileTypeValidator, HttpCode, HttpStatus, Inject, MaxFileSizeValidator, ParseFilePipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
