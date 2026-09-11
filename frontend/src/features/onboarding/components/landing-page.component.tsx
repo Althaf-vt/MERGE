@@ -1,6 +1,6 @@
 import styles from './landing.module.css';
 
-export const LandingPage = () => {
+export const LandingComponent = () => {
   return (
     <div className={styles.landingContainer}>
       
