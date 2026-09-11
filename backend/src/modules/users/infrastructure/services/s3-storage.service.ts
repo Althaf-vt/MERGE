@@ -1,9 +1,10 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from 'uuid';
+import { IStorageService } from "../../application/interfaces/storage-service.interface";
 
 @Injectable()
-export class s3StorageService{
+export class s3StorageService implements IStorageService{
     private readonly _s3Client: S3Client;
     private readonly _bucketName: string;
     private readonly _region: string;
