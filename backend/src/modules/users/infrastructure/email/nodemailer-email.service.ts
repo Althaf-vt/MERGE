@@ -1,6 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as nodemailer from 'nodemailer'
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService{
@@ -48,7 +50,7 @@ export class NodeMailerEmailService implements IEmailService{
             this._logger.log(`OTP email send successfully to ${to}`);
         } catch (error: any) {
             this._logger.error(`Failed to send OTP email to ${to}`, error.stack);
-            throw new Error('Falied to dispatch verification email. Please try again later.')
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch verification email. Please try again later.');
         }
     }
 }

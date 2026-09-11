@@ -1,4 +1,6 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { ITokenPayload, ITokenservice } from "../../domain/interfaces/token-service.interface";
 import { JwtService } from "@nestjs/jwt";
 
@@ -29,7 +31,7 @@ export class JwtTokenService implements ITokenservice{
                 secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
             });
         } catch (error) {
-            throw new UnauthorizedException('Invalid or expired access token');
+            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
         }
     }
 
@@ -39,7 +41,7 @@ export class JwtTokenService implements ITokenservice{
                 secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret'
             });
         } catch (error) {
-            throw new UnauthorizedException("Invalid or expired refresh token");
+            throw new DomainException(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token");
         }
     }
 }

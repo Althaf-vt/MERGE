@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IOtpService } from "../../domain/interfaces/otp-service.interface";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 import Redis from "ioredis";
 
 // Injecting OTP storage and verification using Redis.
@@ -54,7 +56,7 @@ export class RedisOtpService implements IOtpService{
         const storedData = await this._redis.get(key);
 
         if(!storedData){
-            throw new Error('Registration session expired. Please register again.');
+            throw new DomainException(ErrorCode.OTP_EXPIRED, 'Registration session expired. Please register again.');
         }
 
         const parsedData = JSON.parse(storedData);
