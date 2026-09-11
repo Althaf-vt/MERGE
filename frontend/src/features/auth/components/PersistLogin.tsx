@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { useRefreshMutation } from "../api/authApi";
-import { setCredentials } from "../slices/authSlice";
+import { setCredentials, setInitialized } from "../slices/authSlice";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PersistLogin = () => {
@@ -24,6 +24,7 @@ export const PersistLogin = () => {
                 dispatch(setCredentials({accessToken: response.accessToken, user: response.user}));
             } catch (error) {
                 console.error('Silent refresh failed. User must log in manually');
+                dispatch(setInitialized());
             } finally{
                 setHasAttempted(true);
             }
