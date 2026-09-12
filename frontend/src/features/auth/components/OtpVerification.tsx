@@ -2,8 +2,11 @@ import { useVerifyOtpMutation } from "../api/authApi";
 import React, { useState } from "react";
 import { useAppSelector } from "../../../app/hooks";
 import styles from './OtpVerification.module.css';
+import { useNavigate } from "react-router-dom";
 
 export const OtpVerification = () => {
+    const navigate = useNavigate();
+
     // Pull the email we just registered with from the Redux slice
     const email = useAppSelector((state: any) => state.auth.registeredEmail);
 
@@ -15,7 +18,7 @@ export const OtpVerification = () => {
 
         try {
             const response = await verifyOtp({ email, otp }).unwrap();
-            console.log('OTP Verified successfully!', response);
+            navigate('/login');
 
             // TODO: Save JWT token to localStorage/cookies here
             // TODO: Redirect to the KYC Onboading scree

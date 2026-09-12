@@ -1,9 +1,10 @@
 import React from 'react'
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom'
 import { RegisterPage } from './features/auth/pages/RegisterPage'
+import { LoginPage } from './features/auth/pages/LoginPage'
 
 // Placeholder components for future routes we will build
-const LoginPage = () => <div>Login Page (Coming Soon)</div>
+// const LoginPage = () => <div>Login Page (Coming Soon)</div>
 const KycOnboardingPage = () => <div>KYC Onboarding (Coming Soon)</div>
 
 

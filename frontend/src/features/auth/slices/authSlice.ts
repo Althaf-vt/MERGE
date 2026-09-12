@@ -4,16 +4,42 @@ import {createSlice} from '@reduxjs/toolkit';
 // Represents the current step of the user registration flow
 type RegistrationStep = 'REGISTER' | 'OTP';
 
+// Defines the shape of the authenticated user data stored in the client state
+export interface AuthUser{
+    id: string;
+    email: string;
+    isEmailVerified: boolean;
+    kycCompleted?: boolean;
+    onboardingStep?: number;
+    createdAt?: Date | string
+}
+
 // Stores the authentication-related UI state used during registration
 interface AuthState{
     currentStep: RegistrationStep;
     registeredEmail: string | null;
+
+    // auth session state
+    accessToken: string | null;
+    user: AuthUser | null;
+    isAuthenticated: boolean;
+}
+
+// Payload contract for setting authenticated session credentials
+interface SetCredentialsPayload{
+    accessToken: string;
+    user: AuthUser;
 }
 
 // Initial state of the registration flow
 const initialState: AuthState = {
     currentStep: 'REGISTER',
     registeredEmail: null,
+
+    // Default unauthenticated session values
+    accessToken: null,
+    user: null,
+    isAuthenticated: false
 }
 
 const authSlice = createSlice({
@@ -34,9 +60,33 @@ const authSlice = createSlice({
         resetRegistration: (state) => {
             state.currentStep = 'REGISTER';
             state.registeredEmail = null;
+        },
+
+        setCredentials: (state, action: PayloadAction<SetCredentialsPayload>) => {
+            const {accessToken, user} = action.payload;
+
+            state.accessToken = accessToken;
+            state.user = user;
+            state.isAuthenticated = true;
+        },
+
+        logout: (state) => {
+            state.accessToken = null;
+            state.user = null;
+            state.isAuthenticated = false;
+            state.currentStep = 'REGISTER',
+            state.registeredEmail = null;
         }
     }
 })
 
-export const {setRegistrationStep, setRegisteredEmail, resetRegistration} = authSlice.actions;
+export const {
+    setRegistrationStep, 
+    setRegisteredEmail, 
+    resetRegistration,
+    setCredentials,
+    logout,
+
+} = authSlice.actions;
+
 export default authSlice.reducer;

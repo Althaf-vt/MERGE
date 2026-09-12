@@ -10,6 +10,11 @@ export interface VerifyOtpDto{
     otp: string;
 }
 
+export interface LoginUserDto{
+    email: string;
+    password: string;
+}
+
 // shape of the successful response
 export interface AuthResponse {
     message: string;

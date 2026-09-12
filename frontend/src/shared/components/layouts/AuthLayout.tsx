@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './AuthLayout.module.css';
 
 interface AuthLayoutProps {
@@ -7,6 +7,9 @@ interface AuthLayoutProps {
 }
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+    const location = useLocation();
+
+    const isLoginPage = location.pathname === '/login'
   return (
     <div className={styles.layoutContainer}>
       <header className={styles.header}>
@@ -15,7 +18,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           <Link to="/features" className={styles.navLink}>Features</Link>
           <Link to="/safety" className={styles.navLink}>Safety</Link>
         </nav>
-        <Link to="/login" className={styles.loginBtn}>Login</Link>
+        {isLoginPage ? (
+                <Link to="/register" className={styles.loginBtn}>Register</Link>
+            ):(
+                <Link to="/login" className={styles.loginBtn}>Login</Link>
+            )
+        }
       </header>
       <main className={styles.mainContent}>
         {children}
