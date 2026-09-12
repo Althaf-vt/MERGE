@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { clearKycData, setKycStep } from "../slices/kyc.slice";
+import { setKycStep } from "../slices/kyc.slice";
 import { getErrorMessage } from "../../../shared/utils/error.util";
 import { useSubmitFinalVerificationMutation } from '../api/kyc.api';
 import styles from './review-verification.module.css'; 
