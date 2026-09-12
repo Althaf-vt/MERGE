@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../../../app/hooks";
 import { useUpdatePersonaMutation } from "../api/profile.api";
-import { useUpdatePersonaMutation } from "../api/profile.api";
 import { setCredentials } from "../../auth/slices/auth.slice";
 import { getErrorMessage } from "../../../shared/utils/error.util";
 import {
