@@ -41,36 +41,30 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
 
     // --- GLOBAL DDD ERROR HANDLING ---
     if (result.error && result.error.data) {
-        const backendError = (result.error.data as ApiErrorResponse).error;
+    const backendError = (result.error.data as ApiErrorResponse).error;
 
-        if (backendError) {
-            switch (backendError.code) {
-                case ErrorCode.HANDOFF_SESSION_EXPIRED:
-                    window.location.href = '/onboarding/kyc?session=expired';
-                    break;
+    if (backendError) {
+        switch (backendError.code) {
+            case ErrorCode.HANDOFF_SESSION_EXPIRED:
+                window.location.href = '/onboarding/kyc?session=expired';
+                break;
 
-                case ErrorCode.LIVENESS_CHECK_FAILED:
-                    window.location.href = '/onboarding/kyc/liveness';
-                    break;
+            case ErrorCode.INTERNAL_SERVER_ERROR:
+                console.error("System error occurred. Please try again later.");
+                break;
 
-                // Optional: System-wide downtime or unexpected backend crash
-                case ErrorCode.INTERNAL_SERVER_ERROR:
-                    // Only use this if you want a global banner/toast for unhandled 500s:
-                    console.error("System error occurred. Please try again later.");
-                    break;
+            case ErrorCode.USER_SUSPENDED:
+                api.dispatch(logout());
+                window.location.href = '/login?status=suspended';
+                break;
 
-                // Optional: Suspended or deactivated account
-                case ErrorCode.USER_SUSPENDED:
-                    api.dispatch(logout());
-                    window.location.href = '/login?status=suspended';
-                    break;
+            // REMOVED LIVENESS_CHECK_FAILED from here so the local component can catch it
 
-                default:
-                    // Do nothing: let the individual component/form catch block handle it
-                    break;
-            }
+            default:
+                break;
         }
     }
+}
     // --------------------------------------------------------------
 
     // Determine if the failed request was already a refresh request
