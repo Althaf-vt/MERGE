@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as nodemailer from 'nodemailer'
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService{

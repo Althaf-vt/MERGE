@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ISubmitFinalVerificationUseCase } from "../interfaces/submit-final-verification.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { VerificationStatus } from "../../domain/enums/user.enums";

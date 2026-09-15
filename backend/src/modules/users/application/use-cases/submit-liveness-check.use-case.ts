@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ISubmitLivenessCheckUseCase } from "../interfaces/submit-liveness-check.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, IBiometricService } from "../../domain/interfaces/biometric-service.interface";

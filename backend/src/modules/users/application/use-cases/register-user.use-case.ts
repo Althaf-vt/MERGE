@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { RegisterUserDto } from "../dtos/register-user.dto";
@@ -8,8 +8,8 @@ import { OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import type { IOtpService } from "../../domain/interfaces/otp-service.interface";
 import { EMAIL_SERVICE } from "../../domain/interfaces/email-service.interface";
 import type { IEmailService } from "../../domain/interfaces/email-service.interface";
-import { PASSWORD_HASHER } from "../../../../shared/interfaces/password-hasher.interface";
-import type { IPasswordHasher } from "../../../../shared/interfaces/password-hasher.interface";
+import { PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
+import type { IPasswordHasher } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { IRegisterUserUseCase } from "../interfaces/register-user.use-case.interface";
 
 // Handles the user registration process, including validation,

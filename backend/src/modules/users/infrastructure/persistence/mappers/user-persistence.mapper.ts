@@ -2,7 +2,7 @@ import { UserKyc } from "../../../domain/entities/kyc-verification.entity";
 import { UserProfile } from "../../../domain/entities/user-profile.entity";
 import { UserAggregate } from "../../../domain/entities/user.entity";
 import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
-import { EmailVO } from "../../../domain/value-objects/email.vo";
+import { EmailVO } from "../../../../../shared/domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";
 
 // Maps between domain UserEntity objects and Mongoose persistence documents.

@@ -1,12 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IPkiResult, IPkiVerificationService } from "../../domain/interfaces/kyc-service.interface";
 import path from "path";
 import AdmZip from "adm-zip";
 import { DOMParser } from "@xmldom/xmldom";
 import * as fs from 'fs';
 import { SignedXml } from "xml-crypto";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 @Injectable()
 export class AadharPkiService implements IPkiVerificationService{

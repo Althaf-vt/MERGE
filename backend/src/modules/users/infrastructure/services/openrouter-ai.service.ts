@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { BioGenerationContext, IAiService } from "../../domain/interfaces/ai-service.interface";
 import OpenAI from "openai";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService{
