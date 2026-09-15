@@ -1,0 +1,17 @@
+/* frontend/src/index.css */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0a0a0a; /* Optional: matches admin dark mode */
+}
+
+#root {
+  width: 100%;
+  max-width: none; /* Removes Vite's default 1280px max-width */
+  margin: 0;       /* Removes Vite's default centering margin */
+  padding: 0;      /* Removes Vite's default 2rem padding */
+  text-align: left;
+}
