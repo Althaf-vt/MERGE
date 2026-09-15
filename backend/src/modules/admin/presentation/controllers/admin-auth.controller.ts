@@ -5,14 +5,14 @@ import { Response } from "express";
 import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 
 
-@Controller()
+@Controller('admin/auth')
 export class AdminAuthController {
     constructor(
         @Inject(ADMIN_LOGIN_USE_CASE)
         private readonly adminLoginUseCase: IAdminLoginUseCase,
     ){}
 
-    @Post()
+    @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() dto: AdminLoginDto, @Res({passthrough: true}) res: Response) {
         const result = await this.adminLoginUseCase.execute(dto);
