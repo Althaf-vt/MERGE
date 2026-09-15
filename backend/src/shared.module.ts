@@ -13,7 +13,7 @@ import { JwtTokenService } from "./shared/infrastructure/security/services/jwt-t
 
     // Configures JWT support for token generation and verification.
     JwtModule.register({
-        secret: process.env.JWT_SECRET || 'super-secret-fallback',
+        secret: process.env.JWT_ACCESS_SECRET || 'super-secret-fallback',
     }),
   ],
   providers: [
@@ -30,7 +30,7 @@ import { JwtTokenService } from "./shared/infrastructure/security/services/jwt-t
       useClass: NodeMailerEmailService,
     },
   ],
-  exports: [PASSWORD_HASHER, EMAIL_SERVICE, TOKEN_SERVICE],
+  exports: [PASSWORD_HASHER, EMAIL_SERVICE, TOKEN_SERVICE, JwtModule],
 })
 
 export class SharedModule {}
