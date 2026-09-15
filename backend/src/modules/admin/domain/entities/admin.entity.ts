@@ -1,6 +1,6 @@
-import { ErrorCode } from "../../../users/domain/enums/error-code.enum";
-import { DomainException } from "../../../users/domain/exceptions/domain.exception";
-import { EmailVO } from "../../../users/domain/value-objects/email.vo";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminPermission } from "../enums/admin-permission.enums";
 import { AdminRole, AdminStatus } from "../enums/admin.enums";
 

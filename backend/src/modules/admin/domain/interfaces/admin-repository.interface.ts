@@ -1,4 +1,4 @@
-import { IBaseRepository } from "../../../users/domain/interfaces/base-repository.interface";
+import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { AdminAggregate } from "../entities/admin.entity";
 import { AdminRole } from "../enums/admin.enums";
 

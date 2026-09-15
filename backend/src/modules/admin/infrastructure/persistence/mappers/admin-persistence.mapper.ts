@@ -1,4 +1,4 @@
-import { EmailVO } from "../../../../users/domain/value-objects/email.vo";
+import { EmailVO } from "../../../../../shared/domain/value-objects/email.vo";
 import { AdminAggregate } from "../../../domain/entities/admin.entity";
 import { AdminPermission } from "../../../domain/enums/admin-permission.enums";
 import { AdminRole, AdminStatus } from "../../../domain/enums/admin.enums";

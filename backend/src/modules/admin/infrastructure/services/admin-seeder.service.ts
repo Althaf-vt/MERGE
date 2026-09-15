@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger, OnApplicationBootstrap } from "@nestjs/common";
-import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/interfaces/password-hasher.interface";
+import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
 import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
-import { EmailVO } from "../../../users/domain/value-objects/email.vo";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 

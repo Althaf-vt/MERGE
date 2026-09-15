@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IAdminLoginUseCase } from "../interfaces/admin-login.use-case.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
-import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/interfaces/password-hasher.interface";
-import { ITokenservice, TOKEN_SERVICE } from "../../../users/domain/interfaces/token-service.interface";
+import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
+import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminLoginDto } from "../dtos/admin-login.dto";
-import { EmailVO } from "../../../users/domain/value-objects/email.vo";
-import { DomainException } from "../../../users/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../users/domain/enums/error-code.enum";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
