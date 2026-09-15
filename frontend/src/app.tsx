@@ -18,10 +18,26 @@ import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
 import { GlobalLayout } from './shared/components/layouts/global.layout.component';
 import { SessionInitializer } from './features/auth/components/session-initializer.component';
 
+// Admin Imports
+import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page'; // <-- ADDED
+
 export const App = () => {
     return (
         <BrowserRouter>
             <Routes>
+
+                {/* =========================================
+                    ADMIN PORTAL 
+                ========================================= */}
+                <Route path="/admin/login" element={<AdminLoginPage />} />
+                
+                {/* Temporary placeholder to verify successful login redirect */}
+                <Route path="/admin/dashboard" element={<div style={{ color: 'white', padding: '2rem' }}>Admin Dashboard (Coming Soon)</div>} />
+
+
+                {/* =========================================
+                    USER FACING PLATFORM
+                ========================================= */}
                 <Route element={<GlobalLayout />}>
                     {/* Runs silent background refresh across all routes so TopNav stays authenticated on refresh */}
                     <Route element={<SessionInitializer />}>
@@ -61,6 +77,7 @@ export const App = () => {
                         <Route path="*" element={<div>404 - Page Not Found</div>} />
                     </Route>
                 </Route>
+
             </Routes>
         </BrowserRouter>
     );
