@@ -5,19 +5,20 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 @Injectable()
-export class OpenRouterAiService implements IAiService{
+export class OpenRouterAiService implements IAiService {
     private readonly _client: OpenAI;
     private readonly _logger = new Logger(OpenRouterAiService.name);
 
-    constructor(){
+    constructor() {
         const apiKey = process.env.OPENROUTER_API_KEY;
-        if (!apiKey) {
+        if (!apiKey || apiKey.trim().length === 0) {
             this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'OPENROUTER_API_KEY is required to boot the AI service.');
         }
-        
+
         const appUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
         const appTitle = process.env.APP_NAME || 'MERGE Platform';
-        
+
         // Configure standart OpenAi client to route through OpenRouter
         this._client = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
@@ -44,8 +45,8 @@ export class OpenRouterAiService implements IAiService{
             const completion = await this._client.chat.completions.create({
                 model: "openrouter/free",
                 messages: [
-                    {role: "system", content: systemInstruction},
-                    {role: "user", content: `User Context:\n${JSON.stringify(promptContext, null, 2)}`}
+                    { role: "system", content: systemInstruction },
+                    { role: "user", content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
                 ],
                 temperature: 0.7,
             })
