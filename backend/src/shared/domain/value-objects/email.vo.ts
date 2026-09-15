@@ -1,8 +1,8 @@
 // Represents an email as a value object, validating and normalizing the email
 // while keeping its value immutable and providing value-based comaprison.
 
-import { DomainException } from "../exceptions/domain.exception";
 import { ErrorCode } from "../enums/error-code.enum";
+import { DomainException } from "../exceptions/domain.exception";
 export class EmailVO{
     private readonly _value: string;
 

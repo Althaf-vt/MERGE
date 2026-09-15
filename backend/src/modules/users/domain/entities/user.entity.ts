@@ -1,10 +1,10 @@
 import { AuthProvider, UserStatus } from "../enums/user.enums";
-import { EmailVO } from "../value-objects/email.vo";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { UserKyc } from "./kyc-verification.entity";
 import { UserPreference } from "./user-preference.entity";
 import { UserProfile } from "./user-profile.entity";
-import { DomainException } from "../exceptions/domain.exception";
-import { ErrorCode } from "../enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 export enum UserRole{
     USER = 'USER',

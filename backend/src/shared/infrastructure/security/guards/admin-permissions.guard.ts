@@ -1,9 +1,10 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
-import { AdminPermission } from "../../modules/admin/domain/enums/admin-permission.enums";
 import { PERMISSION_KEY } from "../decorators/require-permissions.decorator";
-import { AdminRole } from "../../modules/admin/domain/enums/admin.enums";
+import { AdminPermission } from "../../../../modules/admin/domain/enums/admin-permission.enums";
+import { AdminRole } from "../../../../modules/admin/domain/enums/admin.enums";
+
 
 @Injectable()
 export class AdminPermissionGuard implements CanActivate {

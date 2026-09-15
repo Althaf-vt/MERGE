@@ -1,7 +1,7 @@
 import { Document, Model } from "mongoose";
-import { IBaseRepository } from "../../../modules/users/domain/interfaces/base-repository.interface";
-import { DomainException } from "../../../modules/users/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../modules/users/domain/enums/error-code.enum";
+import { IBaseRepository } from "../../domain/interfaces/base-repository.interface";
+import { DomainException } from "../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
 
 export abstract class BaseMongoRepository<TAggregate, TDocument extends Document> implements IBaseRepository<TAggregate> {
     
