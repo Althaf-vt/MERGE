@@ -38,11 +38,20 @@ export const adminAuthApi = createApi({
                 body,
             }),
         }),
+
+        adminVerifyResetOtp: builder.mutation<{ message: string }, { email: string; otp: string }>({
+            query: (body) => ({
+                url: '/admin/auth/verify-reset-otp',
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 });
 
 export const {
     useAdminLoginMutation,
     useAdminForgotPasswordMutation,
-    useAdminResetPasswordMutation
+    useAdminResetPasswordMutation,
+    useAdminVerifyResetOtpMutation,
 } = adminAuthApi;

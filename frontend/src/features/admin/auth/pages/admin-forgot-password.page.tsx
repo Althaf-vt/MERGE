@@ -1,6 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAdminForgotPasswordMutation, useAdminResetPasswordMutation } from '../api/admin-auth.api';
+import { 
+    useAdminForgotPasswordMutation, 
+    useAdminVerifyResetOtpMutation, 
+    useAdminResetPasswordMutation 
+} from '../api/admin-auth.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
 import { AdminAuthLayout } from '../components/admin-auth.layout';
 import styles from './admin-forgot-password.module.css';
@@ -19,13 +23,27 @@ export const AdminForgotPasswordPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
+    // Timer State
+    const [resendTimer, setResendTimer] = useState(0);
 
     // Refs for OTP auto-focus
     const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     // API Mutations
     const [forgotPassword, { isLoading: isSending }] = useAdminForgotPasswordMutation();
+    const [verifyOtp, { isLoading: isVerifying }] = useAdminVerifyResetOtpMutation();
     const [resetPassword, { isLoading: isResetting }] = useAdminResetPasswordMutation();
+
+    // Timer Effect for Resend Cooldown
+    useEffect(() => {
+        if (resendTimer > 0 && step === 'OTP') {
+            const timerId = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(timerId);
+        }
+    }, [resendTimer, step]);
 
     // Password Validation Logic
     const validations = {
@@ -45,9 +63,17 @@ export const AdminForgotPasswordPage = () => {
         try {
             await forgotPassword({ email }).unwrap();
             setStep('OTP');
+            setResendTimer(60); // Start 60-second cooldown
         } catch (err: any) {
             setError(getErrorMessage(err, 'Failed to send reset code.'));
         }
+    };
+
+    // Step 2: Handle Resend
+    const handleResend = () => {
+        if (resendTimer > 0) return;
+        setOtp(['', '', '', '', '', '']); // Clear existing OTP
+        handleRequestCode();
     };
 
     // Step 2: OTP Input Handling
@@ -75,7 +101,6 @@ export const AdminForgotPasswordPage = () => {
         }
     };
 
-    // Supports pasting a full 6-digit code anywhere into the OTP inputs
     const handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
@@ -87,18 +112,25 @@ export const AdminForgotPasswordPage = () => {
         }
         setOtp(newOtp);
 
-        // Focus next unfilled box, or the last box if all 6 filled
         const focusIndex = Math.min(pastedData.length, 5);
         otpRefs.current[focusIndex]?.focus();
     };
 
-    const handleVerifyOtp = (e: React.FormEvent) => {
+    // Step 2: Verify OTP explicitly BEFORE proceeding
+    const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (otp.join('').length === 6) {
-            setError(null);
-            setStep('PASSWORD');
-        } else {
-            setError('Please enter the complete 6-digit code.');
+        const currentOtp = otp.join('');
+        if (currentOtp.length !== 6) {
+            return setError('Please enter the complete 6-digit code.');
+        }
+
+        setError(null);
+        try {
+            // Check with backend if OTP is valid
+            await verifyOtp({ email, otp: currentOtp }).unwrap();
+            setStep('PASSWORD'); // Backend confirmed it's valid, move to password creation
+        } catch (err: any) {
+            setError(getErrorMessage(err, 'Invalid or expired verification code.'));
         }
     };
 
@@ -117,7 +149,7 @@ export const AdminForgotPasswordPage = () => {
         try {
             await resetPassword({
                 email,
-                otp: otp.join(''),
+                otp: otp.join(''), // Pass OTP again for final secure backend validation
                 newPassword
             }).unwrap();
             navigate('/admin/login', { replace: true });
@@ -125,7 +157,7 @@ export const AdminForgotPasswordPage = () => {
             const msg = getErrorMessage(err, 'Failed to reset password.');
             setError(msg);
             if (msg.toLowerCase().includes('otp') || msg.toLowerCase().includes('code')) {
-                setStep('OTP');
+                setStep('OTP'); // Kick back to OTP if expired
             }
         }
     };
@@ -214,13 +246,24 @@ export const AdminForgotPasswordPage = () => {
                         <div className={styles.otpActions}>
                             <div className={styles.timer}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                10:00
+                                {resendTimer > 0 ? `00:${resendTimer.toString().padStart(2, '0')}` : '00:00'}
                             </div>
-                            <span className={styles.textLink} onClick={() => handleRequestCode()}>Resend Code</span>
-                            <span className={styles.textLink} onClick={() => setStep('EMAIL')}>Change Email</span>
+                            <span 
+                                className={styles.textLink} 
+                                onClick={handleResend}
+                                style={{
+                                    opacity: resendTimer > 0 ? 0.5 : 1,
+                                    cursor: resendTimer > 0 ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                Resend Code
+                            </span>
+                            <span className={styles.textLink} onClick={() => { setStep('EMAIL'); setOtp(['', '', '', '', '', '']); }}>
+                                Change Email
+                            </span>
                         </div>
-                        <button type="submit" className={styles.submitBtn}>
-                            Verify Code →
+                        <button type="submit" className={styles.submitBtn} disabled={isVerifying}>
+                            {isVerifying ? 'Verifying...' : 'Verify Code →'}
                         </button>
                         <BackButton />
                     </form>
@@ -232,6 +275,7 @@ export const AdminForgotPasswordPage = () => {
             )}
 
             {/* --- STEP 3: NEW PASSWORD --- */}
+            {/* ... Rest of the Password UI (Unchanged) ... */}
             {step === 'PASSWORD' && (
                 <div className={styles.fadeEnter}>
                     <div className={styles.header}>
