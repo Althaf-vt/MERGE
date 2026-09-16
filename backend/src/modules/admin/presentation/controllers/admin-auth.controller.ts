@@ -3,9 +3,8 @@ import { ADMIN_LOGIN_USE_CASE, IAdminLoginUseCase } from "../../application/inte
 import { AdminLoginDto } from "../../application/dtos/admin-login.dto";
 import { Response } from "express";
 import { AdminResponseMapper } from "../mappers/admin-response.mapper";
-import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, IAdminForgotPasswordUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
-import { IResetPasswordUseCase } from "../../../users/application/interfaces/forgot-password.use-case.interface";
-import { AdminForgotPasswordDto, AdminResetPasswordDto } from "../../application/dtos/admin-forgot-password.dto";
+import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
+import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 
 
 
@@ -18,7 +17,9 @@ export class AdminAuthController {
         @Inject(ADMIN_FORGOT_PASSWORD_USE_CASE)
         private readonly _forgotPasswordUseCase: IAdminForgotPasswordUseCase,
         @Inject(ADMIN_RESET_PASSWORD_USE_CASE)
-        private readonly _resetPasswordUseCase: IResetPasswordUseCase,
+        private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
+        @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE)
+        private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
     ){}
 
     @Post('login')
@@ -45,6 +46,13 @@ export class AdminAuthController {
     async forgotPassword(@Body() dto: AdminForgotPasswordDto) {
         await this._forgotPasswordUseCase.execute(dto);
         return { message: "If an admin account exists, a reset code has been sent." };
+    }
+
+    @Post('verify-reset-otp')
+    @HttpCode(HttpStatus.OK)
+    async verifyResetOtp(@Body() dto: AdminVerifyResetOtpDto) {
+        await this._adminVerifyResetOtpUseCase.execute(dto);
+        return { message: "Verification code is valid." };
     }
 
     @Post('reset-password')

@@ -21,3 +21,13 @@ export class AdminResetPasswordDto {
     @IsStrongPassword({}, { message: 'Password must contain uppercase, lowercase, numbers, and symbols.' })
     newPassword!: string;
 }
+
+export class AdminVerifyResetOtpDto {
+    @IsEmail()
+    @IsNotEmpty()
+    email!: string;
+
+    @IsString()
+    @IsNotEmpty({ message: 'Verification code is required.' })
+    otp!: string;
+}
