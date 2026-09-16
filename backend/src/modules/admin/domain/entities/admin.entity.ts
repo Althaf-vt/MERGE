@@ -69,6 +69,12 @@ export class AdminAggregate {
         this._markUpdatedAt();
     }
 
+
+    updatePassword(newPasswordHash: string): void {
+        this._props.passwordHash = newPasswordHash;
+        this._markUpdatedAt();
+    }
+
     suspend(): void {
         this._props.status = AdminStatus.SUSPENDED;
         this._markUpdatedAt();
