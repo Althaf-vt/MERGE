@@ -102,7 +102,9 @@ export const AdminLoginPage = () => {
                         <input type="checkbox" />
                         <span>Remember Me</span>
                     </label>
-                    <span className={styles.forgotLink}>Forgot Password?</span>
+                    <span className={styles.forgotLink}
+                        onClick={() => navigate('/admin/forgot-password')}
+                    >Forgot Password?</span>
                 </div>
 
                 <button 

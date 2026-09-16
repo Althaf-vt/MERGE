@@ -17,9 +17,10 @@ import { ProfileLivePage } from './features/onboarding/components/profile-live.p
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
 import { GlobalLayout } from './shared/components/layouts/global.layout.component';
 import { SessionInitializer } from './features/auth/components/session-initializer.component';
+import { AdminForgotPasswordPage } from './features/admin/auth/pages/admin-forgot-password.page';
 
-// Admin Imports
-import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page'; // <-- ADDED
+
+import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page';
 
 export const App = () => {
     return (
@@ -30,6 +31,7 @@ export const App = () => {
                     ADMIN PORTAL 
                 ========================================= */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
+                <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
                 
                 {/* Temporary placeholder to verify successful login redirect */}
                 <Route path="/admin/dashboard" element={<div style={{ color: 'white', padding: '2rem' }}>Admin Dashboard (Coming Soon)</div>} />
