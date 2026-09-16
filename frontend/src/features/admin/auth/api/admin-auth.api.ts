@@ -22,9 +22,27 @@ export const adminAuthApi = createApi({
                 body: credentials,
             }),
         }),
+
+        adminForgotPassword: builder.mutation<{message: string}, {email: string}>({
+            query: (body) => ({
+                url: '/admin/auth/forgot-password',
+                method: 'POST',
+                body,
+            }),
+        }),
+
+        adminResetPassword: builder.mutation<{message: string}, any>({
+            query: (body) => ({
+                url: '/admin/auth/reset-password',
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 });
 
 export const {
     useAdminLoginMutation,
+    useAdminForgotPasswordMutation,
+    useAdminResetPasswordMutation
 } = adminAuthApi;
