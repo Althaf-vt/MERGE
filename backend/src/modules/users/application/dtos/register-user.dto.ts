@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength } from "class-validator";
-import { Match } from "../../../../shared/infrastructure/decorators/match.decorator";
+import { Match } from "../../../../shared/infrastructure/validation/match.decorator";
 
 // DTO for user registration that validates the email and password before processing.
 export class RegisterUserDto{

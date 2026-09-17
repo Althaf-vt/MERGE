@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IResendOtpUseCase } from "../interfaces/resend-otp.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import { EMAIL_SERVICE, IEmailService } from "../../domain/interfaces/email-service.interface";
 import { ResendOtpDto } from "../dtos/resend-otp.dto";
-import { EmailVO } from "../../domain/value-objects/email.vo";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 
 @Injectable()
 export class ResendOtpUseCase implements IResendOtpUseCase{

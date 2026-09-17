@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { SharedModule } from "./shared.module";
 import { UserModule } from "./modules/users/users.module";
+import { AdminModule } from "./modules/admin/admin.module";
 
 
 @Module({
@@ -17,7 +18,8 @@ import { UserModule } from "./modules/users/users.module";
 
         // Application modules
         SharedModule,
-        UserModule
+        UserModule,
+        AdminModule,
     ]
 })
 

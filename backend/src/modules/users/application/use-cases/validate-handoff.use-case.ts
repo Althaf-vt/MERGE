@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../interfaces/handoff-service.interface";
 import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interface.use-case";
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../interfaces/handoff-notification.service.interface";

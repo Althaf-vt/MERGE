@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IGoogleLoginResult, IGoogleLoginUseCase } from "../interfaces/google-login.use-case.interface";
 import { OAuth2Client } from "google-auth-library";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GoogleLoginDto } from "../dtos/google-login.dto";
-import { EmailVO } from "../../domain/value-objects/email.vo";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
-import { ITokenservice, TOKEN_SERVICE } from "../../domain/interfaces/token-service.interface";
+import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase{

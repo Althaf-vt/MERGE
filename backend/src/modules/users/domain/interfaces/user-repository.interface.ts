@@ -1,6 +1,6 @@
 import { LivenessEvaluationRecord, UserKyc } from "../entities/kyc-verification.entity";
 import { UserAggregate } from "../entities/user.entity";
-import { IBaseRepository } from "./base-repository.interface";
+import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 
 // Unique DI token used to identify the UserRepository implementation.
 // String token instead of Symbol for reliable Cross-Module Dependency Injection

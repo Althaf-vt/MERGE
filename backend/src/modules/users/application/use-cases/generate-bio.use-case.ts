@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { AI_SERVICE, IAiService } from "../../domain/interfaces/ai-service.interface";
 import { GeneratebioResult, IGenerateBioUseCase } from "../interfaces/generate-bio.use-case.interface";

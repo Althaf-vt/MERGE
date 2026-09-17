@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IExtractionResult, IBiometricService, ILivenessResult } from "../../domain/interfaces/biometric-service.interface";
 import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import FormData from "form-data";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
 @Injectable()
 export class HttpBiometricService implements IBiometricService{

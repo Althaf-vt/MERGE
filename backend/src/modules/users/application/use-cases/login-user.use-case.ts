@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
-import { PASSWORD_HASHER } from "../../../../shared/interfaces/password-hasher.interface";
-import type { IPasswordHasher } from "../../../../shared/interfaces/password-hasher.interface";
+import { PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
+import type { IPasswordHasher } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { LoginUserDto } from "../dtos/login-user.dto";
 import { UserAggregate } from "../../domain/entities/user.entity";
-import { TOKEN_SERVICE } from "../../domain/interfaces/token-service.interface";
-import type { ITokenservice } from "../../domain/interfaces/token-service.interface";
+import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
+import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
 
 @Injectable()

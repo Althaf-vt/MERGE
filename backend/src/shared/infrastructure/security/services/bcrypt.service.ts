@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
-import { IPasswordHasher } from "../../interfaces/password-hasher.interface";
+import { IPasswordHasher } from "../../../domain/interfaces/password-hasher.interface";
 // Service responsible for securely hashing passwords and comparing passwords with their stored hashes.
 
 // Marks this service as available for dependency injection in NestJs. 

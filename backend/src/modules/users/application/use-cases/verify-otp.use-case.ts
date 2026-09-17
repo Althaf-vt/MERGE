@@ -1,13 +1,13 @@
 import { Injectable, Inject } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import type { IUserRepository } from "../../domain/interfaces/user-repository.interface";
 import { VerifyOtpDto } from "../dtos/verify-otp.dto";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import type { IOtpService } from "../../domain/interfaces/otp-service.interface";
-import { EmailVO } from "../../domain/value-objects/email.vo";
+import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { IVerifyOtpUseCase } from "../interfaces/verify-otp.use-case.interface";
 

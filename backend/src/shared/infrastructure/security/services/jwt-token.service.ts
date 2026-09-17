@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
-import { ITokenPayload, ITokenservice } from "../../domain/interfaces/token-service.interface";
 import { JwtService } from "@nestjs/jwt";
+import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-service.interface";
+import { DomainException } from "../../../domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../domain/enums/error-code.enum";
 
 // Implements token generation and verification using JWT.
 @Injectable()

@@ -17,11 +17,40 @@ import { ProfileLivePage } from './features/onboarding/components/profile-live.p
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
 import { GlobalLayout } from './shared/components/layouts/global.layout.component';
 import { SessionInitializer } from './features/auth/components/session-initializer.component';
+import { AdminForgotPasswordPage } from './features/admin/auth/pages/admin-forgot-password.page';
+
+
+import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page';
+import { AdminProtectedRoute } from './features/admin/auth/components/admin-protected-route.component';
+import { AdminLayout } from './features/admin/dashboard/components/admin.layout';
+import { AdminDashboardPage } from './features/admin/dashboard/pages/admin-dashboard.page';
+import { AdminPersistLogin } from './features/admin/auth/components/admin-persist-login.component';
+import { AdminPublicRoute } from './features/admin/auth/components/admin-public-route.component';
 
 export const App = () => {
     return (
         <BrowserRouter>
             <Routes>
+
+                {/* =========================================
+                    ADMIN PORTAL 
+                ========================================= */}
+                <Route element={<AdminPersistLogin />}>
+
+                <Route element={<AdminPublicRoute />}>
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
+                    <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+                </Route>
+                    <Route element={<AdminProtectedRoute />}>
+                        <Route element={<AdminLayout />}>
+                            <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+                        </Route>
+                    </Route>
+                </Route>
+
+                {/* =========================================
+                    USER FACING PLATFORM
+                ========================================= */}
                 <Route element={<GlobalLayout />}>
                     {/* Runs silent background refresh across all routes so TopNav stays authenticated on refresh */}
                     <Route element={<SessionInitializer />}>
@@ -32,7 +61,7 @@ export const App = () => {
                         <Route element={<PublicRoute />}>
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/login" element={<LoginPage />} />
-                            <Route path='/forgot-password' element={<ForgotPasswordPage/>} />
+                            <Route path='/forgot-password' element={<ForgotPasswordPage />} />
                         </Route>
 
                         {/* Public Mobile Handoff */}
@@ -61,6 +90,7 @@ export const App = () => {
                         <Route path="*" element={<div>404 - Page Not Found</div>} />
                     </Route>
                 </Route>
+
             </Routes>
         </BrowserRouter>
     );

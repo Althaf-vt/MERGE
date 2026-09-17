@@ -1,14 +1,10 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./infrastructure/persistence/user.schema";
-import { JwtModule } from "@nestjs/jwt";
 import { AuthController } from "./presentation/controllers/auth.controller";
-import { BcryptService } from "../../shared/infrastructure/security/bcrypt.service";
 import { RegisterUserUseCase } from "./application/use-cases/register-user.use-case";
 import { VerifyOtpUseCase } from "./application/use-cases/verify-otp.use-case";
 import { USER_REPOSITORY } from "./domain/interfaces/user-repository.interface";
-import { JwtTokenService } from "./infrastructure/security/jwt-token.service";
-import { TOKEN_SERVICE } from "./domain/interfaces/token-service.interface";
 import { MongoUserRepository } from "./infrastructure/persistence/mongo-user.repository";
 import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
@@ -18,7 +14,7 @@ import { KycController } from "./presentation/controllers/kyc.controller";
 import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
 import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/kyc-service.interface";
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
-import { JwtAuthGuard } from "../../shared/infrastructure/security/jwt-auth.guard";
+import { JwtAuthGuard } from "../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service";
 import { HandoffController } from "./presentation/controllers/handoff.controller";
 import { HandoffGateway } from "./presentation/gateways/handoff.gateway";
@@ -67,7 +63,8 @@ import { VERIFY_OTP_USE_CASE } from "./application/interfaces/verify-otp.use-cas
 import { HANDOFF_NOTIFICATION_SERVICE } from "./application/interfaces/handoff-notification.service.interface";
 import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interface";
 import Redis from "ioredis";
-import { ErrorCode } from "./domain/enums/error-code.enum";
+import { ErrorCode } from "../../shared/domain/enums/error-code.enum";
+import { DomainException } from "../../shared/domain/exceptions/domain.exception";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -75,11 +72,6 @@ import { ErrorCode } from "./domain/enums/error-code.enum";
     imports: [
         // Registers the User schema with Mongoose for database operations.
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-
-        // Configures JWT support for token generation and verification.
-        JwtModule.register({
-            secret: process.env.JWT_SECRET || 'super-secret-fallback',
-        }),
 
         HttpModule, // Required for axios request to the ML worker
     ],
@@ -95,7 +87,6 @@ import { ErrorCode } from "./domain/enums/error-code.enum";
     // Handled via interface bindings in section 3
     providers: [
         // Shared Services & Guards
-        BcryptService,
         JwtAuthGuard,
         HandoffGateway,
         OpenRouterAiService,
@@ -116,7 +107,7 @@ import { ErrorCode } from "./domain/enums/error-code.enum";
                 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
                 if (!region || !accessKeyId || !secretAccessKey) {
-                    throw new DOMException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
+                    throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
                 }
 
                 return new S3Client({
@@ -136,10 +127,6 @@ import { ErrorCode } from "./domain/enums/error-code.enum";
             useClass: MongoUserRepository,
         },
         // Maps the token service interface token its JWT implementation.
-        {
-            provide: TOKEN_SERVICE,
-            useClass: JwtTokenService,
-        },
         {
             provide: OTP_SERVICE,
             useClass: RedisOtpService,
@@ -253,7 +240,7 @@ import { ErrorCode } from "./domain/enums/error-code.enum";
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, TOKEN_SERVICE, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE],
+    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE],
 })
 
 export class UserModule { }

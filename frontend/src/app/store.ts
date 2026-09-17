@@ -1,20 +1,24 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/slices/auth.slice";
+import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice"; 
 import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { authApi } from "../features/auth/api/auth.api";
 import { kycApi } from "../features/onboarding/api/kyc.api";
 import { handoffApi } from "../features/onboarding/api/handoff.api";
 import { profileApi } from "../features/onboarding/api/profile.api";
+import { adminAuthApi } from "../features/admin/auth/api/admin-auth.api";
 
 
 export const store = configureStore({
     reducer: {
         // 1. Client State (our Redux Slices)
         auth: authReducer,
+        adminAuth: adminAuthReducer,
 
         // 2. Server State (RTK Query cache)
         // We use a dynamic key here so it scales perfectly as we add more APIs
         [authApi.reducerPath]: authApi.reducer,
+        [adminAuthApi.reducerPath]: adminAuthApi.reducer,
 
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
@@ -27,6 +31,7 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware().concat(
             authApi.middleware,
+            adminAuthApi.middleware,
             kycApi.middleware,
             handoffApi.middleware,
             profileApi.middleware

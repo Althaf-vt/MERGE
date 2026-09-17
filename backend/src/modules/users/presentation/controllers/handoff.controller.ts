@@ -1,7 +1,7 @@
 import { BadGatewayException, Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { ITokenPayload, type ITokenservice, TOKEN_SERVICE } from "../../domain/interfaces/token-service.interface";
+import { ITokenPayload, type ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../application/interfaces/handoff-service.interface";
-import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
+import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { type Response } from "express";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GENERATE_HANDOFF_SESSION_USE_CASE, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";

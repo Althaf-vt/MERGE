@@ -1,6 +1,6 @@
 import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
-import { DomainException } from "../exceptions/domain.exception";
-import { ErrorCode } from "../enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 // Encapsulates individual liveness challenge evaluations within 
 // the KYC aggregate to prevent primitive obsession.

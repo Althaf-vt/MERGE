@@ -1,0 +1,179 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Left Panel */
+.leftPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4rem;
+    border-right: 1px solid #262626;
+    background: radial-gradient(circle at top left, #16151a 0%, #0a0a0a 100%);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logoSquare {
+    background: #d8b4fe;
+    color: #000000;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.15rem;
+    border-radius: 4px;
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+}
+
+.brandTitle {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: 0.5px;
+}
+
+.brandSubtitle {
+    font-size: 0.65rem;
+    color: #a1a1aa;
+    letter-spacing: 1px;
+    margin-top: 3px;
+}
+
+.heroContent {
+    max-width: 600px;
+    margin-top: -8vh;
+}
+
+/* Punchier, refined multi-stop metallic lilac gradient */
+.heroTitle {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.12;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 15%, #e7def7 45%, #b992f8 80%, #9867e9 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.heroDesc {
+    font-size: 1.05rem;
+    color: #e7def7;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+}
+
+.featureGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.featureCard {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid #202022;
+    border-radius: 10px;
+    padding: 1.4rem;
+    transition: border-color 0.2s ease;
+}
+
+.featureCard:hover {
+    border-color: #2e2e32;
+}
+
+.featureCard.fullWidth {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.iconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+}
+
+.featureCard.fullWidth .iconBox {
+    margin-bottom: 0;
+    margin-top: 2px;
+}
+
+.featureCard h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #e7def7;
+}
+
+.featureCard p {
+    font-size: 0.82rem;
+    color: #71717a;
+    line-height: 1.5;
+}
+
+.footerTextLeft {
+    display: flex;
+    align-items: center;
+    font-size: 0.72rem;
+    color: rgba(74, 222, 128, 0.75);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* Right Panel */
+.rightPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 2rem;
+    background-color: #0a0a0a;
+}
+
+.formWrapper {
+    width: 100%;
+    max-width: 440px;
+    background-color: #111112;
+    border: 1px solid #242426;
+    border-radius: 14px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+}
+
+.footerTextRight {
+    position: absolute;
+    bottom: 2rem;
+    right: 3rem;
+    font-size: 0.72rem;
+    color: #4b4b52;
+    letter-spacing: 1.2px;
+}
+
+@media (max-width: 1024px) {
+    .container { flex-direction: column; }
+    .leftPanel { display: none; }
+    .rightPanel { min-height: 100vh; }
+}

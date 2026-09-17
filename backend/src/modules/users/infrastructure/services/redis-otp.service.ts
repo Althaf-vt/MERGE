@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IOtpService } from "../../domain/interfaces/otp-service.interface";
-import { DomainException } from "../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import Redis from "ioredis";
 
 // Injecting OTP storage and verification using Redis.

@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { DomainException } from "../../../modules/users/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../modules/users/domain/enums/error-code.enum";
+import { ErrorCode } from "../../../domain/enums/error-code.enum";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
+import { DomainException } from "../../../domain/exceptions/domain.exception";
 
 // Extend the Express Request to include our custom user property
 interface AuthenticatedRequest extends Request{

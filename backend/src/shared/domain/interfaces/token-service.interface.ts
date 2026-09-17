@@ -6,6 +6,7 @@ export interface ITokenPayload{
     userId: string;
     email: string;
     role: string;
+    permissions?: string[]; // admin permissions
 }
 
 // Defines the operation required for generating and verifying authenticationt tokens.

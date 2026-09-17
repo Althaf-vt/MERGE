@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
-import { JwtAuthGuard } from "../../../../shared/infrastructure/security/jwt-auth.guard";
+import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer'
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE } from "../../application/interfaces/submit-liveness-check.use-case.interface";
