@@ -175,7 +175,7 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.glassContainer}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Lifestyle & Background</h1>
                 <p className={styles.subtitle}>Help us understand your day-to-day rhythm, background, and life values.</p>
@@ -404,13 +404,18 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                 <div className={styles.footer}>
                     <button
                         type="button"
-                        className={styles.backBtn}
+                        className={styles.secondaryBtn}
                         onClick={() => navigate('/onboarding/profile')}
                     >
-                        ← Back
+                        <span>← Back</span>
                     </button>
-                    <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                        {isLoading ? "Saving Background..." : "Save & Continue →"}
+
+                    <button
+                        type="submit"
+                        className={styles.primaryBtn}
+                        disabled={isLoading}
+                    >
+                        <span>{isLoading ? 'Saving Background...' : 'Save & Continue →'}</span>
                     </button>
                 </div>
             </form>

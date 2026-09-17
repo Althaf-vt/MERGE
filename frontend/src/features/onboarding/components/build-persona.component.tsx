@@ -18,7 +18,7 @@ interface BuildPersonaProps {
 export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
     const dispatch = useAppDispatch();
 
-    // Extract user context & immutable KYC data[cite: 8]
+    // Extract user context & immutable KYC data
     const user = useAppSelector((state) => state.auth.user);
     const accessToken = useAppSelector((state) => state.auth.accessToken);
     const verifiedDOB = user?.kycVerification?.verifiedDOB;
@@ -195,7 +195,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
             const res = await updatePersona(payload).unwrap();
 
-            // Hydrate Redux with onboardingStep progression[cite: 8]
+            // Hydrate Redux with onboardingStep progression
             if (user && accessToken) {
                 dispatch(
                     setCredentials({
@@ -224,7 +224,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
         : 'Loading verified data...';
 
     return (
-        <div className={styles.container}>
+        <div className={styles.glassContainer}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Build Your Persona</h1>
                 <p className={styles.subtitle}>Let's start with the basics. How do you present yourself to the world?</p>
@@ -255,7 +255,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                         <div className={styles.inputGroup}>
                             <label className={styles.label}>
                                 Date of Birth
-                                <svg className={styles.lockIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2">
+                                <svg className={styles.lockIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
@@ -573,7 +573,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
                 <div className={styles.footer}>
                     <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                        {isLoading ? "Saving Persona..." : "Save & Continue →"}
+                        <span>{isLoading ? "Saving Persona..." : "Save & Continue →"}</span>
                     </button>
                 </div>
             </form>
