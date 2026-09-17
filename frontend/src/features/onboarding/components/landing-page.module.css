@@ -1,20 +1,45 @@
 .landingContainer {
-  font-family: system-ui, -apple-system, sans-serif;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  /* REMOVED the font-family line here */
   color: #111827;
+  background-color: #ffffff;
   overflow-x: hidden;
+  isolation: isolate; 
 }
 
+/* Pinned to the landing page, strictly below the content */
+.topographyBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: auto;
+}
+
+/* Foreground content elevated above canvas */
+.pageContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Hero Section */
 .hero {
   text-align: center;
-  padding: 8rem 1rem 6rem;
-  background-color: #FAFAFA;
+  padding: 8rem 1rem 5rem;
+  background: transparent;
 }
 
 .heroTitle {
   font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
+  color: #111827;
 }
 
 .highlight {
@@ -30,8 +55,8 @@
 }
 
 .primaryBtn {
-  background-color: #6D28D9;
-  color: white;
+  background-color: #111827;
+  color: #ffffff;
   padding: 1rem 2.5rem;
   border-radius: 9999px;
   font-weight: 600;
@@ -39,36 +64,41 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px 0 rgba(109, 40, 217, 0.39);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
 }
 
 .primaryBtn:hover {
-  background-color: #5B21B6;
-  transform: translateY(-1px);
+  background-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.18);
 }
 
+/* Journey Section */
 .journeySection {
   text-align: center;
-  padding: 6rem 1rem;
-  background-color: #FFFFFF;
+  padding: 5rem 1rem 6rem;
+  background: transparent;
 }
 
 .sectionTitle {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   margin-bottom: 0.5rem;
+  color: #111827;
 }
 
 .sectionSubtitle {
   color: #6B7280;
   margin-bottom: 4rem;
+  font-size: 1rem;
 }
 
 .journeySteps {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 4rem;
+  gap: 3.5rem;
   max-width: 1000px;
   margin: 0 auto;
   position: relative;
@@ -77,11 +107,11 @@
 .journeySteps::before {
   content: '';
   position: absolute;
-  top: 32px;
+  top: 28px;
   left: 10%;
   right: 10%;
   height: 2px;
-  background-color: #F3F4F6;
+  background: linear-gradient(90deg, rgba(109, 40, 217, 0.1) 0%, rgba(109, 40, 217, 0.45) 50%, rgba(109, 40, 217, 0.1) 100%);
   z-index: 0;
 }
 
@@ -95,35 +125,51 @@
 }
 
 .stepIcon {
-  width: 64px;
-  height: 64px;
-  background-color: white;
+  width: 58px;
+  height: 58px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 800;
   color: #6D28D9;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1.5rem;
-  border: 4px solid #F3F4F6;
+  border: 2px solid #6D28D9;
+  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.18), 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: default;
+}
+
+.step:hover .stepIcon {
+  transform: translateY(-3px);
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(109, 40, 217, 0.28);
 }
 
 .stepTitle {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #09090b;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
 }
 
 .stepDesc {
-  font-size: 0.875rem;
-  color: #6B7280;
-  line-height: 1.4;
+  font-size: 0.85rem;
+  color: #52525b;
+  line-height: 1.45;
+  font-weight: 450;
+  text-align: center;
 }
 
+/* Features Section */
 .featuresSection {
-  padding: 6rem 1rem;
-  background-color: #FAFAFA;
+  padding: 6rem 1rem 7rem;
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -133,16 +179,25 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  max-width: 1000px;
-  margin: 4rem auto 1.5rem;
+  max-width: 1040px;
+  width: 100%;
+  margin: 2rem auto 0;
 }
 
 .featureCard {
-  background-color: white;
-  padding: 2rem;
+  background: rgba(253, 252, 252, 0.522);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 2.25rem 2rem;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  border: 1px solid #F3F4F6;
+  border: 1px solid rgba(215, 215, 215, 0.756);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px -4px rgba(109, 40, 217, 0.12);
 }
 
 .featureCardWide {
@@ -155,7 +210,7 @@
 .iconBox {
   width: 48px;
   height: 48px;
-  background-color: #F3E8FF;
+  background-color: rgba(243, 232, 255, 0.8);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -170,18 +225,47 @@
 
 .featureTitle {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.75rem;
+  color: #111827;
 }
 
 .featureDesc {
-  color: #6B7280;
+  color: #4B5563;
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+/* CTA Section */
 .ctaSection {
   text-align: center;
-  padding: 6rem 1rem;
-  background-color: #F5F3FF;
+  padding: 4rem 1rem 8rem;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.ctaCard {
+  background: rgba(253, 252, 252, 0.522);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(215, 215, 215, 0.756);
+  padding: 4rem 2rem;
+  border-radius: 24px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 10px 30px -5px rgba(109, 40, 217, 0.08);
+}
+
+@media (max-width: 900px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+  .journeySteps {
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .journeySteps::before {
+    display: none;
+  }
 }
