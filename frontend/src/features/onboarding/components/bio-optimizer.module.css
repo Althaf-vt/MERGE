@@ -3,7 +3,7 @@
     margin: 0 auto;
     padding: 24px 20px 60px;
     color: #111827;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: inherit;
 }
 
 .header {
@@ -13,13 +13,13 @@
 .title {
     font-size: 2.75rem;
     font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #0f172a;
+    letter-spacing: -0.02em;
+    color: #111827;
     margin: 0 0 10px 0;
 }
 
 .subtitle {
-    color: #475569;
+    color: #6B7280;
     font-size: 1.05rem;
     line-height: 1.5;
     max-width: 600px;
@@ -33,12 +33,24 @@
     align-items: start;
 }
 
-.card {
-    background: #ffffff;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-    border-radius: 20px;
-    padding: 32px;
+/* Glassmorphism Card Wrapper */
+.glassCard {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.08),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  box-sizing: border-box;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .sectionHeader {
@@ -51,14 +63,14 @@
 .sectionTitle {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #0f172a;
+    color: #111827;
     margin: 0;
 }
 
 .counter {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #6d28d9;
+    color: #6D28D9;
 }
 
 .pillGrid {
@@ -69,110 +81,90 @@
 }
 
 .pill {
-    background: #f1f5f9;
-    border: 1.5px solid transparent;
+    background: #ffffff;
+    border: 1px solid #E5E7EB;
     padding: 9px 20px;
     border-radius: 9999px;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #334155;
+    color: #4B5563;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .pill:hover {
-    background: #e2e8f0;
+    border-color: #D8B4FE;
+    color: #6D28D9;
 }
 
 .pillActive {
-    background: #f5f3ff;
-    border-color: #6d28d9;
-    color: #6d28d9;
-    font-weight: 600;
-}
-
-.generateBtn {
-    width: 100%;
-    background: #6d28d9;
+    background: #6D28D9;
+    border-color: #6D28D9;
     color: #ffffff;
-    border: none;
-    padding: 14px 20px;
-    border-radius: 12px;
-    font-size: 1rem;
     font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.05s ease;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
 }
 
-.generateBtn:hover:not(:disabled) {
-    background: #5b21b6;
-}
-
-.generateBtn:active:not(:disabled) {
-    transform: scale(0.99);
-}
-
-.generateBtn:disabled {
-    background: #c4b5fd;
-    cursor: not-allowed;
+.pillActive:hover {
+    background: #5B21B6;
+    color: #ffffff;
 }
 
 .remainingText {
     text-align: center;
     font-size: 0.825rem;
-    color: #64748b;
+    color: #6B7280;
     margin-top: 12px;
     margin-bottom: 0;
 }
 
 .emptyPlaceholder {
-    background: #ffffff;
-    border: 1px solid #f1f5f9;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
     min-height: 380px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #94a3b8;
+    color: #9CA3AF;
     font-size: 0.95rem;
     text-align: center;
     padding: 24px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .bioOptionCard {
-    border: 1.5px solid #f1f5f9;
-    border-radius: 16px;
-    padding: 24px 24px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #E5E7EB;
+    border-radius: 20px;
+    padding: 24px;
     margin-bottom: 16px;
     cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: all 0.2s ease;
     position: relative;
-    background: #ffffff;
     font-size: 0.975rem;
     line-height: 1.6;
-    color: #334155;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    color: #4B5563;
 }
 
 .bioOptionCard:hover {
-    border-color: #cbd5e1;
+    border-color: #D8B4FE;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.05);
 }
 
 .bioOptionSelected {
-    border: 2px solid #6d28d9;
+    border: 2px solid #6D28D9;
     background: #ffffff;
-    box-shadow: 0 4px 12px -2px rgba(109, 40, 217, 0.08);
+    color: #111827;
+    box-shadow: 0 4px 16px -2px rgba(109, 40, 217, 0.12);
 }
 
 .checkIcon {
     position: absolute;
     top: 18px;
     right: 18px;
-    background: #6d28d9;
+    background: #6D28D9;
     color: #ffffff;
     border-radius: 50%;
     width: 20px;
@@ -198,7 +190,7 @@
 .editLink {
     text-align: center;
     display: block;
-    color: #6d28d9;
+    color: #6D28D9;
     font-size: 0.925rem;
     font-weight: 600;
     cursor: pointer;
@@ -206,11 +198,22 @@
     background: none;
     border: none;
     width: 100%;
-    transition: opacity 0.15s ease;
+    transition: color 0.15s ease;
 }
 
 .editLink:hover {
+    color: #5B21B6;
     text-decoration: underline;
+}
+
+.errorBanner {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-weight: 500;
+    border: 1px solid #FCA5A5;
 }
 
 .footer {
@@ -226,7 +229,7 @@
     border: none;
     font-weight: 600;
     font-size: 0.95rem;
-    color: #0f172a;
+    color: #111827;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -235,28 +238,126 @@
 }
 
 .backBtn:hover {
-    color: #334155;
+    color: #4B5563;
 }
 
-.saveBtn {
-    background: #6d28d9;
-    color: #ffffff;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease;
+/* Skew-Fill Primary Action Button */
+.primaryBtn {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #6D28D9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.saveBtn:hover:not(:disabled) {
-    background: #5b21b6;
+.primaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #ffffff;
+  transition: color 0.4s ease;
 }
 
-.saveBtn:disabled {
-    background: #c4b5fd;
-    cursor: not-allowed;
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #111827;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.primaryBtn:hover:not(:disabled) span {
+  color: #ffffff;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(109, 40, 217, 0.35);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary Button (For Generate Bio) */
+.secondaryBtn {
+  outline: none;
+  cursor: pointer;
+  border: 1px solid #E5E7EB;
+  width: 100%;
+  padding: 1rem 2rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #111827;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.secondaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  transition: color 0.4s ease;
+}
+
+.secondaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #F3F4F6;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.secondaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 @media (max-width: 840px) {

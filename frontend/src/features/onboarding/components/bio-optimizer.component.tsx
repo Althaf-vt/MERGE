@@ -94,11 +94,11 @@ export const BioOptimizer = () => {
                 <p className={styles.subtitle}>Select up to 5 traits. Our AI will craft your perfect bio based on your unique personality mix.</p>
             </div>
 
-            {error && <div style={{ color: '#ef4444', marginBottom: '20px', fontSize: '0.875rem' }}>{error}</div>}
+            {error && <div className={styles.errorBanner}>{error}</div>}
 
             <div className={styles.layout}>
                 {/* Left Column: Selections */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <div className={styles.sectionHeader}>
                         <h3 className={styles.sectionTitle}>Select Traits</h3>
                         <span className={styles.counter}>{selectedTraits.length}/5 Selected</span>
@@ -136,15 +136,17 @@ export const BioOptimizer = () => {
                     <button 
                         onClick={handleGenerate} 
                         disabled={isGenerating || remainingGenerations === 0}
-                        className={styles.generateBtn}
+                        className={styles.secondaryBtn}
                         type="button"
                     >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 3l1.912 5.886a2 2 0 0 0 1.272 1.272L21 12l-5.816 1.842a2 2 0 0 0-1.272 1.272L12 21l-1.912-5.886a2 2 0 0 0-1.272-1.272L3 12l5.816-1.842a2 2 0 0 0 1.272-1.272L12 3z"/>
-                            <path d="M5 3v4"/>
-                            <path d="M3 5h4"/>
-                        </svg>
-                        {isGenerating ? 'Generating...' : 'Generate Bio'}
+                        <span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 3l1.912 5.886a2 2 0 0 0 1.272 1.272L21 12l-5.816 1.842a2 2 0 0 0-1.272 1.272L12 21l-1.912-5.886a2 2 0 0 0-1.272-1.272L3 12l5.816-1.842a2 2 0 0 0 1.272-1.272L12 3z"/>
+                                <path d="M5 3v4"/>
+                                <path d="M3 5h4"/>
+                            </svg>
+                            {isGenerating ? 'Generating...' : 'Generate Bio'}
+                        </span>
                     </button>
                     <p className={styles.remainingText}>{remainingGenerations} generations remaining</p>
                 </div>
@@ -200,10 +202,10 @@ export const BioOptimizer = () => {
                 <button 
                     onClick={handleSave} 
                     disabled={isSaving || selectedBioIndex === null} 
-                    className={styles.saveBtn}
+                    className={styles.primaryBtn}
                     type="button"
                 >
-                    {isSaving ? 'Completing...' : 'Save & Complete Profile'}
+                    <span>{isSaving ? 'Completing...' : 'Save & Complete Profile'}</span>
                 </button>
             </div>
         </div>

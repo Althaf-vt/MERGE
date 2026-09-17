@@ -123,7 +123,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.glassContainer}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Who are you looking for?</h1>
                 <p className={styles.subtitle}>Step 4 of 5: Help us refine your matches.</p>
@@ -133,7 +133,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
 
             <div className={styles.cardGrid}>
                 {/* 1. Identities */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <h3 className={styles.cardTitle}>Identities</h3>
                     <div className={styles.pillGroup}>
                         {DEFAULT_IDENTITY_TAGS.map((gender) => (
@@ -149,7 +149,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                     </div>
 
                     <div className={styles.searchInputWrapper}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         <input
                             className={styles.searchInput}
                             placeholder="Search or add identity..."
@@ -177,7 +177,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 </div>
 
                 {/* 2. Relationship Goals */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <h3 className={styles.cardTitle}>Relationship Goals</h3>
                     <div className={styles.pillGroup}>
                         {RELATIONSHIP_GOAL_BUTTONS.map((rg) => (
@@ -194,10 +194,10 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 </div>
 
                 {/* 3. Age Range */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <div className={styles.cardTitle}>
                         <span>Age Range</span>
-                        <span style={{ color: '#6200ea', fontSize: '0.95rem' }}>{ageMin} - {ageMax}</span>
+                        <span style={{ color: '#6D28D9', fontSize: '0.95rem' }}>{ageMin} - {ageMax}</span>
                     </div>
                     <div className={styles.sliderContainer}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -241,7 +241,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 </div>
 
                 {/* 4. Outness Tolerance */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <h3 className={styles.cardTitle}>Outness Tolerance</h3>
                     <p className={styles.cardDescription}>
                         I want to match with people whose Outness is at least level {outnessTolerance}.
@@ -266,7 +266,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 </div>
 
                 {/* 5. Hard Choices */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <h3 className={styles.cardTitle}>The Hard Choices</h3>
                     <div className={styles.toggleRow}>
                         <span className={styles.toggleLabel}>Open to Adoption</span>
@@ -294,7 +294,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 </div>
 
                 {/* 6. Partner Expectations */}
-                <div className={styles.card}>
+                <div className={styles.glassCard}>
                     <h3 className={styles.cardTitle}>Partner Expectations</h3>
                     <textarea
                         className={styles.textarea}
@@ -308,10 +308,10 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
             <div className={styles.footer}>
                 <button
                     type="button"
-                    className={styles.backBtn}
+                    className={styles.secondaryBtn}
                     onClick={() => navigate('/onboarding/lifestyle')}
                 >
-                    ← Back
+                    <span>← Back</span>
                 </button>
 
                 <button
@@ -320,7 +320,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                     onClick={handleSubmit}
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Saving Preference...' : 'Save & Continue →'}
+                    <span>{isLoading ? 'Saving Preference...' : 'Save & Continue →'}</span>
                 </button>
             </div>
         </div>
