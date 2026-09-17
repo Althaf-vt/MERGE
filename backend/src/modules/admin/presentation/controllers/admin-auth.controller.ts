@@ -1,10 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Res } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { ADMIN_LOGIN_USE_CASE, IAdminLoginUseCase } from "../../application/interfaces/admin-login.use-case.interface";
 import { AdminLoginDto } from "../../application/dtos/admin-login.dto";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
+import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
 
 
 
@@ -20,6 +21,8 @@ export class AdminAuthController {
         private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
         @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE)
         private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
+        @Inject(ADMIN_REFRESH_TOKEN_USE_CASE)
+        private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
     ) { }
 
     @Post('login')
@@ -36,6 +39,30 @@ export class AdminAuthController {
 
         return {
             message: "Admin login successful",
+            accessToken: result.accessToken,
+            admin: AdminResponseMapper.toResponse(result.admin)
+        };
+    }
+
+    @Post('refresh')
+    @HttpCode(HttpStatus.OK)
+    async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+        const refreshToken = req.cookies['adminRefreshToken'];
+
+        if (!refreshToken) {
+            throw new UnauthorizedException("No refresh token found");
+        }
+
+        const result = await this._adminRefreshTokenUseCase.execute(refreshToken);
+
+        res.cookie('adminRefreshToken', result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+
+        return {
             accessToken: result.accessToken,
             admin: AdminResponseMapper.toResponse(result.admin)
         };

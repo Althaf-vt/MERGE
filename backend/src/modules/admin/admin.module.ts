@@ -14,6 +14,8 @@ import { AdminForgotPasswordUseCase } from "./application/use-cases/admin-forgot
 import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-password.use-case";
 import { AdminVerifyResetOtpDto } from "./application/dtos/admin-forgot-password.dto";
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
+import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
+import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
 
 @Module({
     imports: [
@@ -51,6 +53,10 @@ import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify
         {
             provide: ADMIN_RESET_PASSWORD_USE_CASE,
             useClass: AdminResetPasswordUseCase,
+        },
+        {
+            provide: ADMIN_REFRESH_TOKEN_USE_CASE,
+            useClass: AdminRefreshTokenUsecase,
         }
     ],
     exports: [
