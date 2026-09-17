@@ -10,20 +10,16 @@ import { GoogleAuthButton } from "./google-auth.component";
 export const RegisterForm = () => {
     const dispatch = useAppDispatch();
 
-    // RTK Query hook gives us the trigger function and the state (isLoading, error)
     const [register, { isLoading, error }] = useRegisterUserMutation();
 
-    // Form State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [clientError, setClientError] = useState<string | null>(null);
 
-    // UI Toggle State
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Realtime password criteria verification
     const passwordChecks = {
         length: password.length >= 8 && password.length <= 128,
         hasUpper: /[A-Z]/.test(password),
@@ -35,12 +31,11 @@ export const RegisterForm = () => {
 
     const passedCount = Object.values(passwordChecks).filter(Boolean).length;
 
-    // Strength tier calculations
     const getStrengthTier = () => {
-        if (passedCount <= 2) return { text: 'Weak', className: styles.meterWeak, color: '#ef4444', activeBars: 1 };
-        if (passedCount <= 4) return { text: 'Fair', className: styles.meterFair, color: '#f59e0b', activeBars: 2 };
-        if (passedCount === 5) return { text: 'Good', className: styles.meterGood, color: '#3b82f6', activeBars: 3 };
-        return { text: 'Strong', className: styles.meterStrong, color: '#10b981', activeBars: 4 };
+        if (passedCount <= 2) return { text: 'Weak', className: styles.meterWeak, activeBars: 1 };
+        if (passedCount <= 4) return { text: 'Fair', className: styles.meterFair, activeBars: 2 };
+        if (passedCount === 5) return { text: 'Good', className: styles.meterGood, activeBars: 3 };
+        return { text: 'Excellent', className: styles.meterStrong, activeBars: 4 };
     };
 
     const strength = getStrengthTier();
@@ -50,79 +45,63 @@ export const RegisterForm = () => {
         setClientError(null);
 
         if (!passwordChecks.length) {
-            setClientError("Password must be between 8 and 128 characters long");
-            return;
+            return setClientError("Password must be between 8 and 128 characters long.");
         }
-
         if (!passwordChecks.hasUpper) {
-            setClientError("Password must contain at least one uppercase letter");
-            return;
+            return setClientError("Password must contain at least one uppercase letter.");
         }
-
         if (!passwordChecks.hasLower) {
-            setClientError("Password must contain at least one lowercase letter");
-            return;
+            return setClientError("Password must contain at least one lowercase letter.");
         }
-
         if (!passwordChecks.hasNumber) {
-            setClientError("Password must contain at least one number");
-            return;
+            return setClientError("Password must contain at least one number.");
         }
-
         if (!passwordChecks.hasSpecial) {
-            setClientError("Password must contain at least one special character");
-            return;
+            return setClientError("Password must contain at least one special character.");
         }
-
         if (!passwordChecks.noSpaces) {
-            setClientError("Password cannot contain spaces");
-            return;
+            return setClientError("Password cannot contain spaces.");
         }
-
         if (password !== confirmPassword) {
-            setClientError("Passwords do not match");
-            return;
+            return setClientError("Passwords do not match.");
         }
 
         try {
-            // unwrap() extracts the payload or throws the error so we can catch it
             await register({ email, password, confirmPassword }).unwrap();
-
-            // If successful, save the email to global state and move to OTP screen
             dispatch(setRegisteredEmail(email));
             dispatch(setRegistrationStep("OTP"));
         } catch (err: any) {
             console.error('Registration failed: ', err);
-            setClientError(getErrorMessage(err, 'Registration failed'));
+            setClientError(getErrorMessage(err, 'Registration failed.'));
         }
     };
 
-    // SVG Icons for the password toggle
     const EyeIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
             <circle cx="12" cy="12" r="3"></circle>
         </svg>
     );
 
     const EyeOffIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-            <line x1="1" y1="1" x2="23" y2="23"></line>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+            <line x1="2" y1="2" x2="22" y2="22"></line>
         </svg>
     );
 
     return (
-        <div className={styles.formWrapper}>
+        <div className={styles.glassCard}>
             <div className={styles.branding}>
-                <h1 className={styles.title}>MERGE</h1>
-                <p className={styles.subtitle}>Two Souls, One Journey.</p>
+                <h1 className={styles.title}>Create Account</h1>
+                <p className={styles.subtitle}>Begin your journey to a meaningful connection.</p>
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                {clientError && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{clientError}</div>}
-                {/* Error handling from NestJS backend */}
-                {error && <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>Registration failed. Please check the credentials.</div>}
+                {clientError && <div className={styles.errorBanner}>{clientError}</div>}
+                {error && <div className={styles.errorBanner}>Registration failed. Please check your credentials.</div>}
 
                 <div className={styles.inputGroup}>
                     <input 
@@ -144,52 +123,50 @@ export const RegisterForm = () => {
                         placeholder="Password"
                         required
                     />
-                    <span className={styles.icon} onClick={() => setShowPassword(!showPassword)}>
+                    <button type="button" className={styles.iconBtn} onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </span>
+                    </button>
                 </div>
 
-                {/* Realtime Password Strength & Rule Checklist (Compact) */}
                 {password.length > 0 && (
-                    <div className={styles.passwordMeterContainer}>
-                        <div className={styles.meterRow}>
-                            <div className={styles.passwordMeter}>
-                                {[1, 2, 3, 4].map((index) => (
-                                    <div
-                                        key={index}
-                                        className={`${styles.meterBar} ${
-                                            index <= strength.activeBars ? strength.className : ''
-                                        }`}
-                                    />
-                                ))}
-                            </div>
-                            <span className={styles.meterLabel} style={{ color: strength.color }}>
-                                {strength.text}
-                            </span>
+                    <div className={styles.passwordSecurityModule}>
+                        <div className={styles.meterHeader}>
+                            <span className={styles.meterTitle}>Security Level</span>
+                            <span className={`${styles.meterLabel} ${strength.className}`}>{strength.text}</span>
+                        </div>
+                        
+                        <div className={styles.meterBars}>
+                            {[1, 2, 3, 4].map((index) => (
+                                <div
+                                    key={index}
+                                    className={`${styles.meterSegment} ${
+                                        index <= strength.activeBars ? strength.className : ''
+                                    }`}
+                                />
+                            ))}
                         </div>
 
-                        {/* Collapses once all conditions are satisfied */}
                         {passedCount < 6 && (
-                            <div className={styles.rulesList}>
-                                <span className={`${styles.ruleItem} ${passwordChecks.length ? styles.rulePassed : ''}`}>
+                            <ul className={styles.rulesList}>
+                                <li className={passwordChecks.length ? styles.rulePassed : styles.rulePending}>
                                     <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+ chars
-                                </span>
-                                <span className={`${styles.ruleItem} ${passwordChecks.hasUpper ? styles.rulePassed : ''}`}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> 1 uppercase
-                                </span>
-                                <span className={`${styles.ruleItem} ${passwordChecks.hasLower ? styles.rulePassed : ''}`}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> 1 lowercase
-                                </span>
-                                <span className={`${styles.ruleItem} ${passwordChecks.hasNumber ? styles.rulePassed : ''}`}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> 1 number
-                                </span>
-                                <span className={`${styles.ruleItem} ${passwordChecks.hasSpecial ? styles.rulePassed : ''}`}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> 1 symbol
-                                </span>
-                                <span className={`${styles.ruleItem} ${passwordChecks.noSpaces ? styles.rulePassed : ''}`}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> no spaces
-                                </span>
-                            </div>
+                                </li>
+                                <li className={passwordChecks.hasUpper ? styles.rulePassed : styles.rulePending}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> Uppercase
+                                </li>
+                                <li className={passwordChecks.hasLower ? styles.rulePassed : styles.rulePending}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> Lowercase
+                                </li>
+                                <li className={passwordChecks.hasNumber ? styles.rulePassed : styles.rulePending}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> Number
+                                </li>
+                                <li className={passwordChecks.hasSpecial ? styles.rulePassed : styles.rulePending}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> Special
+                                </li>
+                                <li className={passwordChecks.noSpaces ? styles.rulePassed : styles.rulePending}>
+                                    <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> No spaces
+                                </li>
+                            </ul>
                         )}
                     </div>
                 )}
@@ -203,23 +180,24 @@ export const RegisterForm = () => {
                         placeholder="Confirm Password"
                         required
                     />
-                    <span className={styles.icon} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    <button type="button" className={styles.iconBtn} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                         {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-                    </span>
+                    </button>
                 </div>
 
                 <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                    {isLoading ? "Creating account..." : "Create Account"}
+                    <span>{isLoading ? "Creating account..." : "Create Account"}</span>
                 </button>
             </form>
 
-            <div className={styles.divider}>OR</div>
+            <div className={styles.divider}>
+                <span>or</span>
+            </div>
 
-            {/* Integrated Google OAuth Button */}
             <GoogleAuthButton />
 
             <p className={styles.footerText}>
-                Already have an account? <Link to="/login" className={styles.footerLink}>Log in.</Link>
+                Already have an account? <Link to="/login" className={styles.footerLink}>Sign in</Link>
             </p>
         </div>
     );

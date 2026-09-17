@@ -34,10 +34,10 @@ export const ForgotPassword = () => {
 
     // Strength tier calculations
     const getStrengthTier = () => {
-        if (passedCount <= 2) return { text: 'Weak', className: styles.meterWeak, color: '#ef4444', activeBars: 1 };
-        if (passedCount <= 4) return { text: 'Fair', className: styles.meterFair, color: '#f59e0b', activeBars: 2 };
-        if (passedCount === 5) return { text: 'Good', className: styles.meterGood, color: '#3b82f6', activeBars: 3 };
-        return { text: 'Strong', className: styles.meterStrong, color: '#10b981', activeBars: 4 };
+        if (passedCount <= 2) return { text: 'Weak', className: styles.meterWeak, activeBars: 1 };
+        if (passedCount <= 4) return { text: 'Fair', className: styles.meterFair, activeBars: 2 };
+        if (passedCount === 5) return { text: 'Good', className: styles.meterGood, activeBars: 3 };
+        return { text: 'Strong', className: styles.meterStrong, activeBars: 4 };
     };
 
     const strength = getStrengthTier();
@@ -101,16 +101,18 @@ export const ForgotPassword = () => {
 
     // SVG Icons for the password toggle
     const EyeIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
             <circle cx="12" cy="12" r="3"></circle>
         </svg>
     );
 
     const EyeOffIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-            <line x1="1" y1="1" x2="23" y2="23"></line>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+            <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+            <line x1="2" y1="2" x2="22" y2="22"></line>
         </svg>
     );
 
@@ -125,7 +127,7 @@ export const ForgotPassword = () => {
 
             <form className={styles.form} onSubmit={step === 1 ? handleSendCode : handleReset}>
                 {error && (
-                    <div style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center', marginBottom: '1rem' }}>
+                    <div className={styles.errorBanner}>
                         {error}
                     </div>
                 )}
@@ -164,51 +166,53 @@ export const ForgotPassword = () => {
                                 placeholder="New Password" 
                                 required
                             />
-                            <span className={styles.icon} onClick={() => setShowNewPassword(!showNewPassword)}>
+                            <button type="button" className={styles.iconBtn} onClick={() => setShowNewPassword(!showNewPassword)}>
                                 {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
-                            </span>
+                            </button>
                         </div>
 
                         {/* Realtime Password Strength & Rule Checklist (Compact) */}
                         {newPassword.length > 0 && (
                             <div className={styles.passwordMeterContainer}>
                                 <div className={styles.meterRow}>
-                                    <div className={styles.passwordMeter}>
-                                        {[1, 2, 3, 4].map((index) => (
-                                            <div
-                                                key={index}
-                                                className={`${styles.meterBar} ${
-                                                    index <= strength.activeBars ? strength.className : ''
-                                                }`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <span className={styles.meterLabel} style={{ color: strength.color }}>
+                                    <span className={styles.meterHeaderTitle}>Security Level</span>
+                                    <span className={`${styles.meterLabel} ${strength.className}`}>
                                         {strength.text}
                                     </span>
                                 </div>
 
+                                <div className={styles.passwordMeter}>
+                                    {[1, 2, 3, 4].map((index) => (
+                                        <div
+                                            key={index}
+                                            className={`${styles.meterBar} ${
+                                                index <= strength.activeBars ? strength.className : ''
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+
                                 {passedCount < 6 && (
-                                    <div className={styles.rulesList}>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.length ? styles.rulePassed : ''}`}>
+                                    <ul className={styles.rulesList}>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.length ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+ chars
-                                        </span>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.hasUpper ? styles.rulePassed : ''}`}>
+                                        </li>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.hasUpper ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> 1 uppercase
-                                        </span>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.hasLower ? styles.rulePassed : ''}`}>
+                                        </li>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.hasLower ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> 1 lowercase
-                                        </span>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.hasNumber ? styles.rulePassed : ''}`}>
+                                        </li>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.hasNumber ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> 1 number
-                                        </span>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.hasSpecial ? styles.rulePassed : ''}`}>
+                                        </li>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.hasSpecial ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> 1 symbol
-                                        </span>
-                                        <span className={`${styles.ruleItem} ${passwordChecks.noSpaces ? styles.rulePassed : ''}`}>
+                                        </li>
+                                        <li className={`${styles.ruleItem} ${passwordChecks.noSpaces ? styles.rulePassed : ''}`}>
                                             <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> no spaces
-                                        </span>
-                                    </div>
+                                        </li>
+                                    </ul>
                                 )}
                             </div>
                         )}
@@ -222,15 +226,15 @@ export const ForgotPassword = () => {
                                 placeholder="Confirm New Password" 
                                 required
                             />
-                            <span className={styles.icon} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                            <button type="button" className={styles.iconBtn} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                                 {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-                            </span>
+                            </button>
                         </div>
                     </>
                 )}
 
                 <button type="submit" className={styles.primaryBtn} disabled={isSending || isResetting}>
-                    {isSending ? "Sending..." : isResetting ? "Resetting..." : step === 1 ? "Send Reset Code" : "Update Password"}
+                    <span>{isSending ? "Sending..." : isResetting ? "Resetting..." : step === 1 ? "Send Reset Code" : "Update Password"}</span>
                 </button>
             </form>
 

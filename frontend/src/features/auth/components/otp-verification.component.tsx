@@ -63,20 +63,22 @@ export const OtpVerification = () => {
 
     return (
         <div className={styles.wrapper}>
-            <h2 className={styles.title}>Verify your email</h2>
-            <p className={styles.subtitle}>
-                We sent a 6-digit code to <br />
-                <span className={styles.emailHighlight}>{email || 'your email address'}</span>
-            </p>
+            <div className={styles.branding}>
+                <h2 className={styles.title}>Verify Email</h2>
+                <p className={styles.subtitle}>
+                    We sent a 6-digit verification code to <br />
+                    <span className={styles.emailHighlight}>{email || 'your email address'}</span>
+                </p>
+            </div>
 
             {resendMessage && (
-                <div className={resendMessage.type === 'error' ? styles.errorText : styles.successText} style={{ marginBottom: '1rem', textAlign: 'center', fontSize: '0.875rem', color: resendMessage.type === 'error' ? '#ef4444' : '#10b981' }}>
+                <div className={resendMessage.type === 'error' ? styles.errorBanner : styles.successBanner}>
                     {resendMessage.text}
                 </div>
             )}
 
             <form className={styles.form} onSubmit={handleSubmit}>
-                {clientError && <div className={styles.errorText}>{clientError}</div>}
+                {clientError && <div className={styles.errorBanner}>{clientError}</div>}
 
                 <div className={styles.inputGroup}>
                     <input
@@ -90,6 +92,7 @@ export const OtpVerification = () => {
                         placeholder="000000"
                         maxLength={6}
                         autoComplete="one-time-code"
+                        required
                     />
                 </div>
 
@@ -98,7 +101,7 @@ export const OtpVerification = () => {
                     className={styles.primaryBtn} 
                     disabled={isLoading || otp.length < 6}
                 >
-                    {isLoading ? "Verifying..." : "Verify Email"}
+                    <span>{isLoading ? "Verifying..." : "Verify Code"}</span>
                 </button>
             </form>
 
@@ -115,5 +118,5 @@ export const OtpVerification = () => {
                 </button>
             </p>
         </div>
-    )
-}
+    );
+};

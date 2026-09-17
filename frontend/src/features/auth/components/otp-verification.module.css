@@ -1,37 +1,57 @@
+/* Glassmorphism Card Wrapper */
 .wrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.12),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.branding {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .title {
-  color: #18181b;
+  color: #111827;
   font-size: 2rem;
   font-weight: 800;
-  margin: 0 0 0.75rem 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem 0;
 }
 
 .subtitle {
-  color: #71717a;
+  color: #6B7280;
   font-size: 0.95rem;
-  margin: 0 0 2.5rem 0;
+  margin: 0;
   line-height: 1.5;
 }
 
 .emailHighlight {
   font-weight: 600;
-  color: #3f3f46;
+  color: #111827;
 }
 
 .form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .inputGroup {
@@ -40,66 +60,138 @@
 
 .otpInput {
   width: 100%;
-  padding: 1.25rem 1rem;
-  border: 1px solid #e4e4e7;
-  border-radius: 8px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.75rem; /* Spreads the 6 digits out evenly */
+  padding: 1.15rem 1rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.65rem;
   text-align: center;
-  background-color: #ffffff;
+  color: #111827;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .otpInput::placeholder {
-  color: #d4d4d8;
+  color: #D1D5DB;
   font-weight: 400;
 }
 
 .otpInput:focus {
-  border-color: #6200ea;
+  border-color: #6D28D9;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.15);
 }
 
-.errorText {
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-bottom: -0.5rem;
-}
-
-.primaryBtn {
-  width: 100%;
-  padding: 1rem;
-  background-color: #6200ea;
-  color: #ffffff;
-  border: none;
+.errorBanner {
+  background-color: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
   font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.successBanner {
+  background-color: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: center;
+  font-weight: 500;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Skew-Fill Primary Action Button */
+.primaryBtn {
+  outline: none;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  border: none;
+  width: 100%;
+  padding: 1rem 2rem;
+  margin-top: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #6D28D9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #111827;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.primaryBtn:hover:not(:disabled) span {
+  color: #ffffff;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(109, 40, 217, 0.35);
 }
 
 .primaryBtn:disabled {
-  background-color: #a78bfa;
+  opacity: 0.65;
   cursor: not-allowed;
-  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
 }
 
 .resendText {
   margin-top: 2rem;
   font-size: 0.9rem;
-  color: #71717a;
+  color: #6B7280;
 }
 
 .resendLink {
-  color: #6200ea;
+  color: #6D28D9;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
   font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.resendLink:hover:not(:disabled) {
+  color: #5B21B6;
+  text-decoration: underline;
 }
