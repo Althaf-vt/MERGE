@@ -5,61 +5,82 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
-  background-color: #fafafa;
+  padding: 1rem;
+  background-color: #ffffff;
+  background-image: radial-gradient(circle at 50% 0%, rgba(109, 40, 217, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
   box-sizing: border-box;
 }
 
+/* Glassmorphism Card Wrappers */
+.glassCard {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 2.5rem 1.5rem;
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.08),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+.glassCardFull {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .title {
-  color: #18181b;
+  color: #111827;
   font-size: 1.75rem;
   font-weight: 800;
   margin: 0 0 0.5rem 0;
-  text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #71717a;
-  font-size: 1rem;
+  color: #6B7280;
+  font-size: 0.95rem;
   margin: 0 0 2rem 0;
-  text-align: center;
   line-height: 1.5;
 }
 
 .errorTitle {
-  color: #ef4444;
+  color: #111827;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 0.5rem;
 }
 
-.cameraPlaceholder {
-  width: 100%;
-  aspect-ratio: 3/4;
-  background-color: #e4e4e7;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #71717a;
-  margin-bottom: 2rem;
-}
-
-.primaryBtn {
-  width: 100%;
-  padding: 1rem;
-  background-color: #6200ea;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
+.successIconWrapper {
+    width: 64px;
+    height: 64px;
+    background-color: #ECFDF5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
 }
 
 .loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #6200ea;
+  border: 3px solid #F3F4F6;
+  border-top: 3px solid #6D28D9;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -68,22 +89,11 @@
 }
 
 .loadingText {
-  color: #71717a;
-  font-weight: 500;
+  color: #4B5563;
+  font-weight: 600;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 480px) {
-  .wrapper {
-    padding: 1rem;
-  }
-  
-  .title {
-    font-size: 1.5rem;
-  }
 }
