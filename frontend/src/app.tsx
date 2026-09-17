@@ -21,6 +21,9 @@ import { AdminForgotPasswordPage } from './features/admin/auth/pages/admin-forgo
 
 
 import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page';
+import { AdminProtectedRoute } from './features/admin/auth/components/admin-protected-route.component';
+import { AdminLayout } from './features/admin/dashboard/components/admin.layout';
+import { AdminDashboardPage } from './features/admin/dashboard/pages/admin-dashboard.page';
 
 export const App = () => {
     return (
@@ -32,10 +35,12 @@ export const App = () => {
                 ========================================= */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
-                
-                {/* Temporary placeholder to verify successful login redirect */}
-                <Route path="/admin/dashboard" element={<div style={{ color: 'white', padding: '2rem' }}>Admin Dashboard (Coming Soon)</div>} />
 
+                <Route element={<AdminProtectedRoute />}>
+                    <Route element={<AdminLayout />}>
+                        <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+                    </Route>
+                </Route>
 
                 {/* =========================================
                     USER FACING PLATFORM
@@ -50,7 +55,7 @@ export const App = () => {
                         <Route element={<PublicRoute />}>
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/login" element={<LoginPage />} />
-                            <Route path='/forgot-password' element={<ForgotPasswordPage/>} />
+                            <Route path='/forgot-password' element={<ForgotPasswordPage />} />
                         </Route>
 
                         {/* Public Mobile Handoff */}
