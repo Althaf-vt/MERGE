@@ -1,86 +1,136 @@
+/* Floating Glass Pill Container */
 .navContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 2rem;
-    background-color: transparent;
-    width: 100%;
-    box-sizing: border-box;
-    font-family: system-ui, -apple-system, sans-serif;
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  
+  /* 3-Column Grid to ensure logo stays dead center */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  
+  width: 92%;
+  max-width: 1000px;
+  padding: 0.75rem 1rem 0.75rem 2rem;
+  border-radius: 9999px; /* Pill shape */
+  
+  /* Light theme frosted glass */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  
+  /* Ambient shadow blending with your #6D28D9 purple */
+  box-shadow: 0 8px 32px rgba(109, 40, 217, 0.08), 
+              0 2px 8px rgba(0, 0, 0, 0.04),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
-.logo {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: #6D28D9;
-    text-decoration: none;
-    letter-spacing: -0.05em;
-}
-
-.navLinks {
-    display: flex;
-    gap: 2rem;
+/* --- Left Column --- */
+.navLeft {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
 .navLink {
-    color: #4B5563;
-    font-size: 0.95rem;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.2s;
+  color: #4B5563;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .navLink:hover {
-    color: #111827;
+  color: #111827;
 }
 
+/* --- Center Column --- */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #6D28D9;
+  text-decoration: none;
+  letter-spacing: -0.05em;
+}
+
+/* --- Right Column --- */
 .authAction {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
 }
 
-.loginBtn {
-    background-color: #6D28D9;
-    color: white;
-    padding: 0.6rem 1.75rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
+/* Simple text button for Login (matches 'Sign in' from reference) */
+.textBtn {
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-.loginBtn:hover {
-    background-color: #5B21B6;
+.textBtn:hover {
+  color: #6D28D9;
 }
 
-.userMenu {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+/* Solid pill button for Register/Primary action */
+.primaryBtn {
+  background-color: #6D28D9;
+  color: white;
+  padding: 0.6rem 1.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
 }
 
-.greeting {
-    font-weight: 500;
-    color: #374151;
-    font-size: 0.95rem;
+.primaryBtn:hover {
+  background-color: #5B21B6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
 }
 
 .logoutBtn {
-    background-color: transparent;
-    color: #6B7280;
-    border: 1px solid #E5E7EB;
-    padding: 0.5rem 1.25rem;
-    border-radius: 9999px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background-color: transparent;
+  color: #6B7280;
+  border: 1.5px solid #E5E7EB;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .logoutBtn:hover {
-    background-color: #F3F4F6;
-    color: #111827;
+  background-color: #F3F4F6;
+  color: #111827;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .navContainer {
+    grid-template-columns: auto 1fr;
+    padding: 0.75rem 1.5rem;
+    width: 95%;
+  }
+  .navLeft {
+    display: none; /* Hide standard links on mobile */
+  }
+  .logoContainer {
+    justify-content: flex-start;
+  }
 }

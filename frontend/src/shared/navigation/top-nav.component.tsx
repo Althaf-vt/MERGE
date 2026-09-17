@@ -16,34 +16,32 @@ export const TopNav = () => {
 
     const handleLogout = async () => {
         try {
-            // 1. Tell backend to clear the HttpOnly refreshToken cookie
             await logoutUser().unwrap();
         } catch (error) {
             console.error('Logout failed on server:', error);
         } finally {
-            // 2. Clear client Redux auth state
             dispatch(logout());
-
-            // 3. Clear all cached RTK Query state in memory
             dispatch(authApi.util.resetApiState());
-
-            // 4. Redirect to login page
             navigate('/login', { replace: true });
         }
     };
 
     return (
         <nav className={styles.navContainer}>
-            <div>
+            {/* Left: Navigation Links */}
+            <div className={styles.navLeft}>
+                <span className={styles.navLink}>Features</span>
+                <span className={styles.navLink}>Safety</span>
+                <span className={styles.navLink}>Support</span>
+            </div>
+
+            {/* Center: Logo */}
+            <div className={styles.logoContainer}>
                 <Link to="/" className={styles.logo}>MERGE</Link>
             </div>
 
-            <div className={styles.navLinks}>
-                <span className={styles.navLink}>Features</span>
-                <span className={styles.navLink}>Safety</span>
-            </div>
-
-           <div className={styles.authAction}>
+            {/* Right: Authentication Actions */}
+            <div className={styles.authAction}>
                 {isInitializing ? (
                     <div style={{ minWidth: '80px', height: '36px' }} />
                 ) : isAuthenticated ? (
@@ -56,10 +54,10 @@ export const TopNav = () => {
                     </button>
                 ) : (
                     <>
-                        <Link to="/login" className={styles.loginBtn}>
+                        <Link to="/login" className={styles.textBtn}>
                             Login
                         </Link>
-                        <Link to="/register" className={styles.loginBtn}>
+                        <Link to="/register" className={styles.primaryBtn}>
                             Register
                         </Link>
                     </>

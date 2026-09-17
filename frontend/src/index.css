@@ -1,10 +1,18 @@
-/* frontend/src/index.css */
+/* 1. Import the 'Inter' font with necessary weights */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
+  /* Transparent base allows layout-specific backgrounds to show through */
+  background-color: #00000000; 
+  
+  /* 2. Apply it globally as the primary font */
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -13,4 +21,10 @@ html, body {
   margin: 0;       /* Removes Vite's default centering margin */
   padding: 0;      /* Removes Vite's default 2rem padding */
   text-align: left;
+}
+
+/* 3. Force all elements (like buttons and inputs) to inherit this font */
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-family: inherit;
 }
