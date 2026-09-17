@@ -20,11 +20,11 @@ export class AdminAuthController {
         private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
         @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE)
         private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
-    ){}
+    ) { }
 
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    async login(@Body() dto: AdminLoginDto, @Res({passthrough: true}) res: Response) {
+    async login(@Body() dto: AdminLoginDto, @Res({ passthrough: true }) res: Response) {
         const result = await this._adminLoginUseCase.execute(dto);
 
         res.cookie('adminRefreshToken', result.refreshToken, {
@@ -60,5 +60,16 @@ export class AdminAuthController {
     async resetPassword(@Body() dto: AdminResetPasswordDto) {
         await this._resetPasswordUseCase.execute(dto);
         return { message: "Password reset successfully. You can now log in." };
+    }
+
+    @Post('logout')
+    @HttpCode(HttpStatus.OK)
+    async logout(@Res({ passthrough: true }) res: Response) {
+        res.clearCookie('adminRefreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+        return { message: "Admin logged out successfully" };
     }
 }
