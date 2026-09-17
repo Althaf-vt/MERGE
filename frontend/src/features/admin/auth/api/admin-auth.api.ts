@@ -6,16 +6,16 @@ export const adminAuthApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
         credentials: 'include',
-        prepareHeaders: (headers, {getState}) => {
+        prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).adminAuth.accessToken;
-            if(token){
+            if (token) {
                 headers.set('authorization', `Bearer ${token}`);
             }
             return headers;
         },
     }),
     endpoints: (builder) => ({
-        adminLogin: builder.mutation<any, {email: string; password: string}>({
+        adminLogin: builder.mutation<any, { email: string; password: string }>({
             query: (credentials) => ({
                 url: '/admin/auth/login',
                 method: 'POST',
@@ -23,7 +23,7 @@ export const adminAuthApi = createApi({
             }),
         }),
 
-        adminForgotPassword: builder.mutation<{message: string}, {email: string}>({
+        adminForgotPassword: builder.mutation<{ message: string }, { email: string }>({
             query: (body) => ({
                 url: '/admin/auth/forgot-password',
                 method: 'POST',
@@ -31,7 +31,7 @@ export const adminAuthApi = createApi({
             }),
         }),
 
-        adminResetPassword: builder.mutation<{message: string}, any>({
+        adminResetPassword: builder.mutation<{ message: string }, any>({
             query: (body) => ({
                 url: '/admin/auth/reset-password',
                 method: 'POST',
@@ -46,6 +46,13 @@ export const adminAuthApi = createApi({
                 body,
             }),
         }),
+
+        adminLogout: builder.mutation<{ messagel: string }, void>({
+            query: () => ({
+                url: '/admin/auth/logout',
+                method: "POST",
+            }),
+        }),
     }),
 });
 
@@ -54,4 +61,5 @@ export const {
     useAdminForgotPasswordMutation,
     useAdminResetPasswordMutation,
     useAdminVerifyResetOtpMutation,
+    useAdminLogoutMutation,
 } = adminAuthApi;
