@@ -1,14 +1,24 @@
-/* Selection View */
+/* Glassmorphism Selection View */
 .selectionWrapper {
   width: 100%;
   max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
   padding: 48px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.12),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .headerArea {
@@ -17,14 +27,15 @@
 }
 
 .title {
-  color: #18181b;
+  color: #111827;
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 12px 0;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #52525b;
+  color: #6B7280;
   font-size: 1.05rem;
   margin: 0;
 }
@@ -37,37 +48,45 @@
 }
 
 .deviceCard {
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.deviceCard:hover {
+  box-shadow: 0 8px 30px -4px rgba(109, 40, 217, 0.12);
+  transform: translateY(-2px);
 }
 
 .recommendedCard {
-  border: 2px solid #d8b4fe;
+  border: 2px solid #D8B4FE;
+  background-color: #ffffff;
 }
 
 .recommendedBadge {
   position: absolute;
   top: 0;
   right: 0;
-  background-color: #6200ea;
+  background-color: #111827;
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 6px 12px;
-  border-bottom-left-radius: 8px;
-  border-top-right-radius: 10px;
+  border-bottom-left-radius: 12px;
+  border-top-right-radius: 14px;
+  letter-spacing: 0.05em;
 }
 
 .cardIcon {
   width: 48px;
   height: 48px;
-  background-color: #f4f4f5;
-  border-radius: 50%;
+  background-color: #F3F4F6;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,12 +96,13 @@
 .cardIconMobile {
   width: 48px;
   height: 48px;
-  background-color: #f3e8ff;
-  border-radius: 50%;
+  background-color: #F3E8FF;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.15);
 }
 
 .cardContent {
@@ -94,12 +114,12 @@
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0 0 12px 0;
-  color: #18181b;
+  color: #111827;
 }
 
 .cardContent p {
   font-size: 0.95rem;
-  color: #52525b;
+  color: #4B5563;
   margin: 0 0 16px 0;
   line-height: 1.5;
 }
@@ -108,41 +128,128 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #ECFDF5;
+  color: #059669;
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 0.8rem;
   font-weight: 600;
 }
 
-.desktopBtn {
-  width: 100%;
-  padding: 14px;
-  background-color: #f4f4f5;
-  color: #3f3f46;
+/* Skew-Fill Primary Action Button (Mobile) */
+.primaryBtn {
+  outline: none;
+  cursor: pointer;
   border: none;
-  border-radius: 8px;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #6D28D9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.desktopBtn:hover { background-color: #e4e4e7; }
 
-.mobileBtn {
+.primaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #111827;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.primaryBtn:hover:not(:disabled) span {
+  color: #ffffff;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(109, 40, 217, 0.35);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Skew-Fill Secondary Action Button (Desktop) */
+.secondaryBtn {
+  outline: none;
+  cursor: pointer;
+  border: 1px solid #E5E7EB;
   width: 100%;
-  padding: 14px;
-  background-color: #f3e8ff;
-  color: #6200ea;
-  border: none;
-  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #111827;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.mobileBtn:hover { background-color: #e9d5ff; }
+
+.secondaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #111827;
+  transition: color 0.4s ease;
+}
+
+.secondaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #F3F4F6;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.secondaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.secondaryBtn:hover:not(:disabled) span {
+  color: #111827;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+}
+
 
 /* QR Modal View */
 .qrWrapper {
@@ -152,17 +259,22 @@
 }
 
 .qrModal {
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 24px;
   padding: 40px;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.12),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  animation: formFadeIn 0.3s ease-out forwards;
 }
 
 .closeBtn {
@@ -173,14 +285,19 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  color: #71717a;
+  color: #9CA3AF;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: #4B5563;
 }
 
 .qrHeaderIcon {
   width: 48px;
   height: 48px;
-  background-color: #f3e8ff;
-  border-radius: 50%;
+  background-color: #F3E8FF;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -190,29 +307,36 @@
 .qrTitle {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #18181b;
+  color: #111827;
   margin: 0 0 12px 0;
   line-height: 1.2;
 }
 
 .qrSubtitle {
   font-size: 0.95rem;
-  color: #52525b;
+  color: #6B7280;
   margin: 0 0 32px 0;
 }
 
 .qrContainerWrapper {
   position: relative;
   padding: 24px;
-  background-color: #f4f4f5;
+  background-color: #ffffff;
   border-radius: 16px;
   margin-bottom: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
 .qrContainerWrapper::before, .qrContainerWrapper::after {
-  content: ''; position: absolute; width: 20px; height: 20px; border-color: #6200ea; border-style: solid;
+  content: ''; 
+  position: absolute; 
+  width: 20px; 
+  height: 20px; 
+  border-color: #6D28D9; 
+  border-style: solid;
 }
-.qrContainerWrapper::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-top-left-radius: 12px; }
-.qrContainerWrapper::after { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-bottom-right-radius: 12px; }
+.qrContainerWrapper::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-top-left-radius: 14px; }
+.qrContainerWrapper::after { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-bottom-right-radius: 14px; }
 
 .instructionSteps {
   display: grid;
@@ -223,7 +347,8 @@
 }
 
 .stepCard {
-  background-color: #f4f4f5;
+  background-color: rgba(249, 250, 251, 0.8);
+  border: 1px solid #F3F4F6;
   border-radius: 12px;
   padding: 16px 12px;
   display: flex;
@@ -233,8 +358,7 @@
 }
 
 .stepNumber {
-  background-color: #e0e0e0;
-  color: #6200ea;
+  color: #6D28D9;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -244,34 +368,34 @@
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 12px;
-  background-color: #e9d5ff;
+  background-color: #F3E8FF;
 }
 
 .stepCard p {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #18181b;
+  color: #111827;
   margin: 0;
   line-height: 1.3;
 }
 
 .statusBox {
   width: 100%;
-  border-top: 1px solid #e4e4e7;
+  border-top: 1px solid #E5E7EB;
   padding-top: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #52525b;
+  color: #4B5563;
   font-weight: 500;
 }
 
 .pulseDot {
   width: 8px;
   height: 8px;
-  background-color: #6200ea;
+  background-color: #6D28D9;
   border-radius: 50%;
   animation: pulse 2s infinite ease-in-out;
 }
@@ -280,7 +404,6 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  /* Selection Cards */
   .selectionWrapper {
     padding: 32px 24px;
   }
@@ -289,7 +412,6 @@
     grid-template-columns: 1fr;
   }
 
-  /* QR Modal */
   .qrModal {
     padding: 32px 24px;
   }

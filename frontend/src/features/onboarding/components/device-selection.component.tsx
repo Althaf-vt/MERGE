@@ -65,9 +65,9 @@ export const DeviceSelection = () => {
             <div className={styles.qrModal}>
                 <button onClick={handleCancel} className={styles.closeBtn}>✕</button>
                 <div className={styles.qrHeaderIcon}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6200ea" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 </div>
-                <h2 className={styles.qrTitle}>Continue Verification On Your Phone</h2>
+                <h2 className={styles.qrTitle}>Continue On Your Phone</h2>
                 <p className={styles.qrSubtitle}>Scan the QR code below to continue verification using your smartphone camera.</p>
                 
                 <div className={styles.qrContainerWrapper}>
@@ -87,7 +87,7 @@ export const DeviceSelection = () => {
                     </div>
                     <div className={styles.stepCard}>
                         <span className={styles.stepNumber}>3</span>
-                        <p>Continue verification on your phone</p>
+                        <p>Continue on your phone</p>
                     </div>
                 </div>
 
@@ -103,7 +103,7 @@ export const DeviceSelection = () => {
     return (
         <div className={styles.selectionWrapper}>
             <div className={styles.headerArea}>
-                <h2 className={styles.title}>How would you like to complete verification?</h2>
+                <h2 className={styles.title}>Camera Selection</h2>
                 <p className={styles.subtitle}>Choose the camera you'd like to use for selfie and liveness verification.</p>
             </div>
         
@@ -111,7 +111,7 @@ export const DeviceSelection = () => {
                 {/* Desktop Option */}
                 <div className={styles.deviceCard}>
                     <div className={styles.cardIcon}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                     </div>
                     <div className={styles.cardContent}>
                         <h3>Use This Device</h3>
@@ -121,8 +121,8 @@ export const DeviceSelection = () => {
                             Camera Available
                         </div>
                     </div>
-                    <button onClick={() => dispatch(setKycStep('LIVE_SELFIE'))} className={styles.desktopBtn}>
-                        Continue On This Device
+                    <button onClick={() => dispatch(setKycStep('LIVE_SELFIE'))} className={styles.secondaryBtn}>
+                        <span>Continue On This Device</span>
                     </button>
                 </div>
 
@@ -130,14 +130,14 @@ export const DeviceSelection = () => {
                 <div className={`${styles.deviceCard} ${styles.recommendedCard}`}>
                     <div className={styles.recommendedBadge}>RECOMMENDED</div>
                     <div className={styles.cardIconMobile}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6200ea" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                     </div>
                     <div className={styles.cardContent}>
                         <h3>Use My Phone</h3>
                         <p>Continue verification using your smartphone camera for the best experience.</p>
                     </div>
-                    <button onClick={handleMobileSelect} className={styles.mobileBtn} disabled={isLoading}>
-                        {isLoading ? "Loading..." : "Use Phone Camera"}
+                    <button onClick={handleMobileSelect} className={styles.primaryBtn} disabled={isLoading}>
+                        <span>{isLoading ? "Loading..." : "Use Phone Camera"}</span>
                     </button>
                 </div>
             </div>
