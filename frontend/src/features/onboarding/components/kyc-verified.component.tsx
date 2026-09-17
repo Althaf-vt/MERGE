@@ -7,7 +7,7 @@ export const KycVerified = () => {
     return (
         <div className={styles.wrapper}>
             <div className={styles.pillBadgeSuccess}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#6200ea" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#6D28D9" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                 <span>Verification Complete</span>
             </div>
             
@@ -17,19 +17,19 @@ export const KycVerified = () => {
             <div className={styles.card}>
                 <ul className={styles.checklist}>
                     <li>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#6200ea" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10B981" stroke="#ffffff" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                         Document Verified
                     </li>
                     <li>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#6200ea" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10B981" stroke="#ffffff" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                         Face Match Passed
                     </li>
                     <li>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#6200ea" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10B981" stroke="#ffffff" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                         Liveness Verification Passed
                     </li>
                     <li>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#6200ea" stroke="#ffffff" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#10B981" stroke="#ffffff" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="9 12 11 14 15 10"></polyline></svg>
                         Security Checks Passed
                     </li>
                 </ul>
@@ -41,7 +41,7 @@ export const KycVerified = () => {
 
             <div className={styles.actionGroup}>
                 <button onClick={() => navigate('/onboarding/profile')} className={styles.primaryBtn}>
-                    Build Your Persona <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    <span>Build Your Persona <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
                 </button>
                 <button className={styles.ghostBtn}>View Verification Details</button>
             </div>
