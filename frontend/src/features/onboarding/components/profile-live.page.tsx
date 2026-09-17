@@ -9,7 +9,7 @@ export const ProfileLivePage = () => {
       <div className={styles.content}>
         <div className={styles.diamondGraphic}>
           <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="50" y="4" width="65" height="65" rx="20" transform="rotate(45 50 4)" fill="#8B5CF6"/>
+            <rect x="50" y="4" width="65" height="65" rx="20" transform="rotate(45 50 4)" fill="#C084FC"/>
             <circle cx="50" cy="50" r="24" fill="#6D28D9"/>
             <circle cx="50" cy="50" r="4" fill="white"/>
           </svg>
@@ -20,11 +20,13 @@ export const ProfileLivePage = () => {
           Two Souls, One Journey. Your profile has been securely saved to the MERGE network.
         </p>
 
-        <Link to="/" className={styles.homeButton}>
-          Home
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+        <Link to="/" className={styles.primaryBtn}>
+            <span>
+              Home
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
         </Link>
 
         <div className={styles.secureBadge}>
