@@ -1,56 +1,342 @@
 .container { 
-    display: grid; 
-    grid-template-columns: 1fr 1.2fr; 
-    gap: 48px; 
-    width: 100%; 
-    color: #18181b; 
+  display: grid; 
+  grid-template-columns: 1fr 1.35fr; 
+  gap: 48px; 
+  width: 100%; 
+  color: #111827; 
 }
 
-.leftPanel { display: flex; flex-direction: column; }
-.mainTitle { font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; color: #18181b; }
-.subtitle { font-size: 1rem; color: #52525b; margin-bottom: 32px; }
-.sectionTitle { font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; color: #18181b; }
+.leftPanel { 
+  display: flex; 
+  flex-direction: column; 
+}
 
-.guidelineGrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 32px; }
-.guideCard { border: 1px solid #e4e4e7; border-radius: 12px; padding: 20px 8px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-size: 0.85rem; font-weight: 600; background: white; color: #18181b; }
-.iconWrapper { color: #6200ea; display: flex; align-items: center; justify-content: center; }
+.mainTitle { 
+  font-size: 2.2rem; 
+  font-weight: 800; 
+  margin-bottom: 8px; 
+  color: #111827; 
+  letter-spacing: -0.02em; 
+}
 
-.checklistCard { border: 1px solid #e4e4e7; border-radius: 12px; padding: 24px; background: white; margin-bottom: 24px; }
-.checklistCard h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px; color: #18181b; margin: 0 0 16px 0; text-transform: uppercase; }
-.checklist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
-.checklist li { font-size: 0.95rem; color: #52525b; display: flex; align-items: center; gap: 12px; }
+.subtitle { 
+  font-size: 1rem; 
+  color: #6B7280; 
+  margin-bottom: 32px; 
+  line-height: 1.5; 
+}
 
-.securityNote { background: #f3e8ff; color: #6200ea; padding: 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: flex; align-items: flex-start; gap: 12px; line-height: 1.5; }
+.sectionTitle { 
+  font-size: 1.25rem; 
+  font-weight: 700; 
+  margin-bottom: 16px; 
+  color: #111827; 
+}
 
-.rightPanel { display: flex; flex-direction: column; }
+.guidelineGrid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr 1fr; 
+  gap: 12px; 
+  margin-bottom: 32px; 
+}
 
-.videoCard { background: #e4e4e7; border-radius: 16px; padding: 24px; border: 2px dashed #d8b4fe; display: flex; justify-content: center; align-items: center; height: 380px; }
-.videoContainer { width: 100%; height: 100%; position: relative; border-radius: 12px; overflow: hidden; background: #d4d4d8; }
-.videoStream { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+.guideCard { 
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #E5E7EB; 
+  border-radius: 16px; 
+  padding: 20px 8px; 
+  text-align: center; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  color: #111827; 
+}
 
-.videoOverlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-.faceGuideOval { width: 220px; height: 300px; border: 1px solid #71717a; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.iconWrapper { 
+  color: #6D28D9; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
 
-.cameraPlaceholder { text-align: center; display: flex; flex-direction: column; align-items: center; padding: 0 24px; }
-.cameraIconCircle { background-color: #ffffff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.cameraPlaceholder h3 { margin: 0 0 8px 0; font-size: 1.1rem; color: #18181b; }
-.cameraPlaceholder p { margin: 0; font-size: 0.85rem; color: #52525b; line-height: 1.4; }
+.checklistCard { 
+  background: rgba(249, 250, 251, 0.5);
+  border: 1px solid #F3F4F6; 
+  border-radius: 16px; 
+  padding: 24px; 
+  margin-bottom: 24px; 
+}
 
-.overlayTextPill { position: absolute; bottom: 24px; background: white; color: #18181b; padding: 10px 20px; border-radius: 24px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.checklistCard h4 { 
+  font-size: 0.8rem; 
+  font-weight: 700; 
+  letter-spacing: 0.05em; 
+  color: #4B5563; 
+  margin: 0 0 16px 0; 
+  text-transform: uppercase; 
+}
 
-.statusBar { display: flex; justify-content: space-between; align-items: center; border: 1px solid #e4e4e7; border-radius: 8px; padding: 14px 16px; margin-top: 16px; background-color: #ffffff; }
-.statusIndicator { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 600; color: #3f3f46; }
-.statusDot { width: 8px; height: 8px; background-color: #71717a; border-radius: 50%; }
-.statusIcons { display: flex; gap: 12px; }
+.checklist { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+}
 
-.actionRow { display: flex; justify-content: flex-end; margin-top: 24px; }
-.captureBtn { padding: 12px 32px; background: white; color: #6200ea; border: 1px solid #d4d4d8; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; }
-.captureBtn:hover:not(:disabled) { border-color: #6200ea; background: #f3e8ff; }
-.captureBtn:disabled { color: #a1a1aa; border-color: #e4e4e7; cursor: not-allowed; }
+.checklist li { 
+  font-size: 0.95rem; 
+  color: #4B5563; 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
 
-.errorBox { padding: 16px; background: #fef2f2; color: #dc2626; border: 1px solid #f87171; border-radius: 8px; width: 100%; text-align: center; }
+.securityNote { 
+  background: #F9FAFB; 
+  color: #4B5563; 
+  padding: 16px; 
+  border-radius: 12px; 
+  font-size: 0.85rem; 
+  font-weight: 500; 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 12px; 
+  line-height: 1.5; 
+  border: 1px solid #F3F4F6; 
+}
 
-/* Responsive Design */
+.rightPanel { 
+  display: flex; 
+  flex-direction: column; 
+}
+
+/* Glassmorphism Camera Wrapper */
+.glassCard {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.08),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.videoContainer { 
+  position: relative; 
+  background-color: #E5E7EB; 
+  border-radius: 16px; 
+  aspect-ratio: 4 / 3; 
+  overflow: hidden; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%;
+}
+
+.videoStream { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  transform: scaleX(-1); 
+}
+
+.videoOverlay { 
+  position: absolute; 
+  inset: 0; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 10; 
+}
+
+.faceGuideOval { 
+  width: 48%; 
+  height: 74%; 
+  border: 2px dashed rgba(255, 255, 255, 0.85); 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3); 
+}
+
+.cameraPlaceholder { 
+  text-align: center; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  padding: 0 24px; 
+  color: #ffffff; 
+}
+
+.cameraIconCircle { 
+  background-color: #ffffff; 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  margin-bottom: 16px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+}
+
+.cameraPlaceholder h3 { 
+  margin: 0 0 8px 0; 
+  font-size: 1.1rem; 
+  color: #ffffff; 
+}
+
+.cameraPlaceholder p { 
+  margin: 0; 
+  font-size: 0.85rem; 
+  color: rgba(255, 255, 255, 0.8); 
+  line-height: 1.4; 
+}
+
+.overlayTextPill { 
+  position: absolute; 
+  bottom: 20px; 
+  background: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(8px); 
+  color: #111827; 
+  padding: 8px 18px; 
+  border-radius: 9999px; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); 
+}
+
+.statusBar { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  border: 1px solid #E5E7EB; 
+  border-radius: 12px; 
+  padding: 14px 16px; 
+  margin-top: 20px; 
+  background-color: #F9FAFB; 
+}
+
+.statusIndicator { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  color: #4B5563; 
+}
+
+.statusDot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  transition: background-color 0.3s; 
+}
+
+.statusIcons { 
+  display: flex; 
+  gap: 12px; 
+}
+
+.actionRow { 
+  display: flex; 
+  justify-content: flex-end; 
+  margin-top: 16px; 
+}
+
+/* Skew-Fill Primary Action Button */
+.primaryBtn {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  padding: 1rem 2rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #6D28D9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #111827;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.primaryBtn:hover:not(:disabled) span {
+  color: #ffffff;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(109, 40, 217, 0.35);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.errorBanner { 
+  padding: 16px; 
+  background: #FEF2F2; 
+  color: #DC2626; 
+  border: 1px solid #FCA5A5; 
+  border-radius: 12px; 
+  width: 100%; 
+  text-align: center; 
+  margin-bottom: 24px; 
+  font-weight: 500; 
+  font-size: 0.9rem;
+}
+
+/* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .container {
     grid-template-columns: 1fr;
@@ -68,13 +354,16 @@
   }
 
   .videoContainer {
-    /* Scale width to 100% of the mobile screen while maintaining the 3/4 oval ratio */
+    aspect-ratio: 4 / 3;
     width: 100%;
-    max-width: none; 
   }
   
   .faceGuideOval {
-    width: 65%;
+    width: 55%;
     height: 75%;
+  }
+
+  .glassCard {
+    padding: 1.25rem;
   }
 }

@@ -1,277 +1,366 @@
 /* ==== Layout ==== */
 .container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    color: #18181b;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #111827;
 }
 
 .layoutWrapper {
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 64px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 48px;
+  width: 100%;
 }
 
 /* ==== Typography ==== */
 .mainTitle {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 8px 0;
-    color: #18181b;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #111827;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-    font-size: 0.95rem;
-    color: #52525b;
-    margin: 0 0 32px 0;
-    line-height: 1.5;
+  font-size: 1rem;
+  color: #6B7280;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
 }
 
 .sectionTitle {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0 0 16px 0;
-    color: #18181b;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: #111827;
 }
 
 /* ==== Left Panel: General ==== */
 .leftPanel {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ==== Left Panel: Features Grid ==== */
 .featuresGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
 }
 
 .featureCard {
-    background-color: #ffffff;
-    border: 1px solid #e4e4e7;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #18181b;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.iconWrapper {
+  color: #6D28D9;
 }
 
 /* ==== Left Panel: Progress Box ==== */
 .progressBox {
-    background-color: #ffffff;
-    border: 1px solid #e4e4e7;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 40px;
+  background: rgba(249, 250, 251, 0.5);
+  border: 1px solid #F3F4F6;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 40px;
 }
 
 .progressTitle {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0 0 20px 0;
-    color: #18181b;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: #111827;
 }
 
 .progressList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .progressList li {
-    display: flex;
-    align-items: center;
-    font-size: 0.95rem;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 /* Custom Radio Indicator */
 .radioIndicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #18181b;
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #D1D5DB;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .radioDot {
-    width: 10px;
-    height: 10px;
-    background-color: #6200ea;
-    border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #6D28D9;
+  border-radius: 50%;
 }
 
 /* Progress States */
-.activeStep { color: #6200ea; font-weight: 700 !important; }
-.activeStep .radioIndicator { border-color: #6200ea; }
+.activeStep { color: #6D28D9; font-weight: 700 !important; }
+.activeStep .radioIndicator { border-color: #6D28D9; }
 
-.completedStep { color: #52525b; }
-.completedStep .radioIndicator { border-color: #18181b; }
+.completedStep { color: #4B5563; }
+.completedStep .radioIndicator { border-color: #111827; background-color: #111827; }
 
-.pendingStep { color: #52525b; }
-.pendingStep .radioIndicator { border-color: #18181b; }
+.pendingStep { color: #9CA3AF; }
 
 /* ==== Left Panel: Checklist ==== */
 .checklist {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .checklist li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.9rem;
-    color: #18181b;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #4B5563;
 }
 
 /* ==== Right Panel: Video & Overlays ==== */
 .rightPanel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.videoCard {
-    width: 100%;
+/* Glassmorphism Camera Wrapper */
+.glassCard {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px -10px rgba(109, 40, 217, 0.08),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: formFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .videoContainer {
-    position: relative;
-    background-color: #e4e4e7;
-    border-radius: 16px;
-    aspect-ratio: 3/4;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  background-color: #E5E7EB;
+  border-radius: 16px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .videoFeed {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
 }
 
 .videoOverlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .dashedOval {
-    position: absolute;
-    width: 70%;
-    height: 85%;
-    border: 8px dashed #c084fc;
-    border-radius: 50%;
+  position: absolute;
+  width: 48%;
+  height: 74%;
+  border: 4px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
 }
 
-.promptAction {
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+/* ==== Right Panel: Active Prompt Box ==== */
+.activePromptBox {
+  background-color: #F3E8FF; 
+  border: 1px solid #D8B4FE;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100px;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.08);
 }
 
-.promptAction h2 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: #6200ea;
-    margin: 0;
-    text-shadow: 0 4px 12px rgba(255, 255, 255, 0.9);
+.promptTitle {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #6D28D9;
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.02em;
 }
 
 .waitingPill {
-    background-color: #ffffff;
-    color: #18181b;
-    padding: 10px 20px;
-    border-radius: 24px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  color: #6D28D9;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.1);
 }
 
-/* ==== Right Panel: Feedback Box ==== */
-.feedbackBox {
-    background-color: #ffffff;
-    border: 1px dashed #d4d4d8;
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #a1a1aa;
+.successPill {
+  background-color: #ECFDF5;
+  color: #059669;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #A7F3D0;
+}
+
+.loadingText {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6B7280;
 }
 
 /* ==== Error Banner ==== */
 .errorBanner {
-    background-color: #fef2f2;
-    color: #b91c1c;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 500;
+  background-color: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* ==== Footer ==== */
 .footerBar {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 32px;
-    margin-top: 32px;
-    border-top: 1px solid #e4e4e7;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 32px;
+  margin-top: 32px;
+  border-top: 1px solid #E5E7EB;
 }
 
-.continueBtn {
-    background-color: #e4e4e7;
-    color: #18181b;
-    padding: 12px 32px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: not-allowed;
+/* Skew-Fill Primary Action Button */
+.primaryBtn {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #6D28D9;
+  color: #ffffff;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryBtn span {
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #ffffff;
+  transition: color 0.4s ease;
+}
+
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  z-index: 1;
+  background: #111827;
+  transform: skew(30deg);
+  transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+}
+
+.primaryBtn:hover:not(:disabled)::before {
+  transform: translate3d(100%, 0, 0);
+}
+
+.primaryBtn:hover:not(:disabled) span {
+  color: #ffffff;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px 0 rgba(109, 40, 217, 0.35);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
   .layoutWrapper {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 32px;
   }
   
   .rightPanel {
-    /* Swap visual order on mobile: Camera first, instructions below */
     order: -1; 
   }
 }
@@ -281,7 +370,21 @@
     grid-template-columns: 1fr;
   }
   
-  .promptAction h2 {
-    font-size: 2rem;
+  .videoContainer {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+  }
+
+  .dashedOval {
+    width: 55%;
+    height: 75%;
+  }
+
+  .promptTitle {
+    font-size: 1.4rem;
+  }
+  
+  .glassCard {
+    padding: 1.25rem;
   }
 }
