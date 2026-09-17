@@ -24,6 +24,8 @@ import { AdminLoginPage } from './features/admin/auth/pages/admin-login.page';
 import { AdminProtectedRoute } from './features/admin/auth/components/admin-protected-route.component';
 import { AdminLayout } from './features/admin/dashboard/components/admin.layout';
 import { AdminDashboardPage } from './features/admin/dashboard/pages/admin-dashboard.page';
+import { AdminPersistLogin } from './features/admin/auth/components/admin-persist-login.component';
+import { AdminPublicRoute } from './features/admin/auth/components/admin-public-route.component';
 
 export const App = () => {
     return (
@@ -33,12 +35,16 @@ export const App = () => {
                 {/* =========================================
                     ADMIN PORTAL 
                 ========================================= */}
-                <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+                <Route element={<AdminPersistLogin />}>
 
-                <Route element={<AdminProtectedRoute />}>
-                    <Route element={<AdminLayout />}>
-                        <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+                <Route element={<AdminPublicRoute />}>
+                    <Route path="/admin/login" element={<AdminLoginPage />} />
+                    <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+                </Route>
+                    <Route element={<AdminProtectedRoute />}>
+                        <Route element={<AdminLayout />}>
+                            <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+                        </Route>
                     </Route>
                 </Route>
 
