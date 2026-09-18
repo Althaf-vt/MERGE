@@ -49,17 +49,28 @@
 }
 
 /* --- Center Column --- */
+/* --- Center Column --- */
 .logoContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #6D28D9;
+.logoLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
-  letter-spacing: -0.05em;
+}
+
+.logoImage {
+  /* Set a baseline height */
+  height: 48px; 
+  width: auto;
+  object-fit: contain;
+  
+  /* THIS IS THE FIX: Zooms the SVG in by 30% to bypass internal transparent padding */
+  transform: scale(1.7); 
 }
 
 /* --- Right Column --- */

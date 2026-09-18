@@ -4,6 +4,9 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/slices/auth.slice';
 import { authApi, useLogoutUserMutation } from '../../features/auth/api/auth.api';
 
+// 1. Import the full logo with the text
+import LogoFull from '../../assets/logos/merge-logo-full.svg';
+
 export const TopNav = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -35,9 +38,11 @@ export const TopNav = () => {
                 <span className={styles.navLink}>Support</span>
             </div>
 
-            {/* Center: Logo */}
+            {/* Center: Replaced Text with the SVG Logo */}
             <div className={styles.logoContainer}>
-                <Link to="/" className={styles.logo}>MERGE</Link>
+                <Link to="/" className={styles.logoLink}>
+                    <img src={LogoFull} alt="MERGE" className={styles.logoImage} />
+                </Link>
             </div>
 
             {/* Right: Authentication Actions */}
