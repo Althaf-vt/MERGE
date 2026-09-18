@@ -74,16 +74,16 @@
 }
 
 .logoSquare {
-    background: linear-gradient(135deg, #d8b4fe 0%, #b992f8 100%);
-    color: #000;
-    width: 32px;
-    height: 32px;
+    width: 36px;   /* Slightly increased base size */
+    height: 36px;  /* Slightly increased base size */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-size: 1.15rem;
     border-radius: 6px;
+    object-fit: contain;
+    
+    /* Zooms the icon in by 40% to fill the space */
+    transform: scale(1.4); 
 }
 
 .brandTitle {

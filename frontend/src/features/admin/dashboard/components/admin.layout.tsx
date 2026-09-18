@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { useAdminLogoutMutation } from '../../auth/api/admin-auth.api';
 import { adminLogout } from '../../auth/slices/admin-auth.slice';
 import styles from './admin.layout.module.css';
+import LogoIcon from '../../../../assets/logos/merge-logo-icon.svg';
 
 type Theme = 'dark' | 'light';
 
@@ -45,7 +46,7 @@ export const AdminLayout: React.FC = () => {
             {/* Sidebar Navigation */}
             <aside className={styles.sidebar}>
                 <div className={styles.brand}>
-                    <div className={styles.logoSquare}>M</div>
+                    <img src={LogoIcon} alt="MERGE" className={styles.logoSquare} />
                     <span className={styles.brandTitle}>MERGE ADMIN</span>
                 </div>
 
