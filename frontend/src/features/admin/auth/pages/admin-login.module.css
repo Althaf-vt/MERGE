@@ -3,37 +3,43 @@
 }
 
 .header h2 {
-    font-size: 1.55rem;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
     margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
-    background: linear-gradient(135deg, #ffffff 30%, #e2d4f8 75%, #b992f8 100%);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
+    letter-spacing: -0.02em;
+    color: #fafafa;
 }
 
 .header p {
-    font-size: 0.88rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
     color: #a1a1aa;
     line-height: 1.5;
 }
 
 .errorBanner {
-    background-color: rgba(239, 68, 68, 0.08);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    background-color: rgba(225, 29, 72, 0.1);
+    color: #fb7185;
+    border: 1px solid rgba(225, 29, 72, 0.3);
     padding: 0.75rem 1rem;
     border-radius: 6px;
-    font-size: 0.84rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
     margin-bottom: 1.5rem;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.errorBanner::before {
+    content: "ERR:";
+    font-weight: 700;
 }
 
 .form {
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1.25rem;
 }
 
 .inputGroup {
@@ -43,10 +49,11 @@
 }
 
 .inputGroup label {
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
     font-weight: 600;
-    color: #8e8e93;
-    letter-spacing: 1px;
+    color: #71717a;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
@@ -58,33 +65,38 @@
 
 .inputIcon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #5d5d63;
+    color: #52525b;
 }
 
 .inputWrapper input {
     width: 100%;
-    background-color: #0c0c0d;
-    border: 1px solid #242427;
-    border-radius: 7px;
-    padding: 0.82rem 1rem 0.82rem 2.5rem;
-    color: #f4f4f5;
-    font-size: 0.92rem;
+    background-color: #0a0a0b;
+    border: 1px solid #27272a;
+    border-radius: 6px;
+    padding: 0.875rem 1rem 0.875rem 2.5rem;
+    color: #fafafa;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .inputWrapper input:focus {
-    border-color: #b992f8;
-    box-shadow: 0 0 0 1px rgba(185, 146, 248, 0.25);
+    border-color: #d8b4fe;
+    box-shadow: 0 0 0 2px rgba(216, 180, 254, 0.15);
+}
+
+.inputWrapper input::placeholder {
+    color: #52525b;
 }
 
 .eyeBtn {
     position: absolute;
-    right: 12px;
+    right: 14px;
     background: none;
     border: none;
     color: #71717a;
@@ -97,69 +109,75 @@
 }
 
 .eyeBtn:hover {
-    color: #e4e4e7;
+    color: #d8b4fe;
 }
 
 .formActions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.84rem;
-    margin-top: -0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    margin-top: -0.25rem;
 }
 
 .rememberMe {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    color: #94949b;
+    gap: 0.5rem;
+    color: #a1a1aa;
     cursor: pointer;
     user-select: none;
 }
 
 .rememberMe input {
-    accent-color: #b992f8;
-    width: 15px;
-    height: 15px;
-    background-color: #0c0c0d;
+    accent-color: #d8b4fe;
+    width: 14px;
+    height: 14px;
+    background-color: #0a0a0b;
     border: 1px solid #27272a;
     border-radius: 3px;
     cursor: pointer;
 }
 
 .forgotLink {
-    color: #94949b;
+    color: #a1a1aa;
     cursor: pointer;
     transition: color 0.2s ease;
 }
 
 .forgotLink:hover {
     color: #d8b4fe;
+    text-decoration: underline;
 }
 
 .submitBtn {
     width: 100%;
-    background: linear-gradient(135deg, #d8b4fe 0%, #b992f8 100%);
-    color: #09090b;
-    font-weight: 600;
-    font-size: 0.92rem;
-    padding: 0.85rem;
+    background-color: #fafafa;
+    color: #0a0a0b;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 1rem;
     border: none;
-    border-radius: 7px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: filter 0.2s ease, transform 0.1s ease;
-    margin-top: 0.6rem;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
 }
 
 .submitBtn:hover:not(:disabled) {
-    filter: brightness(1.06);
+    background-color: #d8b4fe;
 }
 
 .submitBtn:active:not(:disabled) {
-    transform: scale(0.99);
+    transform: scale(0.98);
 }
 
 .submitBtn:disabled {
-    opacity: 0.6;
+    background-color: #27272a;
+    color: #71717a;
     cursor: not-allowed;
 }

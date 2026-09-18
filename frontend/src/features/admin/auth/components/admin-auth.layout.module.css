@@ -1,39 +1,57 @@
-.container {
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+.layoutContainer {
+    position: relative;
     display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 100vh;
     width: 100%;
-    background-color: #0a0a0a;
-    color: #ffffff;
+    background-color: #0a0a0b;
+    color: #fafafa;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
 }
 
-/* Left Panel */
-.leftPanel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 4rem;
-    border-right: 1px solid #262626;
-    background: radial-gradient(circle at top left, #16151a 0%, #0a0a0a 100%);
+/* Subtle Technical Background Grid */
+.gridOverlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
-.brand {
+/* Corner Decorators */
+.topLeft, .topRight, .bottomLeft, .bottomRight {
+    position: absolute;
+    z-index: 10;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.logoSquare {
-    background: #d8b4fe;
-    color: #000000;
+.topLeft { top: 2rem; left: 2rem; }
+.topRight { top: 2rem; right: 2rem; }
+.bottomLeft { bottom: 2rem; left: 2rem; }
+.bottomRight { bottom: 2rem; right: 2rem; color: #71717a; }
+
+.brandBadge {
+    background-color: #fafafa;
+    color: #0a0a0b;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 1.15rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
     border-radius: 4px;
 }
 
@@ -44,136 +62,76 @@
 
 .brandTitle {
     font-weight: 700;
-    font-size: 1.05rem;
-    line-height: 1;
-    letter-spacing: 0.5px;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    color: #fafafa;
 }
 
 .brandSubtitle {
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem;
-    color: #a1a1aa;
-    letter-spacing: 1px;
-    margin-top: 3px;
-}
-
-.heroContent {
-    max-width: 600px;
-    margin-top: -8vh;
-}
-
-/* Punchier, refined multi-stop metallic lilac gradient */
-.heroTitle {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1.12;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #ffffff 15%, #e7def7 45%, #b992f8 80%, #9867e9 100%);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-}
-
-.heroDesc {
-    font-size: 1.05rem;
-    color: #e7def7;
-    line-height: 1.6;
-    margin-bottom: 3rem;
-}
-
-.featureGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.featureCard {
-    background-color: rgba(255, 255, 255, 0.02);
-    border: 1px solid #202022;
-    border-radius: 10px;
-    padding: 1.4rem;
-    transition: border-color 0.2s ease;
-}
-
-.featureCard:hover {
-    border-color: #2e2e32;
-}
-
-.featureCard.fullWidth {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: 1.25rem;
-    align-items: flex-start;
-}
-
-.iconBox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.85rem;
-}
-
-.featureCard.fullWidth .iconBox {
-    margin-bottom: 0;
+    color: #71717a;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     margin-top: 2px;
 }
 
-.featureCard h3 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    color: #e7def7;
+.statusIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #10b981;
+    letter-spacing: 0.05em;
 }
 
-.featureCard p {
-    font-size: 0.82rem;
+.statusDot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.technicalText {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
     color: #71717a;
-    line-height: 1.5;
-}
-
-.footerTextLeft {
-    display: flex;
-    align-items: center;
-    font-size: 0.72rem;
-    color: rgba(74, 222, 128, 0.75);
-    letter-spacing: 1px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    font-weight: 500;
 }
 
-/* Right Panel */
-.rightPanel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* Centered Authenticator Card */
+.authWrapper {
     position: relative;
-    padding: 2rem;
-    background-color: #0a0a0a;
-}
-
-.formWrapper {
+    z-index: 20;
     width: 100%;
-    max-width: 440px;
-    background-color: #111112;
-    border: 1px solid #242426;
-    border-radius: 14px;
+    max-width: 420px;
+    background-color: #141417;
+    border: 1px solid #27272a;
+    border-radius: 12px;
     padding: 2.5rem;
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.footerTextRight {
-    position: absolute;
-    bottom: 2rem;
-    right: 3rem;
-    font-size: 0.72rem;
-    color: #4b4b52;
-    letter-spacing: 1.2px;
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 1024px) {
-    .container { flex-direction: column; }
-    .leftPanel { display: none; }
-    .rightPanel { min-height: 100vh; }
+@media (max-width: 640px) {
+    .gridOverlay { display: none; }
+    .topLeft, .topRight, .bottomLeft, .bottomRight { display: none; }
+    .layoutContainer { padding: 1rem; }
+    .authWrapper { padding: 2rem; border-radius: 16px; }
 }
