@@ -1,21 +1,67 @@
+/* ==========================================================================
+   Admin Theme Dictionary
+   ========================================================================== */
+
+.layoutContainer[data-theme="dark"] {
+    --admin-bg: #0a0a0b;
+    --admin-surface: #141417;
+    --admin-sidebar: #111112;
+    --admin-header: #0c0c0d;
+    --admin-border: #27272a;
+    --admin-border-hover: #3f3f46;
+    --admin-text-primary: #fafafa;
+    --admin-text-secondary: #a1a1aa;
+    --admin-accent-bg: rgba(216, 180, 254, 0.1);
+    --admin-accent-text: #d8b4fe;
+    --admin-accent-rgb: 216, 180, 254;
+    --admin-ring: #d4d4d8;
+    --admin-danger-bg: rgba(239, 68, 68, 0.1);
+    --admin-danger-border: rgba(239, 68, 68, 0.3);
+    --admin-danger-text: #ef4444;
+}
+
+.layoutContainer[data-theme="light"] {
+    --admin-bg: #f4f4f5;
+    --admin-surface: #ffffff;
+    --admin-sidebar: #ffffff;
+    --admin-header: #ffffff;
+    --admin-border: #e4e4e7;
+    --admin-border-hover: #d4d4d8;
+    --admin-text-primary: #09090b;
+    --admin-text-secondary: #71717a;
+    --admin-accent-bg: rgba(109, 40, 217, 0.1);
+    --admin-accent-text: #6D28D9;
+    --admin-accent-rgb: 109, 40, 217;
+    --admin-ring: #18181b;
+    --admin-danger-bg: rgba(220, 38, 38, 0.1);
+    --admin-danger-border: rgba(220, 38, 38, 0.3);
+    --admin-danger-text: #dc2626;
+}
+
+/* ==========================================================================
+   Layout Structure
+   ========================================================================== */
+
 .layoutContainer {
     display: flex;
     height: 100vh;
     width: 100%;
-    background-color: #0a0a0a;
-    color: #f4f4f5;
+    background-color: var(--admin-bg);
+    color: var(--admin-text-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Sidebar */
 .sidebar {
     width: 260px;
-    background-color: #111112;
-    border-right: 1px solid #242427;
+    background-color: var(--admin-sidebar);
+    border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .brand {
@@ -23,7 +69,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid #242427;
+    border-bottom: 1px solid var(--admin-border);
+    transition: border-color 0.3s ease;
 }
 
 .logoSquare {
@@ -43,7 +90,7 @@
     font-weight: 700;
     font-size: 1.05rem;
     letter-spacing: 0.5px;
-    color: #ffffff;
+    color: var(--admin-text-primary);
 }
 
 .navMenu {
@@ -61,7 +108,7 @@
     gap: 12px;
     padding: 0.85rem 1rem;
     border-radius: 8px;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -69,22 +116,23 @@
 }
 
 .navItem:hover {
-    background-color: rgba(255, 255, 255, 0.03);
-    color: #e4e4e7;
+    background-color: var(--admin-border);
+    color: var(--admin-text-primary);
 }
 
 .navItem.active {
-    background-color: rgba(216, 180, 254, 0.1);
-    color: #d8b4fe;
+    background-color: var(--admin-accent-bg);
+    color: var(--admin-accent-text);
 }
 
 .navItem.active svg {
-    color: #d8b4fe;
+    color: var(--admin-accent-text);
 }
 
 .sidebarFooter {
     padding: 1.5rem 1rem;
-    border-top: 1px solid #242427;
+    border-top: 1px solid var(--admin-border);
+    transition: border-color 0.3s ease;
 }
 
 .logoutBtn {
@@ -95,9 +143,9 @@
     gap: 8px;
     padding: 0.75rem;
     background: transparent;
-    border: 1px solid #242427;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
@@ -105,9 +153,9 @@
 }
 
 .logoutBtn:hover {
-    background-color: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-    color: #ef4444;
+    background-color: var(--admin-danger-bg);
+    border-color: var(--admin-danger-border);
+    color: var(--admin-danger-text);
 }
 
 /* Main Content Area */
@@ -115,24 +163,49 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 0; /* Prevents flex blowout */
+    min-width: 0;
 }
 
 .topHeader {
     height: 72px;
-    background-color: #0c0c0d;
-    border-bottom: 1px solid #242427;
+    background-color: var(--admin-header);
+    border-bottom: 1px solid var(--admin-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 2rem;
     flex-shrink: 0;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.themeToggle {
+    background: none;
+    border: none;
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.themeToggle:hover {
+    background-color: var(--admin-border);
+    color: var(--admin-text-primary);
 }
 
 .workspaceText {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #71717a;
+    color: var(--admin-text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -152,31 +225,32 @@
 .adminName {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #f4f4f5;
+    color: var(--admin-text-primary);
 }
 
 .adminRole {
     font-size: 0.7rem;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
 }
 
 .avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #27272a;
-    color: #d8b4fe;
+    background-color: var(--admin-bg);
+    color: var(--admin-accent-text);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 1rem;
-    border: 1px solid #3f3f46;
+    border: 1px solid var(--admin-border-hover);
 }
 
 .contentScroll {
     flex: 1;
     overflow-y: auto;
     padding: 2rem;
-    background-color: #0a0a0a;
+    background-color: var(--admin-bg);
+    transition: background-color 0.3s ease;
 }

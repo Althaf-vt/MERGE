@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../app/hooks';
 import { useAdminLogoutMutation } from '../../auth/api/admin-auth.api';
 import { adminLogout } from '../../auth/slices/admin-auth.slice';
 import styles from './admin.layout.module.css';
 
+type Theme = 'dark' | 'light';
+
 export const AdminLayout: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { admin } = useAppSelector((state) => state.adminAuth);
     const [logoutApi] = useAdminLogoutMutation();
+
+    // Theme State Initialization
+    const [theme, setTheme] = useState<Theme>(() => {
+        const saved = localStorage.getItem('merge-admin-theme');
+        if (saved === 'dark' || saved === 'light') return saved;
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    });
+
+    // Apply theme to localStorage
+    useEffect(() => {
+        localStorage.setItem('merge-admin-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
 
     const handleLogout = async () => {
         try {
@@ -23,7 +41,7 @@ export const AdminLayout: React.FC = () => {
     };
 
     return (
-        <div className={styles.layoutContainer}>
+        <div className={styles.layoutContainer} data-theme={theme}>
             {/* Sidebar Navigation */}
             <aside className={styles.sidebar}>
                 <div className={styles.brand}>
@@ -66,10 +84,17 @@ export const AdminLayout: React.FC = () => {
             <main className={styles.mainContent}>
                 <header className={styles.topHeader}>
                     <div className={styles.headerLeft}>
-                        {/* Dynamic breadcrumbs could be injected here later */}
                         <span className={styles.workspaceText}>Workspace Control</span>
                     </div>
                     <div className={styles.headerRight}>
+                        <button className={styles.themeToggle} onClick={toggleTheme} aria-label="Toggle theme">
+                            {theme === 'dark' ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="19.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                            ) : (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                            )}
+                        </button>
+                        
                         <div className={styles.adminProfile}>
                             <div className={styles.adminInfo}>
                                 <span className={styles.adminName}>{admin?.fullName || 'Administrator'}</span>
@@ -83,7 +108,6 @@ export const AdminLayout: React.FC = () => {
                 </header>
 
                 <div className={styles.contentScroll}>
-                    {/* All protected routes render here */}
                     <Outlet /> 
                 </div>
             </main>
