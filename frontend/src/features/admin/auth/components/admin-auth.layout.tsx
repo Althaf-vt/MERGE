@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './admin-auth.layout.module.css';
+import LogoIcon from '../../../../assets/logos/merge-logo-icon.svg';
 
 interface AdminAuthLayoutProps {
     children: React.ReactNode;
@@ -13,7 +14,7 @@ export const AdminAuthLayout: React.FC<AdminAuthLayoutProps> = ({ children }) =>
 
             {/* Corner Telemetry / Decorative Elements */}
             <div className={styles.topLeft}>
-                <div className={styles.brandBadge}>M</div>
+                <img src={LogoIcon} alt="MERGE" className={styles.brandBadge} />
                 <div className={styles.brandText}>
                     <span className={styles.brandTitle}>MERGE ADMIN</span>
                     <span className={styles.brandSubtitle}>SYSTEM.CORE.AUTH</span>

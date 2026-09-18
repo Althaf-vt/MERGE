@@ -42,17 +42,16 @@
 .bottomRight { bottom: 2rem; right: 2rem; color: #71717a; }
 
 .brandBadge {
-    background-color: #fafafa;
-    color: #0a0a0b;
-    width: 32px;
-    height: 32px;
+    width: 36px;   /* Slightly increased base size */
+    height: 36px;  /* Slightly increased base size */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.2rem;
     border-radius: 4px;
+    object-fit: contain;
+    
+    /* Zooms the icon in by 40% to fill the space */
+    transform: scale(1.4); 
 }
 
 .brandText {
