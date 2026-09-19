@@ -12,18 +12,31 @@ import { AdminRedisOtpService } from "./infrastructure/services/admin-redis-otp.
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE } from "./application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordUseCase } from "./application/use-cases/admin-forgot-password.use-case";
 import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-password.use-case";
-import { AdminVerifyResetOtpDto } from "./application/dtos/admin-forgot-password.dto";
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
 import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
 import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
+import { UserModule } from "../users/users.module";
+import { ModerationLogSchema, ModerationLogSchemaClass } from "./infrastructure/persistence/moderation-log.schema";
+import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-repository.interface";
+import { MongoModerationLogRepository } from "./infrastructure/persistence/mongo-moderation-log.repository";
+import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
+import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
+import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
+import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
+import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
+        UserModule,
+        MongooseModule.forFeature([
+            { name: Admin.name, schema: AdminSchema },
+            {name: ModerationLogSchemaClass.name, schema: ModerationLogSchema}
+        ]),
     ],
 
     controllers: [
         AdminAuthController,
+        AdminUsersController,
     ],
 
     providers: [
@@ -57,6 +70,18 @@ import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-
         {
             provide: ADMIN_REFRESH_TOKEN_USE_CASE,
             useClass: AdminRefreshTokenUsecase,
+        },
+        {
+            provide: MODERATION_LOG_REPOSITORY,
+            useClass: MongoModerationLogRepository,
+        },
+        {
+            provide: MANAGE_USER_STATUS_USE_CASE,
+            useClass: ManageUserStatusUseCase,
+        },
+        {
+            provide: GET_ADMIN_USERS_USE_CASE,
+            useClass: GetAdminUsersUserCase,
         }
     ],
     exports: [
