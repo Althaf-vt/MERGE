@@ -65,6 +65,8 @@ import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interf
 import Redis from "ioredis";
 import { ErrorCode } from "../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../shared/domain/exceptions/domain.exception";
+import { USER_MANAGEMENT_FACADE } from "./application/interfaces/user-management-facade.interface";
+import { UserManagementFacade } from "./application/services/user-management.facade";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -236,11 +238,15 @@ import { DomainException } from "../../shared/domain/exceptions/domain.exception
         {
             provide: SAVE_BIO_USE_CASE,
             useClass: SaveBioUseCase,
+        },
+        {
+            provide: USER_MANAGEMENT_FACADE,
+            useClass: UserManagementFacade,
         }
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE],
+    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE, USER_MANAGEMENT_FACADE],
 })
 
 export class UserModule { }
