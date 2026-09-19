@@ -7,14 +7,15 @@ import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { AdminPersistenceMapper } from "./mappers/admin-persistence.mapper";
 import { AdminRole } from "../../domain/enums/admin.enums";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, AdminDocument> implements IAdminRepository {
     constructor(
-        @InjectModel(Admin.name)
-        model: Model<AdminDocument>
+        @InjectModel(Admin.name) model: Model<AdminDocument>,
+        eventEmitter: EventEmitter2 // Inject the event emitter
     ) {
-        super(model); // Passes the model to the BaseRepo
+        super(model, eventEmitter); // Pass both to the BaseRepo
     }
 
     // fullfil the abstract mappign requirements from the Base Class
