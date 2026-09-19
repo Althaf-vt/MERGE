@@ -7,7 +7,7 @@ import { AdminRole } from "../../../../modules/admin/domain/enums/admin.enums";
 
 
 @Injectable()
-export class AdminPermissionGuard implements CanActivate {
+export class AdminPermissionsGuard implements CanActivate {
     constructor(private readonly _reflector: Reflector){}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
