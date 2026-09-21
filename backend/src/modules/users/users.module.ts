@@ -67,6 +67,8 @@ import { ErrorCode } from "../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../shared/domain/exceptions/domain.exception";
 import { USER_MANAGEMENT_FACADE } from "./application/interfaces/user-management-facade.interface";
 import { UserManagementFacade } from "./application/services/user-management.facade";
+import { UserBannedListener } from "./application/listeners/user-banned.listener";
+import { UserSuspendedListener } from "./application/listeners/user-suspended.listener";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -92,6 +94,8 @@ import { UserManagementFacade } from "./application/services/user-management.fac
         JwtAuthGuard,
         HandoffGateway,
         OpenRouterAiService,
+        UserBannedListener,
+        UserSuspendedListener,
         {
             provide: REDIS_CLIENT,
             useFactory: () => {
