@@ -1,4 +1,5 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminPermission } from "../enums/admin-permission.enums";
@@ -19,10 +20,11 @@ export interface AdminAggregateProps {
     updatedAt?: Date;
 }
 
-export class AdminAggregate {
+export class AdminAggregate extends AggregateRoot {
     private _props: AdminAggregateProps;
 
     constructor(props: AdminAggregateProps) {
+        super();
         this._props = {
             ...props,
             role: props.role ?? AdminRole.ADMIN,
@@ -78,6 +80,8 @@ export class AdminAggregate {
     suspend(): void {
         this._props.status = AdminStatus.SUSPENDED;
         this._markUpdatedAt();
+
+        // Future EDA: this.addDomainEvent(new AdminSuspendedDomainEvent(this.id));
     }
 
     assignPermissions(newPermissions: AdminPermission[]): void {

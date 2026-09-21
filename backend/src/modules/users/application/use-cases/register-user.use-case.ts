@@ -6,8 +6,8 @@ import type { IUserRepository } from "../../domain/interfaces/user-repository.in
 import { RegisterUserDto } from "../dtos/register-user.dto";
 import { OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import type { IOtpService } from "../../domain/interfaces/otp-service.interface";
-import { EMAIL_SERVICE } from "../../domain/interfaces/email-service.interface";
-import type { IEmailService } from "../../domain/interfaces/email-service.interface";
+import { EMAIL_SERVICE } from "../../../../shared/domain/interfaces/email-service.interface";
+import type { IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import type { IPasswordHasher } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { IRegisterUserUseCase } from "../interfaces/register-user.use-case.interface";

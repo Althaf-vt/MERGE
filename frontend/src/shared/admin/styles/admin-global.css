@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Global Admin Theme Dictionary
+   Strictly scoped to prevent leakage into the user-facing application
+   ========================================================================== */
+
+.admin-portal-root {
+    /* Dark Theme (Default) */
+    --admin-bg: #09090b;
+    --admin-surface: #000000;
+    --admin-sidebar: #111112;
+    --admin-header: #0c0c0d;
+    --admin-border: #27272a;
+    --admin-border-hover: #3f3f46;
+    --admin-border-focus: #52525b;
+    --admin-text-primary: #fafafa;
+    --admin-text-secondary: #a1a1aa;
+    --admin-text-subtle: #71717a;
+    --admin-hover: #18181b;
+    
+    --admin-accent-bg: rgba(216, 180, 254, 0.1);
+    --admin-accent-text: #d8b4fe;
+    --admin-accent-rgb: 216, 180, 254;
+    
+    --admin-danger-bg: rgba(220, 38, 38, 0.1);
+    --admin-danger-border: rgba(248, 113, 113, 0.2);
+    --admin-danger-text: #f87171;
+    
+    --admin-ring: #d4d4d8;
+
+    /* Badge Tokens */
+    --badge-active-bg: rgba(22, 163, 74, 0.1);
+    --badge-active-text: #4ade80;
+    --badge-suspend-bg: rgba(234, 88, 12, 0.1);
+    --badge-suspend-text: #fb923c;
+    --badge-ban-bg: var(--admin-danger-bg);
+    --badge-ban-text: var(--admin-danger-text);
+    --badge-del-bg: rgba(82, 82, 91, 0.1);
+    --badge-del-text: #a1a1aa;
+}
+
+/* Light Theme Override */
+.admin-portal-root[data-theme="light"] {
+    --admin-bg: #ffffff;
+    --admin-surface: #fafafa;
+    --admin-sidebar: #ffffff;
+    --admin-header: #ffffff;
+    --admin-border: #e4e4e7;
+    --admin-border-hover: #d4d4d8;
+    --admin-border-focus: #a1a1aa;
+    --admin-text-primary: #09090b;
+    --admin-text-secondary: #52525b;
+    --admin-text-subtle: #71717a;
+    --admin-hover: #f4f4f5;
+    
+    --admin-accent-bg: rgba(109, 40, 217, 0.1);
+    --admin-accent-text: #6D28D9;
+    --admin-accent-rgb: 109, 40, 217;
+    
+    --admin-danger-bg: rgba(220, 38, 38, 0.15);
+    --admin-danger-border: rgba(220, 38, 38, 0.3);
+    --admin-danger-text: #dc2626;
+
+    --admin-ring: #18181b;
+
+    /* Badge Tokens (Adjusted for light bg contrast) */
+    --badge-active-bg: rgba(22, 163, 74, 0.15);
+    --badge-active-text: #16a34a;
+    --badge-suspend-bg: rgba(234, 88, 12, 0.15);
+    --badge-suspend-text: #ea580c;
+    --badge-ban-bg: var(--admin-danger-bg);
+    --badge-ban-text: var(--admin-danger-text);
+    --badge-del-bg: rgba(82, 82, 91, 0.15);
+    --badge-del-text: #52525b;
+}

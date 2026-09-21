@@ -7,6 +7,7 @@ import { kycApi } from "../features/onboarding/api/kyc.api";
 import { handoffApi } from "../features/onboarding/api/handoff.api";
 import { profileApi } from "../features/onboarding/api/profile.api";
 import { adminAuthApi } from "../features/admin/auth/api/admin-auth.api";
+import { adminUsersApi } from "../features/admin/users/api/admin-users.api";
 
 
 export const store = configureStore({
@@ -19,6 +20,7 @@ export const store = configureStore({
         // We use a dynamic key here so it scales perfectly as we add more APIs
         [authApi.reducerPath]: authApi.reducer,
         [adminAuthApi.reducerPath]: adminAuthApi.reducer,
+        [adminUsersApi.reducerPath]: adminUsersApi.reducer,
 
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
@@ -34,7 +36,8 @@ export const store = configureStore({
             adminAuthApi.middleware,
             kycApi.middleware,
             handoffApi.middleware,
-            profileApi.middleware
+            profileApi.middleware,
+            adminUsersApi.middleware
         )
 })
 

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IUserRepository } from "../../domain/interfaces/user-repository.interface";
+import { IUserRepository, PaginatedResult, UserFilters } from "../../domain/interfaces/user-repository.interface";
 import { InjectModel } from "@nestjs/mongoose";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
@@ -7,6 +7,7 @@ import { User, UserDocument } from "./user.schema";
 import { Model } from "mongoose";
 import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 // MongoDB implementation of the UserRepository.
 // Handles User persistence and converts between domain entities and MongoDB documents.
@@ -15,10 +16,11 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
 
     // Injects the Mongoose User model used to perform database operations.
     constructor(
-        @InjectModel(User.name)
-        model: Model<UserDocument>
+        @InjectModel(User.name) model: Model<UserDocument>,
+        eventEmitter: EventEmitter2
     ){
-        super(model); // Passes the model to the BaseMongoRepository
+        // Passes the model and event emitter to the BaseMongoRepository
+        super(model, eventEmitter);
     }
 
     // Fulfill the abstract mapping requirements from the Base Class
@@ -60,5 +62,29 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
                 }
             }
         ).exec();
+    }
+
+    async findAllPaginated(filters: UserFilters): Promise<PaginatedResult<UserAggregate>> {
+        const query: any = {};
+
+        if(filters.search){
+            query['email'] = {$regex: filters.search, $options: 'i'};
+        }
+        if(filters.status){
+            query['accountStatus'] = filters.status;
+        }
+
+        const skip = (filters.page - 1) * filters.limit;
+        const [documents, total] = await Promise.all([
+            this._model.find(query).skip(skip).limit(filters.limit).exec(),
+            this._model.countDocuments(query).exec()
+        ]);
+
+        return {
+            data: documents.map(doc => this.toDomain(doc as UserDocument)),
+            total,
+            page: filters.page,
+            limit: filters.limit
+        }
     }
 }

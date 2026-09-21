@@ -6,4 +6,8 @@ export interface IEmailService{
     
     // For admins (password resets, high-security actions)
     sendAdminResetOtpEmail(to: string, otp: string): Promise<void>;
+
+    // EDA notification contracts
+    sendBanNotificationEmail(to: string, reason: string): Promise<void>;
+    sendSuspensionNotificationEmail(to: string, reason: string, until: Date): Promise<void>;
 }

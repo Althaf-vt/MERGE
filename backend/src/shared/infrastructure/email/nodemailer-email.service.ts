@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import * as nodemailer from 'nodemailer'
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { DomainException } from "../../domain/exceptions/domain.exception";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService {
@@ -89,6 +89,64 @@ export class NodeMailerEmailService implements IEmailService {
         } catch (error: any) {
             this._logger.error(`Failed to send Admin Password Reset email to ${to}`, error.stack);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative security email.');
+        }
+    }
+
+    async sendBanNotificationEmail(to: string, reason: string): Promise<void> {
+        const htmlTemplate = `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a;">
+                <h2 style="color: #dc2626; font-size: 24px; margin-bottom: 24px;">Account Banned</h2>
+                <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
+                    Your MERGE account has been permanently banned due to a violation of our community guidelines.
+                </p>
+                <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin-bottom: 24px;">
+                    <strong>Reason:</strong> ${reason}
+                </div>
+                <p style="font-size: 14px; color: #71717a;">
+                    If you believe this is an error, please contact support.
+                </p>
+            </div>
+        `;
+
+        try {
+            await this._transporter.sendMail({
+                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
+                to,
+                subject: 'Important Notice Regarding Your MERGE Account',
+                html: htmlTemplate,
+            });
+            this._logger.log(`Ban notification sent to ${to}`);
+        } catch (error: any) {
+            this._logger.error(`Failed to send ban notification to ${to}`, error.stack);
+        }
+    }
+
+    async sendSuspensionNotificationEmail(to: string, reason: string, until: Date): Promise<void> {
+        const htmlTemplate = `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a;">
+                <h2 style="color: #ea580c; font-size: 24px; margin-bottom: 24px;">Account Temporarily Suspended</h2>
+                <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
+                    Your MERGE account has been temporarily suspended. You will regain access on <strong>${until.toUTCString()}</strong>.
+                </p>
+                <div style="background-color: #ffedd5; border-left: 4px solid #ea580c; padding: 16px; margin-bottom: 24px;">
+                    <strong>Reason:</strong> ${reason}
+                </div>
+                <p style="font-size: 14px; color: #71717a;">
+                    Please ensure you adhere to our guidelines going forward to avoid permanent account restrictions.
+                </p>
+            </div>
+        `;
+
+        try {
+            await this._transporter.sendMail({
+                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
+                to,
+                subject: 'Notice of Temporary Account Suspension',
+                html: htmlTemplate,
+            });
+            this._logger.log(`Suspension notification sent to ${to}`);
+        } catch (error: any) {
+            this._logger.error(`Failed to send suspension notification to ${to}`, error.stack);
         }
     }
 }

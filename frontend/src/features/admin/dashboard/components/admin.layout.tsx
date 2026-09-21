@@ -5,6 +5,7 @@ import { useAdminLogoutMutation } from '../../auth/api/admin-auth.api';
 import { adminLogout } from '../../auth/slices/admin-auth.slice';
 import styles from './admin.layout.module.css';
 import LogoIcon from '../../../../assets/logos/merge-logo-icon.svg';
+import '../../../../shared/admin/styles/admin-global.css';
 
 type Theme = 'dark' | 'light';
 
@@ -42,7 +43,7 @@ export const AdminLayout: React.FC = () => {
     };
 
     return (
-        <div className={styles.layoutContainer} data-theme={theme}>
+        <div className={`${styles.layoutContainer} admin-portal-root`} data-theme={theme}>
             {/* Sidebar Navigation */}
             <aside className={styles.sidebar}>
                 <div className={styles.brand}>

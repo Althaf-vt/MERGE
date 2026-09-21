@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { IForgotPasswordUseCase } from "../interfaces/forgot-password.use-case.interface";
 import { ForgotPasswordDto } from "../dtos/forgot-password.dto";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { EMAIL_SERVICE, IEmailService } from "../../domain/interfaces/email-service.interface";
+import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 

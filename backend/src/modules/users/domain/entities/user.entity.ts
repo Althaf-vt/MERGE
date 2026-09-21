@@ -5,8 +5,12 @@ import { UserPreference } from "./user-preference.entity";
 import { UserProfile } from "./user-profile.entity";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { SuspensionDurationVO } from "../value-objects/suspension-duration.vo";
+import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
+import { UserSupendedDomainEvent } from "../events/user-suspended.domain-event";
+import { UserBannedDomainEvent } from "../events/user-banned.domain-event";
 
-export enum UserRole{
+export enum UserRole {
     USER = 'USER',
     ADMIN = 'ADMIN',
     SUPER_ADMIN = 'SUPER_ADMIN',
@@ -26,6 +30,11 @@ export interface UserAggregateProps {
     profileCompleted: boolean;
     castingDirectorCompleted: boolean;
 
+    // Moderation state
+    statusReason?: string | null;
+    statusChangedAt?: Date | null;
+    suspendedUntil?: Date | null;
+
     // Lumen
     lumenEnabled: boolean;
     dailyMatchHours: number[];
@@ -44,10 +53,11 @@ export interface UserAggregateProps {
 
 // Represents the User domain entity, managing user data and 
 // controlling how its state can change through domain-specific behaviors.
-export class UserAggregate {
+export class UserAggregate extends AggregateRoot {
     private _props: UserAggregateProps;
 
-    constructor(props: UserAggregateProps){
+    constructor(props: UserAggregateProps) {
+        super(); // Initialize AggregateRoot
         this._props = {
             ...props,
             authProvider: props.authProvider ?? AuthProvider.EMAIL,
@@ -59,6 +69,10 @@ export class UserAggregate {
             profileCompleted: props.profileCompleted ?? false,
             castingDirectorCompleted: props.castingDirectorCompleted ?? false,
 
+            statusReason: props.statusReason ?? null,
+            statusChangedAt: props.statusChangedAt ?? null,
+            suspendedUntil: props.suspendedUntil ?? null,
+
             lumenEnabled: props.lumenEnabled ?? true,
             dailyMatchHours: props.dailyMatchHours ?? [],
             lumenRecommendationGeneratedToday: props.lumenRecommendationGeneratedToday ?? 0,
@@ -69,34 +83,48 @@ export class UserAggregate {
     }
 
     // Getters : Provides read-only access to the User's provate properties.
-    get id(): string | undefined {return this._props.id}
-    get email(): EmailVO {return this._props.email}
-    get passwordHash(): string | null | undefined {return this._props.passwordHash}
-    get authProvider(): AuthProvider {return this._props.authProvider};
-    get isEmailVerified(): boolean {return this._props.isEmailVerified}
-    get accountStatus(): UserStatus {return this._props.accountStatus}
-    get kycCompleted(): boolean {return this._props.kycCompleted}
-    get onboardingStep(): number {return this._props.onboardingStep}
-    get onboardingCompleted(): boolean {return this._props.onboardingCompleted}
-    get profileCompleted(): boolean {return this._props.profileCompleted};
-    get castingDirectorCompleted(): boolean {return this._props.castingDirectorCompleted};
-    get lumenEnabled(): boolean {return this._props.lumenEnabled};
-    get dailyMatchHours(): number[] {return this._props.dailyMatchHours};
-    get lumenRecommendationsGeneratedToday(): number {return this._props.lumenRecommendationGeneratedToday};
-    get lastLumenReset(): Date | undefined {return this._props.lastLumenReset};
-    get lastLogin(): Date | undefined {return this._props.lastLogin};
-    get createdAt(): Date | undefined {return this._props.createdAt};
-    get updatedAt(): Date | undefined {return this._props.updatedAt};
+    get id(): string | undefined { return this._props.id }
+    get email(): EmailVO { return this._props.email }
+    get passwordHash(): string | null | undefined { return this._props.passwordHash }
+    get authProvider(): AuthProvider { return this._props.authProvider };
+    get isEmailVerified(): boolean { return this._props.isEmailVerified }
+    get accountStatus(): UserStatus { return this._props.accountStatus }
+    get kycCompleted(): boolean { return this._props.kycCompleted }
+    get onboardingStep(): number { return this._props.onboardingStep }
+    get onboardingCompleted(): boolean { return this._props.onboardingCompleted }
+    get profileCompleted(): boolean { return this._props.profileCompleted };
+    get castingDirectorCompleted(): boolean { return this._props.castingDirectorCompleted };
+
+    get statusReason(): string | null | undefined { return this._props.statusReason; }
+    get statusChangedAt(): Date | null | undefined { return this._props.statusChangedAt; }
+    get suspendedUntil(): Date | null | undefined { return this._props.suspendedUntil; }
+
+    get lumenEnabled(): boolean { return this._props.lumenEnabled };
+    get dailyMatchHours(): number[] { return this._props.dailyMatchHours };
+    get lumenRecommendationsGeneratedToday(): number { return this._props.lumenRecommendationGeneratedToday };
+    get lastLumenReset(): Date | undefined { return this._props.lastLumenReset };
+    get lastLogin(): Date | undefined { return this._props.lastLogin };
+    get createdAt(): Date | undefined { return this._props.createdAt };
+    get updatedAt(): Date | undefined { return this._props.updatedAt };
 
 
-    get profile(): UserProfile | undefined {return this._props.profile}
-    get preference(): UserPreference | undefined {return this._props.preferences}
-    get kycVerification(): UserKyc | undefined {return this._props.kycVerification};
+    get profile(): UserProfile | undefined { return this._props.profile }
+    get preference(): UserPreference | undefined { return this._props.preferences }
+    get kycVerification(): UserKyc | undefined { return this._props.kycVerification };
 
-    
+
     //1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
-    recordLogin(): void{
-        if(this._props.accountStatus !== UserStatus.ACTIVE){
+    recordLogin(): void {
+        // Auto-lift expired suspension
+        if (this._props.accountStatus === UserStatus.SUSPENDED) {
+            if (this._props.suspendedUntil && new Date() > this._props.suspendedUntil) {
+                this.unsuspendAccount();
+            } else {
+                throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Account is currently suspended");
+            }
+        }
+
+        if (this._props.accountStatus !== UserStatus.ACTIVE) {
             throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Inactive account cannot login');
         }
 
@@ -117,23 +145,83 @@ export class UserAggregate {
         this.markUpdatedAt();
     }
 
-    markEmailVerified():void{
+    markEmailVerified(): void {
         this._props.isEmailVerified = true;
         this.markUpdatedAt();
     }
 
-    suspendAccount(): void{
+    suspendAccount(duration: SuspensionDurationVO, reason: string): void {
+        if (this._props.accountStatus === UserStatus.BANNED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend an already banned account");
+        }
+
+        if (this._props.accountStatus === UserStatus.DELETED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend a deleted account");
+        }
+
+        if (!reason || reason.trim().length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Suspension reason is required");
+        }
+
+        const now = new Date();
         this._props.accountStatus = UserStatus.SUSPENDED;
+        this._props.suspendedUntil = duration.until;
+        this._props.statusReason = reason.trim();
+        this._props.statusChangedAt = now;
+        this.markUpdatedAt();
+
+        // Emit internal domain event
+        if (this.id) {
+            this.addDomainEvent(new UserSupendedDomainEvent(this.id, reason, duration.until));
+        }
+    }
+
+    unsuspendAccount(): void {
+        if (this._props.accountStatus !== UserStatus.SUSPENDED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not suspended");
+        }
+
+        this._props.accountStatus = UserStatus.ACTIVE;
+        this._props.suspendedUntil = null;
+        this._props.statusReason = null;
+        this._props.statusChangedAt = new Date();
         this.markUpdatedAt();
     }
 
-    banAccount(): void{
+    banAccount(reason: string): void {
+        if (this._props.accountStatus === UserStatus.DELETED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot ban a deleted account");
+        }
+        if (!reason || reason.trim().length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Ban reason is required");
+        }
+
         this._props.accountStatus = UserStatus.BANNED;
+        this._props.statusChangedAt = new Date();
+        this._props.statusReason = reason.trim();
+        // Clear any existing temporary suspension values
+        this._props.suspendedUntil = null;
+        this.markUpdatedAt();
+
+        // Emit internal domain event
+        if (this.id) {
+            this.addDomainEvent(new UserBannedDomainEvent(this.id, reason));
+        }
+    }
+
+    unbanAccount(): void {
+        if (this._props.accountStatus !== UserStatus.BANNED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not banned");
+        }
+
+        this._props.accountStatus = UserStatus.ACTIVE;
+        this._props.statusReason = null;
+        this._props.statusChangedAt = new Date();
         this.markUpdatedAt();
     }
 
-        // Update KYC verification
-    updateKycVerification(kycEntity: UserKyc): void{
+    // Update KYC verification
+    updateKycVerification(kycEntity: UserKyc): void {
         this._props.kycVerification = kycEntity;
     }
 
@@ -149,36 +237,36 @@ export class UserAggregate {
 
     //2. ONBOARDING & PIPELINE PROGRESSION
 
-    advanceOnboardingStep(step: number): void{
-        if(step > this._props.onboardingStep){
+    advanceOnboardingStep(step: number): void {
+        if (step > this._props.onboardingStep) {
             this._props.onboardingStep = step;
             this.markUpdatedAt();
         }
     }
 
-    attachProfile(profile: UserProfile): void{
+    attachProfile(profile: UserProfile): void {
         this._props.profile = profile;
         this._props.profileCompleted = true;
         this.advanceOnboardingStep(9);
         this.markUpdatedAt();
     }
 
-    attatchPreferences(preferences: UserPreference): void{
+    attatchPreferences(preferences: UserPreference): void {
         this._props.preferences = preferences;
         this.advanceOnboardingStep(13);
         this.markUpdatedAt();
     }
 
-    completeKyc(): void{
+    completeKyc(): void {
         this._props.kycCompleted = true;
         this.advanceOnboardingStep(8);
         this.markUpdatedAt();
     }
 
-    finalizeOnboarding():void{
-        if(!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, 'Email must be verified first');
-        if(!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification must be completed first');
-        if(!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User profile must be completed first');
+    finalizeOnboarding(): void {
+        if (!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, 'Email must be verified first');
+        if (!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification must be completed first');
+        if (!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User profile must be completed first');
         // Temporarily comment out until the feature is built
         // if(!this._props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
 
@@ -189,17 +277,17 @@ export class UserAggregate {
 
     //3. LUMEN AGENT SCHEDULING & QUOTAS
 
-    toggleLumen(enabled: boolean): void{
+    toggleLumen(enabled: boolean): void {
         this._props.lumenEnabled = enabled;
         this.markUpdatedAt();
     }
 
-    incrementLumenRecommendations(maxDailyQuota: number): void{
-        if(!this._props.lumenEnabled){
+    incrementLumenRecommendations(maxDailyQuota: number): void {
+        if (!this._props.lumenEnabled) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Lumen is not enabled for this user');
         }
 
-        if(this._props.lumenRecommendationGeneratedToday >= maxDailyQuota){
+        if (this._props.lumenRecommendationGeneratedToday >= maxDailyQuota) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Daily lumen quota reached');
         }
 
@@ -207,18 +295,18 @@ export class UserAggregate {
         this.markUpdatedAt();
     }
 
-    resetLumendailyCounters(newHours: number[]): void{
+    resetLumendailyCounters(newHours: number[]): void {
         this._props.lumenRecommendationGeneratedToday = 0;
         this._props.dailyMatchHours = newHours;
         this._props.lastLumenReset = new Date();
         this.markUpdatedAt();
     }
 
-    markUpdatedAt(): void{
+    markUpdatedAt(): void {
         this._props.updatedAt = new Date();
     }
 
-    toJSON(){
+    toJSON() {
         return {
             ...this._props,
             email: this._props.email.getValue(), // EmailVO needs to be unwrapped.
@@ -227,5 +315,5 @@ export class UserAggregate {
             kycVerification: this._props.kycVerification?.toJSON(),
         }
     }
-    
+
 }

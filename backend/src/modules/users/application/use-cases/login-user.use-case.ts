@@ -26,6 +26,10 @@ export class LoginUserUseCase implements ILoginUserUseCase {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
         }
 
+        if (!user.passwordHash) {
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "This account uses social login. Please sign in with Google.");
+        }
+
         const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
 
         if (!isPasswordValid) {
