@@ -238,22 +238,22 @@ export class UserAggregate extends AggregateRoot {
     //2. ONBOARDING & PIPELINE PROGRESSION
 
     advanceOnboardingStep(step: number): void {
-        if (step > this._props.onboardingStep) {
-            this._props.onboardingStep = step;
-            this.markUpdatedAt();
-        }
+        this._props.onboardingStep = step;
+        this.markUpdatedAt();
     }
 
     attachProfile(profile: UserProfile): void {
         this._props.profile = profile;
+        this.markUpdatedAt();
+    }
+
+    markProfileCompleted(): void {
         this._props.profileCompleted = true;
-        this.advanceOnboardingStep(9);
         this.markUpdatedAt();
     }
 
     attatchPreferences(preferences: UserPreference): void {
         this._props.preferences = preferences;
-        this.advanceOnboardingStep(13);
         this.markUpdatedAt();
     }
 

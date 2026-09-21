@@ -4,6 +4,7 @@ import { UserAggregate } from "../../../domain/entities/user.entity";
 import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../domain/enums/user.enums";
 import { EmailVO } from "../../../../../shared/domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";
+import { UserPreference } from "../../../domain/entities/user-preference.entity";
 
 // Maps between domain UserEntity objects and Mongoose persistence documents.
 export class UserPersistenceMapper{
@@ -82,6 +83,26 @@ export class UserPersistenceMapper{
             })
         }
 
+        // Reconstruct UserPreference entity if preference data exists
+        let preferenceEntity: UserPreference | undefined;
+
+        if ((raw as any).preference) {
+            const rawPref = (raw as any).preference;
+            preferenceEntity = new UserPreference({
+                userId: raw._id.toString(),
+                preferredGender: rawPref.preferredGender,
+                preferredAgeMin: rawPref.preferredAgeMin,
+                prefferedAgeMax: rawPref.prefferedAgeMax,
+                relationShipGoals: rawPref.relationShipGoals,
+                minimumOutnessLevel: rawPref.minimumOutnessLevel,
+                openToAdoption: rawPref.openToAdoption,
+                immigrationReady: rawPref.immigrationReady,
+                partnerExpectations: rawPref.partnerExpectations,
+                createdAt: rawPref.createdAt,
+                updatedAt: rawPref.updatedAt,
+            });
+        }
+
         return new UserAggregate({
             id: raw._id.toString(),
             email: new EmailVO(raw.email),
@@ -100,6 +121,7 @@ export class UserPersistenceMapper{
             lastLumenReset: raw.lastLumenReset ?? new Date(),
             lastLogin: raw.lastLogin,
             profile: profileEntity,
+            preferences: preferenceEntity,
             kycVerification: kycEntity, //  Attach to the root aggregate
             createdAt: raw['createdAt'],
             updatedAt: raw['updatedAt']
@@ -109,7 +131,7 @@ export class UserPersistenceMapper{
     // Converts a domain UserEntity into a plain object that can be stored in MongoDB.
     public static toPersistence(entity: UserAggregate): any{
         const data = entity.toJSON();
-        return{
+        return {
             email: data.email,
             passwordHash: data.passwordHash ?? null,
             authProvider: data.authProvider || AuthProvider.EMAIL,
@@ -126,8 +148,8 @@ export class UserPersistenceMapper{
             lastLumenReset: data.lastLumenReset,
             lastLogin: data.lastLogin,
 
-            // Flatten profile for persistance
-            profile: data.profile? {
+            // Flatten profile for persistence
+            profile: data.profile ? {
                 displayName: data.profile.displayName,
                 customLabel: data.profile.customLabel,
                 bio: data.profile.bio,
@@ -159,7 +181,19 @@ export class UserPersistenceMapper{
                 openToAdoption: data.profile.openToAdoption,
                 profileCompletion: data.profile.profileCompletion,
                 isProfileVisible: data.profile.isProfileVisible,
-            }: null,
+            } : null,
+
+            // Flatten preferences for persistence (MATCH user.schema.ts prop name: preference)
+            preference: data.preference ? {
+                preferredGender: data.preference.preferredGender,
+                preferredAgeMin: data.preference.preferredAgeMin,
+                prefferedAgeMax: data.preference.prefferedAgeMax,
+                relationShipGoals: data.preference.relationShipGoals,
+                minimumOutnessLevel: data.preference.minimumOutnessLevel,
+                openToAdoption: data.preference.openToAdoption,
+                immigrationReady: data.preference.immigrationReady,
+                partnerExpectations: data.preference.partnerExpectations,
+            } : null,
 
             // Flatten the KYC entity for MongoDB storage
             kycVerification: data.kycVerification ? {
@@ -169,24 +203,19 @@ export class UserPersistenceMapper{
                 legalName: data.kycVerification.legalName,
                 verifiedDOB: data.kycVerification.verifiedDOB,
                 hashedDocumentNumber: data.kycVerification.hashedDocumentNumber,
-
-                // Selfie Identity Baseline
                 liveSelfieS3: data.kycVerification.liveSelfieS3,
                 selfieFaceEmbedding: data.kycVerification.selfieFaceEmbedding,
                 selfieConfidence: data.kycVerification.selfieConfidence,
                 selfieVerificationStatus: data.kycVerification.selfieVerificationStatus,
-
                 livenessResults: data.kycVerification.livenessResults,
                 verificationSubmitted: data.kycVerification.verificationSubmitted,
-
-                // Liveness & Review
                 manualReviewRequired: data.kycVerification.manualReviewRequired,
                 adminReviewedBy: data.kycVerification.adminReviewedBy,
                 rejectionReason: data.kycVerification.rejectionReason,
                 submittedAt: data.kycVerification.submittedAt,
                 approvedAt: data.kycVerification.approvedAt,
                 rejectedAt: data.kycVerification.rejectedAt,
-            }: null,
-        }
+            } : null,
+        };
     }
 }

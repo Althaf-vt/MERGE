@@ -25,6 +25,7 @@ export class SaveBioUseCase implements ISaveBioUseCase{
         )
 
         user.attachProfile(user.profile);
+        user.markProfileCompleted();
         user.finalizeOnboarding()
 
         await this._userRepository.update(user);

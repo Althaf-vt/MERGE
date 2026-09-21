@@ -186,6 +186,33 @@ class KycVerificationSchema{
     rejectedAt?: Date;
 }
 
+@Schema({_id: false})
+export class UserPreferenceSchema {
+    @Prop({ type: [String], default: [] })
+    preferredGender?: string[];
+
+    @Prop()
+    preferredAgeMin?: number;
+
+    @Prop()
+    prefferedAgeMax?: number;
+
+    @Prop({ type: String, enum: RelationshipGoal })
+    relationShipGoals?: RelationshipGoal;
+
+    @Prop()
+    minimumOutnessLevel?: number;
+
+    @Prop({ default: true })
+    openToAdoption?: boolean;
+
+    @Prop({ default: false })
+    immigrationReady?: boolean;
+
+    @Prop()
+    partnerExpectations?: string;
+}
+
 // export type UserDocument = User & Document;
 
 // Defines the User collection and enables automatic createdAt and updatedAt timestamps.
@@ -256,6 +283,9 @@ export class User{
 
     @Prop({type: UserProfileSchema, default: null})
     profile: UserProfileSchema;
+
+    @Prop({type: UserPreferenceSchema, default: null})
+    preference: UserPreferenceSchema;
 
     createdAt: Date;
     updatedAt: Date;
