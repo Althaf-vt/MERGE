@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { IAdminForgotPasswordUseCase } from "../interfaces/admin-forgot-password.use-case.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
 import { ADMIN_OTP_SERVICE, IAdminOtpService } from "../../domain/interfaces/admin-otp.interface";
-import { EMAIL_SERVICE, IEmailService } from "../../../users/domain/interfaces/email-service.interface";
+import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminForgotPasswordDto } from "../dtos/admin-forgot-password.dto";
 

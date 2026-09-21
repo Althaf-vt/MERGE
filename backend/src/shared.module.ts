@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
-import { EMAIL_SERVICE } from "./modules/users/domain/interfaces/email-service.interface";
-import { NodeMailerEmailService } from "./modules/users/infrastructure/email/nodemailer-email.service";
+import { EMAIL_SERVICE } from "./shared/domain/interfaces/email-service.interface";
+import { NodeMailerEmailService } from "./shared/infrastructure/email/nodemailer-email.service";
 import { PASSWORD_HASHER } from "./shared/domain/interfaces/password-hasher.interface";
 import { BcryptService } from "./shared/infrastructure/security/services/bcrypt.service";
 import { JwtModule } from "@nestjs/jwt";

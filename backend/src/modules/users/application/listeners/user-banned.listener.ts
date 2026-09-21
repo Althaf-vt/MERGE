@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { EMAIL_SERVICE, IEmailService } from "../../domain/interfaces/email-service.interface";
+import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { OnEvent } from "@nestjs/event-emitter";
 import { UserBannedDomainEvent } from "../../domain/events/user-banned.domain-event";
 
