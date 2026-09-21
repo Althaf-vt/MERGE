@@ -67,46 +67,62 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
 }
     // --------------------------------------------------------------
 
-    // Determine if the failed request was already a refresh request
-    const isRefreshRequest = typeof args === 'string' ? args === '/auth/refresh' : args.url === '/auth/refresh';
+        // Determine if the failed request was already a refresh request
+        const requestUrl = typeof args === 'string' ? args : args.url;
 
-    // B. If the request fails with a 401 Unauthorized, the token might be dead
-    // We add !isRefreshRequest to prevent an infinite refresh loop!
-    if (result.error && result.error.status === 401 && !isRefreshRequest) {
+        const isRefreshRequest = requestUrl === '/auth/refresh';
 
-        // Silently call the refresh endpoint
-        const refreshResult = await baseQuery(
-            {
-                url: '/auth/refresh',
-                method: 'POST'
-            },
-            api,
-            extraOptions
-        );
+        // Login/authentication requests should NOT trigger token refresh
+        const isAuthRequest =
+            requestUrl === '/auth/login' ||
+            requestUrl === '/auth/google' ||
+            requestUrl === '/auth/register' ||
+            requestUrl === '/auth/verify-otp' ||
+            requestUrl === '/auth/forgot-password' ||
+            requestUrl === '/auth/reset-password';
 
-        if (refreshResult.data) {
-            // Success! Store the new access token in Redux
-            const data = refreshResult.data as { accessToken: string };
-            const rootState = api.getState() as RootState;
+        // B. If the request fails with a 401 Unauthorized, the token might be dead
+        // We add !isRefreshRequest and !isAuthRequest to prevent unwanted refresh attempts!
+        if (
+            result.error &&
+            result.error.status === 401 &&
+            !isRefreshRequest &&
+            !isAuthRequest
+        ) {
 
-            api.dispatch(setCredentials({
-                accessToken: data.accessToken,
-                user: rootState.auth.user!
-            }));
+            // Silently call the refresh endpoint
+            const refreshResult = await baseQuery(
+                {
+                    url: '/auth/refresh',
+                    method: 'POST'
+                },
+                api,
+                extraOptions
+            );
 
-            // Retry the original query
-            result = await baseQuery(args, api, extraOptions);
-        } else {
-            // token is dead or missing, force logout
-            api.dispatch(logout());
+            if (refreshResult.data) {
+                // Success! Store the new access token in Redux
+                const data = refreshResult.data as { accessToken: string };
+                const rootState = api.getState() as RootState;
 
-            // Completely wipe all cached API data from Redux memory
-            api.dispatch(authApi.util.resetApiState());
-            
-            // Optional: Redirect to login if not already there
-            window.location.href = '/login'; 
+                api.dispatch(setCredentials({
+                    accessToken: data.accessToken,
+                    user: rootState.auth.user!
+                }));
+
+                // Retry the original query
+                result = await baseQuery(args, api, extraOptions);
+            } else {
+                // token is dead or missing, force logout
+                api.dispatch(logout());
+
+                // Completely wipe all cached API data from Redux memory
+                api.dispatch(authApi.util.resetApiState());
+                
+                // Optional: Redirect to login if not already there
+                window.location.href = '/login'; 
+            }
         }
-    }
 
     return result;
 };
