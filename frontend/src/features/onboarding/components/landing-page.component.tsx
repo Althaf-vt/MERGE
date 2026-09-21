@@ -1,10 +1,93 @@
-import React from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../app/hooks';
+import type { RootState } from '../../../app/store';
 import Topography from '../../../shared/components/ui/topography/topography.component';
 import styles from './landing-page.module.css';
 
+// Import the refresh mutation and action to update Redux dynamically
+import { useRefreshMutation } from '../../auth/api/auth.api';
+import { setCredentials } from '../../auth/slices/auth.slice';
+
 export const LandingComponent: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  
+  // 1. Initialize the refresh mutation
+  const [refresh] = useRefreshMutation();
+
+  // 2. Silent background sync: Fetch the latest user state every time they view the homepage
+  useEffect(() => {
+    if (isAuthenticated) {
+        refresh().unwrap().then((data) => {
+            dispatch(setCredentials({ 
+                accessToken: data.accessToken, 
+                user: data.user 
+            }));
+        }).catch((err) => {
+            console.error("Silent sync failed:", err);
+        });
+    }
+  }, [isAuthenticated, refresh, dispatch]);
+
+  // Calculate onboarding progress using strict equality and data checks
+  const { progress, nextRoute, stepName } = useMemo(() => {
+    if (!isAuthenticated || !user) return { progress: 0, nextRoute: '/register', stepName: '' };
+    
+    // 1. MASTER COMPLETION CHECK
+    const isFullyOnboarded = user.onboardingCompleted || user.onboardingStep === 14;
+    if (isFullyOnboarded) {
+        return { progress: 100, nextRoute: '/profile-live', stepName: 'Platform Ready' };
+    }
+
+    // 2. Check KYC (Phases 3-8)
+    if (!user.kycCompleted) {
+        const kyc = user.kycVerification;
+        if (kyc?.verificationSubmitted && kyc?.reviewDecision !== 'APPROVED') {
+            return { progress: 40, nextRoute: '/onboarding/kyc', stepName: 'Awaiting Admin Review' };
+        }
+        if (kyc?.selfieVerificationStatus === 'APPROVED') {
+            return { progress: 25, nextRoute: '/onboarding/kyc', stepName: 'Complete Liveness & Review' };
+        }
+        if (kyc?.documentType) {
+            return { progress: 15, nextRoute: '/onboarding/kyc', stepName: 'Live Selfie Capture' };
+        }
+        return { progress: 10, nextRoute: '/onboarding/kyc', stepName: 'Identity Verification' };
+    }
+
+    // 3. Check Profile Onboarding (Phases 9-12)
+    const step = user.onboardingStep || 0;
+    const prefs = user.preference || (user as any).preferences;
+    const prof = user.profile;
+    
+    // Did they finish Preferences? (Step is exactly 5, OR data exists)
+    const hasCompletedPreferences = !!(prefs?.relationshipGoals || prefs?.relationShipGoals);
+                     
+    if (step === 5 || hasCompletedPreferences) {
+        return { progress: 90, nextRoute: '/onboarding/bio', stepName: 'Bio Generation' };
+    }
+
+    // Did they finish Lifestyle? (Step is exactly 4, OR data exists)
+    const hasCompletedLifestyle = !!prof?.occupation;
+    
+    if (step === 4 || hasCompletedLifestyle) {
+        return { progress: 80, nextRoute: '/onboarding/preferences', stepName: 'Partner Preferences' };
+    }
+
+    // Did they finish Persona? (Step is exactly 3, OR data exists)
+    const hasCompletedPersona = !!prof?.displayName;
+    
+    if (step === 3 || hasCompletedPersona) {
+        return { progress: 65, nextRoute: '/onboarding/lifestyle', stepName: 'Lifestyle Details' };
+    }
+
+    // Catch-all: They just finished KYC (step === 8), haven't saved Persona yet
+    return { progress: 50, nextRoute: '/onboarding/profile', stepName: 'Build Persona' };
+  }, [user, isAuthenticated]);
+
+  const isPartiallyOnboarded = isAuthenticated && progress < 100;
 
   return (
     <div className={styles.landingContainer}>
@@ -38,6 +121,27 @@ export const LandingComponent: React.FC = () => {
 
       {/* Foreground Content */}
       <div className={styles.pageContent}>
+        
+        {/* Conditional Resume Widget for Authenticated Incomplete Users */}
+        {isPartiallyOnboarded && (
+          <div className={styles.resumeWidget}>
+            <div className={styles.resumeContent}>
+              <div className={styles.resumeText}>
+                <h3 className={styles.resumeTitle}>Your Profile is {progress}% Complete</h3>
+                <p className={styles.resumeDesc}>Next step: {stepName}. Complete your profile to access matchmaking and community features.</p>
+              </div>
+              <div className={styles.resumeAction}>
+                <div className={styles.progressBar}>
+                  <div className={styles.progressFill} style={{ width: `${progress}%` }}></div>
+                </div>
+                <button className={styles.resumeBtn} onClick={() => navigate(nextRoute)}>
+                  Resume Journey
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>
             Where Hearts Meet and <span className={styles.highlight}>Merge.</span>
@@ -45,9 +149,11 @@ export const LandingComponent: React.FC = () => {
           <p className={styles.heroSubtitle}>
             Bound by Gravity, United for Eternity. A secure, inclusive space designed for everyone to find their lifelong partner.
           </p>
-          <button className={styles.primaryBtn} onClick={() => navigate('/register')}>
-            Find Your Match
-          </button>
+          {!isAuthenticated && (
+              <button className={styles.primaryBtn} onClick={() => navigate('/register')}>
+                Find Your Match
+              </button>
+          )}
         </section>
 
         <section className={styles.journeySection}>
@@ -124,9 +230,19 @@ export const LandingComponent: React.FC = () => {
           <div className={styles.ctaCard}>
             <h2 className={styles.sectionTitle}>From Meeting to Eternity.</h2>
             <p className={styles.sectionSubtitle} style={{ marginBottom: '2rem' }}>Love That Naturally Merges.</p>
-            <button className={styles.primaryBtn} onClick={() => navigate('/register')}>
-              Create Your Free Profile
-            </button>
+            {!isAuthenticated ? (
+                <button className={styles.primaryBtn} onClick={() => navigate('/register')}>
+                  Create Your Free Profile
+                </button>
+            ) : isPartiallyOnboarded ? (
+                <button className={styles.primaryBtn} onClick={() => navigate(nextRoute)}>
+                  Complete Your Profile
+                </button>
+            ) : (
+                <button className={styles.primaryBtn} onClick={() => navigate('/profile-live')}>
+                  Enter Platform
+                </button>
+            )}
           </div>
         </section>
       </div>

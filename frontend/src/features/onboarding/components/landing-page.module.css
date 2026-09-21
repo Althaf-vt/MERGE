@@ -269,3 +269,115 @@
     display: none;
   }
 }
+
+/* =========================================================
+   Resume Widget (For Authenticated Incomplete Profiles)
+   ========================================================= */
+.resumeWidget {
+  width: 100%;
+  /* Increased top padding from 1.5rem to 7rem to clear the fixed navbar */
+  padding: 7rem 1rem 0; 
+  display: flex;
+  justify-content: center;
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Dynamically reduce the Hero section's top padding if the widget is present 
+   so we don't end up with a massive empty gap between them */
+.resumeWidget + .hero {
+  padding-top: 3rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.resumeContent {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(109, 40, 217, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-shadow: 0 10px 30px -5px rgba(109, 40, 217, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset;
+}
+
+.resumeText {
+  flex: 1;
+}
+
+.resumeTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.resumeDesc {
+  font-size: 0.9375rem;
+  color: #4B5563;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.resumeAction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  min-width: 200px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(109, 40, 217, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ec4899 0%, #6d28d9 100%);
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.resumeBtn {
+  background-color: #6D28D9;
+  color: #ffffff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.resumeBtn:hover {
+  background-color: #5b21b6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+}
+
+@media (max-width: 768px) {
+  .resumeContent {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  .resumeAction {
+    align-items: stretch;
+  }
+}
