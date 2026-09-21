@@ -1,6 +1,7 @@
 import { createContext, Fragment, useContext, useEffect, useState, type ReactNode } from 'react';
 import DraggableWidgetGrid, { type WidgetItem } from '../../../../shared/components/ui/draggable-widget-grid';
 import styles from './admin-dashboard.module.css';
+import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 
 type Kind = 'runs' | 'health' | 'cost' | 'failures' | 'traces' | 'evals' | 'tools' | 'models';
 
@@ -345,7 +346,7 @@ export const AdminDashboardPage = () => {
     }, []);
 
     return (
-        <div className={styles.pageWrapper}>
+        <AdminPageTransition className={styles.pageWrapper}>
             <div className={styles.contentConstraints}>
                 <header style={{ marginBottom: '1.5rem' }}>
                     <h1 className={styles.pageTitle}>Observability Metrics</h1>
@@ -368,6 +369,6 @@ export const AdminDashboardPage = () => {
                     </LiveContext.Provider>
                 </section>
             </div>
-        </div>
+        </AdminPageTransition>
     );
 };
