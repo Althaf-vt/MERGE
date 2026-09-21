@@ -1,5 +1,4 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
-import type { Request } from "express";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { IManageUserStatusUseCase, MANAGE_USER_STATUS_USE_CASE } from "../../application/interfaces/manage-user-status.use-case.interface";
 import { GET_ADMIN_USERS_USE_CASE, IGetAdminUsersUseCase } from "../../application/interfaces/get-admin-users.use-case.interface";
@@ -57,7 +56,7 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
     async suspendUser(@Param('id') targetUserId: string, @Body() dto: SuspendUserDto, @Req() req: AuthenticatedRequest) {
-        const adminId = req.user.id;
+        const adminId = req.user.userId;
         await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit as any, dto.reason);
         return { success: true, message: 'User suspended successfully' };
     }
@@ -66,7 +65,7 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
     async unsuspendUser(@Param('id') targetUserId: string, @Body() dto: UnSuspendUserDto, @Req() req: AuthenticatedRequest) {
-        const adminId = req.user.id;
+        const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unsuspendUser(adminId, targetUserId, dto.reason);
         return { success: true, message: 'User suspension lifted' };
     }
@@ -75,7 +74,7 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
     async banUser(@Param('id') targetUserId: string, @Body() dto: BanUserDto, @Req() req: AuthenticatedRequest) {
-        const adminId = req.user.id;
+        const adminId = req.user.userId;
         await this._manageUserStatusUseCase.banUser(adminId, targetUserId, dto.reason);
         return { success: true, message: 'User permanently banned.' };
     }
@@ -84,7 +83,7 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
     async unbanUser(@Param('id') targetUserId: string, @Body() dto: UnbanUserDto, @Req() req: AuthenticatedRequest) {
-        const adminId = req.user.id;
+        const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unbanUser(adminId, targetUserId, dto.reason);
         return { success: true, message: 'User ban reversed.' };
     }
