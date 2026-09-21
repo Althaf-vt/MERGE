@@ -21,7 +21,6 @@ export const adminUsersApi = createApi({
                 url: '/admin/users',
                 params,
             }),
-
             providesTags: (result) => 
                 result
                     ? [
@@ -33,7 +32,7 @@ export const adminUsersApi = createApi({
 
         getUserDetails: builder.query<{ success: boolean; data: AdminUserDto }, string>({
             query: (id) => `/admin/users/${id}`,
-            providesTags: (result, error, id) => [{ type: 'AdminUserDetails', id }],
+            providesTags: (_result, _error, id) => [{ type: 'AdminUserDetails', id }],
         }),
 
         suspendUser: builder.mutation<{ success: boolean; message: string }, SuspendUserPayload>({
@@ -42,7 +41,7 @@ export const adminUsersApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: (result, error, { userId }) => [
+            invalidatesTags: (_result, _error, { userId }) => [
                 { type: 'AdminUsers', id: userId },
                 { type: 'AdminUserDetails', id: userId }
             ],
@@ -54,7 +53,7 @@ export const adminUsersApi = createApi({
                 method: 'POST',
                 body: { reason },
             }),
-            invalidatesTags: (result, error, { userId }) => [
+            invalidatesTags: (_result, _error, { userId }) => [
                 { type: 'AdminUsers', id: userId },
                 { type: 'AdminUserDetails', id: userId }
             ],
@@ -66,7 +65,7 @@ export const adminUsersApi = createApi({
                 method: 'POST',
                 body: { reason },
             }),
-            invalidatesTags: (result, error, { userId }) => [
+            invalidatesTags: (_result, _error, { userId }) => [
                 { type: 'AdminUsers', id: userId },
                 { type: 'AdminUserDetails', id: userId }
             ],
@@ -78,7 +77,7 @@ export const adminUsersApi = createApi({
                 method: 'POST',
                 body: { reason },
             }),
-            invalidatesTags: (result, error, { userId }) => [
+            invalidatesTags: (_result, _error, { userId }) => [
                 { type: 'AdminUsers', id: userId },
                 { type: 'AdminUserDetails', id: userId }
             ],

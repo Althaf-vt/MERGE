@@ -4,6 +4,7 @@ import { useGetUsersQuery } from '../api/admin-users.api';
 import type { AdminUserStatus } from '../types/admin-users.types';
 import { UserActionModal } from '../components/user-action-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { AnimatePresence } from 'motion/react';
 
 export const AdminUsersPage: React.FC = () => {
     const [page, setPage] = useState(1);
@@ -145,14 +146,17 @@ export const AdminUsersPage: React.FC = () => {
                 </div>
             )}
 
-            {actionModal.isOpen && (
-                <UserActionModal
-                    type={actionModal.type}
-                    userId={actionModal.userId}
-                    userEmail={actionModal.userEmail}
-                    onClose={() => setActionModal({ ...actionModal, isOpen: false })}
-                />
-            )}
+            <AnimatePresence>
+                {actionModal.isOpen && (
+                    <UserActionModal
+                        key="admin-action-modal"
+                        type={actionModal.type}
+                        userId={actionModal.userId}
+                        userEmail={actionModal.userEmail}
+                        onClose={() => setActionModal(prev => ({ ...prev, isOpen: false }))}
+                    />
+                )}
+            </AnimatePresence>
         </AdminPageTransition>
     );
 };
