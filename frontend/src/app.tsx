@@ -26,6 +26,7 @@ import { AdminLayout } from './features/admin/dashboard/components/admin.layout'
 import { AdminDashboardPage } from './features/admin/dashboard/pages/admin-dashboard.page';
 import { AdminPersistLogin } from './features/admin/auth/components/admin-persist-login.component';
 import { AdminPublicRoute } from './features/admin/auth/components/admin-public-route.component';
+import { AdminUsersPage } from './features/admin/users/pages/admin-users.page';
 
 export const App = () => {
     return (
@@ -44,6 +45,7 @@ export const App = () => {
                     <Route element={<AdminProtectedRoute />}>
                         <Route element={<AdminLayout />}>
                             <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
+                            <Route path='/admin/users' element={<AdminUsersPage />} />
                         </Route>
                     </Route>
                 </Route>

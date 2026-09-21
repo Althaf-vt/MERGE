@@ -1,0 +1,182 @@
+.container {
+    padding: 24px;
+    background-color: var(--admin-bg);
+    min-height: 100vh;
+    color: var(--admin-text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 16px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+}
+
+.input, .select {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.input:focus, .select:focus {
+    border-color: var(--admin-border-focus);
+    color: var(--admin-text-primary);
+}
+
+.tableWrapper {
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    overflow-x: auto;
+    background-color: var(--admin-surface);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.table th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-subtle);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--admin-bg);
+}
+
+.table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-primary);
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background-color: var(--admin-hover);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badgeActive { background-color: var(--badge-active-bg); color: var(--badge-active-text); }
+.badgeSuspended { background-color: var(--badge-suspend-bg); color: var(--badge-suspend-text); }
+.badgeBanned { background-color: var(--badge-ban-bg); color: var(--badge-ban-text); }
+.badgeDeleted { background-color: var(--badge-del-bg); color: var(--badge-del-text); }
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 4px 8px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+/* Neutral Hover (Used for Lift/Revoke/Pagination) */
+.actionBtn:hover {
+    background: var(--admin-border);
+    color: var(--admin-text-primary);
+}
+
+/* ---------------------------------------------------
+   Crucial Action Buttons: Distinct Default States
+--------------------------------------------------- */
+
+/* Suspend Action */
+.actionBtn.warning {
+    border-color: rgba(251, 146, 60, 0.4);
+    color: var(--badge-suspend-text);
+}
+
+.actionBtn.warning:hover {
+    background: var(--badge-suspend-bg);
+    border-color: var(--badge-suspend-text);
+}
+
+/* Ban Action */
+.actionBtn.danger {
+    border-color: var(--admin-danger-border);
+    color: var(--badge-ban-text);
+}
+
+.actionBtn.danger:hover {
+    background: var(--badge-ban-bg);
+    border-color: var(--badge-ban-text);
+}
+
+.actionBtn:hover {
+    background: var(--admin-border);
+    color: var(--admin-text-primary);
+}
+
+.actionBtn.danger:hover {
+    background: var(--badge-ban-bg);
+    border-color: var(--badge-ban-text);
+    color: var(--badge-ban-text);
+}
+
+.actionBtn.warning:hover {
+    background: var(--badge-suspend-bg);
+    border-color: var(--badge-suspend-text);
+    color: var(--badge-suspend-text);
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--admin-text-subtle);
+}
+
+.pageControls {
+    display: flex;
+    gap: 8px;
+}
