@@ -5,8 +5,10 @@ import type { AdminUserStatus } from '../types/admin-users.types';
 import { UserActionModal } from '../components/user-action-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import { AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export const AdminUsersPage: React.FC = () => {
+    const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<AdminUserStatus | ''>('');
@@ -103,6 +105,12 @@ export const AdminUsersPage: React.FC = () => {
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                     <td>
                                         <div className={styles.actions}>
+                                            <button 
+                                                onClick={() => navigate(`/admin/users/${user.id}`)} 
+                                                className={styles.actionBtn}
+                                            >
+                                                VIEW
+                                            </button>
                                             {user.accountStatus === 'ACTIVE' && (
                                                 <>
                                                     <button onClick={() => handleActionClick('SUSPEND', user.id, user.email)} className={`${styles.actionBtn} ${styles.warning}`}>SUSPEND</button>
