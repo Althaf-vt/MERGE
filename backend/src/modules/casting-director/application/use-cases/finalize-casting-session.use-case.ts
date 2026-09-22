@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IFinalizeCastingSessionUseCase } from "../interfaces/finalize-casting-session.use-case.interface";
 import { CASTING_SESSION_REPOSITORY, ICastingSessionRepository } from "../../domain/interfaces/casting-session-repository.interface";
-import { CASTING_USER_FACADE, IcastingUserFacade } from "../interfaces/casting-user-facade.interface";
+import { CASTING_USER_FACADE, IcastingUserFacade } from "../../../users/application/interfaces/casting-user-facade.interface";
 import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";

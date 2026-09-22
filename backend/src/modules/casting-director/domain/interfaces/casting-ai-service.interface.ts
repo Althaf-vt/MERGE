@@ -1,4 +1,4 @@
-import { CastingUserContextDto } from "../../application/dtos/casting-user-context.dto";
+import { CastingUserContextDto } from "../../../users/application/dtos/casting-user-context.dto";
 import { TranscriptEntry } from "../entities/casting-session.entity";
 
 export const CASTING_AI_SERVICE = 'CASTING_AI_SERVICE';

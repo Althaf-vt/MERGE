@@ -3,7 +3,7 @@ import { ICastingAiService } from "../../domain/interfaces/casting-ai-service.in
 import OpenAI from 'openai'
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { CastingUserContextDto } from "../../application/dtos/casting-user-context.dto";
+import { CastingUserContextDto } from "../../../users/application/dtos/casting-user-context.dto";
 import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
 export class OpenRouterCastingAiService implements ICastingAiService {
     private readonly _client: OpenAI;
