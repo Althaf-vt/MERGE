@@ -262,6 +262,9 @@ export class User{
     @Prop({default: false})
     castingDirectorCompleted: boolean;
 
+    @Prop({type: [Number], default: []})
+    personalityVector: number[];
+
     @Prop({default: true})
     lumenEnabled: boolean;
 

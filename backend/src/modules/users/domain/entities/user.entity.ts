@@ -29,6 +29,7 @@ export interface UserAggregateProps {
     onboardingCompleted: boolean;
     profileCompleted: boolean;
     castingDirectorCompleted: boolean;
+    personalityVector?: number[];
 
     // Moderation state
     statusReason?: string | null;
@@ -68,6 +69,7 @@ export class UserAggregate extends AggregateRoot {
             onboardingCompleted: props.onboardingCompleted ?? false,
             profileCompleted: props.profileCompleted ?? false,
             castingDirectorCompleted: props.castingDirectorCompleted ?? false,
+            personalityVector: props.personalityVector ?? [],
 
             statusReason: props.statusReason ?? null,
             statusChangedAt: props.statusChangedAt ?? null,
@@ -94,6 +96,7 @@ export class UserAggregate extends AggregateRoot {
     get onboardingCompleted(): boolean { return this._props.onboardingCompleted }
     get profileCompleted(): boolean { return this._props.profileCompleted };
     get castingDirectorCompleted(): boolean { return this._props.castingDirectorCompleted };
+    get personalityVector(): number[] { return [...(this._props.personalityVector ?? [])] };
 
     get statusReason(): string | null | undefined { return this._props.statusReason; }
     get statusChangedAt(): Date | null | undefined { return this._props.statusChangedAt; }
@@ -147,6 +150,16 @@ export class UserAggregate extends AggregateRoot {
 
     markEmailVerified(): void {
         this._props.isEmailVerified = true;
+        this.markUpdatedAt();
+    }
+
+    completeCastingDirector(vector: number[]): void{
+        if(!vector || vector.length === 0){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector cannot be empty.');
+        }
+
+        this._props.personalityVector = vector;
+        this._props.castingDirectorCompleted = true;
         this.markUpdatedAt();
     }
 
