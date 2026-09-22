@@ -69,6 +69,8 @@ import { USER_MANAGEMENT_FACADE } from "./application/interfaces/user-management
 import { UserManagementFacade } from "./application/services/user-management.facade";
 import { UserBannedListener } from "./application/listeners/user-banned.listener";
 import { UserSuspendedListener } from "./application/listeners/user-suspended.listener";
+import { CASTING_USER_FACADE } from "../casting-director/application/interfaces/casting-user-facade.interface";
+import { CastingUserFacade } from "./application/services/casting-user.facade";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -246,11 +248,15 @@ import { UserSuspendedListener } from "./application/listeners/user-suspended.li
         {
             provide: USER_MANAGEMENT_FACADE,
             useClass: UserManagementFacade,
+        },
+        {
+            provide: CASTING_USER_FACADE,
+            useClass: CastingUserFacade,
         }
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE, USER_MANAGEMENT_FACADE],
+    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE, USER_MANAGEMENT_FACADE, CASTING_USER_FACADE],
 })
 
 export class UserModule { }
