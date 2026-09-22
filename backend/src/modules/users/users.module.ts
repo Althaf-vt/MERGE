@@ -69,7 +69,7 @@ import { USER_MANAGEMENT_FACADE } from "./application/interfaces/user-management
 import { UserManagementFacade } from "./application/services/user-management.facade";
 import { UserBannedListener } from "./application/listeners/user-banned.listener";
 import { UserSuspendedListener } from "./application/listeners/user-suspended.listener";
-import { CASTING_USER_FACADE } from "../casting-director/application/interfaces/casting-user-facade.interface";
+import { CASTING_USER_FACADE } from "./application/interfaces/casting-user-facade.interface";
 import { CastingUserFacade } from "./application/services/casting-user.facade";
 
 // Defines the User module and wires together its controllers, use cases,

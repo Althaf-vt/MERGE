@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IcastingUserFacade } from "../../../casting-director/application/interfaces/casting-user-facade.interface";
+import { IcastingUserFacade } from "../interfaces/casting-user-facade.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { CastingUserContextDto } from "../../../casting-director/application/dtos/casting-user-context.dto";
+import { CastingUserContextDto } from "../dtos/casting-user-context.dto";
 
 @Injectable()
 export class CastingUserFacade implements IcastingUserFacade{
