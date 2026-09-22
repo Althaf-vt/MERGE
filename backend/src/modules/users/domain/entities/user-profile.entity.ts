@@ -142,6 +142,7 @@ export class UserProfile{
     }
 
     get displayName(): string | undefined {return this._props.displayName}
+    get bio(): string | undefined { return this._props.bio; }
     get isProfileVisible(): boolean | undefined {return this._props.isProfileVisible}
     get profileCompletion(): number | undefined {return this._props.profileCompletion}
     get customLabel(): string | undefined {return this._props.customLabel};
