@@ -1,0 +1,7 @@
+import { CastingUserContextDto } from "../dtos/casting-user-context.dto";
+
+export const CASTING_USER_FACADE = 'CASTING_USER_FACADE';
+
+export interface IcastingUserFacade {
+    getUserContextForCasting(userId: string): Promise<CastingUserContextDto | null>;
+}
