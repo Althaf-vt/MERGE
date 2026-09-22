@@ -13,6 +13,7 @@ export interface AuthUser{
     onboardingStep?: number;
     profileCompleted?: boolean;
     onboardingCompleted?: boolean;
+    castingDirectorCompleted?: boolean;
     profile?: Record<string, any> | null;
     preference?: Record<string, any> | null;
     kycVerification?: {

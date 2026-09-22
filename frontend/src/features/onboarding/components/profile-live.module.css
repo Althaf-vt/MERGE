@@ -132,3 +132,23 @@
   color: #9CA3AF;
   letter-spacing: 0.05em;
 }
+
+.actionGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.secondaryLink {
+  color: #6B7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.secondaryLink:hover {
+  color: #4B5563;
+  text-decoration: underline;
+}

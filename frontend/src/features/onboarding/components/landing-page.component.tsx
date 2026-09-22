@@ -32,14 +32,20 @@ export const LandingComponent: React.FC = () => {
     }
   }, [isAuthenticated, refresh, dispatch]);
 
-  // Calculate onboarding progress using strict equality and data checks
+  // Calculate onboarding progress using strict data presence checks
   const { progress, nextRoute, stepName } = useMemo(() => {
     if (!isAuthenticated || !user) return { progress: 0, nextRoute: '/register', stepName: '' };
     
     // 1. MASTER COMPLETION CHECK
     const isFullyOnboarded = user.onboardingCompleted || user.onboardingStep === 14;
+    
     if (isFullyOnboarded) {
-        return { progress: 100, nextRoute: '/profile-live', stepName: 'Platform Ready' };
+        // NEW: Check if the AI interview is pending
+        if (!user.castingDirectorCompleted) {
+            return { progress: 95, nextRoute: '/casting-director', stepName: 'Casting Director Interview' };
+        }
+        // Fully ready for the discovery feed
+        return { progress: 100, nextRoute: '/dashboard', stepName: 'Platform Ready' };
     }
 
     // 2. Check KYC (Phases 3-8)
@@ -62,28 +68,28 @@ export const LandingComponent: React.FC = () => {
     const prefs = user.preference || (user as any).preferences;
     const prof = user.profile;
     
-    // Did they finish Preferences? (Step is exactly 5, OR data exists)
+    // Did they finish Preferences?
     const hasCompletedPreferences = !!(prefs?.relationshipGoals || prefs?.relationShipGoals);
                      
     if (step === 5 || hasCompletedPreferences) {
         return { progress: 90, nextRoute: '/onboarding/bio', stepName: 'Bio Generation' };
     }
 
-    // Did they finish Lifestyle? (Step is exactly 4, OR data exists)
+    // Did they finish Lifestyle?
     const hasCompletedLifestyle = !!prof?.occupation;
     
     if (step === 4 || hasCompletedLifestyle) {
         return { progress: 80, nextRoute: '/onboarding/preferences', stepName: 'Partner Preferences' };
     }
 
-    // Did they finish Persona? (Step is exactly 3, OR data exists)
+    // Did they finish Persona?
     const hasCompletedPersona = !!prof?.displayName;
     
     if (step === 3 || hasCompletedPersona) {
         return { progress: 65, nextRoute: '/onboarding/lifestyle', stepName: 'Lifestyle Details' };
     }
 
-    // Catch-all: They just finished KYC (step === 8), haven't saved Persona yet
+    // Catch-all: They just finished KYC
     return { progress: 50, nextRoute: '/onboarding/profile', stepName: 'Build Persona' };
   }, [user, isAuthenticated]);
 
