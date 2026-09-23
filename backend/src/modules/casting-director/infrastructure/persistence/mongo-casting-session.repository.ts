@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionDocument, CastingSessionSchemaClass } from "./casting-session.schema";
@@ -6,11 +6,12 @@ import { ICastingSessionRepository } from "../../domain/interfaces/casting-sessi
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { CastingSessionPersistenceMapper } from "./mappers/casting-session-persistence.mapper";
+import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
 export class MongoCastingSessionRepository extends BaseMongoRepository<CastingSession, CastingSessionDocument> implements ICastingSessionRepository{
     constructor(
-        @Inject(CastingSessionSchemaClass.name) model: Model<CastingSessionDocument>,
+        @InjectModel(CastingSessionSchemaClass.name) model: Model<CastingSessionDocument>,
         eventEmitter: EventEmitter2
     ){
         super(model, eventEmitter);
