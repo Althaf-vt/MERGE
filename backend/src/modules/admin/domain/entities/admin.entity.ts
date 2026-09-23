@@ -71,7 +71,6 @@ export class AdminAggregate extends AggregateRoot {
         this._markUpdatedAt();
     }
 
-
     updatePassword(newPasswordHash: string): void {
         this._props.passwordHash = newPasswordHash;
         this._markUpdatedAt();
@@ -92,6 +91,14 @@ export class AdminAggregate extends AggregateRoot {
             this._props.permissions = Array.from(new Set(newPermissions));
         }
 
+        this._markUpdatedAt();
+    }
+
+    changeRole(newRole: AdminRole): void{
+        if(this._props.status === AdminStatus.DEACTIVATED){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot change the role of a deactivated admin.');
+        }
+        this._props.role = newRole;
         this._markUpdatedAt();
     }
 
