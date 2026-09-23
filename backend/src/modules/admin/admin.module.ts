@@ -24,6 +24,13 @@ import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-sta
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
 import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
 import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
+import { AdminManagementController } from "./presentation/controllers/admin-management.controller";
+import { ADMIN_INVITE_SERVICE } from "./domain/interfaces/admin-invite.interface";
+import { AdminRedisInviteService } from "./infrastructure/services/admin-redis-invite.service";
+import { ACCEPT_ADMIN_INVITE_USE_CASE, INVITE_ADMIN_USE_CASE, UPDATE_ADMIN_USE_CASE } from "./application/interfaces/admin-management.use-case.interface";
+import { UpdateAdminUseCase } from "./application/use-cases/update-admin.use-case";
+import { AcceptAdminInviteUseCase } from "./application/use-cases/accept-admin-invite.use-case";
+import { InviteAdminUseCase } from "./application/use-cases/invite-admin.use-case";
 
 @Module({
     imports: [
@@ -37,6 +44,7 @@ import { AdminUsersController } from "./presentation/controllers/admin-users.con
     controllers: [
         AdminAuthController,
         AdminUsersController,
+        AdminManagementController,
     ],
 
     providers: [
@@ -82,6 +90,22 @@ import { AdminUsersController } from "./presentation/controllers/admin-users.con
         {
             provide: GET_ADMIN_USERS_USE_CASE,
             useClass: GetAdminUsersUserCase,
+        },
+        {
+            provide: ADMIN_INVITE_SERVICE,
+            useClass: AdminRedisInviteService,
+        },
+        {
+            provide: INVITE_ADMIN_USE_CASE,
+            useClass: InviteAdminUseCase,
+        },
+        {
+            provide: ACCEPT_ADMIN_INVITE_USE_CASE,
+            useClass: AcceptAdminInviteUseCase,
+        },
+        {
+            provide: UPDATE_ADMIN_USE_CASE,
+            useClass: UpdateAdminUseCase,
         }
     ],
     exports: [
