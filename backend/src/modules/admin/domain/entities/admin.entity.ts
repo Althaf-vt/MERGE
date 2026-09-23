@@ -8,7 +8,7 @@ import { AdminRole, AdminStatus } from "../enums/admin.enums";
 export interface AdminAggregateProps {
     id?: string;
     email: EmailVO;
-    passwordHash: string;
+    passwordHash?: string | null;
     role: AdminRole;
     fullName: string;
     profilePhotoUrl?: string;
@@ -37,7 +37,7 @@ export class AdminAggregate extends AggregateRoot {
 
     get id(): string | undefined { return this._props.id; }
     get email(): EmailVO { return this._props.email; }
-    get passwordHash(): string { return this._props.passwordHash; }
+    get passwordHash(): string | null | undefined { return this._props.passwordHash; }
     get role(): AdminRole { return this._props.role; }
     get fullName(): string { return this._props.fullName; }
     get profilePhotoUrl(): string | undefined { return this._props.profilePhotoUrl; }
@@ -92,6 +92,15 @@ export class AdminAggregate extends AggregateRoot {
             this._props.permissions = Array.from(new Set(newPermissions));
         }
 
+        this._markUpdatedAt();
+    }
+
+    acceptInvitation(newPasswordHash: string): void{
+        if(this._props.status !== AdminStatus.INVITED){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'This account is not pending an invitation')
+        }
+        this._props.passwordHash = newPasswordHash;
+        this._props.status = AdminStatus.ACTIVE;
         this._markUpdatedAt();
     }
 

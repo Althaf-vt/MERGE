@@ -12,7 +12,7 @@ export class AdminPersistenceMapper {
         return new AdminAggregate({
             id: raw._id.toString(),
             email: new EmailVO(raw.email),
-            passwordHash: raw.passwordHash,
+            passwordHash: raw.passwordHash ?? null,
             role: raw.role as AdminRole,
             fullName: raw.fullName,
             profilePhotoUrl: raw.profilePhotoUrl,
@@ -29,7 +29,7 @@ export class AdminPersistenceMapper {
         const data = entity.toJSON();
         return {
             email: data.email,
-            passwordHash: data.passwordHash,
+            passwordHash: data.passwordHash ?? null,
             role: data.role,
             fullName: data.fullName,
             profilePhotoUrl: data.profilePhotoUrl ?? null,
