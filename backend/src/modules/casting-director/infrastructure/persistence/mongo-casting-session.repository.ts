@@ -29,7 +29,7 @@ export class MongoCastingSessionRepository extends BaseMongoRepository<CastingSe
     async findActiveSessionByUserId(userId: string): Promise<CastingSession | null> {
         const document = await this._model.findOne({
             userId,
-            status: 'IN_PROGRESS',
+            status: { $in: ['IN_PROGRESS', 'ANALYZING'] }
         }).exec();
 
         if(!document) return null;
