@@ -28,6 +28,7 @@ import { AdminPersistLogin } from './features/admin/auth/components/admin-persis
 import { AdminPublicRoute } from './features/admin/auth/components/admin-public-route.component';
 import { AdminUsersPage } from './features/admin/users/pages/admin-users.page';
 import { AdminUserDetailsPage } from './features/admin/users/pages/admin-user-details.page';
+import { CastingDirectorPage } from './features/casting-director/pages/casting-director.page';
 
 
 export const App = () => {
@@ -40,10 +41,10 @@ export const App = () => {
                 ========================================= */}
                 <Route element={<AdminPersistLogin />}>
 
-                <Route element={<AdminPublicRoute />}>
-                    <Route path="/admin/login" element={<AdminLoginPage />} />
-                    <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
-                </Route>
+                    <Route element={<AdminPublicRoute />}>
+                        <Route path="/admin/login" element={<AdminLoginPage />} />
+                        <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+                    </Route>
                     <Route element={<AdminProtectedRoute />}>
                         <Route element={<AdminLayout />}>
                             <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
@@ -76,6 +77,7 @@ export const App = () => {
                         <Route element={<PersistLogin />}>
                             {/* Post-onboarding success page */}
                             <Route path="/profile-live" element={<ProfileLivePage />} />
+                            <Route path='/casting-director' element={<CastingDirectorPage />} />
 
                             {/* 
                                 ONBOARDING ROUTES

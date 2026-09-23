@@ -8,6 +8,7 @@ import { handoffApi } from "../features/onboarding/api/handoff.api";
 import { profileApi } from "../features/onboarding/api/profile.api";
 import { adminAuthApi } from "../features/admin/auth/api/admin-auth.api";
 import { adminUsersApi } from "../features/admin/users/api/admin-users.api";
+import { castingDirectorApi } from "../features/casting-director/api/casting-director.api";
 
 
 export const store = configureStore({
@@ -21,6 +22,7 @@ export const store = configureStore({
         [authApi.reducerPath]: authApi.reducer,
         [adminAuthApi.reducerPath]: adminAuthApi.reducer,
         [adminUsersApi.reducerPath]: adminUsersApi.reducer,
+        [castingDirectorApi.reducerPath]: castingDirectorApi.reducer,
 
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
@@ -37,7 +39,8 @@ export const store = configureStore({
             kycApi.middleware,
             handoffApi.middleware,
             profileApi.middleware,
-            adminUsersApi.middleware
+            adminUsersApi.middleware,
+            castingDirectorApi.middleware,
         )
 })
 
