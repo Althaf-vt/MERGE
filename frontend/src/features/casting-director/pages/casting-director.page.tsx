@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../../app/hooks';
 import { 
     useInitializeSessionMutation, 
     useProcessMessageMutation, 
@@ -10,6 +11,10 @@ import type { CastingSession } from '../types/casting.types';
 
 export const CastingDirectorPage = () => {
     const navigate = useNavigate();
+    
+    // Pull the user from Redux state to check completion status
+    const { user } = useAppSelector((state) => state.auth);
+
     const [initializeSession, { isLoading: isInitializing }] = useInitializeSessionMutation();
     const [processMessage, { isLoading: isProcessing }] = useProcessMessageMutation();
     const [finalizeSession, { isLoading: isFinalizing }] = useFinalizeSessionMutation();
@@ -19,16 +24,22 @@ export const CastingDirectorPage = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const effectRan = useRef(false);
 
+    // Guard: Prevent users from repeating the interview if already completed
+    useEffect(() => {
+        if (user?.castingDirectorCompleted) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
+
     // Initialize session on mount
     useEffect(() => {
-        // Prevent React 18 Strict Mode double-firing
-        if (effectRan.current) return;
+        // Prevent React 18 Strict Mode double-firing and block if already completed
+        if (effectRan.current || user?.castingDirectorCompleted) return;
         effectRan.current = true;
 
         const init = async () => {
             try {
                 const res = await initializeSession().unwrap();
-                // Directly set the session. Do not use an isMounted check here.
                 setSession(res.session);
             } catch (err) {
                 console.error('Failed to initialize casting session', err);
@@ -36,9 +47,7 @@ export const CastingDirectorPage = () => {
         };
         
         init();
-        
-        // Remove the return () => { isMounted = false; }; cleanup
-    }, [initializeSession]);
+    }, [initializeSession, user]);
 
     // Auto-scroll to bottom of chat
     useEffect(() => {
@@ -51,8 +60,8 @@ export const CastingDirectorPage = () => {
             const finalize = async () => {
                 try {
                     await finalizeSession().unwrap();
-                    // Once finalized, route the user to their dashboard/discovery feed
-                    navigate('/dashboard', { replace: true });
+                    // Force hard redirect to homepage to refresh Redux session state
+                    window.location.href = '/'; 
                 } catch (err) {
                     console.error('Failed to finalize session', err);
                 }
@@ -61,7 +70,7 @@ export const CastingDirectorPage = () => {
             const timer = setTimeout(finalize, 3000);
             return () => clearTimeout(timer);
         }
-    }, [session?.status, isFinalizing, finalizeSession, navigate]);
+    }, [session?.status, isFinalizing, finalizeSession]);
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
