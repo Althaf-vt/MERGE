@@ -53,8 +53,13 @@ export class CastingSession extends AggregateRoot {
 
     // Adds a turn to the interview transcript and increments the turn count
     addTurn(role: TranscriptRole, content: string): void {
-        if (this._props.status !== 'IN_PROGRESS') {
+        if (this._props.status === 'COMPLETED') {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add turns to a concluded casting session.');
+        }
+
+        // Block the user from typing more once we hit the limit
+        if (this._props.status === 'ANALYZING' && role === 'user') {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add user turns while the session is analyzing.');
         }
 
         if (!content || content.trim().length === 0) {
@@ -72,7 +77,7 @@ export class CastingSession extends AggregateRoot {
         }
 
         // Check if we hit the limit
-        if (this._props.turnCount >= this.maxTurns) {
+        if (this._props.status === 'IN_PROGRESS' && this._props.turnCount >= this.maxTurns) {
             this._props.status = 'ANALYZING';
         }
 
