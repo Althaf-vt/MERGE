@@ -37,6 +37,20 @@ export class Admin {
     @Prop({ type: String, enum: AdminStatus, default: AdminStatus.ACTIVE })
     status: string;
 
+    @Prop({ type: Date, default: null })
+    suspendedUntil?: Date | null;
+
+    @Prop({
+        type: [{
+            status: { type: String, required: true },
+            reason: { type: String, required: true },
+            actionBy: { type: String, required: true },
+            timestamp: { type: Date, required: true }
+        }],
+        default: []
+    })
+    statusHistory: Array<{ status: string; reason: string; actionBy: string; timestamp: Date }>;
+
     @Prop({ type: [String], enum: AdminPermission, default: [] })
     permissions: string[];
 
