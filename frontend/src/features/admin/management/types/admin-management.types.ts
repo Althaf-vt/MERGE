@@ -43,3 +43,35 @@ export interface AdminManagementResponse {
     success: boolean;
     message: string;
 }
+
+export type AdminStatus = 'INVITED' | 'ACTIVE' | 'SUSPENDED' | 'DEACTIVATED';
+
+export interface AdminDetails {
+    id: string;
+    email: string;
+    fullName: string;
+    role: AdminRole;
+    status: AdminStatus;
+    permissions: AdminPermission[];
+    profilePhotoUrl: string | null;
+    lastLoginAt: string | null;
+    createdAt: string;
+}
+
+export interface GetAdminsRequest {
+    page?: number;
+    limit?: number;
+    role?: AdminRole | '';
+    status?: AdminStatus | '';
+    search?: string;
+}
+
+export interface GetAdminsResponse {
+    success: boolean;
+    data: AdminDetails[];
+    meta: {
+        total: number;
+        page: number;
+        limit: number;
+    };
+}

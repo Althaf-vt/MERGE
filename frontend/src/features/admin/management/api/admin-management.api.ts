@@ -2,7 +2,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../../../app/store';
-import type { AcceptAdminInviteRequest, AdminManagementResponse, InviteAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
+import type { AcceptAdminInviteRequest, AdminManagementResponse, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
 
 export const adminManagementApi = createApi({
     reducerPath: 'adminManagementApi',
@@ -16,13 +16,26 @@ export const adminManagementApi = createApi({
             return headers;
         },
     }),
+    tagTypes: ['Admins'],
     endpoints: (builder) => ({
+
+        getAdmins: builder.query<GetAdminsResponse, GetAdminsRequest>({
+            query: (params) => ({
+                url: '/admin/management',
+                method: 'GET',
+                params,
+            }),
+            // Provides tags to automatically refetch when mutations occur
+            providesTags: ['Admins'],
+        }),
+
         inviteAdmin: builder.mutation<AdminManagementResponse, InviteAdminRequest>({
             query: (body) => ({
                 url: '/admin/management/invite',
                 method: 'POST',
                 body,
             }),
+            invalidatesTags: ['Admins'],
         }),
         
         // This is a public route, so it doesn't strictly need the bearer token, 
@@ -33,6 +46,7 @@ export const adminManagementApi = createApi({
                 method: 'POST',
                 body,
             }),
+            invalidatesTags: ['Admins'],
         }),
         
         updateAdmin: builder.mutation<AdminManagementResponse, { adminId: string; data: UpdateAdminRequest }>({
@@ -41,11 +55,13 @@ export const adminManagementApi = createApi({
                 method: 'PATCH',
                 body: data,
             }),
+            invalidatesTags: ['Admins'],
         }),
     }),
 });
 
 export const {
+    useGetAdminsQuery,
     useInviteAdminMutation,
     useAcceptAdminInviteMutation,
     useUpdateAdminMutation,

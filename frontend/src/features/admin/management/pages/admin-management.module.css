@@ -1,0 +1,194 @@
+.container {
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #f4f4f5;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.header p {
+    margin: 0;
+    color: #a1a1aa;
+    font-size: 0.95rem;
+}
+
+.primaryBtn {
+    background-color: #7e22ce;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.primaryBtn:hover {
+    background-color: #6b21a8;
+}
+
+.filtersBar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #18181b;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #27272a;
+}
+
+.searchInput {
+    flex: 1;
+    background-color: #27272a;
+    border: 1px solid #3f3f46;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    outline: none;
+}
+
+.searchInput:focus {
+    border-color: #a855f7;
+}
+
+.filterSelect {
+    background-color: #27272a;
+    border: 1px solid #3f3f46;
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    outline: none;
+    min-width: 150px;
+}
+
+.refreshBtn {
+    background-color: #27272a;
+    color: #e4e4e7;
+    border: 1px solid #3f3f46;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.refreshBtn:hover {
+    background-color: #3f3f46;
+}
+
+.tableContainer {
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th {
+    padding: 1rem;
+    background-color: #09090b;
+    color: #a1a1aa;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #27272a;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid #27272a;
+    vertical-align: middle;
+}
+
+.adminInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.adminName {
+    font-weight: 600;
+    color: #f4f4f5;
+}
+
+.adminEmail {
+    font-size: 0.85rem;
+    color: #a1a1aa;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.role_SUPER_ADMIN { background-color: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+.role_ADMIN { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+.status_ACTIVE { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+.status_INVITED { background-color: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+.status_SUSPENDED, .status_DEACTIVATED { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+.actionBtn {
+    background-color: transparent;
+    color: #c084fc;
+    border: 1px solid #c084fc;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover {
+    background-color: #c084fc;
+    color: #000;
+}
+
+.loading, .error, .emptyState {
+    padding: 3rem;
+    text-align: center;
+    color: #a1a1aa;
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.pagination button {
+    background-color: #27272a;
+    color: #f4f4f5;
+    border: 1px solid #3f3f46;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-size: 0.9rem;
+    color: #a1a1aa;
+}
