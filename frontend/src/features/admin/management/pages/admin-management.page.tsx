@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
-import { useGetAdminsQuery, useSuspendAdminMutation, useReactivateAdminMutation } from '../api/admin-management.api';
+import { useGetAdminsQuery } from '../api/admin-management.api';
 import { type AdminRole, type AdminStatus, type AdminDetails } from '../types/admin-management.types';
 import { InviteAdminModal } from '../components/invite-admin-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
+import { AdminStatusModal, type AdminActionType } from '../components/admin-status-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import styles from './admin-management.module.css';
 
@@ -18,6 +19,12 @@ export const AdminManagementPage = () => {
     // Modal State
     const [isInviteModalOpen, setInviteModalOpen] = useState(false);
     const [selectedAdmin, setSelectedAdmin] = useState<AdminDetails | null>(null);
+    const [statusModalConfig, setStatusModalConfig] = useState<{
+        isOpen: boolean;
+        adminId: string;
+        adminName: string;
+        actionType: AdminActionType;
+    } | null>(null);
 
     // API Hooks
     const { data, isLoading, isFetching, refetch } = useGetAdminsQuery({
@@ -27,24 +34,19 @@ export const AdminManagementPage = () => {
         role: roleFilter,
         status: statusFilter,
     });
-    const [suspendAdmin] = useSuspendAdminMutation();
-    const [reactivateAdmin] = useReactivateAdminMutation();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
         setPage(1);
     };
 
-    const handleSuspend = async (id: string, name: string) => {
-        if (window.confirm(`Are you sure you want to suspend ${name}? They will instantly lose access.`)) {
-            try { await suspendAdmin(id).unwrap(); } 
-            catch (err) { console.error('Failed to suspend', err); }
-        }
-    };
-
-    const handleReactivate = async (id: string) => {
-        try { await reactivateAdmin(id).unwrap(); } 
-        catch (err) { console.error('Failed to reactivate', err); }
+    const handleStatusAction = (id: string, name: string, actionType: AdminActionType) => {
+        setStatusModalConfig({
+            isOpen: true,
+            adminId: id,
+            adminName: name,
+            actionType
+        });
     };
 
     const totalPages = data?.meta?.total ? Math.ceil(data.meta.total / limit) : 1;
@@ -82,6 +84,7 @@ export const AdminManagementPage = () => {
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="INVITED">INVITED</option>
                         <option value="SUSPENDED">SUSPENDED</option>
+                        <option value="DEACTIVATED">DEACTIVATED</option>
                     </select>
                     <button className={styles.actionBtn} onClick={() => refetch()}>
                         REFRESH
@@ -139,22 +142,34 @@ export const AdminManagementPage = () => {
                                             >
                                                 EDIT
                                             </button>
+                                            
                                             {admin.role !== 'SUPER_ADMIN' && (
-                                                admin.status === 'SUSPENDED' ? (
-                                                    <button 
-                                                        className={`${styles.actionBtn} ${styles.reactivateBtn}`}
-                                                        onClick={() => handleReactivate(admin.id)}
-                                                    >
-                                                        REACTIVATE
-                                                    </button>
-                                                ) : (
-                                                    <button 
-                                                        className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                        onClick={() => handleSuspend(admin.id, admin.fullName)}
-                                                    >
-                                                        SUSPEND
-                                                    </button>
-                                                )
+                                                <>
+                                                    {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
+                                                        <button 
+                                                            className={`${styles.actionBtn} ${styles.reactivateBtn}`}
+                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'REACTIVATE')}
+                                                        >
+                                                            REACTIVATE
+                                                        </button>
+                                                    ) : (
+                                                        <button 
+                                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'SUSPEND')}
+                                                        >
+                                                            SUSPEND
+                                                        </button>
+                                                    )}
+
+                                                    {admin.status !== 'DEACTIVATED' && (
+                                                        <button 
+                                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'DEACTIVATE')}
+                                                        >
+                                                            DEACTIVATE
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </td>
@@ -203,6 +218,16 @@ export const AdminManagementPage = () => {
                         adminName={selectedAdmin.fullName}
                         currentRole={selectedAdmin.role}
                         currentPermissions={selectedAdmin.permissions}
+                    />
+                )}
+
+                {statusModalConfig && (
+                    <AdminStatusModal
+                        isOpen={statusModalConfig.isOpen}
+                        onClose={() => setStatusModalConfig(null)}
+                        adminId={statusModalConfig.adminId}
+                        adminName={statusModalConfig.adminName}
+                        actionType={statusModalConfig.actionType}
                     />
                 )}
             </AnimatePresence>
