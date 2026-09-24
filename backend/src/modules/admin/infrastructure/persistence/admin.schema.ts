@@ -10,8 +10,20 @@ export class Admin {
     @Prop({ required: true, unique: true, lowercase: true, trim: true })
     email: string;
 
-    @Prop({ required: true })
-    passwordHash: string;
+    @Prop({
+        type: String,
+        default: null,
+        validate: {
+            validator: function (this: any, val: string | null) {
+                if (this.status !== 'INVITED') {
+                    return typeof val === 'string' && val.trim().length > 0;
+                }
+                return true;
+            },
+            message: 'Password hash is required for active admins.'
+        }
+    })
+    passwordHash: string | null;
 
     @Prop({ type: String, enum: AdminRole, required: true })
     role: string;
@@ -24,6 +36,20 @@ export class Admin {
 
     @Prop({ type: String, enum: AdminStatus, default: AdminStatus.ACTIVE })
     status: string;
+
+    @Prop({ type: Date, default: null })
+    suspendedUntil?: Date | null;
+
+    @Prop({
+        type: [{
+            status: { type: String, required: true },
+            reason: { type: String, required: true },
+            actionBy: { type: String, required: true },
+            timestamp: { type: Date, required: true }
+        }],
+        default: []
+    })
+    statusHistory: Array<{ status: string; reason: string; actionBy: string; timestamp: Date }>;
 
     @Prop({ type: [String], enum: AdminPermission, default: [] })
     permissions: string[];

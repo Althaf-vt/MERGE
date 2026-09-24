@@ -1,0 +1,205 @@
+.container {
+    padding: 24px;
+    background-color: var(--admin-bg);
+    min-height: 100vh;
+    color: var(--admin-text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 16px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: var(--admin-text-subtle);
+    font-size: 11px;
+    margin-top: 6px;
+    text-transform: uppercase;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.input, .select {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.input:focus, .select:focus {
+    border-color: var(--admin-border-focus);
+    color: var(--admin-text-primary);
+}
+
+.primaryBtn {
+    background-color: var(--admin-text-primary);
+    color: var(--admin-bg);
+    border: 1px solid var(--admin-text-primary);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.primaryBtn:hover {
+    opacity: 0.9;
+}
+
+.tableWrapper {
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    overflow-x: auto;
+    background-color: var(--admin-surface);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.table th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-subtle);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--admin-bg);
+}
+
+.table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-primary);
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background-color: var(--admin-hover);
+}
+
+.adminInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.adminName {
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+.adminEmail {
+    font-size: 11px;
+    color: var(--admin-text-secondary);
+    margin-top: 4px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.role_SUPER_ADMIN { background-color: var(--admin-accent-bg); color: var(--admin-accent-text); }
+.role_ADMIN { border: 1px solid var(--admin-border-focus); color: var(--admin-text-secondary); }
+
+.status_ACTIVE { background-color: var(--badge-active-bg); color: var(--badge-active-text); }
+.status_INVITED { background-color: rgba(234, 179, 8, 0.15); color: #facc15; }
+.status_SUSPENDED, .status_DEACTIVATED { background-color: var(--badge-ban-bg); color: var(--badge-ban-text); }
+
+.actionGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.actionBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover {
+    background: var(--admin-border);
+    color: var(--admin-text-primary);
+}
+
+.suspendBtn {
+    color: var(--badge-ban-text);
+    border-color: var(--admin-danger-border);
+}
+.suspendBtn:hover {
+    background: var(--badge-ban-bg);
+}
+
+.reactivateBtn {
+    color: var(--badge-active-text);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+.reactivateBtn:hover {
+    background: var(--badge-active-bg);
+}
+
+.loading, .emptyState {
+    text-align: center;
+    padding: 24px;
+    color: var(--admin-text-secondary);
+    font-size: 12px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--admin-text-subtle);
+}
+
+.pageControls {
+    display: flex;
+    gap: 8px;
+}

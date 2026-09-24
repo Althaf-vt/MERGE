@@ -149,4 +149,42 @@ export class NodeMailerEmailService implements IEmailService {
             this._logger.error(`Failed to send suspension notification to ${to}`, error.stack);
         }
     }
+
+    async sendAdminInviteEmail(to: string, token: string, inviterName: string): Promise<void> {
+        const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/accept-invite?token=${token}`;
+        
+        const htmlTemplate = `
+            <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #0a0a0a; padding: 20px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 18px; letter-spacing: 1px;">MERGE <span style="color: #d8b4fe;">ADMIN PORTAL</span></h1>
+                </div>
+                <div style="padding: 32px;">
+                    <h2 style="font-weight: 600; font-size: 20px; margin-top: 0; margin-bottom: 24px;">Administrative Invitation</h2>
+                    <p style="font-size: 15px; line-height: 1.6; margin-bottom: 24px; color: #3f3f46;">
+                        You have been invited by <strong>${inviterName}</strong> to join the MERGE administrative team. 
+                        Please click the secure link below to set up your password and access the system.
+                    </p>
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <a href="${inviteUrl}" style="display: inline-block; background-color: #6D28D9; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Accept Invitation</a>
+                    </div>
+                    <p style="font-size: 13px; color: #71717a; line-height: 1.5; margin: 0;">
+                        <strong>Security Note:</strong> This link is strictly confidential and will automatically expire in 24 hours.
+                    </p>
+                </div>
+            </div>
+        `;
+
+        try {
+            await this._transporter.sendMail({
+                from: `"MERGE Security" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+                to,
+                subject: 'MERGE Admin Portal - Secure Invitation',
+                html: htmlTemplate,
+            });
+            this._logger.log(`Admin Invite email sent successfully to ${to}`);
+        } catch (error: any) {
+            this._logger.error(`Failed to send Admin Invite email to ${to}`, error.stack);
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative invite email.');
+        }
+    }
 }

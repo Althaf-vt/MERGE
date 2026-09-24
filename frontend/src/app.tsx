@@ -29,6 +29,8 @@ import { AdminPublicRoute } from './features/admin/auth/components/admin-public-
 import { AdminUsersPage } from './features/admin/users/pages/admin-users.page';
 import { AdminUserDetailsPage } from './features/admin/users/pages/admin-user-details.page';
 import { CastingDirectorPage } from './features/casting-director/pages/casting-director.page';
+import { AdminAcceptInvitePage } from './features/admin/management/pages/accept-invite.page';
+import { AdminManagementPage } from './features/admin/management/pages/admin-management.page';
 
 
 export const App = () => {
@@ -44,12 +46,14 @@ export const App = () => {
                     <Route element={<AdminPublicRoute />}>
                         <Route path="/admin/login" element={<AdminLoginPage />} />
                         <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+                        <Route path="/admin/accept-invite" element={<AdminAcceptInvitePage />} />
                     </Route>
                     <Route element={<AdminProtectedRoute />}>
                         <Route element={<AdminLayout />}>
                             <Route path='/admin/dashboard' element={<AdminDashboardPage />} />
                             <Route path='/admin/users' element={<AdminUsersPage />} />
                             <Route path='/admin/users/:id' element={<AdminUserDetailsPage />} />
+                            <Route path='/admin/management' element={<AdminManagementPage />} />
                         </Route>
                     </Route>
                 </Route>
