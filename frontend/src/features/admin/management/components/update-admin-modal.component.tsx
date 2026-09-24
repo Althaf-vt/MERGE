@@ -20,7 +20,7 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
 
     const [role, setRole] = useState<AdminRole>(currentRole);
     const [selectedPermissions, setSelectedPermissions] = useState<AdminPermission[]>(currentPermissions);
-    const [_errorMsg, setErrorMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     // Sync state if props change when modal opens
     useEffect(() => {
@@ -76,9 +76,11 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                 transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
             >
                 <div className={styles.header}>
-                    <h2 className={styles.title}>INVITE ADMINISTRATOR</h2>
+                    <h2 className={styles.title}>UPDATE PERSONNEL: {adminName}</h2>
                     <button onClick={onClose} className={styles.closeBtn}>&times;</button>
                 </div>
+
+                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
@@ -108,8 +110,8 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                     )}
 
                     <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.cancelBtn}>Cancel</button>
-                        <button type="submit" disabled={isLoading} className={styles.submitBtn}>
+                        <button type="button" onClick={onClose} className={styles.btnCancel}>Cancel</button>
+                        <button type="submit" disabled={isLoading} className={styles.btnSubmit}>
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
