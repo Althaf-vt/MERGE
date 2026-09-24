@@ -26,6 +26,10 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
             throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
         }
 
+        if (!admin.passwordHash) {
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+        }
+
         const isPasswordValid = await this._passwordHasher.compare(dto.password, admin.passwordHash);
 
         if (!isPasswordValid) {
