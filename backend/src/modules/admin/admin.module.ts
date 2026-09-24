@@ -37,6 +37,9 @@ import { DEACTIVATE_ADMIN_USE_CASE, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE
 import { SuspendAdminUseCase } from "./application/use-cases/suspend-admin.use-case";
 import { ReactivateAdminUseCase } from "./application/use-cases/reactivate-admin.use-case";
 import { DeactivateAdminUseCase } from "./application/use-cases/deactivate-admin.use-case";
+import { CANCEL_ADMIN_INVITE_USE_CASE, REINVITE_ADMIN_USE_CASE } from "./application/interfaces/admin-invitation-lifecycle.use-case.interface";
+import { ReinviteAdminUseCase } from "./application/use-cases/reinvite-admin.use-case";
+import { CancelAdminInviteUseCase } from "./application/use-cases/cancel-admin-invite.use-case";
 
 @Module({
     imports: [
@@ -108,6 +111,14 @@ import { DeactivateAdminUseCase } from "./application/use-cases/deactivate-admin
         {
             provide: ACCEPT_ADMIN_INVITE_USE_CASE,
             useClass: AcceptAdminInviteUseCase,
+        },
+        {
+            provide: REINVITE_ADMIN_USE_CASE,
+            useClass: ReinviteAdminUseCase,
+        },
+        {
+            provide: CANCEL_ADMIN_INVITE_USE_CASE,
+            useClass: CancelAdminInviteUseCase,
         },
         {
             provide: UPDATE_ADMIN_USE_CASE,

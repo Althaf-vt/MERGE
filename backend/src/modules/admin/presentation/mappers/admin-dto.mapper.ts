@@ -11,6 +11,7 @@ export class AdminDtoMapper {
             status: entity.status,
             permissions: entity.permissions as string[],
             profilePhotoUrl: entity.profilePhotoUrl ?? null,
+            inviteExpiresAt: entity.inviteExpiresAt ?? null,
             lastLoginAt: entity.lastLogin ?? null,
             createdAt: entity.createdAt as Date,
         };

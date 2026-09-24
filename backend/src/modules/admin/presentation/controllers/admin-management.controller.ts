@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ACCEPT_ADMIN_INVITE_USE_CASE, IAcceptAdminInviteUseCase, IInviteAdminUseCase, INVITE_ADMIN_USE_CASE, IUpdateAdminUseCase, UPDATE_ADMIN_USE_CASE } from "../../application/interfaces/admin-management.use-case.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
@@ -10,6 +10,7 @@ import { GET_ADMINS_USE_CASE, IGetAdminsUseCase } from "../../application/interf
 import { GetAdminsDto } from "../../application/dtos/get-admins.dto";
 import { DEACTIVATE_ADMIN_USE_CASE, IDeactivateAdminUseCase, IReactivateAdminUseCase, ISuspendAdminUseCase, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "../../application/interfaces/admin-status.use-case.interface";
 import { AdminStatusReasonDto, SuspendAdminDto } from "../../application/dtos/admin-status.dto";
+import { CANCEL_ADMIN_INVITE_USE_CASE, ICancelAdminInviteUseCase, IReinviteAdminUseCase, REINVITE_ADMIN_USE_CASE } from "../../application/interfaces/admin-invitation-lifecycle.use-case.interface";
 
 @Controller('admin/management')
 export class AdminManagementController {
@@ -21,6 +22,8 @@ export class AdminManagementController {
         @Inject(SUSPEND_ADMIN_USE_CASE) private readonly _suspendAdminUseCase: ISuspendAdminUseCase,
         @Inject(REACTIVATE_ADMIN_USE_CASE) private readonly _reactivateAdminUseCase: IReactivateAdminUseCase,
         @Inject(DEACTIVATE_ADMIN_USE_CASE) private readonly _deactivateAdminUseCase: IDeactivateAdminUseCase,
+        @Inject(CANCEL_ADMIN_INVITE_USE_CASE) private readonly _cancelAdminInviteUseCase: ICancelAdminInviteUseCase,
+        @Inject(REINVITE_ADMIN_USE_CASE) private readonly _reinviteAdminUseCase: IReinviteAdminUseCase,
     ) { }
 
     @Get()
@@ -62,6 +65,27 @@ export class AdminManagementController {
         await this._acceptInviteUseCase.execute(dto);
 
         return { success: true, message: 'Account activated successfully. You may now log in.' };
+    }
+
+    @Post(':id/reinvite')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_INVITE)
+    @HttpCode(HttpStatus.OK)
+    async reinviteAdmin(@Param('id') targetAdminId: string, @Req() req: AuthenticatedRequest){
+        const inviterName = (req.user as any).email || 'Super Admin';
+        await this._reinviteAdminUseCase.execute(targetAdminId, inviterName);
+
+        return {success: true, message: 'New invitation link sent successfully.'};
+    }
+
+    @Delete(':id/cancel-invite')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_INVITE)
+    @HttpCode(HttpStatus.OK)
+    async cancelAdminInvite(@Param('id') targetAdminid: string){
+        await this._cancelAdminInviteUseCase.execute(targetAdminid);
+
+        return {success: true, message: 'Pending invitation successfully cancelled.'}
     }
 
     @Patch(':id')
