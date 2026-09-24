@@ -8,7 +8,8 @@ import { AcceptAdminInviteDto, InviteAdminDto, UpdateAdminDto } from "../../appl
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GET_ADMINS_USE_CASE, IGetAdminsUseCase } from "../../application/interfaces/get-admins.use-case.interface";
 import { GetAdminsDto } from "../../application/dtos/get-admins.dto";
-import { IReactivateAdminUseCase, ISuspendAdminUseCase, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "../../application/interfaces/admin-status.use-case.interface";
+import { DEACTIVATE_ADMIN_USE_CASE, IDeactivateAdminUseCase, IReactivateAdminUseCase, ISuspendAdminUseCase, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "../../application/interfaces/admin-status.use-case.interface";
+import { AdminStatusReasonDto, SuspendAdminDto } from "../../application/dtos/admin-status.dto";
 
 @Controller('admin/management')
 export class AdminManagementController {
@@ -19,6 +20,7 @@ export class AdminManagementController {
         @Inject(GET_ADMINS_USE_CASE) private readonly _getAdminsUseCase: IGetAdminsUseCase,
         @Inject(SUSPEND_ADMIN_USE_CASE) private readonly _suspendAdminUseCase: ISuspendAdminUseCase,
         @Inject(REACTIVATE_ADMIN_USE_CASE) private readonly _reactivateAdminUseCase: IReactivateAdminUseCase,
+        @Inject(DEACTIVATE_ADMIN_USE_CASE) private readonly _deactivateAdminUseCase: IDeactivateAdminUseCase,
     ) { }
 
     @Get()
@@ -76,17 +78,26 @@ export class AdminManagementController {
     @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
     @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
     @HttpCode(HttpStatus.OK)
-    async suspendAdmin(@Param('id') targetAdminId: string){
-        await this._suspendAdminUseCase.execute(targetAdminId);
+    async suspendAdmin(@Param('id') targetAdminId: string, @Body() dto: SuspendAdminDto, @Req() req: AuthenticatedRequest) {
+        await this._suspendAdminUseCase.execute(targetAdminId, dto, req.user.userId);
         return { success: true, message: 'Admin account suspended successfully.' };
+    }
+
+    @Patch(':id/deactivate')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
+    @HttpCode(HttpStatus.OK)
+    async deactivateAdmin(@Param('id') targetAdminId: string, @Body() dto: AdminStatusReasonDto, @Req() req: AuthenticatedRequest) {
+        await this._deactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
+        return { success: true, message: 'Admin account permanently deactivated.' };
     }
 
     @Patch(':id/reactivate')
     @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
     @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
     @HttpCode(HttpStatus.OK)
-    async reactivateAdmin(@Param('id') targetAdminId: string) {
-        await this._reactivateAdminUseCase.execute(targetAdminId);
+    async reactivateAdmin(@Param('id') targetAdminId: string, @Body() dto: AdminStatusReasonDto, @Req() req: AuthenticatedRequest) {
+        await this._reactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
         return { success: true, message: 'Admin account reactivated successfully.' };
     }
 }
