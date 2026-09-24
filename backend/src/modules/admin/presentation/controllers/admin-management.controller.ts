@@ -27,8 +27,8 @@ export class AdminManagementController {
     @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
     @RequirePermissions(AdminPermission.ADMINS_VIEW)
     @HttpCode(HttpStatus.OK)
-    async getAdmins(@Query() query: GetAdminsDto) {
-        const result = await this._getAdminsUseCase.execute(query);
+    async getAdmins(@Query() query: GetAdminsDto, @Req() req: AuthenticatedRequest) {
+        const result = await this._getAdminsUseCase.execute(query, req.user.userId);
 
         return {
             success: true,

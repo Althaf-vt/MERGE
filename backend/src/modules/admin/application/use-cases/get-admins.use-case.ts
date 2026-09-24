@@ -12,13 +12,14 @@ export class GetAdminsUseCase implements IGetAdminsUseCase{
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
     ){}
 
-    async execute(filters: GetAdminsDto): Promise<PaginatedAdminsResponseDto> {
+    async execute(filters: GetAdminsDto, currentAdminId: string): Promise<PaginatedAdminsResponseDto> {
         const result = await this._adminRepository.findAllPaginated({
             page: filters.page,
             limit: filters.limit,
             role: filters.role as any,
             status: filters.status as any,
             search: filters.search,
+            excludeAdminId: currentAdminId,
         });
 
         return {
