@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { useGetAdminsQuery } from '../api/admin-management.api';
+import { AnimatePresence } from 'motion/react';
+import { useGetAdminsQuery, useSuspendAdminMutation, useReactivateAdminMutation } from '../api/admin-management.api';
 import { type AdminRole, type AdminStatus, type AdminDetails } from '../types/admin-management.types';
 import { InviteAdminModal } from '../components/invite-admin-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
+import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import styles from './admin-management.module.css';
 
 export const AdminManagementPage = () => {
     // Filter State
     const [page, setPage] = useState(1);
-    const [limit] = useState(10);
+    const [limit] = useState(15);
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState<AdminRole | ''>('');
     const [statusFilter, setStatusFilter] = useState<AdminStatus | ''>('');
@@ -17,169 +19,193 @@ export const AdminManagementPage = () => {
     const [isInviteModalOpen, setInviteModalOpen] = useState(false);
     const [selectedAdmin, setSelectedAdmin] = useState<AdminDetails | null>(null);
 
-    // Fetch Data
-    const { data, isLoading, isError, refetch } = useGetAdminsQuery({
+    // API Hooks
+    const { data, isLoading, isFetching, refetch } = useGetAdminsQuery({
         page,
         limit,
-        search: search.length >= 3 ? search : undefined, // simple debounce trigger
+        search: search.length >= 3 ? search : undefined,
         role: roleFilter,
         status: statusFilter,
     });
+    const [suspendAdmin] = useSuspendAdminMutation();
+    const [reactivateAdmin] = useReactivateAdminMutation();
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
-        setPage(1); // Reset to first page on search
+        setPage(1);
     };
 
-    const handleEditClick = (admin: AdminDetails) => {
-        setSelectedAdmin(admin);
+    const handleSuspend = async (id: string, name: string) => {
+        if (window.confirm(`Are you sure you want to suspend ${name}? They will instantly lose access.`)) {
+            try { await suspendAdmin(id).unwrap(); } 
+            catch (err) { console.error('Failed to suspend', err); }
+        }
     };
 
-    const closeUpdateModal = () => {
-        setSelectedAdmin(null);
+    const handleReactivate = async (id: string) => {
+        try { await reactivateAdmin(id).unwrap(); } 
+        catch (err) { console.error('Failed to reactivate', err); }
     };
 
     const totalPages = data?.meta?.total ? Math.ceil(data.meta.total / limit) : 1;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
+        <AdminPageTransition className={styles.container}>
+            <header className={styles.header}>
                 <div>
-                    <h1>Admin Management</h1>
-                    <p>Manage system administrators, roles, and granular permissions.</p>
+                    <h1 className={styles.title}>ADMINISTRATIVE PERSONNEL</h1>
+                    <p className={styles.subtitle}>Manage system administrators, roles, and granular permissions.</p>
                 </div>
-                <button 
-                    className={styles.primaryBtn} 
-                    onClick={() => setInviteModalOpen(true)}
-                >
-                    + Invite Admin
-                </button>
-            </div>
+                <div className={styles.controls}>
+                    <input 
+                        type="text" 
+                        placeholder="Search by name or email..." 
+                        value={search}
+                        onChange={handleSearchChange}
+                        className={styles.input}
+                    />
+                    <select 
+                        value={roleFilter} 
+                        onChange={(e) => { setRoleFilter(e.target.value as AdminRole | ''); setPage(1); }}
+                        className={styles.select}
+                    >
+                        <option value="">ALL ROLES</option>
+                        <option value="SUPER_ADMIN">SUPER ADMIN</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                    <select 
+                        value={statusFilter} 
+                        onChange={(e) => { setStatusFilter(e.target.value as AdminStatus | ''); setPage(1); }}
+                        className={styles.select}
+                    >
+                        <option value="">ALL STATUSES</option>
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="INVITED">INVITED</option>
+                        <option value="SUSPENDED">SUSPENDED</option>
+                    </select>
+                    <button className={styles.actionBtn} onClick={() => refetch()}>
+                        REFRESH
+                    </button>
+                    <button 
+                        className={styles.primaryBtn} 
+                        onClick={() => setInviteModalOpen(true)}
+                    >
+                        + INVITE ADMIN
+                    </button>
+                </div>
+            </header>
 
-            <div className={styles.filtersBar}>
-                <input 
-                    type="text" 
-                    placeholder="Search by name or email..." 
-                    value={search}
-                    onChange={handleSearchChange}
-                    className={styles.searchInput}
-                />
-                <select 
-                    value={roleFilter} 
-                    onChange={(e) => { setRoleFilter(e.target.value as AdminRole | ''); setPage(1); }}
-                    className={styles.filterSelect}
-                >
-                    <option value="">All Roles</option>
-                    <option value="SUPER_ADMIN">Super Admin</option>
-                    <option value="ADMIN">Admin</option>
-                </select>
-                <select 
-                    value={statusFilter} 
-                    onChange={(e) => { setStatusFilter(e.target.value as AdminStatus | ''); setPage(1); }}
-                    className={styles.filterSelect}
-                >
-                    <option value="">All Statuses</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="INVITED">Invited</option>
-                    <option value="SUSPENDED">Suspended</option>
-                </select>
-                <button className={styles.refreshBtn} onClick={() => refetch()}>
-                    Refresh
-                </button>
-            </div>
-
-            <div className={styles.tableContainer}>
-                {isLoading ? (
-                    <div className={styles.loading}>Loading administrators...</div>
-                ) : isError ? (
-                    <div className={styles.error}>Failed to load administrators.</div>
-                ) : (
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Admin Details</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data?.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className={styles.emptyState}>No administrators found.</td>
-                                </tr>
-                            ) : (
-                                data?.data.map((admin) => (
-                                    <tr key={admin.id}>
-                                        <td>
-                                            <div className={styles.adminInfo}>
-                                                <span className={styles.adminName}>{admin.fullName}</span>
-                                                <span className={styles.adminEmail}>{admin.email}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`${styles.badge} ${styles[`role_${admin.role}`]}`}>
-                                                {admin.role.replace('_', ' ')}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className={`${styles.badge} ${styles[`status_${admin.status}`]}`}>
-                                                {admin.status}
-                                            </span>
-                                        </td>
-                                        <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
-                                        <td>
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>PERSONNEL DETAILS</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>CREATED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            <tr><td colSpan={5} className={styles.loading}>INITIALIZING DATA STREAM...</td></tr>
+                        ) : data?.data.length === 0 ? (
+                            <tr><td colSpan={5} className={styles.emptyState}>NO PERSONNEL RECORDS FOUND.</td></tr>
+                        ) : (
+                            data?.data.map((admin) => (
+                                <tr key={admin.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
+                                    <td>
+                                        <div className={styles.adminInfo}>
+                                            <span className={styles.adminName}>{admin.fullName}</span>
+                                            <span className={styles.adminEmail}>{admin.email}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span className={`${styles.badge} ${styles[`role_${admin.role}`]}`}>
+                                            {admin.role.replace('_', ' ')}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`${styles.badge} ${styles[`status_${admin.status}`]}`}>
+                                            {admin.status}
+                                        </span>
+                                    </td>
+                                    <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
+                                    <td>
+                                        <div className={styles.actionGroup}>
                                             <button 
                                                 className={styles.actionBtn}
-                                                onClick={() => handleEditClick(admin)}
+                                                onClick={() => setSelectedAdmin(admin)}
                                             >
-                                                Edit
+                                                EDIT
                                             </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                )}
+                                            {admin.role !== 'SUPER_ADMIN' && (
+                                                admin.status === 'SUSPENDED' ? (
+                                                    <button 
+                                                        className={`${styles.actionBtn} ${styles.reactivateBtn}`}
+                                                        onClick={() => handleReactivate(admin.id)}
+                                                    >
+                                                        REACTIVATE
+                                                    </button>
+                                                ) : (
+                                                    <button 
+                                                        className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                        onClick={() => handleSuspend(admin.id, admin.fullName)}
+                                                    >
+                                                        SUSPEND
+                                                    </button>
+                                                )
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
 
-            {/* Pagination Controls */}
-            {data?.meta && data.meta.total > limit && (
+            {data?.meta && data.meta.total > 0 && (
                 <div className={styles.pagination}>
-                    <button 
-                        disabled={page === 1} 
-                        onClick={() => setPage(p => p - 1)}
-                    >
-                        Previous
-                    </button>
-                    <span>Page {page} of {totalPages}</span>
-                    <button 
-                        disabled={page === totalPages} 
-                        onClick={() => setPage(p => p + 1)}
-                    >
-                        Next
-                    </button>
+                    <span>DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, data.meta.total)} OF {data.meta.total}</span>
+                    <div className={styles.pageControls}>
+                        <button 
+                            className={styles.actionBtn} 
+                            disabled={page === 1} 
+                            onClick={() => setPage(p => p - 1)}
+                        >
+                            PREV
+                        </button>
+                        <button 
+                            className={styles.actionBtn} 
+                            disabled={page === totalPages} 
+                            onClick={() => setPage(p => p + 1)}
+                        >
+                            NEXT
+                        </button>
+                    </div>
                 </div>
             )}
 
-            {/* Modals */}
-            <InviteAdminModal 
-                isOpen={isInviteModalOpen} 
-                onClose={() => setInviteModalOpen(false)} 
-            />
-
-            {selectedAdmin && (
-                <UpdateAdminModal
-                    isOpen={!!selectedAdmin}
-                    onClose={closeUpdateModal}
-                    adminId={selectedAdmin.id}
-                    adminName={selectedAdmin.fullName}
-                    currentRole={selectedAdmin.role}
-                    currentPermissions={selectedAdmin.permissions}
-                />
-            )}
-        </div>
+            <AnimatePresence>
+                {isInviteModalOpen && (
+                    <InviteAdminModal 
+                        isOpen={isInviteModalOpen} 
+                        onClose={() => setInviteModalOpen(false)} 
+                    />
+                )}
+                
+                {selectedAdmin && (
+                    <UpdateAdminModal
+                        isOpen={!!selectedAdmin}
+                        onClose={() => setSelectedAdmin(null)}
+                        adminId={selectedAdmin.id}
+                        adminName={selectedAdmin.fullName}
+                        currentRole={selectedAdmin.role}
+                        currentPermissions={selectedAdmin.permissions}
+                    />
+                )}
+            </AnimatePresence>
+        </AdminPageTransition>
     );
 };

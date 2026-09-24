@@ -1,117 +1,113 @@
 .container {
-    padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: #f4f4f5;
+    padding: 24px;
+    background-color: var(--admin-bg);
+    min-height: 100vh;
+    color: var(--admin-text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 16px;
 }
 
-.header h1 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-}
-
-.header p {
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
     margin: 0;
-    color: #a1a1aa;
-    font-size: 0.95rem;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: var(--admin-text-subtle);
+    font-size: 11px;
+    margin-top: 6px;
+    text-transform: uppercase;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.input, .select {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.input:focus, .select:focus {
+    border-color: var(--admin-border-focus);
+    color: var(--admin-text-primary);
 }
 
 .primaryBtn {
-    background-color: #7e22ce;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    background-color: var(--admin-text-primary);
+    color: var(--admin-bg);
+    border: 1px solid var(--admin-text-primary);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
     font-weight: 600;
+    font-size: 12px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
 }
 
 .primaryBtn:hover {
-    background-color: #6b21a8;
+    opacity: 0.9;
 }
 
-.filtersBar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    background-color: #18181b;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #27272a;
-}
-
-.searchInput {
-    flex: 1;
-    background-color: #27272a;
-    border: 1px solid #3f3f46;
-    color: white;
-    padding: 0.6rem 1rem;
+.tableWrapper {
+    border: 1px solid var(--admin-border);
     border-radius: 6px;
-    outline: none;
-}
-
-.searchInput:focus {
-    border-color: #a855f7;
-}
-
-.filterSelect {
-    background-color: #27272a;
-    border: 1px solid #3f3f46;
-    color: white;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
-    outline: none;
-    min-width: 150px;
-}
-
-.refreshBtn {
-    background-color: #27272a;
-    color: #e4e4e7;
-    border: 1px solid #3f3f46;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.refreshBtn:hover {
-    background-color: #3f3f46;
-}
-
-.tableContainer {
-    background-color: #18181b;
-    border: 1px solid #27272a;
-    border-radius: 8px;
     overflow-x: auto;
+    background-color: var(--admin-surface);
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
+    font-size: 13px;
 }
 
 .table th {
-    padding: 1rem;
-    background-color: #09090b;
-    color: #a1a1aa;
-    font-weight: 600;
-    font-size: 0.85rem;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-subtle);
+    font-weight: 500;
     text-transform: uppercase;
-    border-bottom: 1px solid #27272a;
+    letter-spacing: 0.05em;
+    background-color: var(--admin-bg);
 }
 
 .table td {
-    padding: 1rem;
-    border-bottom: 1px solid #27272a;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text-primary);
     vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background-color: var(--admin-hover);
 }
 
 .adminInfo {
@@ -121,74 +117,89 @@
 
 .adminName {
     font-weight: 600;
-    color: #f4f4f5;
+    color: var(--admin-text-primary);
 }
 
 .adminEmail {
-    font-size: 0.85rem;
-    color: #a1a1aa;
+    font-size: 11px;
+    color: var(--admin-text-secondary);
+    margin-top: 4px;
 }
 
 .badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.role_SUPER_ADMIN { background-color: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
-.role_ADMIN { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+.role_SUPER_ADMIN { background-color: var(--admin-accent-bg); color: var(--admin-accent-text); }
+.role_ADMIN { border: 1px solid var(--admin-border-focus); color: var(--admin-text-secondary); }
 
-.status_ACTIVE { background-color: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
-.status_INVITED { background-color: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
-.status_SUSPENDED, .status_DEACTIVATED { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.status_ACTIVE { background-color: var(--badge-active-bg); color: var(--badge-active-text); }
+.status_INVITED { background-color: rgba(234, 179, 8, 0.15); color: #facc15; }
+.status_SUSPENDED, .status_DEACTIVATED { background-color: var(--badge-ban-bg); color: var(--badge-ban-text); }
+
+.actionGroup {
+    display: flex;
+    gap: 8px;
+}
 
 .actionBtn {
-    background-color: transparent;
-    color: #c084fc;
-    border: 1px solid #c084fc;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
     cursor: pointer;
-    font-weight: 500;
+    border-radius: 4px;
+    font-weight: 600;
     transition: all 0.2s;
 }
 
 .actionBtn:hover {
-    background-color: #c084fc;
-    color: #000;
+    background: var(--admin-border);
+    color: var(--admin-text-primary);
 }
 
-.loading, .error, .emptyState {
-    padding: 3rem;
+.suspendBtn {
+    color: var(--badge-ban-text);
+    border-color: var(--admin-danger-border);
+}
+.suspendBtn:hover {
+    background: var(--badge-ban-bg);
+}
+
+.reactivateBtn {
+    color: var(--badge-active-text);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+.reactivateBtn:hover {
+    background: var(--badge-active-bg);
+}
+
+.loading, .emptyState {
     text-align: center;
-    color: #a1a1aa;
+    padding: 24px;
+    color: var(--admin-text-secondary);
+    font-size: 12px;
 }
 
 .pagination {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--admin-text-subtle);
 }
 
-.pagination button {
-    background-color: #27272a;
-    color: #f4f4f5;
-    border: 1px solid #3f3f46;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination span {
-    font-size: 0.9rem;
-    color: #a1a1aa;
+.pageControls {
+    display: flex;
+    gap: 8px;
 }

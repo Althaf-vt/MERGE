@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { useUpdateAdminMutation } from '../api/admin-management.api';
 import styles from './admin-modal.module.css';
 import { ADMIN_PERMISSIONS, type AdminPermission, type AdminRole } from '../types/admin-management.types';
@@ -12,14 +13,14 @@ interface UpdateAdminModalProps {
     adminName: string;
 }
 
-export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({ 
-    isOpen, onClose, adminId, currentRole, currentPermissions, adminName 
+export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
+    isOpen, onClose, adminId, currentRole, currentPermissions, adminName
 }) => {
     const [updateAdmin, { isLoading }] = useUpdateAdminMutation();
-    
+
     const [role, setRole] = useState<AdminRole>(currentRole);
     const [selectedPermissions, setSelectedPermissions] = useState<AdminPermission[]>(currentPermissions);
-    const [errorMsg, setErrorMsg] = useState('');
+    const [_errorMsg, setErrorMsg] = useState('');
 
     // Sync state if props change when modal opens
     useEffect(() => {
@@ -31,8 +32,8 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
     if (!isOpen) return null;
 
     const handlePermissionToggle = (permission: AdminPermission) => {
-        setSelectedPermissions(prev => 
-            prev.includes(permission) 
+        setSelectedPermissions(prev =>
+            prev.includes(permission)
                 ? prev.filter(p => p !== permission)
                 : [...prev, permission]
         );
@@ -50,7 +51,7 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                     permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions
                 }
             }).unwrap();
-            
+
             onClose();
         } catch (err: any) {
             setErrorMsg(err?.data?.error?.message || 'Failed to update admin.');
@@ -58,14 +59,26 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
     };
 
     return (
-        <div className={styles.overlay}>
-            <div className={styles.modal}>
+        <motion.div
+            className={styles.overlay}
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+        >
+            <motion.div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.97 }}
+                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
+            >
                 <div className={styles.header}>
-                    <h2>Update: {adminName}</h2>
+                    <h2 className={styles.title}>INVITE ADMINISTRATOR</h2>
                     <button onClick={onClose} className={styles.closeBtn}>&times;</button>
                 </div>
-
-                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
@@ -101,7 +114,7 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };

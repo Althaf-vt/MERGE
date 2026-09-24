@@ -57,6 +57,22 @@ export const adminManagementApi = createApi({
             }),
             invalidatesTags: ['Admins'],
         }),
+        
+        suspendAdmin: builder.mutation<AdminManagementResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}/suspend`,
+                method: 'PATCH',
+            }),
+            invalidatesTags: ['Admins'],
+        }),
+        
+        reactivateAdmin: builder.mutation<AdminManagementResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}/reactivate`,
+                method: 'PATCH',
+            }),
+            invalidatesTags: ['Admins'],
+        }),
     }),
 });
 
@@ -65,4 +81,6 @@ export const {
     useInviteAdminMutation,
     useAcceptAdminInviteMutation,
     useUpdateAdminMutation,
+    useSuspendAdminMutation,
+    useReactivateAdminMutation,
 } = adminManagementApi;

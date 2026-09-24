@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { useInviteAdminMutation } from '../api/admin-management.api';
 import styles from './admin-modal.module.css';
 import { ADMIN_PERMISSIONS, type AdminPermission, type AdminRole } from '../types/admin-management.types';
@@ -10,18 +11,18 @@ interface InviteAdminModalProps {
 
 export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onClose }) => {
     const [inviteAdmin, { isLoading }] = useInviteAdminMutation();
-    
+
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
     const [role, setRole] = useState<AdminRole>('ADMIN');
     const [selectedPermissions, setSelectedPermissions] = useState<AdminPermission[]>([]);
-    const [errorMsg, setErrorMsg] = useState('');
+    const [_errorMsg, setErrorMsg] = useState('');
 
     if (!isOpen) return null;
 
     const handlePermissionToggle = (permission: AdminPermission) => {
-        setSelectedPermissions(prev => 
-            prev.includes(permission) 
+        setSelectedPermissions(prev =>
+            prev.includes(permission)
                 ? prev.filter(p => p !== permission)
                 : [...prev, permission]
         );
@@ -38,7 +39,7 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                 role,
                 permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions
             }).unwrap();
-            
+
             // Reset and close on success
             setEmail('');
             setFullName('');
@@ -51,14 +52,26 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
     };
 
     return (
-        <div className={styles.overlay}>
-            <div className={styles.modal}>
+        <motion.div
+            className={styles.overlay}
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+        >
+            <motion.div
+                className={styles.modal}
+                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.97 }}
+                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
+            >
                 <div className={styles.header}>
-                    <h2>Invite Administrator</h2>
+                    <h2 className={styles.title}>INVITE ADMINISTRATOR</h2>
                     <button onClick={onClose} className={styles.closeBtn}>&times;</button>
                 </div>
-
-                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
@@ -104,7 +117,8 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+
+            </motion.div>
+        </motion.div>
     );
 };
