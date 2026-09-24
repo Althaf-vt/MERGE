@@ -13,3 +13,10 @@ export const AdminStatus = {
 } as const;
 
 export type AdminStatus = typeof AdminStatus[keyof typeof AdminStatus];
+
+export const AdminSuspensionUnit = {
+    HOURS: 'HOURS',
+    DAYS: 'DAYS',
+} as const;
+
+export type AdminSuspensionUnit = typeof AdminSuspensionUnit[keyof typeof AdminSuspensionUnit];
