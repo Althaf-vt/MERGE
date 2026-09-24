@@ -21,31 +21,31 @@ export const AdminAcceptInvitePage = () => {
         }
     }, [token]);
 
+    // Password Validation Logic
+    const reqs = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[^A-Za-z0-9]/.test(password),
+    };
+
+    const strengthScore = Object.values(reqs).filter(Boolean).length;
+    const isPasswordValid = strengthScore === 5;
+    const passwordsMatch = password !== '' && password === confirmPassword;
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMsg('');
         setSuccessMsg('');
 
-        if (!token) {
-            setErrorMsg('No token provided.');
-            return;
-        }
-
-        if (password.length < 8) {
-            setErrorMsg('Password must be at least 8 characters long.');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            setErrorMsg('Passwords do not match.');
-            return;
-        }
+        if (!token) return setErrorMsg('No token provided.');
+        if (!isPasswordValid) return setErrorMsg('Password does not meet all security requirements.');
+        if (!passwordsMatch) return setErrorMsg('Passwords do not match.');
 
         try {
-            const res = await acceptInvite({ token, password }).unwrap();
+            const res = await acceptInvite({ token, password, confirmPassword }).unwrap();
             setSuccessMsg(res.message || 'Account activated successfully.');
-            
-            // Redirect to admin login after 3 seconds
             setTimeout(() => {
                 navigate('/admin/login', { replace: true });
             }, 3000);
@@ -79,6 +79,25 @@ export const AdminAcceptInvitePage = () => {
                                 disabled={isLoading}
                             />
                         </div>
+
+                        {password.length > 0 && (
+                            <div className={styles.validationBox}>
+                                <div className={styles.strengthMeter}>
+                                    <div className={`${styles.strengthBar} ${strengthScore >= 1 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
+                                    <div className={`${styles.strengthBar} ${strengthScore >= 3 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
+                                    <div className={`${styles.strengthBar} ${strengthScore >= 4 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
+                                    <div className={`${styles.strengthBar} ${strengthScore >= 5 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
+                                </div>
+                                <ul className={styles.reqList}>
+                                    <li className={reqs.length ? styles.met : ''}>At least 8 characters</li>
+                                    <li className={reqs.uppercase ? styles.met : ''}>One uppercase letter</li>
+                                    <li className={reqs.lowercase ? styles.met : ''}>One lowercase letter</li>
+                                    <li className={reqs.number ? styles.met : ''}>One number</li>
+                                    <li className={reqs.special ? styles.met : ''}>One special character</li>
+                                </ul>
+                            </div>
+                        )}
+
                         <div className={styles.inputGroup}>
                             <label htmlFor="confirmPassword">Confirm Password</label>
                             <input
@@ -89,9 +108,18 @@ export const AdminAcceptInvitePage = () => {
                                 placeholder="Re-enter password"
                                 required
                                 disabled={isLoading}
+                                className={confirmPassword.length > 0 && !passwordsMatch ? styles.inputError : ''}
                             />
+                            {confirmPassword.length > 0 && passwordsMatch && (
+                                <span className={styles.matchSuccess}>Passwords match ✓</span>
+                            )}
                         </div>
-                        <button type="submit" className={styles.submitBtn} disabled={isLoading}>
+
+                        <button 
+                            type="submit" 
+                            className={styles.submitBtn} 
+                            disabled={isLoading || !isPasswordValid || !passwordsMatch}
+                        >
                             {isLoading ? 'Activating...' : 'Activate Account'}
                         </button>
                     </form>

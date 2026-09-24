@@ -32,6 +32,7 @@ export interface InviteAdminRequest {
 export interface AcceptAdminInviteRequest {
     token: string;
     password: string;
+    confirmPassword: string;
 }
 
 export interface UpdateAdminRequest {

@@ -121,3 +121,82 @@
     margin-bottom: 1.5rem;
     text-align: center;
 }
+
+/* Password Validation UI Additions */
+.validationBox {
+    background-color: #0f0f11;
+    border: 1px solid #27272a;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-top: -0.5rem;
+}
+
+.strengthMeter {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 0.75rem;
+}
+
+.strengthBar {
+    height: 4px;
+    flex: 1;
+    background-color: #3f3f46;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.strengthBar.active {
+    background-color: #eab308; /* Yellow for medium */
+}
+
+.strengthBar.full {
+    background-color: #22c55e; /* Green for full strength */
+}
+
+.strengthBar:first-child.active:not(.full) {
+    background-color: #ef4444; /* Red for weak */
+}
+
+.reqList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.reqList li {
+    font-size: 0.75rem;
+    color: #71717a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reqList li::before {
+    content: "✕";
+    color: #ef4444;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.reqList li.met {
+    color: #a1a1aa;
+}
+
+.reqList li.met::before {
+    content: "✓";
+    color: #22c55e;
+}
+
+.inputError {
+    border-color: #ef4444 !important;
+}
+
+.matchSuccess {
+    font-size: 0.75rem;
+    color: #22c55e;
+    margin-top: 0.25rem;
+    display: block;
+}
