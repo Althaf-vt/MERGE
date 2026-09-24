@@ -23,7 +23,7 @@ export interface AdminAggregateProps {
     profilePhotoUrl?: string;
     status: AdminStatus;
     suspendedUntil?: Date | null;
-    statusHistory: AdminStatusLog[];
+    statusHistory?: AdminStatusLog[];
     permissions: AdminPermission[];
     lastLoginAt?: Date;
     createdBy?: string;
@@ -31,8 +31,13 @@ export interface AdminAggregateProps {
     updatedAt?: Date;
 }
 
+interface InternalAdminProps extends AdminAggregateProps {
+    statusHistory: AdminStatusLog[];
+    permissions: AdminPermission[];
+}
+
 export class AdminAggregate extends AggregateRoot {
-    private _props: AdminAggregateProps;
+    private _props: InternalAdminProps;
 
     constructor(props: AdminAggregateProps) {
         super();
