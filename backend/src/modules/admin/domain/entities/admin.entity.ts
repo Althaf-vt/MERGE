@@ -25,6 +25,7 @@ export interface AdminAggregateProps {
     suspendedUntil?: Date | null;
     statusHistory?: AdminStatusLog[];
     permissions: AdminPermission[];
+    inviteExpiresAt?: Date | null;
     lastLoginAt?: Date;
     createdBy?: string;
     createdAt?: Date;
@@ -63,6 +64,7 @@ export class AdminAggregate extends AggregateRoot {
     get suspendedUntil(): Date | null | undefined { return this._props.suspendedUntil; }
     get statusHistory(): AdminStatusLog[] { return [...this._props.statusHistory]; }
     get permissions(): AdminPermission[] { return this._props.permissions; }
+    get inviteExpiresAt(): Date | null | undefined { return this._props.inviteExpiresAt; }
     get lastLogin(): Date | undefined { return this._props.lastLoginAt; }
     get createdBy(): string | undefined { return this._props.createdBy; }
     get createdAt(): Date | undefined { return this._props.createdAt; }
@@ -109,9 +111,9 @@ export class AdminAggregate extends AggregateRoot {
         this._markUpdatedAt();
     }
 
-    deactivateAccount(reason: string, actionBy: string): void{
-        if(this._props.role === AdminRole.SUPER_ADMIN){
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Super Admins cannot be deactivated.');        
+    deactivateAccount(reason: string, actionBy: string): void {
+        if (this._props.role === AdminRole.SUPER_ADMIN) {
+            throw new DomainException(ErrorCode.FORBIDDEN, 'Super Admins cannot be deactivated.');
         }
 
         this._props.status = AdminStatus.DEACTIVATED;
@@ -156,14 +158,34 @@ export class AdminAggregate extends AggregateRoot {
         }
         this._props.passwordHash = newPasswordHash;
         this._props.status = AdminStatus.ACTIVE;
+        this._props.inviteExpiresAt = null; // clear on success
         this._markUpdatedAt();
+    }
+
+    renewInvitation(newExpiryDate: Date): void {
+        if (this._props.status !== AdminStatus.INVITED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending invitations can be renewed.');
+        }
+
+        if (this._props.inviteExpiresAt && this._props.inviteExpiresAt.getTime() > new Date().getTime()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Current invitation is still active. You can only re-invite expired accounts.');
+        }
+        
+        this._props.inviteExpiresAt = newExpiryDate;
+        this._markUpdatedAt();
+    }
+
+    validateCanCancelInvitation(): void {
+        if (this._props.status !== AdminStatus.INVITED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending invitations can be cancelled. Active or suspended accounts must be deactivated.');
+        }
     }
 
     private _markUpdatedAt(): void {
         this._props.updatedAt = new Date();
     }
 
-    private _recordStatusLog(status: AdminStatus, reason: string, actionBy: string){
+    private _recordStatusLog(status: AdminStatus, reason: string, actionBy: string) {
         this._props.statusHistory.push({
             status,
             reason,

@@ -24,4 +24,5 @@ export interface IAdminRepository extends IBaseRepository<AdminAggregate> {
     findByEmail(email: string): Promise<AdminAggregate | null>;
     existsByRole(role: AdminRole): Promise<boolean>;
     findAllPaginated(filters: GetAdminsFilters): Promise<PaginatedAdminsResult>;
+    delete(id: string): Promise<void>;
 }
