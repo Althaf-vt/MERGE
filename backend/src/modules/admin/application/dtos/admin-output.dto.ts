@@ -8,6 +8,7 @@ export interface AdminDetailsDto {
     status: AdminStatus;
     permissions: string[];
     profilePhotoUrl: string | null;
+    inviteExpiresAt: Date | null;
     lastLoginAt: Date | null;
     createdAt: Date;
 }

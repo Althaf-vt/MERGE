@@ -27,6 +27,9 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
             throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, 'An admin account with this email already exists.');
         }
 
+        const ttlSeconds = parseInt(process.env.ADMIN_INVITE_TTL_SECONDS || '86400', 10);
+        const expiresAt = new Date(Date.now() + (ttlSeconds * 1000));
+
         const newAdmin = new AdminAggregate({
             email: emailVo,
             fullName: dto.fullName,
@@ -34,15 +37,14 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
             status: AdminStatus.INVITED,
             permissions: dto.permissions as any[] ?? [],
             passwordHash: null,
+            inviteExpiresAt: expiresAt,
             createdBy: inviterId,
         });
 
         await this._adminRepository.create(newAdmin);
-        const token = crypto.randomBytes(32).toString('hex');
-        const ttlSeconds = parseInt(process.env.ADMIN_INVITE_TTL_SECONDS || '86400', 10);
         
+        const token = crypto.randomBytes(32).toString('hex');        
         await this._inviteService.storeInviteToken(emailVo, token, ttlSeconds);
-
         await this._emailService.sendAdminInviteEmail(emailVo.getValue(), token, inviterName);
     }
 }
