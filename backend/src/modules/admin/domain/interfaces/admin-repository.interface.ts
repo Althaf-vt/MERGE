@@ -10,6 +10,7 @@ export interface GetAdminsFilters {
     role?: AdminRole;
     status?: AdminStatus;
     search?: string;
+    excludeAdminId?: string;
 }
 
 export interface PaginatedAdminsResult {

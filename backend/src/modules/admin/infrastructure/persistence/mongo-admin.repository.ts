@@ -45,6 +45,9 @@ export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, Ad
 
         const query: any = {};
 
+        if (filters.excludeAdminId) {
+            query._id = { $ne: filters.excludeAdminId }
+        }
         if (filters.role) query.role = filters.role;
         if (filters.status) query.status = filters.status;
         if (filters.search) {
