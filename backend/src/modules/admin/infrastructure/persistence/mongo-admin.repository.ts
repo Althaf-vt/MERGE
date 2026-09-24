@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { Admin, AdminDocument } from "./admin.schema";
-import { IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
+import { GetAdminsFilters, IAdminRepository, PaginatedAdminsResult } from "../../domain/interfaces/admin-repository.interface";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { AdminPersistenceMapper } from "./mappers/admin-persistence.mapper";
@@ -36,5 +36,34 @@ export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, Ad
     async existsByRole(role: AdminRole): Promise<boolean> {
         const count = await this._model.countDocuments({ role }).exec();
         return count > 0;
+    }
+
+    async findAllPaginated(filters: GetAdminsFilters): Promise<PaginatedAdminsResult> {
+        const page = filters.page || 1;
+        const limit = filters.limit || 10;
+        const skip = (page - 1) * limit;
+
+        const query: any = {};
+
+        if (filters.role) query.role = filters.role;
+        if (filters.status) query.status = filters.status;
+        if (filters.search) {
+            query.$or = [
+                { email: { $regex: filters.search, $options: 'i' } },
+                { fullName: { $regex: filters.search, $options: 'i' } }
+            ];
+        }
+
+        const [documents, total] = await Promise.all([
+            this._model.find(query).skip(skip).limit(limit).exec(),
+            this._model.countDocuments(query).exec()
+        ]);
+
+        return {
+            data: documents.map(doc => this.toDomain(doc as any)),
+            total,
+            page,
+            limit
+        };
     }
 }
