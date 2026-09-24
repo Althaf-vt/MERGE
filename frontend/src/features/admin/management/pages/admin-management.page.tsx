@@ -6,6 +6,7 @@ import { type AdminRole, type AdminStatus, type AdminDetails } from '../types/ad
 import { InviteAdminModal } from '../components/invite-admin-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
 import { AdminStatusModal, type AdminActionType } from '../components/admin-status-modal.component';
+import { AdminInviteActionModal, type InviteActionType } from '../components/admin-invite-action-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import styles from './admin-management.module.css';
 
@@ -29,6 +30,12 @@ export const AdminManagementPage = () => {
         adminName: string;
         actionType: AdminActionType;
     } | null>(null);
+    const [inviteActionModalConfig, setInviteActionModalConfig] = useState<{
+        isOpen: boolean;
+        adminId: string;
+        adminName: string;
+        actionType: InviteActionType;
+    } | null>(null);
 
     // API Hooks
     const { data, isLoading, isFetching, refetch } = useGetAdminsQuery({
@@ -46,6 +53,15 @@ export const AdminManagementPage = () => {
 
     const handleStatusAction = (id: string, name: string, actionType: AdminActionType) => {
         setStatusModalConfig({
+            isOpen: true,
+            adminId: id,
+            adminName: name,
+            actionType
+        });
+    };
+
+    const handleInviteAction = (id: string, name: string, actionType: InviteActionType) => {
+        setInviteActionModalConfig({
             isOpen: true,
             adminId: id,
             adminName: name,
@@ -142,37 +158,65 @@ export const AdminManagementPage = () => {
                                     <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
                                     <td>
                                         <div className={styles.actionGroup}>
-                                            <button 
-                                                className={styles.actionBtn}
-                                                onClick={() => setSelectedAdmin(admin)}
-                                            >
-                                                EDIT
-                                            </button>
-                                            
-                                            {admin.role !== 'SUPER_ADMIN' && (
+                                            {admin.status === 'INVITED' ? (
                                                 <>
-                                                    {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
+                                                    {/* Strict Expiry Check: Only render RE-INVITE if the date is strictly in the past */}
+                                                    {admin.inviteExpiresAt && new Date(admin.inviteExpiresAt).getTime() < Date.now() ? (
                                                         <button 
                                                             className={`${styles.actionBtn} ${styles.reactivateBtn}`}
-                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'REACTIVATE')}
+                                                            onClick={() => handleInviteAction(admin.id, admin.fullName, 'REINVITE')}
                                                         >
-                                                            REACTIVATE
+                                                            RE-INVITE
                                                         </button>
                                                     ) : (
-                                                        <button 
-                                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'SUSPEND')}
-                                                        >
-                                                            SUSPEND
-                                                        </button>
+                                                        <span style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', alignSelf: 'center', marginRight: '8px', fontWeight: 600 }}>
+                                                            PENDING
+                                                        </span>
                                                     )}
-                                                    {admin.status !== 'DEACTIVATED' && (
-                                                        <button 
-                                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'DEACTIVATE')}
-                                                        >
-                                                            DEACTIVATE
-                                                        </button>
+                                                    
+                                                    <button 
+                                                        className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                        onClick={() => handleInviteAction(admin.id, admin.fullName, 'CANCEL')}
+                                                    >
+                                                        CANCEL
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button 
+                                                        className={styles.actionBtn}
+                                                        onClick={() => setSelectedAdmin(admin)}
+                                                    >
+                                                        EDIT
+                                                    </button>
+                                                    
+                                                    {admin.role !== 'SUPER_ADMIN' && (
+                                                        <>
+                                                            {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
+                                                                <button 
+                                                                    className={`${styles.actionBtn} ${styles.reactivateBtn}`}
+                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'REACTIVATE')}
+                                                                >
+                                                                    REACTIVATE
+                                                                </button>
+                                                            ) : (
+                                                                <button 
+                                                                    className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'SUSPEND')}
+                                                                >
+                                                                    SUSPEND
+                                                                </button>
+                                                            )}
+                                                            
+                                                            {admin.status !== 'DEACTIVATED' && (
+                                                                <button 
+                                                                    className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'DEACTIVATE')}
+                                                                >
+                                                                    DEACTIVATE
+                                                                </button>
+                                                            )}
+                                                        </>
                                                     )}
                                                 </>
                                             )}
@@ -233,6 +277,16 @@ export const AdminManagementPage = () => {
                         adminId={statusModalConfig.adminId}
                         adminName={statusModalConfig.adminName}
                         actionType={statusModalConfig.actionType}
+                    />
+                )}
+
+                {inviteActionModalConfig && (
+                    <AdminInviteActionModal
+                        isOpen={inviteActionModalConfig.isOpen}
+                        onClose={() => setInviteActionModalConfig(null)}
+                        adminId={inviteActionModalConfig.adminId}
+                        adminName={inviteActionModalConfig.adminName}
+                        actionType={inviteActionModalConfig.actionType}
                     />
                 )}
             </AnimatePresence>
