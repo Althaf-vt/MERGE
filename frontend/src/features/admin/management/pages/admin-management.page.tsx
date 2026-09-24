@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
+import { useAppSelector } from '../../../../app/hooks';
 import { useGetAdminsQuery } from '../api/admin-management.api';
 import { type AdminRole, type AdminStatus, type AdminDetails } from '../types/admin-management.types';
 import { InviteAdminModal } from '../components/invite-admin-modal.component';
@@ -9,6 +10,9 @@ import { AdminPageTransition } from '../../../../shared/admin/components/admin-p
 import styles from './admin-management.module.css';
 
 export const AdminManagementPage = () => {
+    // Current Authenticated Admin
+    const { admin: currentAdmin } = useAppSelector((state) => state.adminAuth);
+
     // Filter State
     const [page, setPage] = useState(1);
     const [limit] = useState(15);
@@ -49,6 +53,8 @@ export const AdminManagementPage = () => {
         });
     };
 
+    // Filter out the currently logged-in admin
+    const displayedAdmins = (data?.data || []).filter(admin => admin.id !== currentAdmin?.id);
     const totalPages = data?.meta?.total ? Math.ceil(data.meta.total / limit) : 1;
 
     return (
@@ -112,10 +118,10 @@ export const AdminManagementPage = () => {
                     <tbody>
                         {isLoading ? (
                             <tr><td colSpan={5} className={styles.loading}>INITIALIZING DATA STREAM...</td></tr>
-                        ) : data?.data.length === 0 ? (
+                        ) : displayedAdmins.length === 0 ? (
                             <tr><td colSpan={5} className={styles.emptyState}>NO PERSONNEL RECORDS FOUND.</td></tr>
                         ) : (
-                            data?.data.map((admin) => (
+                            displayedAdmins.map((admin) => (
                                 <tr key={admin.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
                                     <td>
                                         <div className={styles.adminInfo}>
@@ -160,7 +166,6 @@ export const AdminManagementPage = () => {
                                                             SUSPEND
                                                         </button>
                                                     )}
-
                                                     {admin.status !== 'DEACTIVATED' && (
                                                         <button 
                                                             className={`${styles.actionBtn} ${styles.suspendBtn}`}
