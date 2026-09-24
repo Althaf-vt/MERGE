@@ -2,7 +2,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../../../app/store';
-import type { AcceptAdminInviteRequest, AdminManagementResponse, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
+import type { AcceptAdminInviteRequest, AdminManagementResponse, AdminStatusReasonRequest, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, SuspendAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
 
 export const adminManagementApi = createApi({
     reducerPath: 'adminManagementApi',
@@ -58,18 +58,29 @@ export const adminManagementApi = createApi({
             invalidatesTags: ['Admins'],
         }),
         
-        suspendAdmin: builder.mutation<AdminManagementResponse, string>({
-            query: (adminId) => ({
+        suspendAdmin: builder.mutation<AdminManagementResponse, SuspendAdminRequest>({
+            query: ({ adminId, ...body }) => ({
                 url: `/admin/management/${adminId}/suspend`,
                 method: 'PATCH',
+                body,
             }),
             invalidatesTags: ['Admins'],
         }),
         
-        reactivateAdmin: builder.mutation<AdminManagementResponse, string>({
-            query: (adminId) => ({
+        deactivateAdmin: builder.mutation<AdminManagementResponse, AdminStatusReasonRequest>({
+            query: ({ adminId, ...body }) => ({
+                url: `/admin/management/${adminId}/deactivate`,
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Admins'],
+        }),
+        
+        reactivateAdmin: builder.mutation<AdminManagementResponse, AdminStatusReasonRequest>({
+            query: ({ adminId, ...body }) => ({
                 url: `/admin/management/${adminId}/reactivate`,
                 method: 'PATCH',
+                body,
             }),
             invalidatesTags: ['Admins'],
         }),
@@ -82,5 +93,6 @@ export const {
     useAcceptAdminInviteMutation,
     useUpdateAdminMutation,
     useSuspendAdminMutation,
+    useDeactivateAdminMutation,
     useReactivateAdminMutation,
 } = adminManagementApi;

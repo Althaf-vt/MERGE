@@ -75,3 +75,15 @@ export interface GetAdminsResponse {
         limit: number;
     };
 }
+
+export interface SuspendAdminRequest {
+    adminId: string;
+    duration: number;
+    unit: 'HOURS' | 'DAYS';
+    reason: string;
+}
+
+export interface AdminStatusReasonRequest {
+    adminId: string;
+    reason: string;
+}
