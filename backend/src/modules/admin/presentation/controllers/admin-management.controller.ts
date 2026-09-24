@@ -8,6 +8,7 @@ import { AcceptAdminInviteDto, InviteAdminDto, UpdateAdminDto } from "../../appl
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GET_ADMINS_USE_CASE, IGetAdminsUseCase } from "../../application/interfaces/get-admins.use-case.interface";
 import { GetAdminsDto } from "../../application/dtos/get-admins.dto";
+import { IReactivateAdminUseCase, ISuspendAdminUseCase, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "../../application/interfaces/admin-status.use-case.interface";
 
 @Controller('admin/management')
 export class AdminManagementController {
@@ -16,6 +17,8 @@ export class AdminManagementController {
         @Inject(ACCEPT_ADMIN_INVITE_USE_CASE) private readonly _acceptInviteUseCase: IAcceptAdminInviteUseCase,
         @Inject(UPDATE_ADMIN_USE_CASE) private readonly _updateAdminUseCase: IUpdateAdminUseCase,
         @Inject(GET_ADMINS_USE_CASE) private readonly _getAdminsUseCase: IGetAdminsUseCase,
+        @Inject(SUSPEND_ADMIN_USE_CASE) private readonly _suspendAdminUseCase: ISuspendAdminUseCase,
+        @Inject(REACTIVATE_ADMIN_USE_CASE) private readonly _reactivateAdminUseCase: IReactivateAdminUseCase,
     ) { }
 
     @Get()
@@ -67,5 +70,23 @@ export class AdminManagementController {
         await this._updateAdminUseCase.execute(targetAdminId, dto);
 
         return { success: true, message: 'Admin account updated successfully.' };
+    }
+
+    @Patch(':id/suspend')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
+    @HttpCode(HttpStatus.OK)
+    async suspendAdmin(@Param('id') targetAdminId: string){
+        await this._suspendAdminUseCase.execute(targetAdminId);
+        return { success: true, message: 'Admin account suspended successfully.' };
+    }
+
+    @Patch(':id/reactivate')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
+    @HttpCode(HttpStatus.OK)
+    async reactivateAdmin(@Param('id') targetAdminId: string) {
+        await this._reactivateAdminUseCase.execute(targetAdminId);
+        return { success: true, message: 'Admin account reactivated successfully.' };
     }
 }

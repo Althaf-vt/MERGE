@@ -76,11 +76,24 @@ export class AdminAggregate extends AggregateRoot {
         this._markUpdatedAt();
     }
 
-    suspend(): void {
+    suspendAccount(): void {
+        if (this._props.status === AdminStatus.DEACTIVATED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot suspend a deactivated account.');
+        }
+        if (this._props.role === AdminRole.SUPER_ADMIN) {
+            throw new DomainException(ErrorCode.FORBIDDEN, 'Super Admins cannot be suspended.');
+        }
         this._props.status = AdminStatus.SUSPENDED;
         this._markUpdatedAt();
+    }
 
-        // Future EDA: this.addDomainEvent(new AdminSuspendedDomainEvent(this.id));
+    reactivateAccount(): void {
+        if(this._props.status !== AdminStatus.SUSPENDED){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only suspended account can be reactivated.');
+        }
+
+        this._props.status = AdminStatus.ACTIVE;
+        this._markUpdatedAt();
     }
 
     assignPermissions(newPermissions: AdminPermission[]): void {

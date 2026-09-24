@@ -33,6 +33,9 @@ import { AcceptAdminInviteUseCase } from "./application/use-cases/accept-admin-i
 import { InviteAdminUseCase } from "./application/use-cases/invite-admin.use-case";
 import { GET_ADMINS_USE_CASE } from "./application/interfaces/get-admins.use-case.interface";
 import { GetAdminsUseCase } from "./application/use-cases/get-admins.use-case";
+import { REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "./application/interfaces/admin-status.use-case.interface";
+import { SuspendAdminUseCase } from "./application/use-cases/suspend-admin.use-case";
+import { ReactivateAdminUseCase } from "./application/use-cases/reactivate-admin.use-case";
 
 @Module({
     imports: [
@@ -112,7 +115,15 @@ import { GetAdminsUseCase } from "./application/use-cases/get-admins.use-case";
         {
             provide: GET_ADMINS_USE_CASE,
             useClass: GetAdminsUseCase,
-        }
+        },
+        {
+            provide: SUSPEND_ADMIN_USE_CASE,
+            useClass: SuspendAdminUseCase,
+        },
+        {
+            provide: REACTIVATE_ADMIN_USE_CASE,
+            useClass: ReactivateAdminUseCase,
+        },
     ],
     exports: [
         ADMIN_REPOSITORY,
