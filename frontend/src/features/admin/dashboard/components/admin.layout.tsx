@@ -60,6 +60,15 @@ export const AdminLayout: React.FC = () => {
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                         User Management
                     </NavLink>
+
+                    {/* Admin Personnel Management (Super Admin Exclusive) */}
+                    {admin?.role === 'SUPER_ADMIN' && (
+                        <NavLink to="/admin/management" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a7 7 0 0 0 7-7V4l-7-2-7 2v4a7 7 0 0 0 7 7z"></path><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"></path></svg>
+                            Admin Personnel
+                        </NavLink>
+                    )}
+
                     <NavLink to="/admin/kyc-escalations" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                         KYC Escalations
