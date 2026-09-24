@@ -176,7 +176,7 @@ export class NodeMailerEmailService implements IEmailService {
 
         try {
             await this._transporter.sendMail({
-                from: `"MERGE Security" <${process.env.SMTP_FROM || 'security@merge.com'}>`,
+                from: `"MERGE Security" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
                 to,
                 subject: 'MERGE Admin Portal - Secure Invitation',
                 html: htmlTemplate,
