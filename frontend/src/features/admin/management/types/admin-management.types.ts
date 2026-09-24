@@ -55,6 +55,7 @@ export interface AdminDetails {
     status: AdminStatus;
     permissions: AdminPermission[];
     profilePhotoUrl: string | null;
+    inviteExpiresAt: string | null;
     lastLoginAt: string | null;
     createdAt: string;
 }

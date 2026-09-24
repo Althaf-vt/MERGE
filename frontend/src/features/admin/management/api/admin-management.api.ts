@@ -48,6 +48,22 @@ export const adminManagementApi = createApi({
             }),
             invalidatesTags: ['Admins'],
         }),
+
+        reinviteAdmin: builder.mutation<AdminManagementResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}/reinvite`,
+                method: 'POST',
+            }),
+            invalidatesTags: ['Admins'],
+        }),
+        
+        cancelAdminInvite: builder.mutation<AdminManagementResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}/cancel-invite`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Admins'],
+        }),
         
         updateAdmin: builder.mutation<AdminManagementResponse, { adminId: string; data: UpdateAdminRequest }>({
             query: ({ adminId, data }) => ({
@@ -91,6 +107,8 @@ export const {
     useGetAdminsQuery,
     useInviteAdminMutation,
     useAcceptAdminInviteMutation,
+    useCancelAdminInviteMutation,
+    useReinviteAdminMutation,
     useUpdateAdminMutation,
     useSuspendAdminMutation,
     useDeactivateAdminMutation,
