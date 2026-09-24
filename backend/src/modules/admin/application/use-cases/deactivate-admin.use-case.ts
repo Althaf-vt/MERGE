@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IReactivateAdminUseCase } from '../interfaces/admin-status.use-case.interface';
 import { ADMIN_REPOSITORY, IAdminRepository } from '../../domain/interfaces/admin-repository.interface';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { IDeactivateAdminUseCase } from '../interfaces/admin-status.use-case.interface';
 
 @Injectable()
-export class ReactivateAdminUseCase implements IReactivateAdminUseCase {
+export class DeactivateAdminUseCase implements IDeactivateAdminUseCase {
     constructor(
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository
     ) {}
@@ -17,7 +17,7 @@ export class ReactivateAdminUseCase implements IReactivateAdminUseCase {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
         }
 
-        admin.reactivateAccount(reason, actionByAdminId);
+        admin.deactivateAccount(reason, actionByAdminId);
         
         await this._adminRepository.update(admin);
     }
