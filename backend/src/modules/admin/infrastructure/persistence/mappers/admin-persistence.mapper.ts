@@ -18,6 +18,7 @@ export class AdminPersistenceMapper {
             profilePhotoUrl: raw.profilePhotoUrl,
             status: raw.status as AdminStatus,
             permissions: (raw.permissions as AdminPermission[]) ?? [],
+            inviteExpiresAt: raw.inviteExpiresAt ?? null,
             lastLoginAt: raw.lastLoginAt,
             suspendedUntil: raw.suspendedUntil ?? null,
             statusHistory: (raw.statusHistory ?? []).map((log: any): AdminStatusLog => ({
@@ -42,6 +43,7 @@ export class AdminPersistenceMapper {
             profilePhotoUrl: data.profilePhotoUrl ?? null,
             status: data.status,
             permissions: data.permissions ?? [],
+            inviteExpiresAt: data.inviteExpiresAt ?? null,
             lastLoginAt: data.lastLoginAt ?? null,
             suspendedUntil: data.suspendedUntil ?? null,
             statusHistory: (data.statusHistory ?? []).map((log: AdminStatusLog) => ({

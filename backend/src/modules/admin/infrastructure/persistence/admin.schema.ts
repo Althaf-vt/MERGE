@@ -34,6 +34,9 @@ export class Admin {
     @Prop({ default: null })
     profilePhotoUrl?: string;
 
+    @Prop({ type: Date, default: null })
+    inviteExpiresAt?: Date | null;
+
     @Prop({ type: String, enum: AdminStatus, default: AdminStatus.ACTIVE })
     status: string;
 

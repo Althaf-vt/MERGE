@@ -69,4 +69,8 @@ export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, Ad
             limit
         };
     }
+
+    async delete(id: string): Promise<void> {
+        await this._model.findByIdAndDelete(id).exec();
+    }
 }
