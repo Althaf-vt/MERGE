@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/slices/auth.slice";
-import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice"; 
+import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice";
 import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { authApi } from "../features/auth/api/auth.api";
 import { kycApi } from "../features/onboarding/api/kyc.api";
@@ -9,6 +9,7 @@ import { profileApi } from "../features/onboarding/api/profile.api";
 import { adminAuthApi } from "../features/admin/auth/api/admin-auth.api";
 import { adminUsersApi } from "../features/admin/users/api/admin-users.api";
 import { castingDirectorApi } from "../features/casting-director/api/casting-director.api";
+import { adminManagementApi } from "../features/admin/management/api/admin-management.api";
 
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
         [adminAuthApi.reducerPath]: adminAuthApi.reducer,
         [adminUsersApi.reducerPath]: adminUsersApi.reducer,
         [castingDirectorApi.reducerPath]: castingDirectorApi.reducer,
+        [adminManagementApi.reducerPath]: adminManagementApi.reducer,
 
         kyc: kycReducer,
         [kycApi.reducerPath]: kycApi.reducer,
@@ -32,7 +34,7 @@ export const store = configureStore({
 
     // 3. The Middleware
     // We take the default Redux middleware and add the RTK Query middleware on top of it.
-    middleware: (getDefaultMiddleware) => 
+    middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
             authApi.middleware,
             adminAuthApi.middleware,
@@ -41,6 +43,7 @@ export const store = configureStore({
             profileApi.middleware,
             adminUsersApi.middleware,
             castingDirectorApi.middleware,
+            adminManagementApi.middleware,
         )
 })
 
