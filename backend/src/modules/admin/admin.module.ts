@@ -31,6 +31,8 @@ import { ACCEPT_ADMIN_INVITE_USE_CASE, INVITE_ADMIN_USE_CASE, UPDATE_ADMIN_USE_C
 import { UpdateAdminUseCase } from "./application/use-cases/update-admin.use-case";
 import { AcceptAdminInviteUseCase } from "./application/use-cases/accept-admin-invite.use-case";
 import { InviteAdminUseCase } from "./application/use-cases/invite-admin.use-case";
+import { GET_ADMINS_USE_CASE } from "./application/interfaces/get-admins.use-case.interface";
+import { GetAdminsUseCase } from "./application/use-cases/get-admins.use-case";
 
 @Module({
     imports: [
@@ -106,6 +108,10 @@ import { InviteAdminUseCase } from "./application/use-cases/invite-admin.use-cas
         {
             provide: UPDATE_ADMIN_USE_CASE,
             useClass: UpdateAdminUseCase,
+        },
+        {
+            provide: GET_ADMINS_USE_CASE,
+            useClass: GetAdminsUseCase,
         }
     ],
     exports: [
