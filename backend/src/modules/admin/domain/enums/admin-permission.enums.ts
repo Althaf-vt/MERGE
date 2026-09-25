@@ -12,6 +12,7 @@ export const AdminPermission = {
     ADMINS_INVITE: 'admins:invite',
     ADMINS_SUSPEND: 'admins:suspend',
     ADMINS_ASSIGN_PERMISSIONS: 'admins:assign_permissions',
+    ADMINS_FORCE_LOGOUT: 'admins:force_logout',
 
     SCENE_PARTNER_MANAGE: 'scene_partner:manage',
     LUMEN_MANAGE: 'lumen:manage',
