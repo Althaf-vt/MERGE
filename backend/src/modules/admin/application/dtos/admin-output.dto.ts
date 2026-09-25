@@ -1,3 +1,4 @@
+import { AdminStatusLog } from "../../domain/entities/admin.entity";
 import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
 
 export interface AdminDetailsDto {
@@ -10,6 +11,7 @@ export interface AdminDetailsDto {
     profilePhotoUrl: string | null;
     inviteExpiresAt: Date | null;
     lastLoginAt: Date | null;
+    statusHistory: AdminStatusLog[];
     createdAt: Date;
 }
 

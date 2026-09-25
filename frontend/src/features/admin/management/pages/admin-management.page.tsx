@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 import { useAppSelector } from '../../../../app/hooks';
 import { useGetAdminsQuery } from '../api/admin-management.api';
@@ -7,10 +8,13 @@ import { InviteAdminModal } from '../components/invite-admin-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
 import { AdminStatusModal, type AdminActionType } from '../components/admin-status-modal.component';
 import { AdminInviteActionModal, type InviteActionType } from '../components/admin-invite-action-modal.component';
+import { AdminForceLogoutModal } from '../components/admin-force-logout-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import styles from './admin-management.module.css';
 
 export const AdminManagementPage = () => {
+    const navigate = useNavigate();
+
     // Current Authenticated Admin
     const { admin: currentAdmin } = useAppSelector((state) => state.adminAuth);
 
@@ -35,6 +39,11 @@ export const AdminManagementPage = () => {
         adminId: string;
         adminName: string;
         actionType: InviteActionType;
+    } | null>(null);
+    const [forceLogoutConfig, setForceLogoutConfig] = useState<{
+        isOpen: boolean;
+        adminId: string;
+        adminName: string;
     } | null>(null);
 
     // API Hooks
@@ -141,7 +150,13 @@ export const AdminManagementPage = () => {
                                 <tr key={admin.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
                                     <td>
                                         <div className={styles.adminInfo}>
-                                            <span className={styles.adminName}>{admin.fullName}</span>
+                                            <span 
+                                                className={`${styles.adminName} ${styles.clickableName}`}
+                                                onClick={() => navigate(`/admin/management/${admin.id}`)}
+                                                title="View Admin Details"
+                                            >
+                                                {admin.fullName}
+                                            </span>
                                             <span className={styles.adminEmail}>{admin.email}</span>
                                         </div>
                                     </td>
@@ -158,9 +173,16 @@ export const AdminManagementPage = () => {
                                     <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
                                     <td>
                                         <div className={styles.actionGroup}>
+                                            <button 
+                                                className={styles.actionBtn}
+                                                onClick={() => navigate(`/admin/management/${admin.id}`)}
+                                                title="View full audit log and profile"
+                                            >
+                                                VIEW
+                                            </button>
+
                                             {admin.status === 'INVITED' ? (
                                                 <>
-                                                    {/* Strict Expiry Check: Only render RE-INVITE if the date is strictly in the past */}
                                                     {admin.inviteExpiresAt && new Date(admin.inviteExpiresAt).getTime() < Date.now() ? (
                                                         <button 
                                                             className={`${styles.actionBtn} ${styles.reactivateBtn}`}
@@ -169,7 +191,7 @@ export const AdminManagementPage = () => {
                                                             RE-INVITE
                                                         </button>
                                                     ) : (
-                                                        <span style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', alignSelf: 'center', marginRight: '8px', fontWeight: 600 }}>
+                                                        <span style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', alignSelf: 'center', marginRight: '4px', fontWeight: 600 }}>
                                                             PENDING
                                                         </span>
                                                     )}
@@ -189,9 +211,19 @@ export const AdminManagementPage = () => {
                                                     >
                                                         EDIT
                                                     </button>
-                                                    
+
                                                     {admin.role !== 'SUPER_ADMIN' && (
                                                         <>
+                                                            {admin.status === 'ACTIVE' && (
+                                                                <button 
+                                                                    className={styles.actionBtn}
+                                                                    onClick={() => setForceLogoutConfig({ isOpen: true, adminId: admin.id, adminName: admin.fullName })}
+                                                                    title="Revoke session token"
+                                                                >
+                                                                    LOGOUT
+                                                                </button>
+                                                            )}
+
                                                             {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
                                                                 <button 
                                                                     className={`${styles.actionBtn} ${styles.reactivateBtn}`}
@@ -269,7 +301,7 @@ export const AdminManagementPage = () => {
                         currentPermissions={selectedAdmin.permissions}
                     />
                 )}
-
+                
                 {statusModalConfig && (
                     <AdminStatusModal
                         isOpen={statusModalConfig.isOpen}
@@ -279,7 +311,7 @@ export const AdminManagementPage = () => {
                         actionType={statusModalConfig.actionType}
                     />
                 )}
-
+                
                 {inviteActionModalConfig && (
                     <AdminInviteActionModal
                         isOpen={inviteActionModalConfig.isOpen}
@@ -287,6 +319,15 @@ export const AdminManagementPage = () => {
                         adminId={inviteActionModalConfig.adminId}
                         adminName={inviteActionModalConfig.adminName}
                         actionType={inviteActionModalConfig.actionType}
+                    />
+                )}
+
+                {forceLogoutConfig && (
+                    <AdminForceLogoutModal
+                        isOpen={forceLogoutConfig.isOpen}
+                        onClose={() => setForceLogoutConfig(null)}
+                        adminId={forceLogoutConfig.adminId}
+                        adminName={forceLogoutConfig.adminName}
                     />
                 )}
             </AnimatePresence>

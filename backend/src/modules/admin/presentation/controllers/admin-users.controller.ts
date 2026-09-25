@@ -7,9 +7,10 @@ import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUserDto } from "../../application/dtos/user-management.dto";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
+import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 
 @Controller('admin/users')
-@UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+@UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
 export class AdminUsersController {
     constructor(
         @Inject(MANAGE_USER_STATUS_USE_CASE) 

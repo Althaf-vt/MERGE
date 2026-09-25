@@ -40,6 +40,11 @@ import { DeactivateAdminUseCase } from "./application/use-cases/deactivate-admin
 import { CANCEL_ADMIN_INVITE_USE_CASE, REINVITE_ADMIN_USE_CASE } from "./application/interfaces/admin-invitation-lifecycle.use-case.interface";
 import { ReinviteAdminUseCase } from "./application/use-cases/reinvite-admin.use-case";
 import { CancelAdminInviteUseCase } from "./application/use-cases/cancel-admin-invite.use-case";
+import { FORCE_LOGOUT_ADMIN_USE_CASE, GET_ADMIN_DETAILS_USE_CASE } from "./application/interfaces/admin-personnel.use-case.interface";
+import { ForceLogoutAdminUseCase } from "./application/use-cases/force-logout-admin.use-case";
+import { GetAdminDetailsUseCase } from "./application/use-cases/get-admin-details.use-case";
+import { AdminRedisSessionService } from "./infrastructure/services/admin-redis-session.service";
+import { ADMIN_SESSION_SERVICE } from "./domain/interfaces/admin-session.interface";
 
 @Module({
     imports: [
@@ -58,7 +63,6 @@ import { CancelAdminInviteUseCase } from "./application/use-cases/cancel-admin-i
 
     providers: [
         AdminSeederService,
-
 
         {
             provide: ADMIN_REPOSITORY,
@@ -140,6 +144,18 @@ import { CancelAdminInviteUseCase } from "./application/use-cases/cancel-admin-i
             provide: REACTIVATE_ADMIN_USE_CASE,
             useClass: ReactivateAdminUseCase,
         },
+        {
+            provide: FORCE_LOGOUT_ADMIN_USE_CASE,
+            useClass: ForceLogoutAdminUseCase,
+        },
+        {
+            provide: GET_ADMIN_DETAILS_USE_CASE,
+            useClass: GetAdminDetailsUseCase,
+        },
+        {
+            provide: ADMIN_SESSION_SERVICE,
+            useClass: AdminRedisSessionService,
+        }
     ],
     exports: [
         ADMIN_REPOSITORY,

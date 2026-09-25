@@ -13,6 +13,7 @@ export class AdminDtoMapper {
             profilePhotoUrl: entity.profilePhotoUrl ?? null,
             inviteExpiresAt: entity.inviteExpiresAt ?? null,
             lastLoginAt: entity.lastLogin ?? null,
+            statusHistory: entity.statusHistory,
             createdAt: entity.createdAt as Date,
         };
     }

@@ -57,6 +57,7 @@ export interface AdminDetails {
     profilePhotoUrl: string | null;
     inviteExpiresAt: string | null;
     lastLoginAt: string | null;
+    statusHistory: AdminStatusLog[];
     createdAt: string;
 }
 
@@ -88,4 +89,16 @@ export interface SuspendAdminRequest {
 export interface AdminStatusReasonRequest {
     adminId: string;
     reason: string;
+}
+
+export interface AdminStatusLog {
+    status: AdminStatus;
+    reason: string;
+    actionBy: string; 
+    timestamp: string;
+}
+
+export interface GetAdminDetailsResponse {
+    success: boolean;
+    data: AdminDetails;
 }

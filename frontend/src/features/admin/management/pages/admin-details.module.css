@@ -1,0 +1,223 @@
+/* frontend/src/features/admin/management/pages/admin-details.module.css */
+
+.container {
+    padding: 24px;
+    background-color: var(--admin-bg);
+    min-height: 100vh;
+    color: var(--admin-text-primary);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 16px;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.backBtn {
+    background: transparent;
+    border: none;
+    color: var(--admin-text-secondary);
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.backBtn:hover {
+    color: var(--admin-text-primary);
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 4px 0 0 0;
+    letter-spacing: -0.02em;
+}
+
+.badges {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.actionBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 16px;
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover {
+    background: var(--admin-border);
+    color: var(--admin-text-primary);
+}
+
+.suspendBtn { color: var(--badge-ban-text); border-color: var(--admin-danger-border); }
+.suspendBtn:hover { background: var(--badge-ban-bg); }
+
+.reactivateBtn { color: var(--badge-active-text); border-color: rgba(22, 163, 74, 0.3); }
+.reactivateBtn:hover { background: var(--badge-active-bg); }
+
+.pendingText {
+    font-size: 11px;
+    color: var(--admin-text-subtle);
+    padding: 0 8px;
+}
+
+/* Grids & Cards */
+.gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.card {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    padding: 24px;
+}
+
+.cardTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin: 0 0 16px 0;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 8px;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.label {
+    color: var(--admin-text-secondary);
+    font-size: 12px;
+}
+
+.value {
+    color: var(--admin-text-primary);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.permissionsGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.permTag {
+    background-color: var(--admin-bg);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+/* Timeline */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    padding-left: 12px;
+    border-left: 2px solid var(--admin-border);
+}
+
+.timelineItem {
+    position: relative;
+}
+
+.timelineDot {
+    position: absolute;
+    left: -17px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--admin-accent-bg);
+    border: 2px solid var(--admin-surface);
+}
+
+.timelineContent {
+    background-color: var(--admin-bg);
+    border: 1px solid var(--admin-border);
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.timelineHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timelineDate {
+    font-size: 10px;
+    color: var(--admin-text-subtle);
+}
+
+.timelineReason {
+    font-size: 12px;
+    color: var(--admin-text-primary);
+    margin: 0 0 8px 0;
+    font-style: italic;
+}
+
+.timelineActionBy {
+    font-size: 10px;
+    color: var(--admin-text-secondary);
+    margin: 0;
+}
+
+/* Shared Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.role_SUPER_ADMIN { background-color: var(--admin-accent-bg); color: var(--admin-accent-text); }
+.role_ADMIN { border: 1px solid var(--admin-border-focus); color: var(--admin-text-secondary); }
+.status_ACTIVE { background-color: var(--badge-active-bg); color: var(--badge-active-text); }
+.status_INVITED { background-color: rgba(234, 179, 8, 0.15); color: #facc15; }
+.status_SUSPENDED, .status_DEACTIVATED { background-color: var(--badge-ban-bg); color: var(--badge-ban-text); }
+
+.loading, .error {
+    padding: 48px;
+    text-align: center;
+    color: var(--admin-text-secondary);
+    font-size: 12px;
+}
