@@ -11,6 +11,7 @@ import { GetAdminsDto } from "../../application/dtos/get-admins.dto";
 import { DEACTIVATE_ADMIN_USE_CASE, IDeactivateAdminUseCase, IReactivateAdminUseCase, ISuspendAdminUseCase, REACTIVATE_ADMIN_USE_CASE, SUSPEND_ADMIN_USE_CASE } from "../../application/interfaces/admin-status.use-case.interface";
 import { AdminStatusReasonDto, SuspendAdminDto } from "../../application/dtos/admin-status.dto";
 import { CANCEL_ADMIN_INVITE_USE_CASE, ICancelAdminInviteUseCase, IReinviteAdminUseCase, REINVITE_ADMIN_USE_CASE } from "../../application/interfaces/admin-invitation-lifecycle.use-case.interface";
+import { FORCE_LOGOUT_ADMIN_USE_CASE, GET_ADMIN_DETAILS_USE_CASE, IForceLogoutAdminUseCase, IGetAdminDetailsUseCase } from "../../application/interfaces/admin-personnel.use-case.interface";
 
 @Controller('admin/management')
 export class AdminManagementController {
@@ -24,6 +25,8 @@ export class AdminManagementController {
         @Inject(DEACTIVATE_ADMIN_USE_CASE) private readonly _deactivateAdminUseCase: IDeactivateAdminUseCase,
         @Inject(CANCEL_ADMIN_INVITE_USE_CASE) private readonly _cancelAdminInviteUseCase: ICancelAdminInviteUseCase,
         @Inject(REINVITE_ADMIN_USE_CASE) private readonly _reinviteAdminUseCase: IReinviteAdminUseCase,
+        @Inject(GET_ADMIN_DETAILS_USE_CASE) private readonly _getAdminDetailsUseCase: IGetAdminDetailsUseCase,
+        @Inject(FORCE_LOGOUT_ADMIN_USE_CASE) private readonly _forceLogoutUseCase: IForceLogoutAdminUseCase,
     ) { }
 
     @Get()
@@ -42,6 +45,15 @@ export class AdminManagementController {
                 limit: result.limit,
             }
         };
+    }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_VIEW)
+    @HttpCode(HttpStatus.OK)
+    async getAdminDetails(@Param('id') targetAdminId: string) {
+        const data = await this._getAdminDetailsUseCase.execute(targetAdminId);
+        return { success: true, data }
     }
 
     @Post('invite')
@@ -71,21 +83,21 @@ export class AdminManagementController {
     @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
     @RequirePermissions(AdminPermission.ADMINS_INVITE)
     @HttpCode(HttpStatus.OK)
-    async reinviteAdmin(@Param('id') targetAdminId: string, @Req() req: AuthenticatedRequest){
+    async reinviteAdmin(@Param('id') targetAdminId: string, @Req() req: AuthenticatedRequest) {
         const inviterName = (req.user as any).email || 'Super Admin';
         await this._reinviteAdminUseCase.execute(targetAdminId, inviterName);
 
-        return {success: true, message: 'New invitation link sent successfully.'};
+        return { success: true, message: 'New invitation link sent successfully.' };
     }
 
     @Delete(':id/cancel-invite')
     @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
     @RequirePermissions(AdminPermission.ADMINS_INVITE)
     @HttpCode(HttpStatus.OK)
-    async cancelAdminInvite(@Param('id') targetAdminid: string){
+    async cancelAdminInvite(@Param('id') targetAdminid: string) {
         await this._cancelAdminInviteUseCase.execute(targetAdminid);
 
-        return {success: true, message: 'Pending invitation successfully cancelled.'}
+        return { success: true, message: 'Pending invitation successfully cancelled.' }
     }
 
     @Patch(':id')
@@ -123,5 +135,14 @@ export class AdminManagementController {
     async reactivateAdmin(@Param('id') targetAdminId: string, @Body() dto: AdminStatusReasonDto, @Req() req: AuthenticatedRequest) {
         await this._reactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
         return { success: true, message: 'Admin account reactivated successfully.' };
+    }
+
+    @Post(':id/force-logout')
+    @UseGuards(JwtAuthGuard, AdminPermissionsGuard)
+    @RequirePermissions(AdminPermission.ADMINS_FORCE_LOGOUT)
+    @HttpCode(HttpStatus.OK)
+    async forceLogoutAdmin(@Param('id') targetAdminId: string, @Req() req: AuthenticatedRequest){
+        await this._forceLogoutUseCase.execute(targetAdminId, req.user.userId);
+        return {success: true, message: 'Admin personnel forcefully logged out.'};
     }
 }
