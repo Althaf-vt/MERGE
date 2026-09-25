@@ -1,6 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { AdoptionPreference, AuthProvider, DietType, DisabilityOption, DocumentType, DrinkingHabit, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, ReviewDecision, SelfieVerificationStatus, SmokingHabit, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
+import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from '../../domain/enums/profile.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
 // Mongoose document type combining the User schema with a MongoDb document.
@@ -213,6 +214,72 @@ export class UserPreferenceSchema {
     partnerExpectations?: string;
 }
 
+@Schema({ _id: false })
+export class UserMedicalSchema {
+    @Prop({ default: null }) 
+    diabetes?: string;
+
+    @Prop({ default: null }) 
+    bloodPressure?: string;
+
+    @Prop({ default: null }) 
+    fertility?: string;
+
+    @Prop({ default: null }) 
+    genetic?: string;
+
+    @Prop({ default: null }) 
+    infectious?: string;
+
+    @Prop({ type: String, enum: Object.values(InfectiousVisibility), default: InfectiousVisibility.HIDDEN }) 
+    infectiousVisibility: string;
+
+    @Prop({ default: null }) 
+    disability?: string;
+
+    @Prop({ type: Date, default: Date.now }) 
+    updatedAt: Date;
+}
+
+@Schema({ _id: false })
+export class UserPrivacySchema {
+    @Prop({ default: true }) 
+    showAge: boolean;
+
+    @Prop({ default: true }) 
+    showOccupation: boolean;
+
+    @Prop({ default: false }) 
+    blurPhotos: boolean;
+
+    @Prop({ type: String, enum: Object.values(ProfileVisibility), default: ProfileVisibility.VISIBLE }) 
+    profileVisibility: string;
+
+    @Prop({ type: Date, default: Date.now }) 
+    updatedAt: Date;
+}
+
+@Schema({ _id: false })
+export class UserPhotoSchema {
+    @Prop({ required: true }) 
+    id: string;
+
+    @Prop({ required: true })
+    url: string;
+
+    @Prop({ default: false }) 
+    isPrimary: boolean;
+
+    @Prop({ type: String, enum: Object.values(PhotoVerificationStatus), default: PhotoVerificationStatus.PENDING }) 
+    status: string;
+
+    @Prop({ default: null }) 
+    faceMatchScore?: number;
+
+    @Prop({ required: true, type: Date, default: Date.now }) 
+    uploadedAt: Date;
+}
+
 // export type UserDocument = User & Document;
 
 // Defines the User collection and enables automatic createdAt and updatedAt timestamps.
@@ -289,6 +356,15 @@ export class User{
 
     @Prop({type: UserPreferenceSchema, default: null})
     preference: UserPreferenceSchema;
+
+    @Prop({ type: UserMedicalSchema, default: null })
+    medicalRecord?: UserMedicalSchema;
+
+    @Prop({ type: UserPrivacySchema, default: null })
+    privacySettings?: UserPrivacySchema;
+
+    @Prop({ type: [UserPhotoSchema], default: [] })
+    photos: UserPhotoSchema[];
 
     createdAt: Date;
     updatedAt: Date;

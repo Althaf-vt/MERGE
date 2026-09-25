@@ -9,6 +9,10 @@ import { SuspensionDurationVO } from "../value-objects/suspension-duration.vo";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { UserSupendedDomainEvent } from "../events/user-suspended.domain-event";
 import { UserBannedDomainEvent } from "../events/user-banned.domain-event";
+import { PhotoVerificationStatus } from "../enums/profile.enums";
+import { UserMedical } from "./user-medical.entity";
+import { UserPrivacy } from "./user-privacy.entity";
+import { UserPhoto } from "./user-photo.entity";
 
 export enum UserRole {
     USER = 'USER',
@@ -49,7 +53,10 @@ export interface UserAggregateProps {
     // Sub-Entities (The seperate collections)
     profile?: UserProfile;
     preferences?: UserPreference;
-    kycVerification?: UserKyc
+    kycVerification?: UserKyc;
+    medicalRecord?: UserMedical;
+    privacySettings?: UserPrivacy;
+    photos?: UserPhoto[];
 }
 
 // Represents the User domain entity, managing user data and 
@@ -70,6 +77,10 @@ export class UserAggregate extends AggregateRoot {
             profileCompleted: props.profileCompleted ?? false,
             castingDirectorCompleted: props.castingDirectorCompleted ?? false,
             personalityVector: props.personalityVector ?? [],
+            
+            photos: props.photos ?? [],
+            medicalRecord: props.medicalRecord ?? undefined,
+            privacySettings: props.privacySettings ?? undefined,
 
             statusReason: props.statusReason ?? null,
             statusChangedAt: props.statusChangedAt ?? null,
@@ -98,6 +109,9 @@ export class UserAggregate extends AggregateRoot {
     get castingDirectorCompleted(): boolean { return this._props.castingDirectorCompleted };
     get personalityVector(): number[] { return [...(this._props.personalityVector ?? [])] };
 
+    get medicalRecord(): UserMedical | undefined { return this._props.medicalRecord; }
+    get privacySettings(): UserPrivacy | undefined { return this._props.privacySettings; }
+    get photos(): UserPhoto[] { return [...(this._props.photos ?? [])]; }
     get statusReason(): string | null | undefined { return this._props.statusReason; }
     get statusChangedAt(): Date | null | undefined { return this._props.statusChangedAt; }
     get suspendedUntil(): Date | null | undefined { return this._props.suspendedUntil; }
@@ -288,6 +302,52 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
+
+    attachMedicalRecord(medical: UserMedical): void{
+        this._props.medicalRecord = medical;
+        this.markUpdatedAt();
+    }
+
+    attachPrivacySettings(privacy: UserPrivacy): void{
+        this._props.privacySettings = privacy;
+        this.markUpdatedAt();
+    }
+
+    addPhoto(photo: UserPhoto): void{
+        if(this._props.photos && this._props.photos.length >= 6){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum of 6 photos allowed.');
+        }
+        this._props.photos?.push(photo);
+        this.markUpdatedAt();
+    }
+
+    setPrimaryPhoto(photoId: string): void{
+        if(!this._props.photos) return;
+
+        const photoExists = this._props.photos.find(p => p.id === photoId);
+        if (!photoExists) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Photo not found.');
+
+        if(photoExists.status !== PhotoVerificationStatus.APPROVED){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only approved photos can be set as primary.');
+        }
+
+        this._props.photos.forEach(p => {
+            if(p.id === photoId){
+                p.markAsPrimary();
+            }else{
+                p.removePrimaryStatus();
+            }
+        })
+
+        this.markUpdatedAt();
+    }
+
+    removePhoto(photoId: string): void{
+        if(!this._props.photos) return;
+        this._props.photos = this._props.photos.filter(p => p.id !== photoId);
+        this.markUpdatedAt();
+    }
+
     //3. LUMEN AGENT SCHEDULING & QUOTAS
 
     toggleLumen(enabled: boolean): void {
@@ -326,7 +386,9 @@ export class UserAggregate extends AggregateRoot {
             profile: this._props.profile?.toJSON(),
             preference: this._props.preferences?.toJSON(),
             kycVerification: this._props.kycVerification?.toJSON(),
+            medicalRecord: this._props.medicalRecord?.toJSON(),
+            privacySettings: this._props.privacySettings?.toJSON(),
+            photos: this._props.photos?.map(p => p.toJSON()),
         }
     }
-
 }
