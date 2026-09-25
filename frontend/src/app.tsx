@@ -31,6 +31,7 @@ import { AdminUserDetailsPage } from './features/admin/users/pages/admin-user-de
 import { CastingDirectorPage } from './features/casting-director/pages/casting-director.page';
 import { AdminAcceptInvitePage } from './features/admin/management/pages/accept-invite.page';
 import { AdminManagementPage } from './features/admin/management/pages/admin-management.page';
+import { AdminDetailsPage } from './features/admin/management/pages/admin-details.page';
 
 
 export const App = () => {
@@ -54,6 +55,8 @@ export const App = () => {
                             <Route path='/admin/users' element={<AdminUsersPage />} />
                             <Route path='/admin/users/:id' element={<AdminUserDetailsPage />} />
                             <Route path='/admin/management' element={<AdminManagementPage />} />
+                            <Route path='/admin/management' element={<AdminManagementPage />} />
+                            <Route path='/admin/management/:id' element={<AdminDetailsPage />} />
                         </Route>
                     </Route>
                 </Route>

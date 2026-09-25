@@ -2,7 +2,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../../../app/store';
-import type { AcceptAdminInviteRequest, AdminManagementResponse, AdminStatusReasonRequest, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, SuspendAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
+import type { AcceptAdminInviteRequest, AdminManagementResponse, AdminStatusReasonRequest, GetAdminDetailsResponse, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, SuspendAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
 
 export const adminManagementApi = createApi({
     reducerPath: 'adminManagementApi',
@@ -100,6 +100,23 @@ export const adminManagementApi = createApi({
             }),
             invalidatesTags: ['Admins'],
         }),
+
+        getAdminDetails: builder.query<GetAdminDetailsResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}`,
+                method: 'GET',
+            }),
+            providesTags: (_result, _error, id) => [{ type: 'Admins', id }, 'Admins'],
+        }),
+
+        forceLogoutAdmin: builder.mutation<AdminManagementResponse, string>({
+            query: (adminId) => ({
+                url: `/admin/management/${adminId}/force-logout`,
+                method: 'POST',
+            }),
+            // Does not necessarily invalidate the admin data, but good practice
+            invalidatesTags: (_result, _error, id) => [{ type: 'Admins', id }],
+        }),
     }),
 });
 
@@ -113,4 +130,6 @@ export const {
     useSuspendAdminMutation,
     useDeactivateAdminMutation,
     useReactivateAdminMutation,
+    useGetAdminDetailsQuery,
+    useForceLogoutAdminMutation,
 } = adminManagementApi;

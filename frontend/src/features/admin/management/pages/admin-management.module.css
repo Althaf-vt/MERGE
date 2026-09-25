@@ -203,3 +203,13 @@
     display: flex;
     gap: 8px;
 }
+
+.clickableName {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.clickableName:hover {
+    color: var(--admin-accent-text, #a855f7);
+    text-decoration: underline;
+}
