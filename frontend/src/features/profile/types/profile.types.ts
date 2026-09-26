@@ -2,6 +2,27 @@ export type InfectiousVisibility = 'MATCH_ONLY' | 'EVERYONE' | 'HIDDEN';
 export type PhotoVerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type ProfileVisibility = 'VISIBLE' | 'PAUSED' | 'HIDDEN';
 
+export interface GetProfileResponse {
+    success: boolean;
+    data: {
+        id: string;
+        email: string;
+        profile: any;
+        photos: Array<{
+            id: string;
+            url: string; // This will now be the fresh AWS Presigned URL!
+            isPrimary: boolean;
+            status: string;
+            faceMatchScore?: number;
+            uploadedAt: string;
+        }>;
+        privacySettings: any;
+        medicalRecord: any;
+        kycCompleted: boolean;
+        onboardingCompleted: boolean;
+    };
+}
+
 export interface UserPhoto {
     id: string;
     url: string;

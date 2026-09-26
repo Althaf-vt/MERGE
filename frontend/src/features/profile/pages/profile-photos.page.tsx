@@ -1,28 +1,20 @@
 import React, { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../app/hooks';
-import { 
-    useUploadProfilePhotoMutation, 
-    useRemoveProfilePhotoMutation, 
-    useSetPrimaryPhotoMutation,
-    useUpdatePrivacySettingsMutation
-} from '../api/profile.api';
+import { useUploadProfilePhotoMutation, useRemoveProfilePhotoMutation, useSetPrimaryPhotoMutation, useUpdatePrivacySettingsMutation, useGetProfileQuery } from '../api/profile.api';
 import styles from './profile-photos.module.css';
-import { useRefreshMutation } from '../../auth/api/auth.api';
 
 export const ProfilePhotosPage: React.FC = () => {
-    const dispatch = useDispatch();
-    const { user } = useAppSelector((state) => state.auth);
-    
-    const photos = user?.photos || [];
-    const privacy = user?.privacySettings;
-    
+    // Fetch live profile data with dynamically signed presigned URLs from GET /profile
+    const { data: profileResponse, refetch: refetchProfile } = useGetProfileQuery();
+
+    // Extract photos and privacy from the query response instead of stale auth state
+    const photos = profileResponse?.data?.photos || [];
+    const privacy = profileResponse?.data?.privacySettings;
+
     const [uploadPhoto, { isLoading: isUploading }] = useUploadProfilePhotoMutation();
     const [removePhoto, { isLoading: isRemoving }] = useRemoveProfilePhotoMutation();
     const [setPrimaryPhoto, { isLoading: isSettingPrimary }] = useSetPrimaryPhotoMutation();
     const [updatePrivacy, { isLoading: isUpdatingPrivacy }] = useUpdatePrivacySettingsMutation();
-    const [refreshSession] = useRefreshMutation();
-    
+
     const [errorMsg, setErrorMsg] = useState('');
     const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,17 +22,11 @@ export const ProfilePhotosPage: React.FC = () => {
     const maxPhotos = 6;
     const showEmptySlot = photos.length < maxPhotos;
 
+    // Calculate Verification Stats
     const stats = {
         approved: photos.filter(p => p.status === 'APPROVED').length,
         pending: photos.filter(p => p.status === 'PENDING').length,
         rejected: photos.filter(p => p.status === 'REJECTED').length,
-    };
-
-    // Helper function to sync Redux state instantly
-    const syncReduxState = async () => {
-        const sessionData = await refreshSession().unwrap();
-        // Fallback generic dispatch if you don't have the exact imported action:
-        dispatch({ type: 'auth/setCredentials', payload: sessionData })
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,21 +36,21 @@ export const ProfilePhotosPage: React.FC = () => {
         setErrorMsg('');
         try {
             await uploadPhoto(file).unwrap();
-            await syncReduxState();
+            await refetchProfile(); // Refresh signed URLs instantly
         } catch (err: any) {
             console.error('Failed to upload photo:', err);
             setErrorMsg(err?.data?.error?.message || 'Failed to upload photo. Ensure your face is clearly visible.');
         } finally {
-            if (fileInputRef.current) fileInputRef.current.value = ''; 
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
     const confirmRemove = async () => {
-        if (!photoToDelete) return; 
+        if (!photoToDelete) return;
         setErrorMsg('');
         try {
             await removePhoto(photoToDelete).unwrap();
-            await syncReduxState();
+            await refetchProfile();
             setPhotoToDelete(null);
         } catch (err: any) {
             setErrorMsg('Failed to remove photo.');
@@ -79,7 +65,7 @@ export const ProfilePhotosPage: React.FC = () => {
         setErrorMsg('');
         try {
             await setPrimaryPhoto({ photoId }).unwrap();
-            await syncReduxState();
+            await refetchProfile();
         } catch (err: any) {
             setErrorMsg('Failed to set primary photo.');
         }
@@ -88,12 +74,12 @@ export const ProfilePhotosPage: React.FC = () => {
     const handleTogglePrivacy = async (field: 'blurPhotos' | 'profileVisibility') => {
         if (!privacy) return;
         try {
-            const payload = field === 'blurPhotos' 
+            const payload = field === 'blurPhotos'
                 ? { blurPhotos: !privacy.blurPhotos }
                 : { profileVisibility: privacy.profileVisibility === 'VISIBLE' ? 'HIDDEN' as const : 'VISIBLE' as const };
-            
+
             await updatePrivacy(payload).unwrap();
-            await syncReduxState();
+            await refetchProfile();
         } catch (err: any) {
             setErrorMsg('Failed to update privacy settings.');
         }
@@ -126,15 +112,15 @@ export const ProfilePhotosPage: React.FC = () => {
                         </p>
 
                         <div className={styles.galleryGrid}>
-                            {/* Render Existing Photos */}
+                            {/* Render Existing Photos with Presigned URLs */}
                             {photos.map((photo) => (
                                 <div key={photo.id} className={`${styles.photoItem} ${photo.isPrimary ? styles.primaryItem : ''}`}>
-                                    <img 
-                                        src={photo.url} 
-                                        alt="Profile" 
-                                        className={`${styles.image} ${photo.status !== 'APPROVED' ? styles.blurredImage : ''}`} 
+                                    <img
+                                        src={photo.url}
+                                        alt="Profile"
+                                        className={`${styles.image} ${photo.status !== 'APPROVED' ? styles.blurredImage : ''}`}
                                     />
-                                    
+
                                     {/* Badges */}
                                     <div className={styles.badgeContainer}>
                                         {photo.isPrimary && <span className={`${styles.badge} ${styles.badgePrimary}`}>Primary</span>}
@@ -146,7 +132,7 @@ export const ProfilePhotosPage: React.FC = () => {
                                     {/* Hover Action Overlay */}
                                     <div className={styles.actionOverlay}>
                                         {!photo.isPrimary && photo.status === 'APPROVED' && (
-                                            <button 
+                                            <button
                                                 className={styles.actionBtnPrimary}
                                                 onClick={() => handleSetPrimary(photo.id, photo.status)}
                                                 disabled={isSettingPrimary}
@@ -154,7 +140,7 @@ export const ProfilePhotosPage: React.FC = () => {
                                                 Make Primary
                                             </button>
                                         )}
-                                        <button 
+                                        <button
                                             className={styles.actionBtnDelete}
                                             onClick={() => setPhotoToDelete(photo.id)}
                                             disabled={isRemoving}
@@ -174,7 +160,7 @@ export const ProfilePhotosPage: React.FC = () => {
                                         <>
                                             <span className={styles.addIcon}>+</span>
                                             <span className={styles.addText}>Upload Photo</span>
-                                            <span className={styles.addLimits}>JPG, PNG, WEBP<br/>Max 5MB</span>
+                                            <span className={styles.addLimits}>JPG, PNG, WEBP<br />Max 5MB</span>
                                         </>
                                     )}
                                 </div>
@@ -213,18 +199,18 @@ export const ProfilePhotosPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Privacy Settings mapped directly to the domain */}
+                    {/* Privacy Settings */}
                     <div className={styles.sideCard}>
                         <h3 className={styles.sideCardTitle}>Photo Privacy</h3>
-                        
+
                         <div className={styles.toggleRow}>
                             <div className={styles.toggleText}>
                                 <strong>Blur Photos Until Match</strong>
                             </div>
                             <label className={styles.switch}>
-                                <input 
-                                    type="checkbox" 
-                                    checked={privacy?.blurPhotos || false} 
+                                <input
+                                    type="checkbox"
+                                    checked={privacy?.blurPhotos || false}
                                     onChange={() => handleTogglePrivacy('blurPhotos')}
                                     disabled={isUpdatingPrivacy}
                                 />
@@ -237,16 +223,16 @@ export const ProfilePhotosPage: React.FC = () => {
                                 <strong>Allow Full Photo Visibility</strong>
                             </div>
                             <label className={styles.switch}>
-                                <input 
-                                    type="checkbox" 
-                                    checked={privacy?.profileVisibility === 'VISIBLE'} 
+                                <input
+                                    type="checkbox"
+                                    checked={privacy?.profileVisibility === 'VISIBLE'}
                                     onChange={() => handleTogglePrivacy('profileVisibility')}
                                     disabled={isUpdatingPrivacy}
                                 />
                                 <span className={styles.slider}></span>
                             </label>
                         </div>
-                        
+
                         <div className={styles.infoBox}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                             Private photos can only be viewed by approved users.
@@ -256,9 +242,9 @@ export const ProfilePhotosPage: React.FC = () => {
             </div>
 
             {/* Hidden File Input */}
-            <input 
-                type="file" 
-                accept="image/jpeg, image/png, image/webp" 
+            <input
+                type="file"
+                accept="image/jpeg, image/png, image/webp"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
                 onChange={handleFileChange}

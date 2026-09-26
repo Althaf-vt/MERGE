@@ -3,6 +3,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../../app/store';
 import type { 
+    GetProfileResponse,
     ProfileStandardResponse, 
     SetPrimaryPhotoRequest, 
     UpdateFullProfileRequest, 
@@ -24,6 +25,14 @@ export const profileApi = createApi({
     }),
     tagTypes: ['Profile', 'User'],
     endpoints: (builder) => ({
+
+        getProfile: builder.query<GetProfileResponse, void>({
+            query: () => ({
+                url: '/profile',
+                method: 'GET',
+            }),
+            providesTags: ['Profile'],
+        }),
 
         updateFullProfile: builder.mutation<ProfileStandardResponse, UpdateFullProfileRequest>({
             query: (body) => ({
@@ -87,6 +96,7 @@ export const profileApi = createApi({
 });
 
 export const {
+    useGetProfileQuery,
     useUpdateFullProfileMutation,
     useUpdateMedicalRecordMutation,
     useUpdatePrivacySettingsMutation,
