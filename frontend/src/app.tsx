@@ -34,6 +34,7 @@ import { AdminManagementPage } from './features/admin/management/pages/admin-man
 import { AdminDetailsPage } from './features/admin/management/pages/admin-details.page';
 import { ProfileLayout } from './features/profile/components/profile.layout';
 import { EditProfilePage } from './features/profile/pages/edit-profile.page';
+import { ProfilePhotosPage } from './features/profile/pages/profile-photos.page';
 
 
 export const App = () => {
@@ -92,7 +93,7 @@ export const App = () => {
                             <Route path="/profile" element={<ProfileLayout />}>
                                 <Route index element={<Navigate to="/profile/edit" replace />} />
                                 <Route path="edit" element={<EditProfilePage />} />
-                                {/* <Route path="photos" element={<ProfilePhotosPage />} /> */}
+                                <Route path="photos" element={<ProfilePhotosPage />} />
                                 {/* <Route path="preferences" element={<ProfilePreferencesPage />} />
                                 <Route path="medical" element={<MedicalRecordsPage />} />
                                 <Route path="privacy" element={<PrivacySettingsPage />} />
