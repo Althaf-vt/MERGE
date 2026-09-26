@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE } from "../../application/interfaces/update-persona.use-case.interface";
 import { UpdatePersonaDto } from "../../application/dtos/update-persona.dto";
@@ -15,6 +15,7 @@ import { SetPrimaryPhotoDto, UpdateMedicalRecordDto, UpdatePrivacySettingsDto } 
 import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
 import { UpdateFullProfileDto } from "../../application/dtos/update-full-profile.dto";
+import { GET_PROFILE_USE_CASE, IGetProfileUseCase } from "../../application/interfaces/get-profile.use-case.interface";
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -31,6 +32,7 @@ export class ProfileController{
         @Inject(SET_PRIMARY_PHOTO_USE_CASE) private readonly _setPrimaryPhotoUseCase: ISetPrimaryPhotoUseCase,
         @Inject(REMOVE_PROFILE_PHOTO_USE_CASE) private readonly _removeProfilePhotoUseCase: IRemoveProfilePhotoUseCase,
         @Inject(UPDATE_FULL_PROFILE_USE_CASE) private readonly _updateFullProfileUseCase: IUpdateFullProfileUseCase,
+        @Inject(GET_PROFILE_USE_CASE) private readonly _getProfileUseCase: IGetProfileUseCase,
     ){}
 
     @Patch('persona')
@@ -81,6 +83,18 @@ export class ProfileController{
     ){
         const userId = req.user.userId;
         return await this._saveBioUseCase.execute(userId, dto);
+    }
+
+    @Get()
+    @HttpCode(HttpStatus.OK)
+    async getProfile(@Req() req: any) {
+        const userId = req.user.userId;
+        const profileData = await this._getProfileUseCase.execute(userId);
+        
+        return {
+            success: true,
+            data: profileData
+        };
     }
 
     @Patch('full')

@@ -79,6 +79,8 @@ import { SetPrimaryPhotoUseCase } from "./application/use-cases/set-primary-phot
 import { RemoveProfilePhotoUseCase } from "./application/use-cases/remove-profile-photo.use-case";
 import { UPDATE_FULL_PROFILE_USE_CASE } from "./application/interfaces/update-full-profile.use-case.interface";
 import { UpdateFullProfileUseCase } from "./application/use-cases/update-full-profile.use-case";
+import { GET_PROFILE_USE_CASE } from "./application/interfaces/get-profile.use-case.interface";
+import { GetProfileUseCase } from "./application/use-cases/get-profile.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -285,6 +287,10 @@ import { UpdateFullProfileUseCase } from "./application/use-cases/update-full-pr
             provide: CASTING_USER_FACADE,
             useClass: CastingUserFacade,
         },
+        {
+            provide: GET_PROFILE_USE_CASE,
+            useClass: GetProfileUseCase,
+        }
     ],
 
     // Makes these repository and token service providers available to other modules.
