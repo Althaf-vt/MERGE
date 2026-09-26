@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { RegisterPage } from './features/auth/pages/register.page';
 import { LoginPage } from './features/auth/pages/login.page';
 import { KycPage } from './features/onboarding/Pages/kyc.page';
@@ -32,6 +32,8 @@ import { CastingDirectorPage } from './features/casting-director/pages/casting-d
 import { AdminAcceptInvitePage } from './features/admin/management/pages/accept-invite.page';
 import { AdminManagementPage } from './features/admin/management/pages/admin-management.page';
 import { AdminDetailsPage } from './features/admin/management/pages/admin-details.page';
+import { ProfileLayout } from './features/profile/components/profile.layout';
+import { EditProfilePage } from './features/profile/pages/edit-profile.page';
 
 
 export const App = () => {
@@ -85,6 +87,19 @@ export const App = () => {
                             {/* Post-onboarding success page */}
                             <Route path="/profile-live" element={<ProfileLivePage />} />
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
+
+                            {/* USER PROFILE MANAGEMENT ROUTES */}
+                            <Route path="/profile" element={<ProfileLayout />}>
+                                <Route index element={<Navigate to="/profile/edit" replace />} />
+                                <Route path="edit" element={<EditProfilePage />} />
+                                {/* <Route path="photos" element={<ProfilePhotosPage />} /> */}
+                                {/* <Route path="preferences" element={<ProfilePreferencesPage />} />
+                                <Route path="medical" element={<MedicalRecordsPage />} />
+                                <Route path="privacy" element={<PrivacySettingsPage />} />
+                                <Route path="security" element={<SecuritySettingsPage />} />
+                                <Route path="blocked" element={<BlockedUsersPage />} />
+                                <Route path="billing" element={<SubscriptionCreditsPage />} /> */}
+                            </Route>
 
                             {/* 
                                 ONBOARDING ROUTES
