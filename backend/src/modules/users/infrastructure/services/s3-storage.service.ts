@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v4 as uuidv4 } from "uuid";
 import { IStorageService } from "../../application/interfaces/storage-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-
 export const S3_CLIENT = 'S3_CLIENT';
 
 @Injectable()
@@ -52,5 +52,27 @@ export class S3StorageService implements IStorageService {
     }));
 
     return `https://${this._bucketName}.s3.${this._region}.amazonaws.com/${uniqueFilename}`;
+  }
+
+  async getPresignedUrl(fullUrl: string, expiresInSeconds = 1800): Promise<string> {
+    if (!fullUrl) return fullUrl;
+
+    try {
+      const urlParts = fullUrl.split('.amazonaws.com/');
+      if (urlParts.length < 2) return fullUrl; // Fallback if not an s3 URL
+
+      const key = urlParts[1];
+
+      const command = new GetObjectCommand({
+        Bucket: this._bucketName,
+        Key: key,
+      });
+
+      // Generate teh secure URL valid for exactly 30 minutes
+      return await getSignedUrl(this._s3Client, command, { expiresIn: expiresInSeconds });
+    } catch (error) {
+      console.error('Failed to generate presigned URL', error);
+      return fullUrl; // Fallback
+    }
   }
 }
