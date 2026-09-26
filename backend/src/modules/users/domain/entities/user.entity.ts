@@ -348,6 +348,12 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
+    validatePhotoLimit(): void {
+        if (this._props.photos && this._props.photos.length >= 6) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'You have reached the maximum limit of 6 photos.');
+        }
+    }
+
     //3. LUMEN AGENT SCHEDULING & QUOTAS
 
     toggleLumen(enabled: boolean): void {
