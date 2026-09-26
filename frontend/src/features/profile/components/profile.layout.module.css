@@ -1,0 +1,134 @@
+.layoutContainer {
+    display: flex;
+    min-height: 100vh;
+    background-color: #fafafa; /* Consumer light background */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #ffffff;
+    border-right: 1px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    flex-shrink: 0;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #6D28D9; /* Primary Brand Color */
+    margin-bottom: 1rem;
+    border: 2px solid #e5e7eb;
+}
+
+.userName {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.userLocation {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.navigation {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+}
+
+.navGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.groupLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    letter-spacing: 0.05em;
+    padding-left: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.navItem {
+    text-decoration: none;
+    color: #4b5563;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.navItem:hover {
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+.navItem.active {
+    background-color: rgba(109, 40, 217, 0.08);
+    color: #6D28D9;
+    font-weight: 600;
+}
+
+.logoutWrapper {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.logoutBtn:hover {
+    background-color: #fef2f2;
+}
+
+.contentArea {
+    flex: 1;
+    padding: 2.5rem 4rem;
+    background-color: #fafafa;
+    overflow-y: auto;
+}
+
+.contentWrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
