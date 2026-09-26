@@ -1,17 +1,18 @@
 import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { PhotoVerificationStatus } from "../enums/profile.enums";
 
 // Encapsulates individual liveness challenge evaluations within 
 // the KYC aggregate to prevent primitive obsession.
-export interface LivenessEvaluationRecord{
+export interface LivenessEvaluationRecord {
     prompt: string;
     score: number;
     status: string;
     videoS3: string;
 }
 
-export interface UserKycProps{
+export interface UserKycProps {
     id?: string;
     userId?: string;
     verificationStatus?: VerificationStatus;
@@ -45,7 +46,7 @@ export interface UserKycProps{
     updatedAt?: Date;
 }
 
-export interface SubmitPkiDocumentsPayload{
+export interface SubmitPkiDocumentsPayload {
     documentType: DocumentType;
     issuingCountry: string;
     legalName: string;
@@ -53,31 +54,31 @@ export interface SubmitPkiDocumentsPayload{
     hashedDocumentNumber: string;
 }
 
-export interface RecordSelfiePayload{
+export interface RecordSelfiePayload {
     liveSelfieS3: string;
     selfieFaceEmbedding: number[];
     selfieConfidence: number;
     rejectionReason?: string;
 }
 
-export interface RecordLivenessPayload{
+export interface RecordLivenessPayload {
     prompt: string;
     score: number;
     videoS3?: string;
 }
 
-export interface ApproveManualReviewPayload{
+export interface ApproveManualReviewPayload {
     adminId: string;
 }
 
-export interface RejectManualReviewPayload{
+export interface RejectManualReviewPayload {
     adminId: string;
     rejectionReason: string;
 }
 
 
 
-export class UserKyc{
+export class UserKyc {
     private _props: UserKycProps;
 
     private readonly _REQUIRED_PROMPTS_COUNT = 4;
@@ -86,7 +87,7 @@ export class UserKyc{
     private readonly _LIVENESS_MIN_PASS_THRESHOLD = 0.80;
     private readonly _LIVENESS_AUTO_APPROVE_THRESHOLD = 0.88;
 
-    constructor(props: UserKycProps){
+    constructor(props: UserKycProps) {
         this._props = {
             ...props,
             verificationStatus: props.verificationStatus ?? VerificationStatus.NOT_STARTED,
@@ -97,22 +98,22 @@ export class UserKyc{
         }
     }
 
-    get id(): string | undefined {return this._props.id};
-    get userId(): string | undefined {return this._props.userId};
-    get verificationStatus(): VerificationStatus | undefined {return this._props.verificationStatus};
-    get reviewDecision(): ReviewDecision | undefined {return this._props.reviewDecision};
-    get verificationAttempt(): number | undefined {return this._props.verificationAttempt};
-    get documentType(): DocumentType | undefined {return this._props.documentType};
-    get issuingCountry(): string | undefined {return this._props.issuingCountry};
-    get verificationDevice(): VerificationDevice | undefined {return this._props.verificationDevice};
-    get qrSessionId(): string | undefined {return this._props.qrSessionId};
-    get legalName(): string | undefined {return this._props.legalName};
-    get verifiedDOB(): Date | undefined {return this._props.verifiedDOB};
-    get hashedDocumentNumber(): string | undefined {return this._props.hashedDocumentNumber};
-    get liveSelfieS3(): string | undefined {return this._props.liveSelfieS3};
-    get selfieFaceEmbedding(): number[] | undefined {return this._props.selfieFaceEmbedding};
-    get selfieVerificationStatus(): SelfieVerificationStatus | undefined {return this._props.selfieVerificationStatus};
-    get selfieConfidence(): number | undefined {return this._props.selfieConfidence};
+    get id(): string | undefined { return this._props.id };
+    get userId(): string | undefined { return this._props.userId };
+    get verificationStatus(): VerificationStatus | undefined { return this._props.verificationStatus };
+    get reviewDecision(): ReviewDecision | undefined { return this._props.reviewDecision };
+    get verificationAttempt(): number | undefined { return this._props.verificationAttempt };
+    get documentType(): DocumentType | undefined { return this._props.documentType };
+    get issuingCountry(): string | undefined { return this._props.issuingCountry };
+    get verificationDevice(): VerificationDevice | undefined { return this._props.verificationDevice };
+    get qrSessionId(): string | undefined { return this._props.qrSessionId };
+    get legalName(): string | undefined { return this._props.legalName };
+    get verifiedDOB(): Date | undefined { return this._props.verifiedDOB };
+    get hashedDocumentNumber(): string | undefined { return this._props.hashedDocumentNumber };
+    get liveSelfieS3(): string | undefined { return this._props.liveSelfieS3 };
+    get selfieFaceEmbedding(): number[] | undefined { return this._props.selfieFaceEmbedding };
+    get selfieVerificationStatus(): SelfieVerificationStatus | undefined { return this._props.selfieVerificationStatus };
+    get selfieConfidence(): number | undefined { return this._props.selfieConfidence };
     get livenessResults(): any[] | undefined { return this._props.livenessResults; }
     get verificationSubmitted(): boolean | undefined { return this._props.verificationSubmitted; }
     // Returns an array of prompt names that have successfully passed
@@ -121,17 +122,17 @@ export class UserKyc{
             ?.filter(r => r.status === 'PASSED')
             .map(r => r.prompt) ?? [];
     }
-    get manualReviewRequired(): boolean | undefined {return this._props.manualReviewRequired};
-    get adminReviewedBy(): string | undefined {return this._props.adminReviewedBy};
-    get rejectionReason(): string | undefined {return this._props.rejectionReason};
-    get submittedAt(): Date | undefined {return this._props.submittedAt};
-    get approvedAt(): Date | undefined {return this._props.approvedAt};
-    get rejectedAt(): Date | undefined {return this._props.rejectedAt};
-    get createdAt(): Date | undefined {return this._props.createdAt};
-    get updatedAt(): Date | undefined {return this._props.updatedAt};
+    get manualReviewRequired(): boolean | undefined { return this._props.manualReviewRequired };
+    get adminReviewedBy(): string | undefined { return this._props.adminReviewedBy };
+    get rejectionReason(): string | undefined { return this._props.rejectionReason };
+    get submittedAt(): Date | undefined { return this._props.submittedAt };
+    get approvedAt(): Date | undefined { return this._props.approvedAt };
+    get rejectedAt(): Date | undefined { return this._props.rejectedAt };
+    get createdAt(): Date | undefined { return this._props.createdAt };
+    get updatedAt(): Date | undefined { return this._props.updatedAt };
 
     // Instant PKI validation
-    recordPkiValidation(payload: SubmitPkiDocumentsPayload): void{
+    recordPkiValidation(payload: SubmitPkiDocumentsPayload): void {
         this._props.documentType = payload.documentType;
         this._props.issuingCountry = payload.issuingCountry;
         this._props.legalName = payload.legalName;
@@ -146,39 +147,39 @@ export class UserKyc{
     }
 
     // Live Selfie
-    recordSelfie(payload: RecordSelfiePayload): void{
-        
+    recordSelfie(payload: RecordSelfiePayload): void {
+
         // Always save the S3 link and confidence, regardless of pass/fail, for audit logs
         this._props.liveSelfieS3 = payload.liveSelfieS3;
         this._props.selfieConfidence = payload.selfieConfidence;
         this._props.updatedAt = new Date();
-        
-        if(payload.selfieConfidence >= this._SELFIE_MIN_PASS_THRESHOLD){
+
+        if (payload.selfieConfidence >= this._SELFIE_MIN_PASS_THRESHOLD) {
             this._props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
             this._props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
-        }else{
+        } else {
             this._props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
             this._props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
         }
-        
+
     }
 
     // Liveness Test : Evaluates a single liveness prompt incrementally
     recordLivenessPrompt(payload: RecordLivenessPayload): void {
         if (!this._props.livenessResults) this._props.livenessResults = [];
-        
+
         const passed = payload.score >= this._LIVENESS_MIN_PASS_THRESHOLD;
-        
+
         this._props.livenessResults.push({
             prompt: payload.prompt,
             score: payload.score,
             status: passed ? 'PASSED' : 'FAILED',
             videoS3: payload.videoS3
         });
-        
+
         this._props.updatedAt = new Date();
     }
-    
+
     // Resets liveness state to allow users to retake the challenge
     resetLiveness(): void {
         this._props.livenessResults = [];
@@ -192,16 +193,16 @@ export class UserKyc{
     // submission gate 
     submitVerification(): void {
         const results = this._props.livenessResults ?? [];
-        
+
         // DDD Encapsulation: The entity decides how to interpret historical data.
         // Group by prompt so we only evaluate the user's most recent attempt for each action.
         const latestResultsMap = new Map<string, any>();
         for (const record of results) {
             latestResultsMap.set(record.prompt, record);
         }
-        
+
         const latestResults = Array.from(latestResultsMap.values());
-        
+
         const hasFailedPrompts = latestResults.some(r => r.status === 'FAILED');
         const passedCount = latestResults.filter(r => r.status === 'PASSED').length;
 
@@ -217,15 +218,15 @@ export class UserKyc{
         } else {
 
             // Calculate aggregate scores to determine if we can bypass manual review
-            const averageLivenessScore = latestResults.reduce((acc,curr) => acc + curr.score, 0) / passedCount;
+            const averageLivenessScore = latestResults.reduce((acc, curr) => acc + curr.score, 0) / passedCount;
             const selfieConfidence = this._props.selfieConfidence ?? 0;
 
             // Auto approve if both metrics exceed our strict trust threshold
-            if(averageLivenessScore >= this._LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this._SELFIE_AUTO_APPROVE_THRESHOLD){
+            if (averageLivenessScore >= this._LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this._SELFIE_AUTO_APPROVE_THRESHOLD) {
                 this._props.verificationStatus = VerificationStatus.APPROVED;
                 this._props.reviewDecision = ReviewDecision.AUTO_APPROVED;
                 this._props.manualReviewRequired = false;
-            }else{
+            } else {
                 // Forward to manual review queue or auto-approve based on system thresholds
                 this._props.verificationStatus = VerificationStatus.UNDER_REVIEW;
                 this._props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
@@ -239,8 +240,46 @@ export class UserKyc{
         this._props.updatedAt = new Date();
     }
 
-    approveManualReview(payload: ApproveManualReviewPayload){
-        if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
+    evaluateFaceMatch(newEmbedding: number[], confidence: number): { score: number, status: PhotoVerificationStatus } {
+        
+        // Enforce biometric quality invariant
+        if (confidence < 80) {
+            throw new DomainException(ErrorCode.FACE_MISMATCH, 'Face is not clearly visible in the uploaded photo.');
+        }
+
+        const baseline = this._props.selfieFaceEmbedding;
+
+        if (!baseline || baseline.length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC biometric baseline missing. Cannot verify photo.');
+        }
+
+        if (baseline.length !== newEmbedding.length) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Embedding dimension mismatch.');
+        }
+
+        // 1. calculate L2 norm (Euclidean distance)
+        let sum = 0;
+        for (let i = 0; i < baseline.length; i++) {
+            sum += Math.pow(baseline[i] - newEmbedding[i], 2);
+        }
+
+        const distance = Math.sqrt(sum);
+
+        // 2. Enforce strict business policy threshold
+        let status: PhotoVerificationStatus = PhotoVerificationStatus.PENDING;
+
+        if (distance <= 20.0) {
+            status = PhotoVerificationStatus.APPROVED;
+        } else if (distance > 25.0) {
+            status = PhotoVerificationStatus.REJECTED;
+        }
+
+        // Distance between 20.0 and 25.0 remain PENDING for manual admin review 
+        return { score: distance, status };
+    }
+
+    approveManualReview(payload: ApproveManualReviewPayload) {
+        if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
 
@@ -253,12 +292,12 @@ export class UserKyc{
         this._props.updatedAt = new Date();
     }
 
-    rejectManualReview(payload: RejectManualReviewPayload){
-        if(this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW){
+    rejectManualReview(payload: RejectManualReviewPayload) {
+        if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
 
-        if(!payload.rejectionReason || payload.rejectionReason.trim().length === 0){
+        if (!payload.rejectionReason || payload.rejectionReason.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Rejection reason is required when rejecting KYC');
         }
 
@@ -272,7 +311,7 @@ export class UserKyc{
         this._props.updatedAt = new Date();
     }
 
-    toJSON(){
-        return {...this._props};
+    toJSON() {
+        return { ...this._props };
     }
 }
