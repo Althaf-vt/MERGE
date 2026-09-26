@@ -14,6 +14,7 @@ export class UserResponseMapper{
             onboardingStep: entity.onboardingStep,
             castingDirectorCompleted: entity.castingDirectorCompleted,
             profile: entity.profile ? entity.profile.toJSON() : null,
+            preference: entity.preference ? entity.preference.toJSON() : null,
             kycVerification: entity.kycVerification? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,

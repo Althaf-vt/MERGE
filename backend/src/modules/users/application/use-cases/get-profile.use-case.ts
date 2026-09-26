@@ -32,6 +32,7 @@ export class GetProfileUseCase implements IGetProfileUseCase {
             id: user.id,
             email: user.email.getValue(),
             profile: user.profile ? user.profile.toJSON() : null,
+            preference: user.preference ? user.preference.toJSON() : null,
             photos: photosWithSignedUrls,
             privacySettings: user.privacySettings ? user.privacySettings.toJSON() : null,
             medicalRecord: user.medicalRecord ? user.medicalRecord.toJSON() : null,
