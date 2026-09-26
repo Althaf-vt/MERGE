@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { logout } from '../../auth/slices/auth.slice';
+import { useGetProfileQuery } from '../api/profile.api';
 import styles from './profile.layout.module.css';
 
 export const ProfileLayout: React.FC = () => {
@@ -9,22 +10,47 @@ export const ProfileLayout: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useAppSelector((state) => state.auth);
 
+    // Fetch fresh profile data including presigned photo URLs
+    const { data: profileResponse } = useGetProfileQuery();
+    const liveProfile = profileResponse?.data?.profile || user?.profile;
+    const photos = profileResponse?.data?.photos || user?.photos || [];
+
+    // Fallback if image fails to load via network/CORS
+    const [imageError, setImageError] = useState(false);
+
+    // Primary photo must be explicitly APPROVED and marked as primary
+    const primaryPhoto = photos.find((p) => p.isPrimary && p.status === 'APPROVED');
+
     const handleLogout = () => {
         dispatch(logout());
         navigate('/login');
     };
+
+    const displayName = liveProfile?.displayName || 'User';
+    const fallbackInitial = displayName.trim().charAt(0).toUpperCase() || 'U';
+
+    const locationDisplay = liveProfile?.city
+        ? `${liveProfile.city}${liveProfile.state ? `, ${liveProfile.state}` : ''}`
+        : 'Location hidden';
 
     return (
         <div className={styles.layoutContainer}>
             <aside className={styles.sidebar}>
                 <div className={styles.userInfo}>
                     <div className={styles.avatar}>
-                        {user?.profile?.displayName?.charAt(0).toUpperCase() || 'U'}
+                        {primaryPhoto?.url && !imageError ? (
+                            <img
+                                src={primaryPhoto.url}
+                                alt={displayName}
+                                className={styles.avatarImg}
+                                onError={() => setImageError(true)}
+                            />
+                        ) : (
+                            <span className={styles.avatarInitial}>{fallbackInitial}</span>
+                        )}
                     </div>
-                    <h3 className={styles.userName}>{user?.profile?.displayName || 'User'}</h3>
-                    <p className={styles.userLocation}>
-                        {user?.profile?.city ? `${user.profile.city}, ${user.profile.state}` : 'Location hidden'}
-                    </p>
+                    <h3 className={styles.userName}>{displayName}</h3>
+                    <p className={styles.userLocation}>{locationDisplay}</p>
                 </div>
 
                 <nav className={styles.navigation}>
