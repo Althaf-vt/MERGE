@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 import { useGetAdminDetailsQuery } from '../api/admin-management.api';
