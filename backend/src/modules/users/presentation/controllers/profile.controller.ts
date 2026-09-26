@@ -16,6 +16,8 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
 import { UpdateFullProfileDto } from "../../application/dtos/update-full-profile.dto";
 import { GET_PROFILE_USE_CASE, IGetProfileUseCase } from "../../application/interfaces/get-profile.use-case.interface";
+import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
+import { IUpdateFullPreferencesUseCase, UPDATE_FULL_PREFERENCES_USE_CASE } from "../../application/interfaces/update-full-preferences.use-case.interface";
 
 @Controller('profile')
 @UseGuards(JwtAuthGuard)
@@ -33,6 +35,7 @@ export class ProfileController{
         @Inject(REMOVE_PROFILE_PHOTO_USE_CASE) private readonly _removeProfilePhotoUseCase: IRemoveProfilePhotoUseCase,
         @Inject(UPDATE_FULL_PROFILE_USE_CASE) private readonly _updateFullProfileUseCase: IUpdateFullProfileUseCase,
         @Inject(GET_PROFILE_USE_CASE) private readonly _getProfileUseCase: IGetProfileUseCase,
+        @Inject(UPDATE_FULL_PREFERENCES_USE_CASE) private readonly _updateFullPreferencesUseCase: IUpdateFullPreferencesUseCase,
     ){}
 
     @Patch('persona')
@@ -57,12 +60,10 @@ export class ProfileController{
 
     @Patch('preferences')
     @HttpCode(HttpStatus.OK)
-    async updatePreferences(
-        @Req() req: any,
-        @Body() dto: UpdatePreferencesDto
-    ){
+    async updatePreferences(@Req() req: any, @Body() dto: UpdateFullPreferencesDto) {
         const userId = req.user.userId;
-        return await this._updatePreferencesUseCase.execute(userId, dto)
+        await this._updateFullPreferencesUseCase.execute(userId, dto);
+        return { success: true, message: 'Preferences updated successfully.' };
     }
 
     @Post('bio/generate')

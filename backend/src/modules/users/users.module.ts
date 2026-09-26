@@ -81,6 +81,8 @@ import { UPDATE_FULL_PROFILE_USE_CASE } from "./application/interfaces/update-fu
 import { UpdateFullProfileUseCase } from "./application/use-cases/update-full-profile.use-case";
 import { GET_PROFILE_USE_CASE } from "./application/interfaces/get-profile.use-case.interface";
 import { GetProfileUseCase } from "./application/use-cases/get-profile.use-case";
+import { UPDATE_FULL_PREFERENCES_USE_CASE } from "./application/interfaces/update-full-preferences.use-case.interface";
+import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-full-preferences.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -278,6 +280,10 @@ import { GetProfileUseCase } from "./application/use-cases/get-profile.use-case"
         {
             provide: REMOVE_PROFILE_PHOTO_USE_CASE,
             useClass: RemoveProfilePhotoUseCase,
+        },
+        {
+            provide: UPDATE_FULL_PREFERENCES_USE_CASE,
+            useClass: UpdateFullPreferencesUseCase,
         },
         {
             provide: USER_MANAGEMENT_FACADE,
