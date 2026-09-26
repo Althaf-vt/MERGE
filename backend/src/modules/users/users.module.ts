@@ -71,6 +71,14 @@ import { UserBannedListener } from "./application/listeners/user-banned.listener
 import { UserSuspendedListener } from "./application/listeners/user-suspended.listener";
 import { CASTING_USER_FACADE } from "./application/interfaces/casting-user-facade.interface";
 import { CastingUserFacade } from "./application/services/casting-user.facade";
+import { REMOVE_PROFILE_PHOTO_USE_CASE, SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE, UPLOAD_PROFILE_PHOTO_USE_CASE } from "./application/interfaces/profile-management.use-case.interface";
+import { UpdateMedicalRecordUseCase } from "./application/use-cases/update-medical-record.use-case";
+import { UpdatePrivacySettingsUseCase } from "./application/use-cases/update-privacy-settings.use-case";
+import { UploadProfilePhotoUseCase } from "./application/use-cases/upload-profile-photo.use-case";
+import { SetPrimaryPhotoUseCase } from "./application/use-cases/set-primary-photos.use-case";
+import { RemoveProfilePhotoUseCase } from "./application/use-cases/remove-profile-photo.use-case";
+import { UPDATE_FULL_PROFILE_USE_CASE } from "./application/interfaces/update-full-profile.use-case.interface";
+import { UpdateFullProfileUseCase } from "./application/use-cases/update-full-profile.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -246,13 +254,37 @@ import { CastingUserFacade } from "./application/services/casting-user.facade";
             useClass: SaveBioUseCase,
         },
         {
+            provide: UPDATE_FULL_PROFILE_USE_CASE,
+            useClass: UpdateFullProfileUseCase,
+        },
+        {
+            provide: UPDATE_MEDICAL_RECORD_USE_CASE,
+            useClass: UpdateMedicalRecordUseCase,
+        },
+        {
+            provide: UPDATE_PRIVACY_SETTINGS_USE_CASE,
+            useClass: UpdatePrivacySettingsUseCase,
+        },
+        {
+            provide: UPLOAD_PROFILE_PHOTO_USE_CASE,
+            useClass: UploadProfilePhotoUseCase,
+        },
+        {
+            provide: SET_PRIMARY_PHOTO_USE_CASE,
+            useClass: SetPrimaryPhotoUseCase,
+        },
+        {
+            provide: REMOVE_PROFILE_PHOTO_USE_CASE,
+            useClass: RemoveProfilePhotoUseCase,
+        },
+        {
             provide: USER_MANAGEMENT_FACADE,
             useClass: UserManagementFacade,
         },
         {
             provide: CASTING_USER_FACADE,
             useClass: CastingUserFacade,
-        }
+        },
     ],
 
     // Makes these repository and token service providers available to other modules.
