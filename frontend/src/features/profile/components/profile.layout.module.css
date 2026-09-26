@@ -129,6 +129,7 @@
 }
 
 .contentWrapper {
-    max-width: 800px;
+    max-width: 1200px; /* Increased from 800px to fill the gaps */
+    width: 100%;
     margin: 0 auto;
 }

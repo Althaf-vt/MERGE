@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../app/hooks';
 import { 
     useUploadProfilePhotoMutation, 
@@ -7,9 +8,12 @@ import {
     useUpdatePrivacySettingsMutation
 } from '../api/profile.api';
 import styles from './profile-photos.module.css';
+import { useRefreshMutation } from '../../auth/api/auth.api';
 
 export const ProfilePhotosPage: React.FC = () => {
+    const dispatch = useDispatch();
     const { user } = useAppSelector((state) => state.auth);
+    
     const photos = user?.photos || [];
     const privacy = user?.privacySettings;
     
@@ -17,19 +21,26 @@ export const ProfilePhotosPage: React.FC = () => {
     const [removePhoto, { isLoading: isRemoving }] = useRemoveProfilePhotoMutation();
     const [setPrimaryPhoto, { isLoading: isSettingPrimary }] = useSetPrimaryPhotoMutation();
     const [updatePrivacy, { isLoading: isUpdatingPrivacy }] = useUpdatePrivacySettingsMutation();
+    const [refreshSession] = useRefreshMutation();
     
     const [errorMsg, setErrorMsg] = useState('');
     const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const maxPhotos = 6;
-    const emptySlots = Math.max(0, maxPhotos - photos.length);
+    const showEmptySlot = photos.length < maxPhotos;
 
-    // Calculate Verification Stats
     const stats = {
         approved: photos.filter(p => p.status === 'APPROVED').length,
         pending: photos.filter(p => p.status === 'PENDING').length,
         rejected: photos.filter(p => p.status === 'REJECTED').length,
+    };
+
+    // Helper function to sync Redux state instantly
+    const syncReduxState = async () => {
+        const sessionData = await refreshSession().unwrap();
+        // Fallback generic dispatch if you don't have the exact imported action:
+        dispatch({ type: 'auth/setCredentials', payload: sessionData })
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,11 +50,12 @@ export const ProfilePhotosPage: React.FC = () => {
         setErrorMsg('');
         try {
             await uploadPhoto(file).unwrap();
+            await syncReduxState();
         } catch (err: any) {
             console.error('Failed to upload photo:', err);
             setErrorMsg(err?.data?.error?.message || 'Failed to upload photo. Ensure your face is clearly visible.');
         } finally {
-            if (fileInputRef.current) fileInputRef.current.value = ''; // Reset input
+            if (fileInputRef.current) fileInputRef.current.value = ''; 
         }
     };
 
@@ -52,6 +64,7 @@ export const ProfilePhotosPage: React.FC = () => {
         setErrorMsg('');
         try {
             await removePhoto(photoToDelete).unwrap();
+            await syncReduxState();
             setPhotoToDelete(null);
         } catch (err: any) {
             setErrorMsg('Failed to remove photo.');
@@ -66,6 +79,7 @@ export const ProfilePhotosPage: React.FC = () => {
         setErrorMsg('');
         try {
             await setPrimaryPhoto({ photoId }).unwrap();
+            await syncReduxState();
         } catch (err: any) {
             setErrorMsg('Failed to set primary photo.');
         }
@@ -79,10 +93,16 @@ export const ProfilePhotosPage: React.FC = () => {
                 : { profileVisibility: privacy.profileVisibility === 'VISIBLE' ? 'HIDDEN' as const : 'VISIBLE' as const };
             
             await updatePrivacy(payload).unwrap();
+            await syncReduxState();
         } catch (err: any) {
             setErrorMsg('Failed to update privacy settings.');
         }
     };
+
+    // Reusable SVG Icons
+    const CheckIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
+    const ClockIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+    const XIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
     return (
         <div className={styles.pageContainer}>
@@ -112,15 +132,15 @@ export const ProfilePhotosPage: React.FC = () => {
                                     <img 
                                         src={photo.url} 
                                         alt="Profile" 
-                                        className={`${styles.image} ${photo.status === 'REJECTED' ? styles.blurredImage : ''}`} 
+                                        className={`${styles.image} ${photo.status !== 'APPROVED' ? styles.blurredImage : ''}`} 
                                     />
                                     
                                     {/* Badges */}
                                     <div className={styles.badgeContainer}>
                                         {photo.isPrimary && <span className={`${styles.badge} ${styles.badgePrimary}`}>Primary</span>}
-                                        {photo.status === 'APPROVED' && <span className={`${styles.badge} ${styles.badgeVerified}`}>✓ Verified</span>}
-                                        {photo.status === 'PENDING' && <span className={`${styles.badge} ${styles.badgePending}`}>⏳ Verifying</span>}
-                                        {photo.status === 'REJECTED' && <span className={`${styles.badge} ${styles.badgeRejected}`}>✕ Rejected</span>}
+                                        {photo.status === 'APPROVED' && <span className={`${styles.badge} ${styles.badgeVerified}`}>{CheckIcon} Verified</span>}
+                                        {photo.status === 'PENDING' && <span className={`${styles.badge} ${styles.badgePending}`}>{ClockIcon} Verifying</span>}
+                                        {photo.status === 'REJECTED' && <span className={`${styles.badge} ${styles.badgeRejected}`}>{XIcon} Rejected</span>}
                                     </div>
 
                                     {/* Hover Action Overlay */}
@@ -139,23 +159,16 @@ export const ProfilePhotosPage: React.FC = () => {
                                             onClick={() => setPhotoToDelete(photo.id)}
                                             disabled={isRemoving}
                                         >
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                            </svg>
+                                            {XIcon}
                                         </button>
                                     </div>
                                 </div>
                             ))}
 
-                            {/* Render Empty Slots */}
-                            {Array.from({ length: emptySlots }).map((_, index) => (
-                                <div 
-                                    key={`empty-${index}`} 
-                                    className={styles.emptySlot}
-                                    onClick={() => !isUploading && fileInputRef.current?.click()}
-                                >
-                                    {isUploading && index === 0 ? (
+                            {/* Render ONE Empty Slot if limit not reached */}
+                            {showEmptySlot && (
+                                <div className={styles.emptySlot} onClick={() => !isUploading && fileInputRef.current?.click()}>
+                                    {isUploading ? (
                                         <div className={styles.spinner}></div>
                                     ) : (
                                         <>
@@ -165,7 +178,7 @@ export const ProfilePhotosPage: React.FC = () => {
                                         </>
                                     )}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
@@ -176,10 +189,10 @@ export const ProfilePhotosPage: React.FC = () => {
                     <div className={styles.sideCard}>
                         <h3 className={styles.sideCardTitle}>Photo Guidelines</h3>
                         <ul className={styles.guidelineList}>
-                            <li className={styles.valid}><span>✓</span> Clear, well-lit photos</li>
-                            <li className={styles.valid}><span>✓</span> Face clearly visible</li>
-                            <li className={styles.invalid}><span>✕</span> No heavy filters or sunglasses</li>
-                            <li className={styles.invalid}><span>✕</span> No group photos</li>
+                            <li className={styles.valid}><span className={styles.iconWrapper}>{CheckIcon}</span> Clear, well-lit photos</li>
+                            <li className={styles.valid}><span className={styles.iconWrapper}>{CheckIcon}</span> Face clearly visible</li>
+                            <li className={styles.invalid}><span className={styles.iconWrapper}>{XIcon}</span> No heavy filters or sunglasses</li>
+                            <li className={styles.invalid}><span className={styles.iconWrapper}>{XIcon}</span> No group photos</li>
                         </ul>
                         <p className={styles.sideCardNote}>
                             All photos undergo AI face-matching against your KYC baseline to ensure authenticity.
@@ -251,7 +264,7 @@ export const ProfilePhotosPage: React.FC = () => {
                 onChange={handleFileChange}
             />
 
-            {/* Custom Confirm Modal (Strict No window.confirm rule) */}
+            {/* Custom Confirm Modal */}
             {photoToDelete && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalCard}>
