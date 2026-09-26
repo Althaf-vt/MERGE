@@ -25,7 +25,7 @@ export class UploadProfilePhotoUseCase implements IUploadProfilePhotoUseCase {
         user.validatePhotoLimit();
 
         // 2. offload to ML worker
-        const {faceEmbedding, confidence} = await this._biometricService.extractEmbedding(fileBuffer);
+        const {faceEmbedding, confidence} = await this._biometricService.extractProfileEmbedding(fileBuffer);
 
         // 3. Delegate ALL quality and matching validation to Domain
         const kyc = user.kycVerification;

@@ -252,6 +252,10 @@ export class UserKyc {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Embedding dimension mismatch.');
         }
 
+        if(!newEmbedding || newEmbedding.length === 0 || confidence < 80 || baseline.length !== newEmbedding.length){
+            return {score: 999, status: PhotoVerificationStatus.PENDING};
+        }
+
         // 1. calculate L2 norm (Euclidean distance)
         let sum = 0;
         for (let i = 0; i < baseline.length; i++) {
@@ -264,7 +268,7 @@ export class UserKyc {
         let status: PhotoVerificationStatus = PhotoVerificationStatus.PENDING;
 
         // Auto-approve ONLY if it's a tight biometric match AND high visual quality
-        if (distance <= 20.0 && confidence >= 80) {
+        if (distance <= 20.0) {
             status = PhotoVerificationStatus.APPROVED;
         }
 
