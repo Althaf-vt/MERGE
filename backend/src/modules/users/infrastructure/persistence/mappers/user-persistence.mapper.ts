@@ -102,6 +102,11 @@ export class UserPersistenceMapper{
                 openToAdoption: rawPref.openToAdoption,
                 immigrationReady: rawPref.immigrationReady,
                 partnerExpectations: rawPref.partnerExpectations,
+                diabeteBpPreference: rawPref.diabeteBpPreference,
+                fertilityPreference: rawPref.fertilityPreference,
+                geneticPreference: rawPref.geneticPreference,
+                infectiousPreference: rawPref.infectiousPreference,
+                disablilityPreferece: rawPref.disablilityPreferece,
                 createdAt: rawPref.createdAt,
                 updatedAt: rawPref.updatedAt,
             });
@@ -236,6 +241,11 @@ export class UserPersistenceMapper{
                 openToAdoption: data.preference.openToAdoption,
                 immigrationReady: data.preference.immigrationReady,
                 partnerExpectations: data.preference.partnerExpectations,
+                diabeteBpPreference: data.preference.diabeteBpPreference,
+                fertilityPreference: data.preference.fertilityPreference,
+                geneticPreference: data.preference.geneticPreference,
+                infectiousPreference: data.preference.infectiousPreference,
+                disablilityPreferece: data.preference.disablilityPreferece,
             } : null,
 
             // Flatten the KYC entity for MongoDB storage

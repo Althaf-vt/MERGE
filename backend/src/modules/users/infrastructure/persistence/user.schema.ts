@@ -1,6 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { AdoptionPreference, AuthProvider, DietType, DisabilityOption, DocumentType, DrinkingHabit, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, ReviewDecision, SelfieVerificationStatus, SmokingHabit, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
+import { AdoptionPreference, AuthProvider, DietType, DisabilityOption, DocumentType, DrinkingHabit, HealthConditionPreference, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, ReviewDecision, SelfieVerificationStatus, SmokingHabit, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
 import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from '../../domain/enums/profile.enums';
 // Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
@@ -192,16 +192,16 @@ export class UserPreferenceSchema {
     @Prop({ type: [String], default: [] })
     preferredGender?: string[];
 
-    @Prop()
+    @Prop({ default: 18 })
     preferredAgeMin?: number;
 
-    @Prop()
+    @Prop({ default: 45 })
     prefferedAgeMax?: number;
 
-    @Prop({ type: String, enum: RelationshipGoal })
+    @Prop({ type: String, enum: RelationshipGoal, default: RelationshipGoal.LONG_TERM_RELATIONSHIP })
     relationShipGoals?: RelationshipGoal;
 
-    @Prop()
+    @Prop({ default: 1 })
     minimumOutnessLevel?: number;
 
     @Prop({ default: true })
@@ -210,8 +210,23 @@ export class UserPreferenceSchema {
     @Prop({ default: false })
     immigrationReady?: boolean;
 
-    @Prop()
+    @Prop({ default: '' })
     partnerExpectations?: string;
+
+    @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
+    diabeteBpPreference?: HealthConditionPreference;
+
+    @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
+    fertilityPreference?: HealthConditionPreference;
+
+    @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
+    geneticPreference?: HealthConditionPreference;
+
+    @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
+    infectiousPreference?: HealthConditionPreference;
+
+    @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
+    disablilityPreferece?: HealthConditionPreference;
 }
 
 @Schema({ _id: false })
