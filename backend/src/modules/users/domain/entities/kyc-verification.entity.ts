@@ -242,11 +242,6 @@ export class UserKyc {
 
     evaluateFaceMatch(newEmbedding: number[], confidence: number): { score: number, status: PhotoVerificationStatus } {
         
-        // Enforce biometric quality invariant
-        if (confidence < 80) {
-            throw new DomainException(ErrorCode.FACE_MISMATCH, 'Face is not clearly visible in the uploaded photo.');
-        }
-
         const baseline = this._props.selfieFaceEmbedding;
 
         if (!baseline || baseline.length === 0) {
@@ -268,13 +263,11 @@ export class UserKyc {
         // 2. Enforce strict business policy threshold
         let status: PhotoVerificationStatus = PhotoVerificationStatus.PENDING;
 
-        if (distance <= 20.0) {
+        // Auto-approve ONLY if it's a tight biometric match AND high visual quality
+        if (distance <= 20.0 && confidence >= 80) {
             status = PhotoVerificationStatus.APPROVED;
-        } else if (distance > 25.0) {
-            status = PhotoVerificationStatus.REJECTED;
         }
 
-        // Distance between 20.0 and 25.0 remain PENDING for manual admin review 
         return { score: distance, status };
     }
 
