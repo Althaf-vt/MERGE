@@ -23,6 +23,11 @@ export class UserResponseMapper{
                 passedPrompts: entity.kycVerification.passedPrompts,
                 reviewDecision: entity.kycVerification.reviewDecision,
             } : null,
+
+            photos: entity.photos ? entity.photos.map(p => p.toJSON()) : [],
+            privacySettings: entity.privacySettings ? entity.privacySettings.toJSON() : null,
+            medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
+            
             createdAt: entity.createdAt
         }
     }
