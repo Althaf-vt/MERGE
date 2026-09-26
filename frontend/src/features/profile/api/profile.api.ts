@@ -42,24 +42,6 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile', 'User'],
         }),
-        
-        updateMedicalRecord: builder.mutation<ProfileStandardResponse, UpdateMedicalRequest>({
-            query: (body) => ({
-                url: '/profile/medical',
-                method: 'PATCH',
-                body,
-            }),
-            invalidatesTags: ['Profile', 'User'],
-        }),
-
-        updatePrivacySettings: builder.mutation<ProfileStandardResponse, UpdatePrivacyRequest>({
-            query: (body) => ({
-                url: '/profile/privacy',
-                method: 'PATCH',
-                body,
-            }),
-            invalidatesTags: ['Profile', 'User'],
-        }),
 
         uploadProfilePhoto: builder.mutation<ProfileStandardResponse, File>({
             query: (file) => {
@@ -90,7 +72,33 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile', 'User'],
         }),
+        
+        updateMedicalRecord: builder.mutation<ProfileStandardResponse, UpdateMedicalRequest>({
+            query: (body) => ({
+                url: '/profile/medical',
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
 
+        saveUserFullPreferences: builder.mutation<ProfileStandardResponse, any>({
+            query: (body) => ({
+                url: '/profile/preferences',
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        updatePrivacySettings: builder.mutation<ProfileStandardResponse, UpdatePrivacyRequest>({
+            query: (body) => ({
+                url: '/profile/privacy',
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
         // Note: You can add updatePersona, updateLifestyle, etc., here mapping to the existing endpoints
     }),
 });
@@ -98,6 +106,7 @@ export const profileApi = createApi({
 export const {
     useGetProfileQuery,
     useUpdateFullProfileMutation,
+    useSaveUserFullPreferencesMutation,
     useUpdateMedicalRecordMutation,
     useUpdatePrivacySettingsMutation,
     useUploadProfilePhotoMutation,
