@@ -4,7 +4,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 export class UserResponseMapper{
 
     // Maps the UserEntity properties into the response format.
-    public static toResponse(entity: UserAggregate){
+    public static toResponse(entity: UserAggregate, presignedPhotoUrls?: Record<string, string>, presignedLiveSelfieUrl?: string | null){
         return {
             id: entity.id,
             email: entity.email.getValue(),
@@ -24,7 +24,7 @@ export class UserResponseMapper{
                 reviewDecision: entity.kycVerification.reviewDecision,
             } : null,
 
-            photos: entity.photos ? entity.photos.map(p => p.toJSON()) : [],
+            photos: (entity.photos || []).map(p => p.toJSON()),
             privacySettings: entity.privacySettings ? entity.privacySettings.toJSON() : null,
             medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
             
