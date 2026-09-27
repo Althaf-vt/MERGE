@@ -37,6 +37,7 @@ import { EditProfilePage } from './features/profile/pages/edit-profile.page';
 import { ProfilePhotosPage } from './features/profile/pages/profile-photos.page';
 import { UserPreferencesPage } from './features/profile/pages/user-preferences.page';
 import { MedicalRecordsPage } from './features/profile/pages/medical-records.page';
+import { PrivacyPage } from './features/profile/pages/privacy.page';
 
 
 export const App = () => {
@@ -98,12 +99,12 @@ export const App = () => {
                                 <Route path="photos" element={<ProfilePhotosPage />} />
                                 <Route path='/profile/preferences' element={<UserPreferencesPage />} />
                                 <Route path="/profile/medical" element={<MedicalRecordsPage />} />
-                                {/* <Route path="preferences" element={<ProfilePreferencesPage />} />
-                                <Route path="medical" element={<MedicalRecordsPage />} />
-                                <Route path="privacy" element={<PrivacySettingsPage />} />
+                                <Route path="/profile/privacy" element={<PrivacyPage />} />
+                                {/* 
                                 <Route path="security" element={<SecuritySettingsPage />} />
                                 <Route path="blocked" element={<BlockedUsersPage />} />
-                                <Route path="billing" element={<SubscriptionCreditsPage />} /> */}
+                                <Route path="billing" element={<SubscriptionCreditsPage />} /> 
+                                */}
                             </Route>
 
                             {/* 
