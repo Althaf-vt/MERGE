@@ -52,14 +52,34 @@ export interface UserPrivacy {
 }
 
 // Request Payloads
+export interface FertilityRecord {
+    status: string;
+    details?: string;
+}
+
+export interface GeneticRecord {
+    status: string;
+    details?: string;
+}
+
+export interface InfectiousRecord {
+    hiv: string;
+    hepatitis: string;
+}
+
+export interface DisabilityRecord {
+    hasDisability: boolean;
+    details?: string;
+}
+
 export interface UpdateMedicalRequest {
     diabetes?: string;
     bloodPressure?: string;
-    fertility?: string;
-    genetic?: string;
-    infectious?: string;
-    infectiousVisibility?: InfectiousVisibility;
-    disability?: string;
+    fertility?: FertilityRecord;
+    genetic?: GeneticRecord;
+    infectious?: InfectiousRecord;
+    infectiousVisibility?: string; 
+    disability?: DisabilityRecord;
 }
 
 export interface UpdatePrivacyRequest {

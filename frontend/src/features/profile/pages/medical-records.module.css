@@ -1,0 +1,71 @@
+.pageContainer { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 5rem; }
+
+/* Warning Banner */
+.warningBanner { display: flex; gap: 1rem; background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 8px; align-items: flex-start; }
+.warningText { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: #4b5563; line-height: 1.4; }
+.warningText strong { color: #111827; font-size: 0.9rem; }
+.termsLink { color: #6D28D9; text-decoration: none; font-weight: 600; margin-top: 0.25rem; }
+
+/* Headers & Buttons */
+.viewHeaderRow { display: flex; justify-content: space-between; align-items: center; }
+.title { font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0; }
+.subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+.editSubtitle { font-size: 0.95rem; color: #4b5563; margin: 0; }
+.editBtnPrimary { background-color: #6D28D9; color: #fff; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.backBtn { display: inline-flex; align-items: center; gap: 0.5rem; background: none; border: none; color: #111827; font-size: 1.5rem; font-weight: 700; padding: 0; cursor: pointer; margin-bottom: 0.5rem; }
+
+.errorMsg { background-color: #fef2f2; color: #ef4444; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; border: 1px solid #fecaca; }
+.successMsg { background-color: #f0fdf4; color: #16a34a; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; border: 1px solid #bbf7d0; }
+
+/* Empty State */
+.emptyStateCard { background-color: #ffffff; border: 1px solid #f3f4f6; border-radius: 12px; padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.folderIconWrap { background-color: #f5f3ff; width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
+.emptyStateCard h3 { font-size: 1.25rem; color: #111827; margin: 0; }
+.emptyStateCard p { font-size: 0.9rem; color: #6b7280; max-width: 400px; margin: 0; line-height: 1.5; }
+.addBtn { background-color: #6D28D9; color: #fff; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+
+/* View Mode Card */
+.viewCard { background-color: #ffffff; border: 1px solid #f3f4f6; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.viewRow { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 1.5rem; }
+.viewRow:last-child { border-bottom: none; padding-bottom: 0; }
+.viewLabel { font-size: 0.95rem; font-weight: 600; color: #111827; }
+.viewTextRight { font-size: 0.9rem; color: #4b5563; }
+.pillGroupRight { display: flex; gap: 0.5rem; }
+.viewPill { background-color: #f5f3ff; color: #6D28D9; padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.viewPillGray { background-color: #f3f4f6; color: #6b7280; padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; }
+
+/* Edit Mode Cards */
+.card { background-color: #ffffff; border: 1px solid #f3f4f6; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.cardTitle { font-size: 1.15rem; font-weight: 600; color: #111827; margin: 0; }
+.fieldBlock { display: flex; flex-direction: column; gap: 0.5rem; }
+.fieldBlock label { font-size: 0.85rem; color: #6b7280; }
+.helperText { font-size: 0.75rem; color: #9ca3af; margin: 0; }
+
+.pillWrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pillBtn { background: #f9fafb; border: 1px solid #e5e7eb; color: #4b5563; padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; }
+.pillBtn:hover { border-color: #c4b5fd; color: #6D28D9; }
+.pillBtnActive { background-color: #f5f3ff; border-color: #6D28D9; color: #6D28D9; font-weight: 600; }
+
+.pillBtnOutline { background: #ffffff; border: 1px solid #e5e7eb; color: #4b5563; padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease; }
+.pillBtnOutlineActive { border-color: #6D28D9; color: #6D28D9; font-weight: 600; }
+
+.detailInput { width: 100%; padding: 0.75rem 1rem; background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 0.9rem; color: #111827; outline: none; margin-top: 0.5rem; }
+.detailInput:focus { border-color: #6D28D9; }
+
+/* Toggles */
+.toggleRow { display: flex; justify-content: space-between; align-items: center; }
+.toggleWrap { display: flex; align-items: center; gap: 0.75rem; }
+.toggleLabel { font-size: 0.9rem; color: #374151; }
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.sliderRound { position: absolute; cursor: pointer; inset: 0; background-color: #e5e7eb; transition: .3s; border-radius: 24px; }
+.sliderRound:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+input:checked + .sliderRound { background-color: #6D28D9; }
+input:checked + .sliderRound:before { transform: translateX(20px); }
+
+/* Bottom Action Bar */
+.bottomBar { position: sticky; bottom: 0; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-top: 1px solid #f3f4f6; padding: 1rem 0; display: flex; justify-content: flex-end; gap: 1rem; z-index: 10; }
+.cancelBtn { background: transparent; border: 1px solid #d1d5db; padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: #4b5563; cursor: pointer; }
+.saveBtn { background-color: #6D28D9; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: #ffffff; cursor: pointer; transition: background-color 0.2s ease; }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.loadingState { padding: 3rem; text-align: center; color: #6b7280; font-weight: 500; }
