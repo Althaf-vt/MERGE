@@ -236,21 +236,21 @@ export class UserMedicalSchema {
 
     @Prop({ default: null }) 
     bloodPressure?: string;
-
-    @Prop({ default: null }) 
-    fertility?: string;
-
-    @Prop({ default: null }) 
-    genetic?: string;
-
-    @Prop({ default: null }) 
-    infectious?: string;
-
+    
+    @Prop({ type: Object, default: null }) 
+    fertility?: { status: string; details?: string };
+    
+    @Prop({ type: Object, default: null }) 
+    genetic?: { status: string; details?: string };
+    
+    @Prop({ type: Object, default: null }) 
+    infectious?: { hiv: string; hepatitis: string };
+    
     @Prop({ type: String, enum: Object.values(InfectiousVisibility), default: InfectiousVisibility.HIDDEN }) 
     infectiousVisibility: string;
-
-    @Prop({ default: null }) 
-    disability?: string;
+    
+    @Prop({ type: Object, default: null }) 
+    disability?: { hasDisability: boolean; details?: string };
 
     @Prop({ type: Date, default: Date.now }) 
     updatedAt: Date;

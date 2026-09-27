@@ -19,7 +19,7 @@ export class UpdateMedicalRecordUseCase implements IUpdateMedicalRecordUseCase {
         // Retrieve existing entity or initialize a new one
         const medicalRecord = user.medicalRecord || new UserMedical({ infectiousVisibility: 'HIDDEN' });
 
-        medicalRecord.updateRecords(dto);
+        medicalRecord.updateMedicalInfo(dto);
 
         // Attach and save
         user.attachMedicalRecord(medicalRecord);

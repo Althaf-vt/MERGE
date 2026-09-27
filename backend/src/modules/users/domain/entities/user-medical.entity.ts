@@ -3,11 +3,11 @@ import { InfectiousVisibility } from "../enums/profile.enums";
 export interface UserMedicalProps {
     diabetes?: string;
     bloodPressure?: string;
-    fertility?: string;
-    genetic?: string;
-    infectious?: string;
+    fertility?: { status: string; details?: string };
+    genetic?: { status: string; details?: string };
+    infectious?: { hiv: string; hepatitis: string };
     infectiousVisibility: InfectiousVisibility;
-    disability?: string;
+    disability?: { hasDisability: boolean; details?: string };
     updatedAt?: Date;
 }
 
@@ -24,14 +24,14 @@ export class UserMedical {
 
     get diabetes(): string | undefined { return this._props.diabetes; }
     get bloodPressure(): string | undefined { return this._props.bloodPressure; }
-    get fertility(): string | undefined { return this._props.fertility; }
-    get genetic(): string | undefined { return this._props.genetic; }
-    get infectious(): string | undefined { return this._props.infectious; }
+    get fertility() { return this._props.fertility; }
+    get genetic() { return this._props.genetic; }
+    get infectious() { return this._props.infectious; }
     get infectiousVisibility(): InfectiousVisibility { return this._props.infectiousVisibility; }
-    get disability(): string | undefined { return this._props.disability; }
+    get disability() { return this._props.disability; }
     get updatedAt(): Date | undefined { return this._props.updatedAt; }
 
-    updateRecords(payload: Partial<UserMedicalProps>): void {
+    updateMedicalInfo(payload: Partial<UserMedicalProps>): void {
         if (payload.diabetes !== undefined) this._props.diabetes = payload.diabetes;
         if (payload.bloodPressure !== undefined) this._props.bloodPressure = payload.bloodPressure;
         if (payload.fertility !== undefined) this._props.fertility = payload.fertility;
