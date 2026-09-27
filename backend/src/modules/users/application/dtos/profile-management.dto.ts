@@ -1,4 +1,4 @@
-import { IsBoolean, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 import { InfectiousVisibility, ProfileVisibility } from '../../domain/enums/profile.enums';
 import { Type } from 'class-transformer';
 
@@ -58,20 +58,27 @@ export class UpdateMedicalRecordDto {
 
 export class UpdatePrivacySettingsDto {
     @IsOptional()
-    @IsBoolean()
+    @IsBoolean({ message: 'showAge must be a boolean value.' })
     showAge?: boolean;
 
     @IsOptional()
-    @IsBoolean()
+    @IsBoolean({ message: 'showOccupation must be a boolean value.' })
     showOccupation?: boolean;
 
     @IsOptional()
-    @IsBoolean()
+    @IsBoolean({ message: 'blurPhotos must be a boolean value.' })
     blurPhotos?: boolean;
 
     @IsOptional()
-    @IsIn(Object.values(ProfileVisibility))
+    @IsIn(Object.values(ProfileVisibility), { message: 'Invalid profile visibility state.' })
     profileVisibility?: ProfileVisibility;
+
+    // Orchestrated cross-entity update
+    @IsOptional()
+    @IsNumber()
+    @Min(1, { message: 'Outness level must be at least 1.' })
+    @Max(5, { message: 'Outness level cannot exceed 5.' })
+    outnessLevel?: number;
 }
 
 export class SetPrimaryPhotoDto {

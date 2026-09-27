@@ -16,6 +16,7 @@ export class UpdatePrivacySettingsUseCase implements IUpdatePrivacySettingsUseCa
         const user = await this._userRepository.findById(userId);
         if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
 
+        // 1. Update the Privacy Entity
         const privacySettings = user.privacySettings || new UserPrivacy({
             showAge: true,
             showOccupation: true,
@@ -23,9 +24,19 @@ export class UpdatePrivacySettingsUseCase implements IUpdatePrivacySettingsUseCa
             profileVisibility: 'VISIBLE'
         });
 
-        privacySettings.updateSettings(dto);
-
+        privacySettings.updateSettings({
+            showAge: dto.showAge,
+            showOccupation: dto.showOccupation,
+            blurPhotos: dto.blurPhotos,
+            profileVisibility: dto.profileVisibility
+        });
         user.attachPrivacySettings(privacySettings);
+
+        // 2. Update the Profile Entity's Outness Level if provided
+        if (dto.outnessLevel !== undefined && user.profile) {
+            user.profile.updateIndentity({ outnessLevel: dto.outnessLevel });
+        }
+
         await this._userRepository.update(user);
     }
 }
