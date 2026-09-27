@@ -87,6 +87,7 @@ export interface UpdatePrivacyRequest {
     showOccupation?: boolean;
     blurPhotos?: boolean;
     profileVisibility?: ProfileVisibility;
+    outnessLevel?: number;
 }
 
 export interface SetPrimaryPhotoRequest {
