@@ -78,7 +78,7 @@ export interface UpdateMedicalRequest {
     fertility?: FertilityRecord;
     genetic?: GeneticRecord;
     infectious?: InfectiousRecord;
-    infectiousVisibility?: string; 
+    infectiousVisibility?: string;
     disability?: DisabilityRecord;
 }
 
@@ -124,4 +124,36 @@ export interface UpdateFullProfileRequest {
     immigrationReady?: string;
     selectedTraits?: string[];
     interests?: string[];
+}
+
+// --- SECURITY & SESSION TYPES ---
+
+export interface UserSessionData {
+    sessionId: string;
+    userId: string;
+    deviceInfo: string;
+    ipAddress: string;
+    lastActive: string; // ISO Date string
+    createdAt: string;  // ISO Date string
+}
+
+export interface GetActiveSessionsResponse {
+    success: boolean;
+    data: UserSessionData[];
+}
+
+// Request Payloads
+export interface UpdateSecurityPasswordRequest {
+    otp: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface InitiateEmailChangeRequest {
+    currentOtp: string;
+    newEmail: string;
+}
+
+export interface ConfirmEmailChangeRequest {
+    newEmailOtp: string;
 }

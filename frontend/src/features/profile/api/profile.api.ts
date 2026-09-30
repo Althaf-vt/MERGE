@@ -2,13 +2,17 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../../../app/store';
-import type { 
+import type {
+    ConfirmEmailChangeRequest,
+    GetActiveSessionsResponse,
     GetProfileResponse,
-    ProfileStandardResponse, 
-    SetPrimaryPhotoRequest, 
-    UpdateFullProfileRequest, 
-    UpdateMedicalRequest, 
-    UpdatePrivacyRequest 
+    InitiateEmailChangeRequest,
+    ProfileStandardResponse,
+    SetPrimaryPhotoRequest,
+    UpdateFullProfileRequest,
+    UpdateMedicalRequest,
+    UpdatePrivacyRequest,
+    UpdateSecurityPasswordRequest
 } from '../types/profile.types';
 
 export const profileApi = createApi({
@@ -23,7 +27,7 @@ export const profileApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['Profile', 'User'],
+    tagTypes: ['Profile', 'User', 'Sessions'],
     endpoints: (builder) => ({
 
         getProfile: builder.query<GetProfileResponse, void>({
@@ -72,7 +76,7 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile', 'User'],
         }),
-        
+
         updateMedicalRecord: builder.mutation<ProfileStandardResponse, UpdateMedicalRequest>({
             query: (body) => ({
                 url: '/profile/medical',
@@ -99,7 +103,78 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile', 'User'],
         }),
-        // Note: You can add updatePersona, updateLifestyle, etc., here mapping to the existing endpoints
+
+        requestSecurityOtp: builder.mutation<ProfileStandardResponse, void>({
+            query: () => ({
+                url: '/profile/security/request',
+                method: 'POST',
+            }),
+        }),
+
+        updateSecurityPassword: builder.mutation<ProfileStandardResponse, UpdateSecurityPasswordRequest>({
+            query: (body) => ({
+                url: '/profile/privacy',
+                method: 'POST',
+                body,
+            }),
+        }),
+
+        initiateEmailChange: builder.mutation<ProfileStandardResponse, InitiateEmailChangeRequest>({
+            query: (body) => ({
+                url: '/profile/security/email/initiate',
+                method: 'POST',
+                body,
+            }),
+        }),
+
+        confirmEmailChange: builder.mutation<ProfileStandardResponse, ConfirmEmailChangeRequest>({
+            query: (body) => ({
+                url: '/profile/security/email/confirm',
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        deactivateAccount: builder.mutation<ProfileStandardResponse, void>({
+            query: () => ({
+                url: '/profile/security/account/deactivate',
+                method: 'PATCH',
+            }),
+            invalidatesTags: ['Profile', 'User', 'Sessions'],
+        }),
+
+        deleteAccount: builder.mutation<ProfileStandardResponse, void>({
+            query: () => ({
+                url: '/profile/security/account/delete',
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Profile', 'User', 'Sessions'],
+        }),
+
+        getActiveSessions: builder.query<GetActiveSessionsResponse, void>({
+            query: () => ({
+                url: '/profile/security/sessions',
+                method: 'GET',
+            }),
+            providesTags: ['Sessions'],
+        }),
+
+        revokeSession: builder.mutation<ProfileStandardResponse, string>({
+            query: (sessionId) => ({
+                url: `/profile/security/sessions/${sessionId}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Sessions'],
+        }),
+
+        revokeOtherSessions: builder.mutation<ProfileStandardResponse, void>({
+            query: () => ({
+                url: '/profile/security/sessions/other',
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Sessions'],
+        }),
     }),
 });
 
@@ -111,5 +186,14 @@ export const {
     useUpdatePrivacySettingsMutation,
     useUploadProfilePhotoMutation,
     useSetPrimaryPhotoMutation,
-    useRemoveProfilePhotoMutation
+    useRemoveProfilePhotoMutation,
+    useRequestSecurityOtpMutation,
+    useUpdateSecurityPasswordMutation,
+    useInitiateEmailChangeMutation,
+    useConfirmEmailChangeMutation,
+    useDeactivateAccountMutation,
+    useDeleteAccountMutation,
+    useGetActiveSessionsQuery,
+    useRevokeSessionMutation,
+    useRevokeOtherSessionsMutation
 } = profileApi;
