@@ -9,6 +9,7 @@ type RegistrationStep = 'REGISTER' | 'OTP';
 export interface AuthUser{
     id: string;
     email: string;
+    authProvider?: string;
     isEmailVerified: boolean;
     kycCompleted?: boolean;
     onboardingStep?: number;
