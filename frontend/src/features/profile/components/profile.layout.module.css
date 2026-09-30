@@ -3,7 +3,6 @@
     min-height: 100vh;
     background-color: #fafafa;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    /* Do NOT add padding-top here so sidebar stays flush against the top */
     padding-top: 0; 
 }
 
@@ -15,7 +14,6 @@
     flex-direction: column;
     padding: 2rem 1.5rem;
     flex-shrink: 0;
-    /* Restores your original sidebar position unchanged */
     height: 130vh;
     position: sticky;
     top: 0;
@@ -79,10 +77,26 @@
     overflow-y: auto;
 }
 
+/* Hide scrollbar for cleaner look */
+.navigation::-webkit-scrollbar {
+    display: none;
+}
+.navigation {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
 .navGroup {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
+}
+
+.groupLabelRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 0.5rem;
 }
 
 .groupLabel {
@@ -92,9 +106,13 @@
     letter-spacing: 0.05em;
     padding-left: 0.75rem;
     margin-bottom: 0.25rem;
+    display: block;
 }
 
 .navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     text-decoration: none;
     color: #4b5563;
     padding: 0.75rem;
@@ -104,9 +122,18 @@
     transition: all 0.2s ease;
 }
 
+.navItem svg {
+    color: #6b7280;
+    transition: color 0.2s ease;
+}
+
 .navItem:hover {
     background-color: #f9fafb;
     color: #111827;
+}
+
+.navItem:hover svg {
+    color: #4b5563;
 }
 
 .navItem.active {
@@ -115,8 +142,29 @@
     font-weight: 600;
 }
 
+.navItem.active svg {
+    color: #6D28D9;
+}
+
+/* Disabled "Coming Soon" Links */
+.disabledLink {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #d1d5db;
+    cursor: not-allowed;
+    user-select: none;
+}
+
+.disabledLink svg {
+    color: #e5e7eb;
+}
+
 .logoutWrapper {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid #f3f4f6;
 }
@@ -143,7 +191,6 @@
 
 .contentArea {
     flex: 1;
-    /* 5.5rem top padding clears the floating navbar, while keeping side/bottom padding */
     padding: 8.5rem 4rem 4rem 4rem; 
     background-color: #fafafa;
     overflow-y: auto;
