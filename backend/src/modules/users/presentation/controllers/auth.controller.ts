@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Logger, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
@@ -16,6 +16,7 @@ import { ILoginUserUseCase, LOGIN_USER_USE_CASE } from "../../application/interf
 import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/interfaces/refresh-token.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
+import { ClientInfo, ClientInfoData } from "../../../../shared/infrastructure/security/decorators/client-info.decorator";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -34,6 +35,7 @@ export class AuthController{
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
     ){}
+    private readonly _logger = new Logger(AuthController.name)
 
     // Handles user registration requests. 
     @Post('register')
@@ -68,12 +70,9 @@ export class AuthController{
     // Handle User Login Requests
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    async login(@Body() dto: LoginUserDto, @Req() req: Request, @Res({passthrough: true}) res: Response){
-        // Extract context for redis session tracking
-        const ipAddress = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
-        const deviceInfo = req.headers['user-agent'] || 'unknown device';
+    async login(@Body() dto: LoginUserDto, @ClientInfo() client: ClientInfoData, @Res({passthrough: true}) res: Response){
 
-        const result = await this._loginUserUseCase.execute(dto, deviceInfo, ipAddress);
+        const result = await this._loginUserUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
         // Aet the refresh token as an HttpOnly, Secure cookie
         res.cookie('refreshToken', result.refreshToken, {
@@ -109,14 +108,10 @@ export class AuthController{
     @HttpCode(HttpStatus.OK)
     async googleLogin(
         @Body() dto: GoogleLoginDto,
-        @Req() req: Request,
+        @ClientInfo() client: ClientInfoData,
         @Res({passthrough: true}) res: Response
     ){
-        // extract context for redis session tracking
-        const ipAddress = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
-        const deviceInfo = req.headers['user-agent'] || 'unknown device';
-
-        const result = await this._googleLoginUseCase.execute(dto, deviceInfo, ipAddress);
+        const result = await this._googleLoginUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
@@ -169,11 +164,12 @@ export class AuthController{
                 // Decode the token to get the embedded sessionId, then explicitly kill it in redis
                 const payload = this._tokenService.verifyRefreshToken(refreshToken);
                 if(payload && payload.userId && payload.sessionId){
-                    await this._sessionService.revokeAllOtherSessions(payload.userId, payload.sessionId);
+                    await this._sessionService.revokeSession(payload.userId, payload.sessionId);
                 }
             } catch (error) {
                 // If the token is already expired or invalid, swallow the error
                 // and proceed to clear the dead cookie.
+                this._logger.debug('Refresh token invalid during logout; proceeding with cookie cleanup.');
             }
         }
         // Clear the cookie matching the options used when set
