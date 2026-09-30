@@ -354,6 +354,28 @@ export class UserAggregate extends AggregateRoot {
         }
     }
 
+    deactivateAccount(): void{
+        if(this._props.accountStatus === UserStatus.DELETED){
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot deactivate a deleted account.");
+        }
+        this._props.accountStatus = UserStatus.DEACTIVATED;
+        this.markUpdatedAt();
+    }
+
+    deleteAccount(): void {
+        this._props.accountStatus = UserStatus.DELETED;
+        this.markUpdatedAt();
+    }
+
+    updateEmail(newEmail: EmailVO): void {
+        if (this._props.authProvider === AuthProvider.GOOGLE) {
+            throw new DomainException(ErrorCode.FORBIDDEN, "Google-authenticated accounts cannot change their email address.");
+        }
+        this._props.email = newEmail;
+        this._props.isEmailVerified = true; 
+        this.markUpdatedAt();
+    }
+
     //3. LUMEN AGENT SCHEDULING & QUOTAS
 
     toggleLumen(enabled: boolean): void {
