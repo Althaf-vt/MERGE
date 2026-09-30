@@ -83,6 +83,19 @@ import { GET_PROFILE_USE_CASE } from "./application/interfaces/get-profile.use-c
 import { GetProfileUseCase } from "./application/use-cases/get-profile.use-case";
 import { UPDATE_FULL_PREFERENCES_USE_CASE } from "./application/interfaces/update-full-preferences.use-case.interface";
 import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-full-preferences.use-case";
+import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, INITIATE_EMAIL_CHANGE_USE_CASE, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "./application/interfaces/security-management.use-case.interface";
+import { SecurityController } from "./presentation/controllers/security.controller";
+import { USER_SESSION_SERVICE } from "./domain/interfaces/user-session.interface";
+import { UserRedisSessionService } from "./infrastructure/services/user-redis-session.service";
+import { InitiateEmailChangeUseCase } from "./application/use-cases/initiate-email-change.use-case";
+import { ConfirmEmailChangeUseCase } from "./application/use-cases/confirm-email-change.use-case";
+import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-security-password.use-case.ts";
+import { RequestSecurityOtpUseCase } from "./application/use-cases/request-security-otp.use-case";
+import { DeactivateAccountUseCase } from "./application/use-cases/deactivate-account.use-case";
+import { DeleteAccountUseCase } from "./application/use-cases/delete-account.use-case";
+import { GetActiveSessionsUseCase } from "./application/use-cases/get-active-sessions.use-case";
+import { RevokeSessionUseCase } from "./application/use-cases/revoke-session.use-case";
+import { RevokeOtherSessionsUseCase } from "./application/use-cases/revoke-other-sessions.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -100,6 +113,7 @@ import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-ful
         KycController,
         HandoffController,
         ProfileController,
+        SecurityController,
     ],
     // 2. Standard Providers (Gateways & Use Cases)
     // Handled via interface bindings in section 3
@@ -150,6 +164,10 @@ import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-ful
         {
             provide: OTP_SERVICE,
             useClass: RedisOtpService,
+        },
+        {
+            provide: USER_SESSION_SERVICE,
+            useClass: UserRedisSessionService,
         },
         {
             provide: GENERATE_HANDOFF_SESSION_USE_CASE,
@@ -296,11 +314,57 @@ import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-ful
         {
             provide: GET_PROFILE_USE_CASE,
             useClass: GetProfileUseCase,
-        }
+        },
+
+        // Security Use Cases
+        { 
+            provide: REQUEST_SECURITY_OTP_USE_CASE, 
+            useClass: RequestSecurityOtpUseCase 
+        },
+        { 
+            provide: UPDATE_SECURITY_PASSWORD_USE_CASE, 
+            useClass: UpdateSecurityPasswordUseCase 
+        },
+        { 
+            provide: INITIATE_EMAIL_CHANGE_USE_CASE, 
+            useClass: InitiateEmailChangeUseCase 
+        },
+        { 
+            provide: CONFIRM_EMAIL_CHANGE_USE_CASE, 
+            useClass: ConfirmEmailChangeUseCase 
+        },
+        { 
+            provide: DEACTIVATE_ACCOUNT_USE_CASE, 
+            useClass: DeactivateAccountUseCase 
+        },
+        { 
+            provide: DELETE_ACCOUNT_USE_CASE, 
+            useClass: DeleteAccountUseCase 
+        },
+        { 
+            provide: GET_ACTIVE_SESSIONS_USE_CASE, 
+            useClass: GetActiveSessionsUseCase 
+        },
+        { 
+            provide: REVOKE_SESSION_USE_CASE, 
+            useClass: RevokeSessionUseCase 
+        },
+        { 
+            provide: REVOKE_OTHER_SESSIONS_USE_CASE, 
+            useClass: RevokeOtherSessionsUseCase
+        },
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE, USER_MANAGEMENT_FACADE, CASTING_USER_FACADE],
+    exports: [
+        USER_REPOSITORY, 
+        OTP_SERVICE, 
+        USER_SESSION_SERVICE,
+        JwtAuthGuard, 
+        HANDOFF_SERVICE, 
+        USER_MANAGEMENT_FACADE, 
+        CASTING_USER_FACADE
+    ],
 })
 
 export class UserModule { }
