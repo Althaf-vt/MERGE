@@ -38,6 +38,7 @@ import { ProfilePhotosPage } from './features/profile/pages/profile-photos.page'
 import { UserPreferencesPage } from './features/profile/pages/user-preferences.page';
 import { MedicalRecordsPage } from './features/profile/pages/medical-records.page';
 import { PrivacyPage } from './features/profile/pages/privacy.page';
+import { SecurityPage } from './features/profile/pages/security.page';
 
 
 export const App = () => {
@@ -100,6 +101,7 @@ export const App = () => {
                                 <Route path='/profile/preferences' element={<UserPreferencesPage />} />
                                 <Route path="/profile/medical" element={<MedicalRecordsPage />} />
                                 <Route path="/profile/privacy" element={<PrivacyPage />} />
+                                <Route path="/profile/security" element={<SecurityPage />} />
                                 {/* 
                                 <Route path="security" element={<SecuritySettingsPage />} />
                                 <Route path="blocked" element={<BlockedUsersPage />} />
