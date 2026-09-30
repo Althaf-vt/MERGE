@@ -8,6 +8,7 @@ export class UserResponseMapper{
         return {
             id: entity.id,
             email: entity.email.getValue(),
+            authProvider: entity.authProvider,
             isEmailVerified: entity.isEmailVerified,
             kycCompleted: entity.kycCompleted,
             accountStatus: entity.accountStatus,
