@@ -69,13 +69,11 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
             const persistedUser = await this._userRepository.findByEmail(emailVo.getValue());
             if(persistedUser) user = persistedUser;
         }else{
-            // Existing User login 
-            if(user.accountStatus !== UserStatus.ACTIVE){
-                throw new DomainException(ErrorCode.INVALID_CREDENTIALS, `Cannot login: account is ${user.accountStatus.toLowerCase()}.`)
-            }
-
+            // STRICT DDD FIX: We removed the manual accountStatus check here.
+            // We delegate entirely to the Domain Entity which automatically lifts suspensions,
+            // triggers reactivations, or throws errors for banned/deleted states
             user.recordLogin();
-            await this._userRepository.update(user)
+            await this._userRepository.update(user);
         }
 
         if(!user.id){

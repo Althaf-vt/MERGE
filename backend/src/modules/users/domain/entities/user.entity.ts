@@ -141,6 +141,10 @@ export class UserAggregate extends AggregateRoot {
             }
         }
 
+        if(this._props.accountStatus === UserStatus.DEACTIVATED){
+            this.reactivateAccount();
+        }
+
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
             throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Inactive account cannot login');
         }
@@ -359,6 +363,14 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot deactivate a deleted account.");
         }
         this._props.accountStatus = UserStatus.DEACTIVATED;
+        this.markUpdatedAt();
+    }
+
+    reactivateAccount(): void {
+        if (this._props.accountStatus !== UserStatus.DEACTIVATED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only deactivated accounts can be reactivated.');
+        }
+        this._props.accountStatus = UserStatus.ACTIVE;
         this.markUpdatedAt();
     }
 
