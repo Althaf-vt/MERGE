@@ -89,13 +89,13 @@ import { USER_SESSION_SERVICE } from "./domain/interfaces/user-session.interface
 import { UserRedisSessionService } from "./infrastructure/services/user-redis-session.service";
 import { InitiateEmailChangeUseCase } from "./application/use-cases/initiate-email-change.use-case";
 import { ConfirmEmailChangeUseCase } from "./application/use-cases/confirm-email-change.use-case";
-import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-security-password.use-case.ts";
 import { RequestSecurityOtpUseCase } from "./application/use-cases/request-security-otp.use-case";
 import { DeactivateAccountUseCase } from "./application/use-cases/deactivate-account.use-case";
 import { DeleteAccountUseCase } from "./application/use-cases/delete-account.use-case";
 import { GetActiveSessionsUseCase } from "./application/use-cases/get-active-sessions.use-case";
 import { RevokeSessionUseCase } from "./application/use-cases/revoke-session.use-case";
 import { RevokeOtherSessionsUseCase } from "./application/use-cases/revoke-other-sessions.use-case";
+import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-security-password.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -323,7 +323,7 @@ import { RevokeOtherSessionsUseCase } from "./application/use-cases/revoke-other
         },
         { 
             provide: UPDATE_SECURITY_PASSWORD_USE_CASE, 
-            useClass: UpdateSecurityPasswordUseCase 
+            useClass: UpdateSecurityPasswordUseCase,
         },
         { 
             provide: INITIATE_EMAIL_CHANGE_USE_CASE, 
