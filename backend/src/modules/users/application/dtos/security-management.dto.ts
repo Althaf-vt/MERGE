@@ -33,3 +33,22 @@ export class RevokeSessionDto {
     @IsNotEmpty()
     sessionId!: string;
 }
+
+export class InitiateEmailChangeDto{
+    @IsString()
+    @IsNotEmpty({ message: 'Current email verification code is required.' })
+    @MaxLength(6, { message: 'OTP must be exactly 6 digits.' })
+    currentOtp!: string;
+
+    @IsEmail({}, { message: 'Provide a valid new email address.' })
+    @IsNotEmpty()
+    @MaxLength(255, { message: 'Email cannot exceed 255 characters.' })
+    newEmail!: string;
+}
+
+export class ConfirmEmailChangeDto {
+    @IsString()
+    @IsNotEmpty({ message: 'New email verification code is required.' })
+    @MaxLength(6, { message: 'OTP must be exactly 6 digits.' })
+    newEmailOtp!: string;
+}
