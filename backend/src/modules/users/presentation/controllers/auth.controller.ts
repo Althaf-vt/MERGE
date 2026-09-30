@@ -14,6 +14,8 @@ import { IRegisterUserUseCase, REGISTER_USER_USE_CASE } from "../../application/
 import { IVerifyOtpUseCase, VERIFY_OTP_USE_CASE } from "../../application/interfaces/verify-otp.use-case.interface";
 import { ILoginUserUseCase, LOGIN_USER_USE_CASE } from "../../application/interfaces/login-user.use-case.interface";
 import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/interfaces/refresh-token.use-case.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 
 // Handles authentication-related HTTP requests such as registration and OTP verfication.
 @Controller('auth')
@@ -21,30 +23,16 @@ export class AuthController{
 
     // Injects the use-cases responsible for registration and OTP verification.
     constructor(
-        @Inject(REGISTER_USER_USE_CASE)
-        private readonly _registerUserUseCase: IRegisterUserUseCase,
-        
-        @Inject(VERIFY_OTP_USE_CASE)
-
-        private readonly _verifyOtpUseCase: IVerifyOtpUseCase,
-        
-        @Inject(LOGIN_USER_USE_CASE)
-        private readonly _loginUserUseCase: ILoginUserUseCase,
-        
-        @Inject(REFRESH_TOKEN_USE_CASE)
-        private readonly _refreshTokenUseCase: IRefreshTokenUseCase,
-        
-        @Inject(RESEND_OTP_USE_CASE) 
-        private readonly _resendOtpUseCase: IResendOtpUseCase,
-        
-        @Inject(FORGOT_PASSWORD_USE_CASE)
-        private readonly _forgotPasswordUseCase: IForgotPasswordUseCase,
-        
-        @Inject(RESET_PASSWORD_USE_CASE)
-        private readonly _resetPasswordUseCase: IResetPasswordUseCase,
-        
-        @Inject(GOOGLE_LOGIN_USE_CASE)
-        private readonly _googleLoginUseCase: IGoogleLoginUseCase
+        @Inject(REGISTER_USER_USE_CASE) private readonly _registerUserUseCase: IRegisterUserUseCase,
+        @Inject(VERIFY_OTP_USE_CASE) private readonly _verifyOtpUseCase: IVerifyOtpUseCase,
+        @Inject(LOGIN_USER_USE_CASE) private readonly _loginUserUseCase: ILoginUserUseCase,
+        @Inject(REFRESH_TOKEN_USE_CASE) private readonly _refreshTokenUseCase: IRefreshTokenUseCase,
+        @Inject(RESEND_OTP_USE_CASE) private readonly _resendOtpUseCase: IResendOtpUseCase,
+        @Inject(FORGOT_PASSWORD_USE_CASE) private readonly _forgotPasswordUseCase: IForgotPasswordUseCase,
+        @Inject(RESET_PASSWORD_USE_CASE) private readonly _resetPasswordUseCase: IResetPasswordUseCase,
+        @Inject(GOOGLE_LOGIN_USE_CASE) private readonly _googleLoginUseCase: IGoogleLoginUseCase,
+        @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
     ){}
 
     // Handles user registration requests. 
@@ -80,8 +68,12 @@ export class AuthController{
     // Handle User Login Requests
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    async login(@Body() dto: LoginUserDto, @Res({passthrough: true}) res: Response){
-        const result = await this._loginUserUseCase.execute(dto);
+    async login(@Body() dto: LoginUserDto, @Req() req: Request, @Res({passthrough: true}) res: Response){
+        // Extract context for redis session tracking
+        const ipAddress = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
+        const deviceInfo = req.headers['user-agent'] || 'unknown device';
+
+        const result = await this._loginUserUseCase.execute(dto, deviceInfo, ipAddress);
 
         // Aet the refresh token as an HttpOnly, Secure cookie
         res.cookie('refreshToken', result.refreshToken, {
@@ -117,9 +109,14 @@ export class AuthController{
     @HttpCode(HttpStatus.OK)
     async googleLogin(
         @Body() dto: GoogleLoginDto,
+        @Req() req: Request,
         @Res({passthrough: true}) res: Response
     ){
-        const result = await this._googleLoginUseCase.execute(dto);
+        // extract context for redis session tracking
+        const ipAddress = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
+        const deviceInfo = req.headers['user-agent'] || 'unknown device';
+
+        const result = await this._googleLoginUseCase.execute(dto, deviceInfo, ipAddress);
 
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
@@ -164,7 +161,21 @@ export class AuthController{
 
     @Post('logout')
     @HttpCode(HttpStatus.OK)
-    async logout(@Res({passthrough: true}) res: Response){
+    async logout(@Req() req: Request, @Res({passthrough: true}) res: Response){
+        const refreshToken = req.cookies['refreshToken'];
+
+        if(refreshToken){
+            try {
+                // Decode the token to get the embedded sessionId, then explicitly kill it in redis
+                const payload = this._tokenService.verifyRefreshToken(refreshToken);
+                if(payload && payload.userId && payload.sessionId){
+                    await this._sessionService.revokeAllOtherSessions(payload.userId, payload.sessionId);
+                }
+            } catch (error) {
+                // If the token is already expired or invalid, swallow the error
+                // and proceed to clear the dead cookie.
+            }
+        }
         // Clear the cookie matching the options used when set
         res.clearCookie('refreshToken', {
             httpOnly: true,
