@@ -9,7 +9,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUpdateSecurityPasswordUseCase } from "../interfaces/security-management.use-case.interface";
 
 @Injectable()
-export class UpdateSecurityPassword implements IUpdateSecurityPasswordUseCase {
+export class UpdateSecurityPasswordUseCase implements IUpdateSecurityPasswordUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(OTP_SERVICE) private readonly _otpService: IOtpService,
