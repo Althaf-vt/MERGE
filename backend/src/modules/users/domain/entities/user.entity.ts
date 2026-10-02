@@ -15,7 +15,7 @@ import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
 import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
-import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
+import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
 
 export enum UserRole {
     USER = 'USER',
@@ -391,7 +391,7 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot unblock yourself.");
         }
 
-        this.addDomainEvent(new UserUnblockedDomainEvent(this.id, targetUserId));
+        this.addDomainEvent(new UserUnblockDomainEvent(this.id, targetUserId));
     }
 
     // 3. LUMEN AGENT SCHEDULING & QUOTAS
