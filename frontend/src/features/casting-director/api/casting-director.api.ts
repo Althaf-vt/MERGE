@@ -1,20 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../../../app/store";
-import type { CastingResponse } from "../types/casting.types";
+import { rootApi } from '../../../shared/api/base-api';
+import type { CastingResponse } from '../types/casting.types';
 
-export const castingDirectorApi = createApi({
-    reducerPath: 'castingDirectorApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
-        prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).auth.accessToken;
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
-            return headers;
-        },
-    }),
-
+export const castingDirectorApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
         initializeSession: builder.mutation<CastingResponse, void>({
             query: () => ({
@@ -35,8 +22,9 @@ export const castingDirectorApi = createApi({
                 method: 'POST',
             }),
         }),
-    })
-})
+    }),
+    overrideExisting: false,
+});
 
 export const {
     useInitializeSessionMutation,
