@@ -14,7 +14,7 @@ import { IRegisterUserUseCase, REGISTER_USER_USE_CASE } from "../../application/
 import { IVerifyOtpUseCase, VERIFY_OTP_USE_CASE } from "../../application/interfaces/verify-otp.use-case.interface";
 import { ILoginUserUseCase, LOGIN_USER_USE_CASE } from "../../application/interfaces/login-user.use-case.interface";
 import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/interfaces/refresh-token.use-case.interface";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ClientInfo, ClientInfoData } from "../../../../shared/infrastructure/security/decorators/client-info.decorator";
 

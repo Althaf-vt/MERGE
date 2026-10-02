@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IUserSessionService, USER_SESSION_SERVICE, UserSessionData } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE, UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
 import { IGetActiveSessionsUseCase } from "../interfaces/security-management.use-case.interface";
 
 @Injectable()

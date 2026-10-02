@@ -10,7 +10,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IRevokeOtherSessionsUseCase } from "../interfaces/security-management.use-case.interface";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 @Injectable()
 export class RevokeOtherSessionsUseCase implements IRevokeOtherSessionsUseCase {

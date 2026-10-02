@@ -9,7 +9,7 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase{

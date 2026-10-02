@@ -3,7 +3,7 @@ import { UpdateSecurityPasswordDto } from "../dtos/security-management.dto";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUpdateSecurityPasswordUseCase } from "../interfaces/security-management.use-case.interface";

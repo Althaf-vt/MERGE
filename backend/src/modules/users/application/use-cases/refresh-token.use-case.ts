@@ -7,7 +7,7 @@ import { RefreshTokenDto } from "../dtos/refresh-token.dto";
 import { UserStatus } from "../../domain/enums/user.enums";
 import { IRefreshTokenUseCase } from "../interfaces/refresh-token.use-case.interface";
 import { UserAggregate } from "../../domain/entities/user.entity";
-import { IUserSessionService, USER_SESSION_SERVICE } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
