@@ -6,6 +6,10 @@ import { BcryptService } from "./shared/infrastructure/security/services/bcrypt.
 import { JwtModule } from "@nestjs/jwt";
 import { TOKEN_SERVICE } from "./shared/domain/interfaces/token-service.interface";
 import { JwtTokenService } from "./shared/infrastructure/security/services/jwt-token.service";
+import { UserSessionGuard } from "./shared/infrastructure/security/guards/user-session.guard";
+import { JwtAuthGuard } from "./shared/infrastructure/security/guards/jwt-auth.guard";
+import { USER_SESSION_SERVICE } from "./shared/domain/interfaces/user-session.interface";
+import { UserRedisSessionService } from "./shared/infrastructure/security/services/user-redis-session.service";
 
 @Global() // Make these providers available app-wide without re-importing the module
 @Module({
@@ -29,8 +33,28 @@ import { JwtTokenService } from "./shared/infrastructure/security/services/jwt-t
       provide: EMAIL_SERVICE,
       useClass: NodeMailerEmailService,
     },
+    {
+      provide: USER_SESSION_SERVICE,
+      useClass: UserRedisSessionService,
+    },
+    {
+      provide: UserSessionGuard,
+      useClass: UserSessionGuard
+    },
+    {
+      provide: JwtAuthGuard,
+      useClass: JwtAuthGuard
+    }
   ],
-  exports: [PASSWORD_HASHER, EMAIL_SERVICE, TOKEN_SERVICE, JwtModule],
+  exports: [
+    PASSWORD_HASHER, 
+    EMAIL_SERVICE, 
+    TOKEN_SERVICE, 
+    USER_SESSION_SERVICE,
+    UserSessionGuard,
+    JwtAuthGuard,
+    JwtModule
+  ],
 })
 
 export class SharedModule {}
