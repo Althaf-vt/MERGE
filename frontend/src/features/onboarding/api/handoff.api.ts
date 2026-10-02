@@ -1,7 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../../auth/api/auth.api";
+import { rootApi } from '../../../shared/api/base-api';
 
-interface HandoffSessionResponse{
+interface HandoffSessionResponse {
     success: boolean;
     message: string;
     data: {
@@ -11,9 +10,7 @@ interface HandoffSessionResponse{
     };
 }
 
-export const handoffApi = createApi({
-    reducerPath: 'handoffApi',
-    baseQuery: baseQueryWithReauth,
+export const handoffApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
         generateSession: builder.mutation<HandoffSessionResponse, void>({
             query: () => ({
@@ -22,27 +19,33 @@ export const handoffApi = createApi({
             })
         }),
 
-        cancelSession: builder.mutation<{success: boolean}, string>({
+        cancelSession: builder.mutation<{ success: boolean }, string>({
             query: (sessionId) => ({
                 url: `/verification/phone-handoff/${sessionId}/cancel`,
                 method: 'POST',
             })
         }),
 
-        validateMobileSession: builder.query<{success: boolean, data: {accessToken: string}}, string>({
+        validateMobileSession: builder.query<{ success: boolean, data: { accessToken: string } }, string>({
             query: (sessionId) => ({
                 url: `/verification/phone-handoff/${sessionId}`,
                 method: 'GET'
             })
         }),
 
-        completeMobileSession: builder.mutation<{success: boolean}, string>({
+        completeMobileSession: builder.mutation<{ success: boolean }, string>({
             query: (sessionId) => ({
                 url: `verification/phone-handoff/${sessionId}/complete`,
                 method: 'POST',
             })
         })
-    })
-})
+    }),
+    overrideExisting: false,
+});
 
-export const {useGenerateSessionMutation, useCancelSessionMutation, useValidateMobileSessionQuery, useCompleteMobileSessionMutation} = handoffApi;
+export const {
+    useGenerateSessionMutation,
+    useCancelSessionMutation,
+    useValidateMobileSessionQuery,
+    useCompleteMobileSessionMutation
+} = handoffApi;
