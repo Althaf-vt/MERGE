@@ -12,7 +12,7 @@ export class BlockedUsersController {
         @Inject(BLOCK_USER_USE_CASE) private readonly _blockUserUseCase: IBlockUserUseCase,
         @Inject(UNBLOCK_USER_USE_CASE) private readonly _unblockUserUseCase: IUnblockUserUseCase,
         @Inject(GET_BLOCKED_USERS_USE_CASE) private readonly _getBlockedUsersUseCase: IGetBlockedUsersUseCase,
-    ) {}
+    ) { }
 
     @Get()
     @HttpCode(HttpStatus.OK)
@@ -22,7 +22,7 @@ export class BlockedUsersController {
         @Query('sortBy') sortBy?: SortOrder
     ) {
         const validSort = Object.values(SortOrder).includes(sortBy as SortOrder) ? sortBy : SortOrder.RECENT;
-        
+
         const data = await this._getBlockedUsersUseCase.execute(req.user.userId, search, validSort as SortOrder);
         return { success: true, data };
     }
