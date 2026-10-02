@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { IUserSessionService, USER_SESSION_SERVICE } from '../../../domain/interfaces/user-session.interface';
 import { ErrorCode } from '../../../domain/enums/error-code.enum';
 import { DomainException } from '../../../domain/exceptions/domain.exception';
+import { IUserSessionService, USER_SESSION_SERVICE } from '../../../domain/interfaces/user-session.interface';
 
 
 interface AuthenticatedRequest extends Request {

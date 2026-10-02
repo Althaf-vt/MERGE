@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from 'uuid';
 import Redis from "ioredis";
-import { IUserSessionService, UserSessionData } from "../../domain/interfaces/user-session.interface";
+import { IUserSessionService, UserSessionData } from "../../../domain/interfaces/user-session.interface";
 
 @Injectable()
 export class UserRedisSessionService implements IUserSessionService {
