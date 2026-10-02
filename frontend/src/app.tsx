@@ -39,6 +39,8 @@ import { UserPreferencesPage } from './features/profile/pages/user-preferences.p
 import { MedicalRecordsPage } from './features/profile/pages/medical-records.page';
 import { PrivacyPage } from './features/profile/pages/privacy.page';
 import { SecurityPage } from './features/profile/pages/security.page';
+import { V2PlaceholderPage } from './features/profile/pages/v2-placeholder.page';
+import { ActivityPage } from './features/profile/pages/activity.page';
 
 
 export const App = () => {
@@ -102,6 +104,9 @@ export const App = () => {
                                 <Route path="/profile/medical" element={<MedicalRecordsPage />} />
                                 <Route path="/profile/privacy" element={<PrivacyPage />} />
                                 <Route path="/profile/security" element={<SecurityPage />} />
+                                <Route path="activity" element={<ActivityPage />} />
+                                <Route path="insights" element={<V2PlaceholderPage title="Profile Insights" subtitle="Understand how others perceive your profile." />} />
+                                <Route path="analytics" element={<V2PlaceholderPage title="Advanced Analytics" subtitle="Deep dive into your matching metrics." />} />
                                 {/* 
                                 <Route path="security" element={<SecuritySettingsPage />} />
                                 <Route path="blocked" element={<BlockedUsersPage />} />

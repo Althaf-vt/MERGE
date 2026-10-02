@@ -15,7 +15,7 @@ import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
 import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
-import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
+import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
 
 export enum UserRole {
     USER = 'USER',
@@ -48,7 +48,6 @@ export interface UserAggregateProps {
     dailyMatchHours: number[];
     lumenRecommendationGeneratedToday: number;
     lastLumenReset: Date;
-
     lastLogin?: Date;
     createdAt?: Date;
     updatedAt?: Date;
@@ -80,60 +79,51 @@ export class UserAggregate extends AggregateRoot {
             profileCompleted: props.profileCompleted ?? false,
             castingDirectorCompleted: props.castingDirectorCompleted ?? false,
             personalityVector: props.personalityVector ?? [],
-
             photos: props.photos ?? [],
             medicalRecord: props.medicalRecord ?? undefined,
             privacySettings: props.privacySettings ?? undefined,
-
             statusReason: props.statusReason ?? null,
             statusChangedAt: props.statusChangedAt ?? null,
             suspendedUntil: props.suspendedUntil ?? null,
-
             lumenEnabled: props.lumenEnabled ?? true,
             dailyMatchHours: props.dailyMatchHours ?? [],
             lumenRecommendationGeneratedToday: props.lumenRecommendationGeneratedToday ?? 0,
-
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date()
-        }
+        };
     }
 
-    // Getters : Provides read-only access to the User's provate properties.
-    get id(): string | undefined { return this._props.id }
-    get email(): EmailVO { return this._props.email }
-    get passwordHash(): string | null | undefined { return this._props.passwordHash }
-    get authProvider(): AuthProvider { return this._props.authProvider };
-    get isEmailVerified(): boolean { return this._props.isEmailVerified }
-    get accountStatus(): UserStatus { return this._props.accountStatus }
-    get kycCompleted(): boolean { return this._props.kycCompleted }
-    get onboardingStep(): number { return this._props.onboardingStep }
-    get onboardingCompleted(): boolean { return this._props.onboardingCompleted }
-    get profileCompleted(): boolean { return this._props.profileCompleted };
-    get castingDirectorCompleted(): boolean { return this._props.castingDirectorCompleted };
-    get personalityVector(): number[] { return [...(this._props.personalityVector ?? [])] };
-
+    // Getters: Provides read-only access to the User's private properties.
+    get id(): string | undefined { return this._props.id; }
+    get email(): EmailVO { return this._props.email; }
+    get passwordHash(): string | null | undefined { return this._props.passwordHash; }
+    get authProvider(): AuthProvider { return this._props.authProvider; }
+    get isEmailVerified(): boolean { return this._props.isEmailVerified; }
+    get accountStatus(): UserStatus { return this._props.accountStatus; }
+    get kycCompleted(): boolean { return this._props.kycCompleted; }
+    get onboardingStep(): number { return this._props.onboardingStep; }
+    get onboardingCompleted(): boolean { return this._props.onboardingCompleted; }
+    get profileCompleted(): boolean { return this._props.profileCompleted; }
+    get castingDirectorCompleted(): boolean { return this._props.castingDirectorCompleted; }
+    get personalityVector(): number[] { return [...(this._props.personalityVector ?? [])]; }
     get medicalRecord(): UserMedical | undefined { return this._props.medicalRecord; }
     get privacySettings(): UserPrivacy | undefined { return this._props.privacySettings; }
     get photos(): UserPhoto[] { return [...(this._props.photos ?? [])]; }
     get statusReason(): string | null | undefined { return this._props.statusReason; }
     get statusChangedAt(): Date | null | undefined { return this._props.statusChangedAt; }
     get suspendedUntil(): Date | null | undefined { return this._props.suspendedUntil; }
+    get lumenEnabled(): boolean { return this._props.lumenEnabled; }
+    get dailyMatchHours(): number[] { return this._props.dailyMatchHours; }
+    get lumenRecommendationsGeneratedToday(): number { return this._props.lumenRecommendationGeneratedToday; }
+    get lastLumenReset(): Date | undefined { return this._props.lastLumenReset; }
+    get lastLogin(): Date | undefined { return this._props.lastLogin; }
+    get createdAt(): Date | undefined { return this._props.createdAt; }
+    get updatedAt(): Date | undefined { return this._props.updatedAt; }
+    get profile(): UserProfile | undefined { return this._props.profile; }
+    get preference(): UserPreference | undefined { return this._props.preferences; }
+    get kycVerification(): UserKyc | undefined { return this._props.kycVerification; }
 
-    get lumenEnabled(): boolean { return this._props.lumenEnabled };
-    get dailyMatchHours(): number[] { return this._props.dailyMatchHours };
-    get lumenRecommendationsGeneratedToday(): number { return this._props.lumenRecommendationGeneratedToday };
-    get lastLumenReset(): Date | undefined { return this._props.lastLumenReset };
-    get lastLogin(): Date | undefined { return this._props.lastLogin };
-    get createdAt(): Date | undefined { return this._props.createdAt };
-    get updatedAt(): Date | undefined { return this._props.updatedAt };
-
-
-    get profile(): UserProfile | undefined { return this._props.profile }
-    get preference(): UserPreference | undefined { return this._props.preferences }
-    get kycVerification(): UserKyc | undefined { return this._props.kycVerification };
-
-
-    //1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
+    // 1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
     recordLogin(): void {
         // Auto-lift expired suspension
         if (this._props.accountStatus === UserStatus.SUSPENDED) {
@@ -144,6 +134,7 @@ export class UserAggregate extends AggregateRoot {
             }
         }
 
+        // Auto-reactivate account upon successful credential authorization
         if (this._props.accountStatus === UserStatus.DEACTIVATED) {
             this.reactivateAccount();
         }
@@ -160,11 +151,9 @@ export class UserAggregate extends AggregateRoot {
         if (!newPasswordHash || newPasswordHash.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Password hash cannot be empty.');
         }
-
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot update password for ${this._props.accountStatus.toLowerCase()} account.`);
         }
-
         this._props.passwordHash = newPasswordHash;
         this.markUpdatedAt();
     }
@@ -178,7 +167,6 @@ export class UserAggregate extends AggregateRoot {
         if (!vector || vector.length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector cannot be empty.');
         }
-
         this._props.personalityVector = vector;
         this._props.castingDirectorCompleted = true;
         this.markUpdatedAt();
@@ -188,15 +176,12 @@ export class UserAggregate extends AggregateRoot {
         if (this._props.accountStatus === UserStatus.BANNED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend an already banned account");
         }
-
         if (this._props.accountStatus === UserStatus.DELETED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend a deleted account");
         }
-
         if (!reason || reason.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Suspension reason is required");
         }
-
         const now = new Date();
         this._props.accountStatus = UserStatus.SUSPENDED;
         this._props.suspendedUntil = duration.until;
@@ -214,7 +199,6 @@ export class UserAggregate extends AggregateRoot {
         if (this._props.accountStatus !== UserStatus.SUSPENDED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not suspended");
         }
-
         this._props.accountStatus = UserStatus.ACTIVE;
         this._props.suspendedUntil = null;
         this._props.statusReason = null;
@@ -229,7 +213,6 @@ export class UserAggregate extends AggregateRoot {
         if (!reason || reason.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Ban reason is required");
         }
-
         this._props.accountStatus = UserStatus.BANNED;
         this._props.statusChangedAt = new Date();
         this._props.statusReason = reason.trim();
@@ -247,7 +230,6 @@ export class UserAggregate extends AggregateRoot {
         if (this._props.accountStatus !== UserStatus.BANNED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not banned");
         }
-
         this._props.accountStatus = UserStatus.ACTIVE;
         this._props.statusReason = null;
         this._props.statusChangedAt = new Date();
@@ -269,8 +251,7 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    //2. ONBOARDING & PIPELINE PROGRESSION
-
+    // 2. ONBOARDING & PIPELINE PROGRESSION
     advanceOnboardingStep(step: number): void {
         this._props.onboardingStep = step;
         this.markUpdatedAt();
@@ -301,14 +282,11 @@ export class UserAggregate extends AggregateRoot {
         if (!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, 'Email must be verified first');
         if (!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification must be completed first');
         if (!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User profile must be completed first');
-        // Temporarily comment out until the feature is built
-        // if(!this._props.castingDirectorCompleted) throw new Error('Casting director interview must be completed');
 
         this._props.onboardingCompleted = true;
         this._props.onboardingStep = 14;
         this.markUpdatedAt();
     }
-
 
     attachMedicalRecord(medical: UserMedical): void {
         this._props.medicalRecord = medical;
@@ -330,22 +308,18 @@ export class UserAggregate extends AggregateRoot {
 
     setPrimaryPhoto(photoId: string): void {
         if (!this._props.photos) return;
-
         const photoExists = this._props.photos.find(p => p.id === photoId);
         if (!photoExists) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Photo not found.');
-
         if (photoExists.status !== PhotoVerificationStatus.APPROVED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only approved photos can be set as primary.');
         }
-
         this._props.photos.forEach(p => {
             if (p.id === photoId) {
                 p.markAsPrimary();
             } else {
                 p.removePrimaryStatus();
             }
-        })
-
+        });
         this.markUpdatedAt();
     }
 
@@ -399,7 +373,7 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot block yourself.");
         }
 
-        // Emit event to trigger side-effects (e.g., severing active chats/matches asynchronously)
+        // Emit domain event to sever downstream states asynchronously
         this.addDomainEvent(new UserBlockedDomainEvent(this.id, targetUserId, reason));
 
         return new BlockedRelationship({
@@ -417,11 +391,10 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot unblock yourself.");
         }
 
-        this.addDomainEvent(new UserUnblockDomainEvent(this.id, targetUserId))
+        this.addDomainEvent(new UserUnblockedDomainEvent(this.id, targetUserId));
     }
 
-    //3. LUMEN AGENT SCHEDULING & QUOTAS
-
+    // 3. LUMEN AGENT SCHEDULING & QUOTAS
     toggleLumen(enabled: boolean): void {
         this._props.lumenEnabled = enabled;
         this.markUpdatedAt();
@@ -431,11 +404,9 @@ export class UserAggregate extends AggregateRoot {
         if (!this._props.lumenEnabled) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Lumen is not enabled for this user');
         }
-
         if (this._props.lumenRecommendationGeneratedToday >= maxDailyQuota) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Daily lumen quota reached');
         }
-
         this._props.lumenRecommendationGeneratedToday += 1;
         this.markUpdatedAt();
     }
@@ -461,6 +432,6 @@ export class UserAggregate extends AggregateRoot {
             medicalRecord: this._props.medicalRecord?.toJSON(),
             privacySettings: this._props.privacySettings?.toJSON(),
             photos: this._props.photos?.map(p => p.toJSON()),
-        }
+        };
     }
 }
