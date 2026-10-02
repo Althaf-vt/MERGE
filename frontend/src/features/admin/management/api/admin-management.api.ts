@@ -1,31 +1,24 @@
-// frontend/src/features/admin/management/api/admin-management.api.ts
+import { adminRootApi } from '../../auth/api/admin-base-api';
+import type { 
+    AcceptAdminInviteRequest, 
+    AdminManagementResponse, 
+    AdminStatusReasonRequest, 
+    GetAdminDetailsResponse, 
+    GetAdminsRequest, 
+    GetAdminsResponse, 
+    InviteAdminRequest, 
+    SuspendAdminRequest, 
+    UpdateAdminRequest 
+} from '../types/admin-management.types';
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../../../../app/store';
-import type { AcceptAdminInviteRequest, AdminManagementResponse, AdminStatusReasonRequest, GetAdminDetailsResponse, GetAdminsRequest, GetAdminsResponse, InviteAdminRequest, SuspendAdminRequest, UpdateAdminRequest } from '../types/admin-management.types';
-
-export const adminManagementApi = createApi({
-    reducerPath: 'adminManagementApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
-        prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).adminAuth.accessToken;
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
-            return headers;
-        },
-    }),
-    tagTypes: ['Admins'],
+export const adminManagementApi = adminRootApi.injectEndpoints({
     endpoints: (builder) => ({
-
         getAdmins: builder.query<GetAdminsResponse, GetAdminsRequest>({
             query: (params) => ({
                 url: '/admin/management',
                 method: 'GET',
                 params,
             }),
-            // Provides tags to automatically refetch when mutations occur
             providesTags: ['Admins'],
         }),
 
@@ -38,8 +31,6 @@ export const adminManagementApi = createApi({
             invalidatesTags: ['Admins'],
         }),
         
-        // This is a public route, so it doesn't strictly need the bearer token, 
-        // but it's safe to process through this API slice.
         acceptAdminInvite: builder.mutation<AdminManagementResponse, AcceptAdminInviteRequest>({
             query: (body) => ({
                 url: '/admin/management/accept-invite',
@@ -114,10 +105,10 @@ export const adminManagementApi = createApi({
                 url: `/admin/management/${adminId}/force-logout`,
                 method: 'POST',
             }),
-            // Does not necessarily invalidate the admin data, but good practice
             invalidatesTags: (_result, _error, id) => [{ type: 'Admins', id }],
         }),
     }),
+    overrideExisting: false,
 });
 
 export const {
