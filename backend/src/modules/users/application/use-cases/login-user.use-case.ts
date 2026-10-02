@@ -10,6 +10,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
+import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -17,36 +18,30 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
+        @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
     ) { }
 
-    async execute(dto: LoginUserDto): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
+    async execute(dto: LoginUserDto, deviceInfo: string, ipAddress: string): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
         const user = await this._userRepository.findByEmail(dto.email);
 
-        if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
-        }
-
-        if (!user.passwordHash) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "This account uses social login. Please sign in with Google.");
-        }
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
+        if (!user.passwordHash) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "This account uses social login. Please sign in with Google.");
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
-
-        if (!isPasswordValid) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid Email or Password");
-        }
-
-        if (!user.isEmailVerified) {
-            throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, "Please verify your email before logging in");
-        }
+        if (!isPasswordValid) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid Email or Password");
+        if (!user.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, "Please verify your email before logging in");
 
         user.recordLogin();
         await this._userRepository.update(user);
 
+        const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
+        const sessionId = await this._sessionService.createSession(user.id!, deviceInfo, ipAddress, ttlSeconds);
+        
         const payload = {
             userId: user.id!,
             email: user.email.getValue(),
             role: 'USER',
+            sessionId
         }
 
         return {

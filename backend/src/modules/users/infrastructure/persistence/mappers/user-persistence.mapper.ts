@@ -5,6 +5,10 @@ import { AuthProvider, SelfieVerificationStatus, UserStatus } from "../../../dom
 import { EmailVO } from "../../../../../shared/domain/value-objects/email.vo";
 import { UserDocument } from "../user.schema";
 import { UserPreference } from "../../../domain/entities/user-preference.entity";
+import { UserPrivacy } from "../../../domain/entities/user-privacy.entity";
+import { UserMedical } from "../../../domain/entities/user-medical.entity";
+import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from "../../../domain/enums/profile.enums";
+import { UserPhoto } from "../../../domain/entities/user-photo.entity";
 
 // Maps between domain UserEntity objects and Mongoose persistence documents.
 export class UserPersistenceMapper{
@@ -98,8 +102,47 @@ export class UserPersistenceMapper{
                 openToAdoption: rawPref.openToAdoption,
                 immigrationReady: rawPref.immigrationReady,
                 partnerExpectations: rawPref.partnerExpectations,
+                diabeteBpPreference: rawPref.diabeteBpPreference,
+                fertilityPreference: rawPref.fertilityPreference,
+                geneticPreference: rawPref.geneticPreference,
+                infectiousPreference: rawPref.infectiousPreference,
+                disablilityPreferece: rawPref.disablilityPreferece,
                 createdAt: rawPref.createdAt,
                 updatedAt: rawPref.updatedAt,
+            });
+        }
+
+        let medicalEntity: UserMedical | undefined;
+        if (raw.medicalRecord) {
+            medicalEntity = new UserMedical({
+                diabetes: raw.medicalRecord.diabetes,
+                bloodPressure: raw.medicalRecord.bloodPressure,
+                fertility: raw.medicalRecord.fertility,
+                genetic: raw.medicalRecord.genetic,
+                infectious: raw.medicalRecord.infectious,
+                infectiousVisibility: raw.medicalRecord.infectiousVisibility as InfectiousVisibility,
+                disability: raw.medicalRecord.disability,
+                updatedAt: raw.medicalRecord.updatedAt,
+            });
+        }
+
+        const photosArray = raw.photos?.map(p => new UserPhoto({
+            id: p.id,
+            url: p.url,
+            isPrimary: p.isPrimary,
+            status: p.status as PhotoVerificationStatus,
+            faceMatchScore: p.faceMatchScore,
+            uploadedAt: p.uploadedAt
+        })) || [];
+
+        let privacyEntity: UserPrivacy | undefined;
+        if (raw.privacySettings) {
+            privacyEntity = new UserPrivacy({
+                showAge: raw.privacySettings.showAge,
+                showOccupation: raw.privacySettings.showOccupation,
+                blurPhotos: raw.privacySettings.blurPhotos,
+                profileVisibility: raw.privacySettings.profileVisibility as ProfileVisibility,
+                updatedAt: raw.privacySettings.updatedAt,
             });
         }
 
@@ -124,6 +167,9 @@ export class UserPersistenceMapper{
             profile: profileEntity,
             preferences: preferenceEntity,
             kycVerification: kycEntity, //  Attach to the root aggregate
+            medicalRecord: medicalEntity,
+            privacySettings: privacyEntity,
+            photos: photosArray,
             createdAt: raw['createdAt'],
             updatedAt: raw['updatedAt']
         });
@@ -195,6 +241,11 @@ export class UserPersistenceMapper{
                 openToAdoption: data.preference.openToAdoption,
                 immigrationReady: data.preference.immigrationReady,
                 partnerExpectations: data.preference.partnerExpectations,
+                diabeteBpPreference: data.preference.diabeteBpPreference,
+                fertilityPreference: data.preference.fertilityPreference,
+                geneticPreference: data.preference.geneticPreference,
+                infectiousPreference: data.preference.infectiousPreference,
+                disablilityPreferece: data.preference.disablilityPreferece,
             } : null,
 
             // Flatten the KYC entity for MongoDB storage
@@ -218,6 +269,27 @@ export class UserPersistenceMapper{
                 approvedAt: data.kycVerification.approvedAt,
                 rejectedAt: data.kycVerification.rejectedAt,
             } : null,
+
+            medicalRecord: data.medicalRecord ? {
+                diabetes: data.medicalRecord.diabetes ?? null,
+                bloodPressure: data.medicalRecord.bloodPressure ?? null,
+                fertility: data.medicalRecord.fertility ?? null,
+                genetic: data.medicalRecord.genetic ?? null,
+                infectious: data.medicalRecord.infectious ?? null,
+                infectiousVisibility: data.medicalRecord.infectiousVisibility,
+                disability: data.medicalRecord.disability ?? null,
+                updatedAt: data.medicalRecord.updatedAt,
+            } : null,
+
+            privacySettings: data.privacySettings ? {
+                showAge: data.privacySettings.showAge,
+                showOccupation: data.privacySettings.showOccupation,
+                blurPhotos: data.privacySettings.blurPhotos,
+                profileVisibility: data.privacySettings.profileVisibility,
+                updatedAt: data.privacySettings.updatedAt,
+            } : null,
+
+            photos: data.photos || [], // Already mapped to plain object by UserPhoto.toJSON() inside UserAggregate.toJSON()
         };
     }
 }

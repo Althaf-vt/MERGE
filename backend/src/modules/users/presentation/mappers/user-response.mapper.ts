@@ -4,16 +4,18 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 export class UserResponseMapper{
 
     // Maps the UserEntity properties into the response format.
-    public static toResponse(entity: UserAggregate){
+    public static toResponse(entity: UserAggregate, presignedPhotoUrls?: Record<string, string>, presignedLiveSelfieUrl?: string | null){
         return {
             id: entity.id,
             email: entity.email.getValue(),
+            authProvider: entity.authProvider,
             isEmailVerified: entity.isEmailVerified,
             kycCompleted: entity.kycCompleted,
             accountStatus: entity.accountStatus,
             onboardingStep: entity.onboardingStep,
             castingDirectorCompleted: entity.castingDirectorCompleted,
             profile: entity.profile ? entity.profile.toJSON() : null,
+            preference: entity.preference ? entity.preference.toJSON() : null,
             kycVerification: entity.kycVerification? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,
@@ -23,6 +25,11 @@ export class UserResponseMapper{
                 passedPrompts: entity.kycVerification.passedPrompts,
                 reviewDecision: entity.kycVerification.reviewDecision,
             } : null,
+
+            photos: (entity.photos || []).map(p => p.toJSON()),
+            privacySettings: entity.privacySettings ? entity.privacySettings.toJSON() : null,
+            medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
+            
             createdAt: entity.createdAt
         }
     }

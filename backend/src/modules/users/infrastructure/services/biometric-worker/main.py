@@ -154,6 +154,46 @@ async def extract_embedding(file: UploadFile = File(...)):
         print(f"Extraction Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal ML worker error.")
 
+@app.post("/extract-profile-embedding")
+async def extract_profile_embedding(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        nparr = np.frombuffer(contents, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if img is None:
+            # Return 0 gracefully so the backend can upload it and flag it for manual review
+            return {"confidence": 0, "faceEmbedding": []}
+
+        # enforce_detection=False prevents crashes if no face is found (e.g. scenic photos)
+        faces = DeepFace.extract_faces(img_path=img, detector_backend="mtcnn", enforce_detection=False)
+
+        if len(faces) == 0 or faces[0].get("confidence", 0) == 0:
+            return {"confidence": 0, "faceEmbedding": []}
+        
+        # DeepFace automatically sorts by largest bounding box, naturally grabbing the primary subject
+        primary_face = faces[0]
+        
+        # NOTE: We purposefully DO NOT call evaluate_quality_and_occlusion() here.
+        # This allows group photos, sunglasses, and distance shots to pass to human review.
+
+        results = DeepFace.represent(
+            img_path=primary_face["face"],
+            model_name="Facenet512",
+            detector_backend="skip",
+            enforce_detection=False
+        )
+
+        return {
+            "confidence": round(primary_face.get("confidence", 0) * 100, 2),
+            "faceEmbedding": results[0]["embedding"]
+        }
+
+    except Exception as e: 
+        print(f"Profile Extraction Error: {str(e)}")
+        # Fail open: Allow the photo to upload but force it into the PENDING admin queue
+        return {"confidence": 0, "faceEmbedding": []}
+
 def euclidean_distance(p1, p2) -> float:
     """Calculates normalized 2D Euclidean distance between two landmarks."""
     return math.hypot(p1.x - p2.x, p1.y - p2.y)

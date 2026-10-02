@@ -8,6 +8,7 @@ export interface IExtractionResult {
 export interface IBiometricService{
     // Analyzes an image buffer for physical liveness and extracts facial embeddings.
     extractEmbedding(imageBuffer: Buffer): Promise<IExtractionResult>;
+    extractProfileEmbedding(imageBuffer: Buffer): Promise<IExtractionResult>;
     analyzeLiveness(videoBuffer: Buffer, promptType: string): Promise<ILivenessResult>;
 }
 

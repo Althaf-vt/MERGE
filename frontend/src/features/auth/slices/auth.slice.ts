@@ -1,5 +1,6 @@
 import type {PayloadAction} from '@reduxjs/toolkit';
 import {createSlice} from '@reduxjs/toolkit';
+import type { UserPhoto } from '../../profile/types/profile.types';
 
 // Represents the current step of the user registration flow
 type RegistrationStep = 'REGISTER' | 'OTP';
@@ -8,6 +9,7 @@ type RegistrationStep = 'REGISTER' | 'OTP';
 export interface AuthUser{
     id: string;
     email: string;
+    authProvider?: string;
     isEmailVerified: boolean;
     kycCompleted?: boolean;
     onboardingStep?: number;
@@ -16,6 +18,9 @@ export interface AuthUser{
     castingDirectorCompleted?: boolean;
     profile?: Record<string, any> | null;
     preference?: Record<string, any> | null;
+    photos?: UserPhoto[];
+    medicalRecord?: Record<string, any> | null; 
+    privacySettings?: Record<string, any> | null;
     kycVerification?: {
         verificationStatus: string;
         documentType?: string;

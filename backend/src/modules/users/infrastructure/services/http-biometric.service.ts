@@ -46,6 +46,30 @@ export class HttpBiometricService implements IBiometricService{
         }
     }
 
+    async extractProfileEmbedding(imageBuffer: Buffer): Promise<IExtractionResult> {
+        try {
+            const formData = new FormData();
+            formData.append('file', imageBuffer, {filename: 'profile.jpg'});
+
+            const baseUrl = process.env.ML_SERVICE_URL?.replace('/extract-embedding', '') || 'http://biometric-worker:8000';
+            const mlProfileUrl = `${baseUrl}/extract-profile-embedding`;
+
+            const response = await lastValueFrom(
+                this._httpService.post(mlProfileUrl, formData, {
+                    headers: formData.getHeaders()
+                })
+            );
+
+            return {
+                confidence: response.data.confidence || 0,
+                faceEmbedding: response.data.faceEmbedding || []
+            };
+        } catch (error: any) {
+            console.error('ML Worker Profile Error Details:', error.message);
+            return {confidence: 0, faceEmbedding: []};
+        }
+    }
+
     async analyzeLiveness(videoBuffer: Buffer, promptType: string): Promise<ILivenessResult> {
         try {
             const formData = new FormData();

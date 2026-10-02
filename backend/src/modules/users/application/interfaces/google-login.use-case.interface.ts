@@ -9,5 +9,5 @@ export interface IGoogleLoginResult {
 }
 
 export interface IGoogleLoginUseCase {
-    execute(dto: GoogleLoginDto): Promise<IGoogleLoginResult>;
+    execute(dto: GoogleLoginDto, deviceInfo: string, ipAddress: string): Promise<IGoogleLoginResult>;
 }

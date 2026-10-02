@@ -4,9 +4,10 @@ import { IInitializeCastingSessionUseCase, INITIALIZE_CASTING_SESSION_USE_CASE }
 import { IProcessCastingMessageUseCase, PROCESS_CASTING_MESSAGE_USE_CASE } from "../../application/interfaces/process-casting-message.use-case.interface";
 import { FINALIZE_CASTING_SESSION_USE_CASE, IFinalizeCastingSessionUseCase } from "../../application/interfaces/finalize-casting-session.use-case.interface";
 import { ProcessMessageDto } from "../../application/dtos/process-message.dto";
+import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 
 @Controller('casting-director')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, UserSessionGuard)
 export class CastingDirectorController {
     constructor(
         @Inject(INITIALIZE_CASTING_SESSION_USE_CASE) private readonly _initializeCastingSessionUseCase: IInitializeCastingSessionUseCase,

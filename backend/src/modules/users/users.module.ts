@@ -71,13 +71,49 @@ import { UserBannedListener } from "./application/listeners/user-banned.listener
 import { UserSuspendedListener } from "./application/listeners/user-suspended.listener";
 import { CASTING_USER_FACADE } from "./application/interfaces/casting-user-facade.interface";
 import { CastingUserFacade } from "./application/services/casting-user.facade";
+import { REMOVE_PROFILE_PHOTO_USE_CASE, SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE, UPLOAD_PROFILE_PHOTO_USE_CASE } from "./application/interfaces/profile-management.use-case.interface";
+import { UpdateMedicalRecordUseCase } from "./application/use-cases/update-medical-record.use-case";
+import { UpdatePrivacySettingsUseCase } from "./application/use-cases/update-privacy-settings.use-case";
+import { UploadProfilePhotoUseCase } from "./application/use-cases/upload-profile-photo.use-case";
+import { SetPrimaryPhotoUseCase } from "./application/use-cases/set-primary-photos.use-case";
+import { RemoveProfilePhotoUseCase } from "./application/use-cases/remove-profile-photo.use-case";
+import { UPDATE_FULL_PROFILE_USE_CASE } from "./application/interfaces/update-full-profile.use-case.interface";
+import { UpdateFullProfileUseCase } from "./application/use-cases/update-full-profile.use-case";
+import { GET_PROFILE_USE_CASE } from "./application/interfaces/get-profile.use-case.interface";
+import { GetProfileUseCase } from "./application/use-cases/get-profile.use-case";
+import { UPDATE_FULL_PREFERENCES_USE_CASE } from "./application/interfaces/update-full-preferences.use-case.interface";
+import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-full-preferences.use-case";
+import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, INITIATE_EMAIL_CHANGE_USE_CASE, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "./application/interfaces/security-management.use-case.interface";
+import { SecurityController } from "./presentation/controllers/security.controller";
+import { USER_SESSION_SERVICE } from "../../shared/domain/interfaces/user-session.interface";
+import { UserRedisSessionService } from "../../shared/infrastructure/security/services/user-redis-session.service";
+import { InitiateEmailChangeUseCase } from "./application/use-cases/initiate-email-change.use-case";
+import { ConfirmEmailChangeUseCase } from "./application/use-cases/confirm-email-change.use-case";
+import { RequestSecurityOtpUseCase } from "./application/use-cases/request-security-otp.use-case";
+import { DeactivateAccountUseCase } from "./application/use-cases/deactivate-account.use-case";
+import { DeleteAccountUseCase } from "./application/use-cases/delete-account.use-case";
+import { GetActiveSessionsUseCase } from "./application/use-cases/get-active-sessions.use-case";
+import { RevokeSessionUseCase } from "./application/use-cases/revoke-session.use-case";
+import { RevokeOtherSessionsUseCase } from "./application/use-cases/revoke-other-sessions.use-case";
+import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-security-password.use-case";
+import { BlockedRelationshipSchema, BlockedRelationshipSchemaClass } from "./infrastructure/persistence/blocked-relationship.schema";
+import { BlockedUsersController } from "./presentation/controllers/blocked-users.controller";
+import { BLOCKED_RELATIONSHIP_REPOSITORY } from "./domain/interfaces/blocked-relationship-repository.interface";
+import { MongoBlockedRelationshipRepository } from "./infrastructure/persistence/mongo-blocked-relationship.repository";
+import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, UNBLOCK_USER_USE_CASE } from "./application/interfaces/block-management.use-case.interface";
+import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
+import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
+import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-users.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
 @Module({
     imports: [
         // Registers the User schema with Mongoose for database operations.
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([
+            { name: User.name, schema: UserSchema },
+            { name: BlockedRelationshipSchemaClass.name, schema: BlockedRelationshipSchema }
+        ]),
 
         HttpModule, // Required for axios request to the ML worker
     ],
@@ -88,6 +124,8 @@ import { CastingUserFacade } from "./application/services/casting-user.facade";
         KycController,
         HandoffController,
         ProfileController,
+        SecurityController,
+        BlockedUsersController,
     ],
     // 2. Standard Providers (Gateways & Use Cases)
     // Handled via interface bindings in section 3
@@ -138,6 +176,10 @@ import { CastingUserFacade } from "./application/services/casting-user.facade";
         {
             provide: OTP_SERVICE,
             useClass: RedisOtpService,
+        },
+        {
+            provide: USER_SESSION_SERVICE,
+            useClass: UserRedisSessionService,
         },
         {
             provide: GENERATE_HANDOFF_SESSION_USE_CASE,
@@ -246,17 +288,111 @@ import { CastingUserFacade } from "./application/services/casting-user.facade";
             useClass: SaveBioUseCase,
         },
         {
+            provide: UPDATE_FULL_PROFILE_USE_CASE,
+            useClass: UpdateFullProfileUseCase,
+        },
+        {
+            provide: UPDATE_MEDICAL_RECORD_USE_CASE,
+            useClass: UpdateMedicalRecordUseCase,
+        },
+        {
+            provide: UPDATE_PRIVACY_SETTINGS_USE_CASE,
+            useClass: UpdatePrivacySettingsUseCase,
+        },
+        {
+            provide: UPLOAD_PROFILE_PHOTO_USE_CASE,
+            useClass: UploadProfilePhotoUseCase,
+        },
+        {
+            provide: SET_PRIMARY_PHOTO_USE_CASE,
+            useClass: SetPrimaryPhotoUseCase,
+        },
+        {
+            provide: REMOVE_PROFILE_PHOTO_USE_CASE,
+            useClass: RemoveProfilePhotoUseCase,
+        },
+        {
+            provide: UPDATE_FULL_PREFERENCES_USE_CASE,
+            useClass: UpdateFullPreferencesUseCase,
+        },
+        {
             provide: USER_MANAGEMENT_FACADE,
             useClass: UserManagementFacade,
         },
         {
             provide: CASTING_USER_FACADE,
             useClass: CastingUserFacade,
-        }
+        },
+        {
+            provide: GET_PROFILE_USE_CASE,
+            useClass: GetProfileUseCase,
+        },
+
+        // Security Use Cases
+        { 
+            provide: REQUEST_SECURITY_OTP_USE_CASE, 
+            useClass: RequestSecurityOtpUseCase 
+        },
+        { 
+            provide: UPDATE_SECURITY_PASSWORD_USE_CASE, 
+            useClass: UpdateSecurityPasswordUseCase,
+        },
+        { 
+            provide: INITIATE_EMAIL_CHANGE_USE_CASE, 
+            useClass: InitiateEmailChangeUseCase 
+        },
+        { 
+            provide: CONFIRM_EMAIL_CHANGE_USE_CASE, 
+            useClass: ConfirmEmailChangeUseCase 
+        },
+        { 
+            provide: DEACTIVATE_ACCOUNT_USE_CASE, 
+            useClass: DeactivateAccountUseCase 
+        },
+        { 
+            provide: DELETE_ACCOUNT_USE_CASE, 
+            useClass: DeleteAccountUseCase 
+        },
+        { 
+            provide: GET_ACTIVE_SESSIONS_USE_CASE, 
+            useClass: GetActiveSessionsUseCase 
+        },
+        { 
+            provide: REVOKE_SESSION_USE_CASE, 
+            useClass: RevokeSessionUseCase 
+        },
+        { 
+            provide: REVOKE_OTHER_SESSIONS_USE_CASE, 
+            useClass: RevokeOtherSessionsUseCase
+        },
+        {
+            provide: BLOCKED_RELATIONSHIP_REPOSITORY,
+            useClass: MongoBlockedRelationshipRepository,
+        },
+        {
+            provide: BLOCK_USER_USE_CASE,
+            useClass: BlockUserUseCase,
+        },
+        {
+            provide: UNBLOCK_USER_USE_CASE,
+            useClass: UnblockUserUseCase,
+        },
+        {
+            provide: GET_BLOCKED_USERS_USE_CASE,
+            useClass: GetBlockedUsersUseCase,
+        },
     ],
 
     // Makes these repository and token service providers available to other modules.
-    exports: [USER_REPOSITORY, OTP_SERVICE, JwtAuthGuard, HANDOFF_SERVICE, USER_MANAGEMENT_FACADE, CASTING_USER_FACADE],
+    exports: [
+        USER_REPOSITORY, 
+        OTP_SERVICE, 
+        USER_SESSION_SERVICE,
+        JwtAuthGuard, 
+        HANDOFF_SERVICE, 
+        USER_MANAGEMENT_FACADE, 
+        CASTING_USER_FACADE
+    ],
 })
 
 export class UserModule { }

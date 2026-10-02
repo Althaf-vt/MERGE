@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { RegisterPage } from './features/auth/pages/register.page';
 import { LoginPage } from './features/auth/pages/login.page';
 import { KycPage } from './features/onboarding/Pages/kyc.page';
@@ -32,6 +32,16 @@ import { CastingDirectorPage } from './features/casting-director/pages/casting-d
 import { AdminAcceptInvitePage } from './features/admin/management/pages/accept-invite.page';
 import { AdminManagementPage } from './features/admin/management/pages/admin-management.page';
 import { AdminDetailsPage } from './features/admin/management/pages/admin-details.page';
+import { ProfileLayout } from './features/profile/components/profile.layout';
+import { EditProfilePage } from './features/profile/pages/edit-profile.page';
+import { ProfilePhotosPage } from './features/profile/pages/profile-photos.page';
+import { UserPreferencesPage } from './features/profile/pages/user-preferences.page';
+import { MedicalRecordsPage } from './features/profile/pages/medical-records.page';
+import { PrivacyPage } from './features/profile/pages/privacy.page';
+import { SecurityPage } from './features/profile/pages/security.page';
+import { V2PlaceholderPage } from './features/profile/pages/v2-placeholder.page';
+import { ActivityPage } from './features/profile/pages/activity.page';
+import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
 
 
 export const App = () => {
@@ -85,6 +95,26 @@ export const App = () => {
                             {/* Post-onboarding success page */}
                             <Route path="/profile-live" element={<ProfileLivePage />} />
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
+
+                            {/* USER PROFILE MANAGEMENT ROUTES */}
+                            <Route path="/profile" element={<ProfileLayout />}>
+                                <Route index element={<Navigate to="/profile/edit" replace />} />
+                                <Route path="edit" element={<EditProfilePage />} />
+                                <Route path="photos" element={<ProfilePhotosPage />} />
+                                <Route path='/profile/preferences' element={<UserPreferencesPage />} />
+                                <Route path="/profile/medical" element={<MedicalRecordsPage />} />
+                                <Route path="/profile/privacy" element={<PrivacyPage />} />
+                                <Route path="/profile/security" element={<SecurityPage />} />
+                                <Route path="activity" element={<ActivityPage />} />
+                                <Route path="insights" element={<V2PlaceholderPage title="Profile Insights" subtitle="Understand how others perceive your profile." />} />
+                                <Route path="analytics" element={<V2PlaceholderPage title="Advanced Analytics" subtitle="Deep dive into your matching metrics." />} />
+                                <Route path="blocked" element={<BlockedUsersPage/>} />
+                                {/* 
+                                <Route path="security" element={<SecuritySettingsPage />} />
+                                <Route path="blocked" element={<BlockedUsersPage />} />
+                                <Route path="billing" element={<SubscriptionCreditsPage />} /> 
+                                */}
+                            </Route>
 
                             {/* 
                                 ONBOARDING ROUTES

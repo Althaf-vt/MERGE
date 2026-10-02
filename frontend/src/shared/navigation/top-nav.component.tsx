@@ -33,7 +33,9 @@ export const TopNav = () => {
         <nav className={styles.navContainer}>
             {/* Left: Navigation Links */}
             <div className={styles.navLeft}>
-                <span className={styles.navLink}>Features</span>
+                <Link to='/profile/edit' className={styles.logoLink}>
+                    <span className={styles.navLink}>Account</span>
+                </Link>
                 <span className={styles.navLink}>Safety</span>
                 <span className={styles.navLink}>Support</span>
             </div>
