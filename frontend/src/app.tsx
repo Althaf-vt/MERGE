@@ -41,6 +41,7 @@ import { PrivacyPage } from './features/profile/pages/privacy.page';
 import { SecurityPage } from './features/profile/pages/security.page';
 import { V2PlaceholderPage } from './features/profile/pages/v2-placeholder.page';
 import { ActivityPage } from './features/profile/pages/activity.page';
+import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
 
 
 export const App = () => {
@@ -107,6 +108,7 @@ export const App = () => {
                                 <Route path="activity" element={<ActivityPage />} />
                                 <Route path="insights" element={<V2PlaceholderPage title="Profile Insights" subtitle="Understand how others perceive your profile." />} />
                                 <Route path="analytics" element={<V2PlaceholderPage title="Advanced Analytics" subtitle="Deep dive into your matching metrics." />} />
+                                <Route path="blocked" element={<BlockedUsersPage/>} />
                                 {/* 
                                 <Route path="security" element={<SecuritySettingsPage />} />
                                 <Route path="blocked" element={<BlockedUsersPage />} />
