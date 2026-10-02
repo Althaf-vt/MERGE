@@ -1,9 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../../auth/api/auth.api";
+import { rootApi } from '../../../shared/api/base-api';
 
-export const profileApi = createApi({
-    reducerPath: 'profileApi',
-    baseQuery: baseQueryWithReauth,
+export const onboardingProfileApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
         updatePersona: builder.mutation<any, any>({
             query: (payload) => ({
@@ -44,8 +41,9 @@ export const profileApi = createApi({
                 body: payload
             })
         })
-    })
-})
+    }),
+    overrideExisting: false,
+});
 
 export const {
     useUpdatePersonaMutation, 
@@ -53,4 +51,4 @@ export const {
     useUpdatePreferencesMutation,
     useGenerateBioMutation,
     useSaveFinalBioMutation
-} = profileApi
+} = onboardingProfileApi;
