@@ -2,9 +2,10 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Pat
 import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, IConfirmEmailChangeUseCase, IDeactivateAccountUseCase, IDeleteAccountUseCase, IGetActiveSessionsUseCase, IInitiateEmailChangeUseCase, INITIATE_EMAIL_CHANGE_USE_CASE, IRequestSecurityOtpUseCase, IRevokeOtherSessionsUseCase, IRevokeSessionUseCase, IUpdateSecurityPasswordUseCase, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "../../application/interfaces/security-management.use-case.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
+import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 
 @Controller('profile/security')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, UserSessionGuard)
 export class SecurityController {
     constructor(
         @Inject(REQUEST_SECURITY_OTP_USE_CASE) private readonly _requestOtpUseCase: IRequestSecurityOtpUseCase,

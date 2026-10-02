@@ -18,9 +18,10 @@ import { UpdateFullProfileDto } from "../../application/dtos/update-full-profile
 import { GET_PROFILE_USE_CASE, IGetProfileUseCase } from "../../application/interfaces/get-profile.use-case.interface";
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdateFullPreferencesUseCase, UPDATE_FULL_PREFERENCES_USE_CASE } from "../../application/interfaces/update-full-preferences.use-case.interface";
+import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 
 @Controller('profile')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, UserSessionGuard)
 export class ProfileController{
     constructor(
         @Inject(UPDATE_PERSONA_USE_CASE) private readonly _updatePersonaUseCase: IUpdatePersonaUseCase,
