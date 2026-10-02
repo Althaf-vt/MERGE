@@ -1,10 +1,9 @@
-// frontend/src/features/profile/api/profile.api.ts
-
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../../../app/store';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import type {
+    BlockUserRequest,
     ConfirmEmailChangeRequest,
     GetActiveSessionsResponse,
+    GetBlockedUsersResponse,
     GetProfileResponse,
     InitiateEmailChangeRequest,
     ProfileStandardResponse,
@@ -14,20 +13,12 @@ import type {
     UpdatePrivacyRequest,
     UpdateSecurityPasswordRequest
 } from '../types/profile.types';
+import { baseQueryWithReauth } from '../../auth/api/auth.api';
 
 export const profileApi = createApi({
     reducerPath: 'userProfileApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
-        prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).auth.accessToken;
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
-            return headers;
-        },
-    }),
-    tagTypes: ['Profile', 'User', 'Sessions'],
+    baseQuery: baseQueryWithReauth,
+    tagTypes: ['Profile', 'User', 'Sessions', 'BlockedUsers'],
     endpoints: (builder) => ({
 
         getProfile: builder.query<GetProfileResponse, void>({
@@ -175,6 +166,40 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Sessions'],
         }),
+
+        getBlockedUsers: builder.query<GetBlockedUsersResponse, { search?: string; sortBy?: 'RECENT' | 'OLDEST' } | void>({
+            query: (params) => {
+                let url = '/profile/blocked';
+                const queryParams = new URLSearchParams();
+                if (params?.search) queryParams.append('search', params.search);
+                if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+                
+                const queryString = queryParams.toString();
+                if (queryString) url += `?${queryString}`;
+
+                return { url, method: 'GET' };
+            },
+            providesTags: ['BlockedUsers'],
+        }),
+
+        blockUser: builder.mutation<ProfileStandardResponse, BlockUserRequest>({
+            query: (body) => ({
+                url: '/profile/blocked',
+                method: 'POST',
+                body,
+            }),
+            // Invalidates the list so the newly blocked user appears immediately
+            invalidatesTags: ['BlockedUsers'],
+        }),
+
+        unblockUser: builder.mutation<ProfileStandardResponse, string>({
+            query: (blockedId) => ({
+                url: `/profile/blocked/${blockedId}`,
+                method: 'DELETE',
+            }),
+            // Invalidates the list so the unblocked user disappears immediately
+            invalidatesTags: ['BlockedUsers'],
+        }),
     }),
 });
 
@@ -195,5 +220,8 @@ export const {
     useDeleteAccountMutation,
     useGetActiveSessionsQuery,
     useRevokeSessionMutation,
-    useRevokeOtherSessionsMutation
+    useRevokeOtherSessionsMutation,
+    useGetBlockedUsersQuery,
+    useBlockUserMutation,
+    useUnblockUserMutation,
 } = profileApi;

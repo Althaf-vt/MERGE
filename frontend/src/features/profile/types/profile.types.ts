@@ -157,3 +157,27 @@ export interface InitiateEmailChangeRequest {
 export interface ConfirmEmailChangeRequest {
     newEmailOtp: string;
 }
+
+// --- BLOCKED USERS TYPES ---
+
+export interface BlockedUser {
+    blockedId: string;
+    displayName: string;
+    genderIdentity?: string;
+    customLabel?: string;
+    location?: string;
+    avatarUrl: string | null;
+    reason: string;
+    blockedAt: string;
+    isDeleted: boolean;
+}
+
+export interface GetBlockedUsersResponse {
+    success: boolean;
+    data: BlockedUser[];
+}
+
+export interface BlockUserRequest {
+    blockedId: string;
+    reason?: string;
+}
