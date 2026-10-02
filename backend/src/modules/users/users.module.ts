@@ -85,8 +85,8 @@ import { UPDATE_FULL_PREFERENCES_USE_CASE } from "./application/interfaces/updat
 import { UpdateFullPreferencesUseCase } from "./application/use-cases/update-full-preferences.use-case";
 import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, INITIATE_EMAIL_CHANGE_USE_CASE, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "./application/interfaces/security-management.use-case.interface";
 import { SecurityController } from "./presentation/controllers/security.controller";
-import { USER_SESSION_SERVICE } from "./domain/interfaces/user-session.interface";
-import { UserRedisSessionService } from "./infrastructure/services/user-redis-session.service";
+import { USER_SESSION_SERVICE } from "../../shared/domain/interfaces/user-session.interface";
+import { UserRedisSessionService } from "../../shared/infrastructure/security/services/user-redis-session.service";
 import { InitiateEmailChangeUseCase } from "./application/use-cases/initiate-email-change.use-case";
 import { ConfirmEmailChangeUseCase } from "./application/use-cases/confirm-email-change.use-case";
 import { RequestSecurityOtpUseCase } from "./application/use-cases/request-security-otp.use-case";
@@ -96,13 +96,24 @@ import { GetActiveSessionsUseCase } from "./application/use-cases/get-active-ses
 import { RevokeSessionUseCase } from "./application/use-cases/revoke-session.use-case";
 import { RevokeOtherSessionsUseCase } from "./application/use-cases/revoke-other-sessions.use-case";
 import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-security-password.use-case";
+import { BlockedRelationshipSchema, BlockedRelationshipSchemaClass } from "./infrastructure/persistence/blocked-relationship.schema";
+import { BlockedUsersController } from "./presentation/controllers/blocked-users.controller";
+import { BLOCKED_RELATIONSHIP_REPOSITORY } from "./domain/interfaces/blocked-relationship-repository.interface";
+import { MongoBlockedRelationshipRepository } from "./infrastructure/persistence/mongo-blocked-relationship.repository";
+import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, UNBLOCK_USER_USE_CASE } from "./application/interfaces/block-management.use-case.interface";
+import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
+import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
+import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-users.use-case";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
 @Module({
     imports: [
         // Registers the User schema with Mongoose for database operations.
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([
+            { name: User.name, schema: UserSchema },
+            { name: BlockedRelationshipSchemaClass.name, schema: BlockedRelationshipSchema }
+        ]),
 
         HttpModule, // Required for axios request to the ML worker
     ],
@@ -114,6 +125,7 @@ import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-se
         HandoffController,
         ProfileController,
         SecurityController,
+        BlockedUsersController,
     ],
     // 2. Standard Providers (Gateways & Use Cases)
     // Handled via interface bindings in section 3
@@ -352,6 +364,22 @@ import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-se
         { 
             provide: REVOKE_OTHER_SESSIONS_USE_CASE, 
             useClass: RevokeOtherSessionsUseCase
+        },
+        {
+            provide: BLOCKED_RELATIONSHIP_REPOSITORY,
+            useClass: MongoBlockedRelationshipRepository,
+        },
+        {
+            provide: BLOCK_USER_USE_CASE,
+            useClass: BlockUserUseCase,
+        },
+        {
+            provide: UNBLOCK_USER_USE_CASE,
+            useClass: UnblockUserUseCase,
+        },
+        {
+            provide: GET_BLOCKED_USERS_USE_CASE,
+            useClass: GetBlockedUsersUseCase,
         },
     ],
 
