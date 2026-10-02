@@ -1,4 +1,4 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { rootApi } from '../../../shared/api/base-api';
 import type {
     BlockUserRequest,
     ConfirmEmailChangeRequest,
@@ -13,14 +13,9 @@ import type {
     UpdatePrivacyRequest,
     UpdateSecurityPasswordRequest
 } from '../types/profile.types';
-import { baseQueryWithReauth } from '../../auth/api/auth.api';
 
-export const profileApi = createApi({
-    reducerPath: 'userProfileApi',
-    baseQuery: baseQueryWithReauth,
-    tagTypes: ['Profile', 'User', 'Sessions', 'BlockedUsers'],
+export const profileApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-
         getProfile: builder.query<GetProfileResponse, void>({
             query: () => ({
                 url: '/profile',
@@ -97,15 +92,15 @@ export const profileApi = createApi({
 
         requestSecurityOtp: builder.mutation<ProfileStandardResponse, void>({
             query: () => ({
-                url: '/profile/security/request',
+                url: '/profile/security/otp/request', // Fixed path to match backend
                 method: 'POST',
             }),
         }),
 
         updateSecurityPassword: builder.mutation<ProfileStandardResponse, UpdateSecurityPasswordRequest>({
             query: (body) => ({
-                url: '/profile/privacy',
-                method: 'POST',
+                url: '/profile/security/password', // Fixed path to match backend
+                method: 'PATCH', // Fixed method to match backend
                 body,
             }),
         }),
@@ -188,7 +183,6 @@ export const profileApi = createApi({
                 method: 'POST',
                 body,
             }),
-            // Invalidates the list so the newly blocked user appears immediately
             invalidatesTags: ['BlockedUsers'],
         }),
 
@@ -197,10 +191,10 @@ export const profileApi = createApi({
                 url: `/profile/blocked/${blockedId}`,
                 method: 'DELETE',
             }),
-            // Invalidates the list so the unblocked user disappears immediately
             invalidatesTags: ['BlockedUsers'],
         }),
     }),
+    overrideExisting: false,
 });
 
 export const {
