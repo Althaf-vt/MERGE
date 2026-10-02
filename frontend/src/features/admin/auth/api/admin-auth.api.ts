@@ -1,55 +1,6 @@
-import { createApi, fetchBaseQuery, type BaseQueryFn, type FetchArgs, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import type { RootState } from "../../../../app/store";
-import { adminLogout, setAdminCredentials } from "../slices/admin-auth.slice";
+import { adminRootApi } from './admin-base-api';
 
-const adminBaseQuery = fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-        headers.set('ngrok-skip-browser-warning', 'true');
-        const token = (getState() as RootState).adminAuth.accessToken;
-        if (token) {
-            headers.set('authorization', `Bearer ${token}`);
-        }
-        return headers;
-    },
-});
-
-const AdminBaseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-    args,
-    api,
-    extraOptions
-) => {
-    let result = await adminBaseQuery(args, api, extraOptions);
-
-    const isRefreshRequest = typeof args === 'string' ? args === '/admin/auth/refresh' : args.url === '/admin/auth/refresh';
-
-    if (result.error && result.error.status === 401 && !isRefreshRequest) {
-        const refreshResult = await adminBaseQuery(
-            { url: '/admin/auth/refresh', method: "POST" },
-            api,
-            extraOptions
-        );
-
-        if (refreshResult.data) {
-            const data = refreshResult.data as { accessToken: string, admin: any };
-            api.dispatch(setAdminCredentials({
-                accessToken: data.accessToken,
-                admin: data.admin
-            }));
-            result = await adminBaseQuery(args, api, extraOptions);
-        } else {
-            api.dispatch(adminLogout());
-            api.dispatch(adminAuthApi.util.resetApiState());
-            window.location.href = '/admin/login';
-        }
-    }
-    return result;
-}
-
-export const adminAuthApi = createApi({
-    reducerPath: 'adminAuthApi',
-    baseQuery: AdminBaseQueryWithReauth,
+export const adminAuthApi = adminRootApi.injectEndpoints({
     endpoints: (builder) => ({
         adminLogin: builder.mutation<any, { email: string; password: string }>({
             query: (credentials) => ({
@@ -57,6 +8,7 @@ export const adminAuthApi = createApi({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ['AdminAuth'],
         }),
 
         adminForgotPassword: builder.mutation<{ message: string }, { email: string }>({
@@ -83,11 +35,12 @@ export const adminAuthApi = createApi({
             }),
         }),
 
-        adminLogout: builder.mutation<{ messagel: string }, void>({
+        adminLogout: builder.mutation<{ message: string }, void>({
             query: () => ({
                 url: '/admin/auth/logout',
                 method: "POST",
             }),
+            invalidatesTags: ['AdminAuth'],
         }),
 
         adminRefresh: builder.mutation<{ accessToken: string, admin: any }, void>({
@@ -97,6 +50,7 @@ export const adminAuthApi = createApi({
             })
         }),
     }),
+    overrideExisting: false,
 });
 
 export const {
