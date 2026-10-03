@@ -16,7 +16,6 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
 import { UpdateFullProfileDto } from "../../application/dtos/update-full-profile.dto";
 import { GET_PROFILE_USE_CASE, IGetProfileUseCase } from "../../application/interfaces/get-profile.use-case.interface";
-import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdateFullPreferencesUseCase, UPDATE_FULL_PREFERENCES_USE_CASE } from "../../application/interfaces/update-full-preferences.use-case.interface";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 
@@ -61,7 +60,7 @@ export class ProfileController{
 
     @Patch('preferences')
     @HttpCode(HttpStatus.OK)
-    async updatePreferences(@Req() req: any, @Body() dto: UpdateFullPreferencesDto) {
+    async updatePreferences(@Req() req: any, @Body() dto: UpdatePreferencesDto) {
         const userId = req.user.userId;
         await this._updateFullPreferencesUseCase.execute(userId, dto);
         return { success: true, message: 'Preferences updated successfully.' };
