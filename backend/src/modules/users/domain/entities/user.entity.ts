@@ -16,6 +16,7 @@ import { UserPhoto } from "./user-photo.entity";
 import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
 import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
+import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain-event";
 
 export enum UserRole {
     USER = 'USER',
@@ -298,11 +299,40 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    addPhoto(photo: UserPhoto): void {
+    addPhoto(photo: UserPhoto, kycSelfieUrl?: string): void {
         if (this._props.photos && this._props.photos.length >= 6) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum of 6 photos allowed.');
         }
         this._props.photos?.push(photo);
+
+        // EDA Trigger: If the photo requires manual review, alert the Admin module
+        if(photo.status === PhotoVerificationStatus.PENDING && kycSelfieUrl && this.id){
+            this.addDomainEvent(new UserPhotoFlaggedDomainEvent(
+                this.id, 
+                photo.id, 
+                kycSelfieUrl, 
+                photo.url, 
+                photo.faceMatchScore ?? 0
+            ));
+        }
+        this.markUpdatedAt();
+    }
+
+    appovePhoto(photoId: string): void{
+        if(!this._props.photos) return;
+        const photo = this._props.photos.find(p => p.id === photoId);
+        if(!photo) return // Fail silently if user already deleted the photo
+
+        photo.updateVerificationStatus(PhotoVerificationStatus.APPROVED);
+        this.markUpdatedAt();
+    }
+
+    rejectPhoto(photoId: string, reason: string): void{
+        if(!this._props.photos) return;
+        const photo = this._props.photos.find(p => p.id === photoId);
+        if(!photo) return;
+
+        photo.updateVerificationStatus(PhotoVerificationStatus.REJECTED);
         this.markUpdatedAt();
     }
 
