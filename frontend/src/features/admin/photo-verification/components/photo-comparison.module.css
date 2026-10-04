@@ -1,0 +1,110 @@
+.comparisonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.imagesWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.imageColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.imageLabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.imageBox {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #e5e7eb;
+    border: 2px dashed #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scoreBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+.scoreLabel {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.scoreValueWrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.scoreValue {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.scoreGood {
+    color: #059669; 
+}
+
+.scoreWarning {
+    color: #d97706; 
+}
+
+.scoreDanger {
+    color: #dc2626; 
+}
+
+.scoreBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badgeGood {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badgeWarning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badgeDanger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
