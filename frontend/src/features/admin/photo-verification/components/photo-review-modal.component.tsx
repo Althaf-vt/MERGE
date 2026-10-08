@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import styles from './photo-review-modal.module.css';
 import type { PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoComparison } from './photo-comparison.component';
@@ -11,6 +12,7 @@ import {
 } from '../api/photo-verification.api';
 
 interface PhotoReviewModalProps {
+    isOpen: boolean;
     task: PhotoVerificationTask;
     currentAdminId: string;
     isSuperAdmin: boolean;
@@ -18,6 +20,7 @@ interface PhotoReviewModalProps {
 }
 
 export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
+    isOpen,
     task,
     currentAdminId,
     isSuperAdmin,
@@ -33,66 +36,48 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
     const [approvePhoto, { isLoading: isApproving }] = useApprovePhotoMutation();
     const [rejectPhoto, { isLoading: isSubmittingReject }] = useRejectPhotoMutation();
 
+    if (!isOpen) return null;
+
     const isOwner = task.claimStatus === 'CLAIMED' && task.claimedBy === currentAdminId;
     const isClaimedByOther = task.claimStatus === 'CLAIMED' && task.claimedBy !== currentAdminId;
     const canResolve = isOwner || isSuperAdmin;
     const isResolved = task.taskStatus !== 'PENDING';
 
-    const handleClaim = async () => {
-        try { await claimTask(task.id).unwrap(); } 
-        catch (err: any) { setErrorMsg(err.data?.message || 'Failed to claim task.'); }
-    };
-
-    const handleRelease = async () => {
-        try { await releaseTask(task.id).unwrap(); } 
-        catch (err: any) { setErrorMsg(err.data?.message || 'Failed to release claim.'); }
-    };
-
-    const handleTakeover = async () => {
-        try { await takeoverTask(task.id).unwrap(); } 
-        catch (err: any) { setErrorMsg(err.data?.message || 'Failed to takeover claim.'); }
-    };
-
-    const handleApprove = async () => {
+    const handleAction = async (actionFn: () => Promise<any>, successCallback?: () => void) => {
+        setErrorMsg('');
         try {
-            await approvePhoto(task.id).unwrap();
-            onClose();
+            await actionFn();
+            if (successCallback) successCallback();
         } catch (err: any) {
-            setErrorMsg(err.data?.message || 'Failed to approve photo.');
-        }
-    };
-
-    const handleReject = async () => {
-        if (!rejectReason.trim()) {
-            setErrorMsg('A rejection reason is required.');
-            return;
-        }
-        try {
-            await rejectPhoto({ taskId: task.id, reason: rejectReason }).unwrap();
-            onClose();
-        } catch (err: any) {
-            setErrorMsg(err.data?.message || 'Failed to reject photo.');
+            setErrorMsg(err.data?.message || err?.data?.error?.message || 'Operation failed.');
         }
     };
 
     const isLoading = isClaiming || isReleasing || isTakingOver || isApproving || isSubmittingReject;
 
     return (
-        <div className={styles.modalOverlay} onClick={onClose}>
-            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                
+        <motion.div
+            className={styles.overlay}
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+        >
+            <motion.div
+                className={styles.modal}
+                onClick={e => e.stopPropagation()}
+                initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 18, scale: 0.97 }}
+                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
+            >
                 <header className={styles.header}>
-                    <h2 className={styles.title}>Review Profile Photo</h2>
-                    <button className={styles.closeBtn} onClick={onClose}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                    <h2 className={styles.title}>REVIEW PROFILE PHOTO</h2>
+                    <button className={styles.closeBtn} onClick={onClose}>&times;</button>
                 </header>
 
                 <div className={styles.body}>
-                    {/* Operational Lock Banner */}
                     {task.claimStatus === 'UNCLAIMED' && !isResolved && (
                         <div className={styles.lockBanner}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -100,7 +85,7 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                                 <line x1="12" y1="8" x2="12" y2="12"></line>
                                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
                             </svg>
-                            This task is currently unclaimed. You must claim it before making a decision.
+                            TASK UNCLAIMED. CLAIM REQUIRED BEFORE RESOLUTION.
                         </div>
                     )}
 
@@ -110,13 +95,13 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
-                            This task is currently locked and claimed by Admin ID: {task.claimedBy}.
+                            LOCKED BY ADMIN ID: {task.claimedBy}
                         </div>
                     )}
 
                     {isResolved && (
                         <div className={styles.lockBanner}>
-                            Task has been resolved. Final Status: <strong>{task.taskStatus}</strong>
+                            RESOLVED STATUS: <strong>{task.taskStatus}</strong>
                         </div>
                     )}
 
@@ -127,11 +112,13 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                     />
 
                     {isRejecting && canResolve && !isResolved && (
-                        <div className={styles.rejectSection}>
-                            <label className={styles.title} style={{ fontSize: '1rem' }}>Reason for Rejection</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                            <label style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', textTransform: 'uppercase' }}>
+                                REASON FOR REJECTION
+                            </label>
                             <textarea 
                                 className={styles.rejectInput}
-                                placeholder="Explain why the photo does not match the baseline..."
+                                placeholder="ENTER REJECTION REASON..."
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
                                 disabled={isLoading}
@@ -139,56 +126,57 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                         </div>
                     )}
 
-                    {errorMsg && <p className={styles.errorText}>{errorMsg}</p>}
+                    {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
                 </div>
 
                 <footer className={styles.footer}>
-                    <button className={styles.btnOutline} onClick={onClose} disabled={isLoading}>
-                        Cancel
+                    <button className={styles.btnCancel} onClick={onClose} disabled={isLoading}>
+                        CLOSE
                     </button>
 
-                    {/* State: UNCLAIMED */}
                     {task.claimStatus === 'UNCLAIMED' && !isResolved && (
-                        <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleClaim} disabled={isLoading}>
-                            Claim Task
+                        <button className={styles.btnSubmit} onClick={() => handleAction(() => claimTask(task.id).unwrap())} disabled={isLoading}>
+                            CLAIM TASK
                         </button>
                     )}
 
-                    {/* State: CLAIMED (Super Admin Takeover) */}
                     {isClaimedByOther && isSuperAdmin && !isResolved && (
-                        <button className={`${styles.btn} ${styles.btnDanger}`} onClick={handleTakeover} disabled={isLoading}>
-                            Force Takeover
+                        <button className={styles.btnDanger} onClick={() => handleAction(() => takeoverTask(task.id).unwrap())} disabled={isLoading}>
+                            FORCE TAKEOVER
                         </button>
                     )}
 
-                    {/* State: CLAIMED (Owner) */}
                     {isOwner && !isResolved && (
-                        <button className={styles.btnOutline} onClick={handleRelease} disabled={isLoading}>
-                            Release Claim
+                        <button className={styles.btnCancel} onClick={() => handleAction(() => releaseTask(task.id).unwrap())} disabled={isLoading}>
+                            RELEASE CLAIM
                         </button>
                     )}
 
-                    {/* Resolution Buttons */}
                     {canResolve && !isResolved && !isRejecting && (
                         <>
-                            <button className={`${styles.btn} ${styles.btnDanger}`} onClick={() => setIsRejecting(true)} disabled={isLoading}>
-                                Reject Photo
+                            <button className={styles.btnDanger} onClick={() => setIsRejecting(true)} disabled={isLoading}>
+                                REJECT
                             </button>
-                            <button className={`${styles.btn} ${styles.btnSuccess}`} onClick={handleApprove} disabled={isLoading}>
-                                Approve Match
+                            <button className={styles.btnSuccess} onClick={() => handleAction(() => approvePhoto(task.id).unwrap(), onClose)} disabled={isLoading}>
+                                APPROVE
                             </button>
                         </>
                     )}
 
-                    {/* Confirm Rejection */}
                     {isRejecting && canResolve && !isResolved && (
-                        <button className={`${styles.btn} ${styles.btnDanger}`} onClick={handleReject} disabled={isLoading}>
-                            Confirm Rejection
+                        <button 
+                            className={styles.btnDanger} 
+                            onClick={() => {
+                                if (!rejectReason.trim()) { setErrorMsg('REASON REQUIRED'); return; }
+                                handleAction(() => rejectPhoto({ taskId: task.id, reason: rejectReason }).unwrap(), onClose);
+                            }} 
+                            disabled={isLoading}
+                        >
+                            CONFIRM REJECTION
                         </button>
                     )}
                 </footer>
-
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };
