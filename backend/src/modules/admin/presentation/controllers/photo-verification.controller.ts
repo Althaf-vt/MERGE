@@ -11,6 +11,7 @@ import {
     APPROVE_PHOTO_VERIFICATION_USE_CASE, 
     CLAIM_PHOTO_TASK_USE_CASE, 
     GET_PHOTO_TASKS_USE_CASE, 
+    HydratedPhotoTaskResult, 
     IApprovePhotoVerificationUseCase, 
     IClaimPhotoTaskUseCase, 
     IGetPhotoTasksUseCase, 
@@ -21,6 +22,7 @@ import {
     RELEASE_PHOTO_TASK_CLAIM_USE_CASE, 
     TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE 
 } from "../../application/interfaces/photo-verification.use-case.interface";
+import { PhotoTaskDtoMapper } from "../mappers/photo-task-dto.mapper";
 
 @Controller('admin/photo-verification')
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -39,7 +41,11 @@ export class PhotoVerificationController {
     @RequirePermissions(AdminPermission.KYC_VIEW)
     async getTasks(@Query() query: GetPhotoTasksQueryDto) {
         const result = await this._getPhotoTasksUseCase.execute(query);
-        return { success: true, data: result.data, meta: { total: result.total, page: result.page, limit: result.limit } };
+
+        const mappedData = result.data.map((item: HydratedPhotoTaskResult) => 
+            PhotoTaskDtoMapper.toResponseDto(item.task, item.signedKycUrl, item.signedUploadedUrl)
+        );
+        return { success: true, data: mappedData, meta: { total: result.total, page: result.page, limit: result.limit } };
     }
 
     @Post(':id/claim')
