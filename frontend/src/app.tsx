@@ -42,6 +42,7 @@ import { SecurityPage } from './features/profile/pages/security.page';
 import { V2PlaceholderPage } from './features/profile/pages/v2-placeholder.page';
 import { ActivityPage } from './features/profile/pages/activity.page';
 import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
+import { PhotoVerificationPage } from './features/admin/photo-verification/pages/photo-verification.page';
 
 
 export const App = () => {
@@ -67,6 +68,7 @@ export const App = () => {
                             <Route path='/admin/management' element={<AdminManagementPage />} />
                             <Route path='/admin/management' element={<AdminManagementPage />} />
                             <Route path='/admin/management/:id' element={<AdminDetailsPage />} />
+                            <Route path='/admin/photo-verification' element={<PhotoVerificationPage />} />
                         </Route>
                     </Route>
                 </Route>
