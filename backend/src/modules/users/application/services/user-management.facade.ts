@@ -6,11 +6,13 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserStatus } from "../../domain/enums/user.enums";
+import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
 
 @Injectable()
 export class UserManagementFacade implements IUserManagementFacade {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(STORAGE_SERVICE) private readonly _storageService: IStorageService,
     ) { }
 
     // Maps the internal Aggregate to the boundary-safe DTO
@@ -83,5 +85,14 @@ export class UserManagementFacade implements IUserManagementFacade {
         const user = await this._userRepository.findById(userId);
         if (!user) return null;
         return this._mapToDto(user);
+    }
+
+    async getPresignedMediaUrl(rawUrl: string, expiresInSeconds?: number): Promise<string | null> {
+        if(!rawUrl) return null;
+        try {
+            return await this._storageService.getPresignedUrl(rawUrl, expiresInSeconds)
+        } catch (error) {
+            return null;
+        }
     }
 }
