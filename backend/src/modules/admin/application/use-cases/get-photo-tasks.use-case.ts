@@ -3,11 +3,13 @@ import { IGetPhotoTasksUseCase } from "../interfaces/photo-verification.use-case
 import { IPhotoVerificationTaskRepository, PHOTO_VERIFICATION_TASK_REPOSITORY } from "../../domain/interfaces/photo-verification-task-repository.interface";
 import { GetPhotoTasksQueryDto, PaginatedPhotoTasksResponseDto } from "../dtos/photo-verification.dto";
 import { PhotoTaskDtoMapper } from "../../presentation/mappers/photo-task-dto.mapper";
+import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Injectable()
 export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
     constructor(
-        @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository
+        @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository,
+        @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade
     ) {}
 
     async execute(query: GetPhotoTasksQueryDto): Promise<PaginatedPhotoTasksResponseDto> {
@@ -18,6 +20,16 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
             claimStatus: query.claimStatus,
             claimedBy: query.claimedBy,
         });
+
+        // Hydrate the raw S3 keys into secure presingned URLs concurrently
+        const hydratedData = await Promise.all(
+            result.data.map(async (task) => {
+                const signedKycUrl = await this._userFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
+                const signedUploadedUrl = await this._userFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
+
+                return PhotoTaskDtoMapper.toResponseDto(task, signedKycUrl, signedUploadedUrl);
+            })
+        )
 
         return {
             data: result.data.map(task => PhotoTaskDtoMapper.toResponseDto(task)),
