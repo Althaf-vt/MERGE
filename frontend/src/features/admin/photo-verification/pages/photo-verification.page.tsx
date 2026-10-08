@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { AnimatePresence } from 'motion/react';
 import type { RootState } from '../../../../app/store';
 import { useGetPhotoTasksQuery } from '../api/photo-verification.api';
 import type { PhotoTaskStatus, ClaimStatus, PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoReviewModal } from '../components/photo-review-modal.component';
+import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import styles from './photo-verification.module.css';
 
 export const PhotoVerificationPage: React.FC = () => {
-    // Redux Admin State
     const currentAdmin = useSelector((state: RootState) => state.adminAuth.admin);
     const currentAdminId = currentAdmin?.id || '';
     const isSuperAdmin = currentAdmin?.role === 'SUPER_ADMIN';
 
-    // Filters and Pagination State
     const [page, setPage] = useState(1);
     const limit = 15;
     const [statusFilter, setStatusFilter] = useState<PhotoTaskStatus | ''>('PENDING');
     const [claimStatusFilter, setClaimStatusFilter] = useState<ClaimStatus | ''>('');
     const [claimedByFilter, setClaimedByFilter] = useState('');
 
-    // Modal State
     const [selectedTask, setSelectedTask] = useState<PhotoVerificationTask | null>(null);
 
-    // RTK Query
-    const { data, isLoading, isFetching } = useGetPhotoTasksQuery({
+    const { data, isLoading, isFetching, refetch } = useGetPhotoTasksQuery({
         page,
         limit,
         status: statusFilter || undefined,
@@ -33,128 +31,95 @@ export const PhotoVerificationPage: React.FC = () => {
 
     const tasks = data?.data || [];
     const total = data?.meta.total || 0;
-    const totalPages = Math.ceil(total / limit);
-
-    const handleClearFilters = () => {
-        setStatusFilter('');
-        setClaimStatusFilter('');
-        setClaimedByFilter('');
-        setPage(1);
-    };
-
-    const getStatusBadge = (status: PhotoTaskStatus) => {
-        switch (status) {
-            case 'APPROVED': return <span className={`${styles.badge} ${styles.badgeSuccess}`}>Approved</span>;
-            case 'REJECTED': return <span className={`${styles.badge} ${styles.badgeDanger}`}>Rejected</span>;
-            default: return <span className={`${styles.badge} ${styles.badgeWarning}`}>Pending</span>;
-        }
-    };
-
-    const getClaimBadge = (status: ClaimStatus) => {
-        switch (status) {
-            case 'CLAIMED': return <span className={`${styles.badge} ${styles.badgeClaimed}`}>Claimed</span>;
-            case 'RESOLVED': return <span className={`${styles.badge} ${styles.badgeSuccess}`}>Resolved</span>;
-            default: return <span className={`${styles.badge} ${styles.badgeNeutral}`}>Unclaimed</span>;
-        }
-    };
+    const totalPages = Math.ceil(total / limit) || 1;
 
     return (
-        <div className={styles.pageContainer}>
+        <AdminPageTransition className={styles.container}>
             <header className={styles.header}>
                 <div>
-                    <h1 className={styles.title}>Photo Verification Queue</h1>
-                    <p className={styles.subtitle}>Review flagged profile photos against biometric baselines.</p>
+                    <h1 className={styles.title}>PHOTO VERIFICATION QUEUE</h1>
+                    <p className={styles.subtitle}>REVIEW FLAGGED PROFILE PHOTOS AGAINST BIOMETRIC BASELINES.</p>
                 </div>
-            </header>
-
-            {/* Filter Controls */}
-            <div className={styles.filterBar}>
-                <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>Task Status</label>
+                <div className={styles.controls}>
                     <select 
-                        className={styles.filterSelect} 
+                        className={styles.select} 
                         value={statusFilter} 
                         onChange={e => { setStatusFilter(e.target.value as PhotoTaskStatus | ''); setPage(1); }}
                     >
-                        <option value="">All Statuses</option>
-                        <option value="PENDING">Pending Review</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
+                        <option value="">ALL STATUSES</option>
+                        <option value="PENDING">PENDING REVIEW</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REJECTED">REJECTED</option>
                     </select>
-                </div>
 
-                <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>Claim Status</label>
                     <select 
-                        className={styles.filterSelect} 
+                        className={styles.select} 
                         value={claimStatusFilter} 
                         onChange={e => { setClaimStatusFilter(e.target.value as ClaimStatus | ''); setPage(1); }}
                     >
-                        <option value="">All Claims</option>
-                        <option value="UNCLAIMED">Unclaimed</option>
-                        <option value="CLAIMED">Claimed</option>
-                        <option value="RESOLVED">Resolved</option>
+                        <option value="">ALL CLAIMS</option>
+                        <option value="UNCLAIMED">UNCLAIMED</option>
+                        <option value="CLAIMED">CLAIMED</option>
+                        <option value="RESOLVED">RESOLVED</option>
                     </select>
-                </div>
 
-                <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>Claimed By (Admin ID)</label>
                     <input 
                         type="text" 
-                        className={styles.filterInput}
-                        placeholder="Search by Admin ID..." 
+                        className={styles.input}
+                        placeholder="ADMIN ID..." 
                         value={claimedByFilter} 
                         onChange={e => { setClaimedByFilter(e.target.value); setPage(1); }}
                     />
-                </div>
-
-                {(statusFilter || claimStatusFilter || claimedByFilter) && (
-                    <button className={styles.clearBtn} onClick={handleClearFilters}>
-                        Clear Filters
+                    
+                    <button className={styles.actionBtn} onClick={() => refetch()}>
+                        REFRESH
                     </button>
-                )}
-            </div>
+                </div>
+            </header>
 
-            {/* Data Grid */}
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                     <thead>
                         <tr>
-                            <th className={styles.th}>Target User ID</th>
-                            <th className={styles.th}>Submitted On</th>
-                            <th className={styles.th}>L2 Distance</th>
-                            <th className={styles.th}>Decision</th>
-                            <th className={styles.th}>Claim State</th>
-                            <th className={styles.th}>Actions</th>
+                            <th>TARGET USER ID</th>
+                            <th>SUBMITTED ON</th>
+                            <th>L2 DISTANCE</th>
+                            <th>DECISION</th>
+                            <th>CLAIM STATE</th>
+                            <th>ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         {isLoading ? (
-                            <tr>
-                                <td colSpan={6} className={styles.emptyState}>Loading tasks...</td>
-                            </tr>
+                            <tr><td colSpan={6} className={styles.loading}>INITIALIZING DATA STREAM...</td></tr>
                         ) : tasks.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className={styles.emptyState}>No photo tasks found matching your filters.</td>
-                            </tr>
+                            <tr><td colSpan={6} className={styles.emptyState}>NO PHOTO TASKS FOUND.</td></tr>
                         ) : (
                             tasks.map((task) => (
-                                <tr key={task.id} className={styles.tr}>
-                                    <td className={styles.td}>{task.targetUserId}</td>
-                                    <td className={styles.td}>{new Date(task.createdAt).toLocaleDateString()}</td>
-                                    <td className={styles.td}>{task.faceMatchScore.toFixed(2)}</td>
-                                    <td className={styles.td}>{getStatusBadge(task.taskStatus)}</td>
-                                    <td className={styles.td}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                                            {getClaimBadge(task.claimStatus)}
+                                <tr key={task.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
+                                    <td>{task.targetUserId}</td>
+                                    <td>{new Date(task.createdAt).toLocaleDateString()}</td>
+                                    <td style={{ fontFamily: 'monospace' }}>{task.faceMatchScore.toFixed(4)}</td>
+                                    <td>
+                                        <span className={`${styles.badge} ${styles[`badge_${task.taskStatus}`]}`}>
+                                            {task.taskStatus}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                                            <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
+                                                {task.claimStatus}
+                                            </span>
                                             {task.claimStatus === 'CLAIMED' && (
-                                                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>By: {task.claimedBy}</span>
+                                                <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
+                                                    BY: {task.claimedBy}
+                                                </span>
                                             )}
                                         </div>
                                     </td>
-                                    <td className={styles.td}>
+                                    <td>
                                         <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus === 'PENDING' ? 'Review' : 'View Details'}
+                                            {task.taskStatus === 'PENDING' ? 'REVIEW' : 'VIEW'}
                                         </button>
                                     </td>
                                 </tr>
@@ -162,31 +127,29 @@ export const PhotoVerificationPage: React.FC = () => {
                         )}
                     </tbody>
                 </table>
-
-                {/* Pagination */}
-                {!isLoading && tasks.length > 0 && (
-                    <div className={styles.pagination}>
-                        <span className={styles.pageInfo}>
-                            Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, total)} of {total} results
-                            {isFetching && ' (Refreshing...)'}
-                        </span>
-                        <div className={styles.pageControls}>
-                            <button className={styles.pageBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-                            <button className={styles.pageBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
-                        </div>
-                    </div>
-                )}
             </div>
 
-            {/* Verification Modal */}
-            {selectedTask && (
-                <PhotoReviewModal 
-                    task={selectedTask}
-                    currentAdminId={currentAdminId}
-                    isSuperAdmin={isSuperAdmin}
-                    onClose={() => setSelectedTask(null)}
-                />
+            {!isLoading && tasks.length > 0 && (
+                <div className={styles.pagination}>
+                    <span>DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, total)} OF {total}</span>
+                    <div className={styles.pageControls}>
+                        <button className={styles.actionBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>PREV</button>
+                        <button className={styles.actionBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>NEXT</button>
+                    </div>
+                </div>
             )}
-        </div>
+
+            <AnimatePresence>
+                {selectedTask && (
+                    <PhotoReviewModal 
+                        isOpen={!!selectedTask}
+                        task={selectedTask}
+                        currentAdminId={currentAdminId}
+                        isSuperAdmin={isSuperAdmin}
+                        onClose={() => setSelectedTask(null)}
+                    />
+                )}
+            </AnimatePresence>
+        </AdminPageTransition>
     );
 };
