@@ -1,3 +1,4 @@
+import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 import { GetPhotoTasksQueryDto, PaginatedPhotoTasksResponseDto, RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
 
 export const GET_PHOTO_TASKS_USE_CASE = 'GET_PHOTO_TASKS_USE_CASE';
@@ -8,8 +9,21 @@ export const APPROVE_PHOTO_VERIFICATION_USE_CASE = 'APPROVE_PHOTO_VERIFICATION_U
 export const REJECT_PHOTO_VERIFICATION_USE_CASE = 'REJECT_PHOTO_VERIFICATION_USE_CASE';
 export const CREATE_PHOTO_VERIFICATION_TASK_USE_CASE = 'CREATE_PHOTO_VERIFICATION_TASK_USE_CASE';
 
+export interface HydratedPhotoTaskResult {
+    task: PhotoVerificationTask;
+    signedKycUrl: string;
+    signedUploadedUrl: string;
+}
+
+export interface PaginatedHydratedPhotoTasks {
+    data: HydratedPhotoTaskResult[];
+    total: number;
+    page: number;
+    limit: number;
+}
+
 export interface IGetPhotoTasksUseCase {
-    execute(query: GetPhotoTasksQueryDto): Promise<PaginatedPhotoTasksResponseDto>;
+    execute(query: GetPhotoTasksQueryDto): Promise<PaginatedHydratedPhotoTasks>;
 }
 
 export interface IClaimPhotoTaskUseCase {

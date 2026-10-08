@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IGetPhotoTasksUseCase } from "../interfaces/photo-verification.use-case.interface";
+import { HydratedPhotoTaskResult, IGetPhotoTasksUseCase, PaginatedHydratedPhotoTasks } from "../interfaces/photo-verification.use-case.interface";
 import { IPhotoVerificationTaskRepository, PHOTO_VERIFICATION_TASK_REPOSITORY } from "../../domain/interfaces/photo-verification-task-repository.interface";
 import { GetPhotoTasksQueryDto, PaginatedPhotoTasksResponseDto } from "../dtos/photo-verification.dto";
 import { PhotoTaskDtoMapper } from "../../presentation/mappers/photo-task-dto.mapper";
@@ -12,7 +12,7 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
         @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade
     ) {}
 
-    async execute(query: GetPhotoTasksQueryDto): Promise<PaginatedPhotoTasksResponseDto> {
+    async execute(query: GetPhotoTasksQueryDto): Promise<PaginatedHydratedPhotoTasks> {
         const result = await this._repository.findAllPaginated({
             page: query.page ?? 1,
             limit: query.limit ?? 20,
@@ -22,17 +22,17 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
         });
 
         // Hydrate the raw S3 keys into secure presingned URLs concurrently
-        const hydratedData = await Promise.all(
+        const hydratedData: HydratedPhotoTaskResult[] = await Promise.all(
             result.data.map(async (task) => {
                 const signedKycUrl = await this._userFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
                 const signedUploadedUrl = await this._userFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
 
-                return PhotoTaskDtoMapper.toResponseDto(task, signedKycUrl, signedUploadedUrl);
+                return { task, signedKycUrl, signedUploadedUrl };
             })
-        )
+        );
 
         return {
-            data: result.data.map(task => PhotoTaskDtoMapper.toResponseDto(task)),
+            data: hydratedData,
             total: result.total,
             page: result.page,
             limit: result.limit
