@@ -2,13 +2,17 @@ import { PhotoVerificationTaskResponseDto } from "../../application/dtos/photo-v
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 
 export class PhotoTaskDtoMapper {
-    public static toResponseDto(entity: PhotoVerificationTask): PhotoVerificationTaskResponseDto {
+    public static toResponseDto(
+        entity: PhotoVerificationTask,
+        signedKycUrl?: string, 
+        signedUploadedUrl?: string
+    ): PhotoVerificationTaskResponseDto {
         return {
             id: entity.id,
             targetUserId: entity.targetUserId,
             photoId: entity.photoId,
-            kycSelfieUrl: entity.kycSelfieUrl,
-            uploadedPhotoUrl: entity.uploadedPhotoUrl,
+            kycSelfieUrl: signedKycUrl || entity.kycSelfieUrl,
+            uploadedPhotoUrl: signedUploadedUrl || entity.uploadedPhotoUrl,
             faceMatchScore: entity.faceMatchScore,
             taskStatus: entity.taskStatus,
             claimStatus: entity.claimDetails.status,
