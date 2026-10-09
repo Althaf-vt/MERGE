@@ -33,6 +33,8 @@ export const PhotoVerificationPage: React.FC = () => {
     const total = data?.meta.total || 0;
     const totalPages = Math.ceil(total / limit) || 1;
 
+    const activeTask = selectedTask ? tasks.find(t => t.id === selectedTask.id) || selectedTask : null;
+
     return (
         <AdminPageTransition className={styles.container}>
             <header className={styles.header}>
@@ -144,10 +146,10 @@ export const PhotoVerificationPage: React.FC = () => {
             )}
 
             <AnimatePresence>
-                {selectedTask && (
+                {activeTask && (
                     <PhotoReviewModal 
-                        isOpen={!!selectedTask}
-                        task={selectedTask}
+                        isOpen={!!activeTask}
+                        task={activeTask}
                         currentAdminId={currentAdminId}
                         isSuperAdmin={isSuperAdmin}
                         onClose={() => setSelectedTask(null)}
