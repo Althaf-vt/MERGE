@@ -7,7 +7,7 @@ export class ClaimDetailsVO {
     private readonly _claimedBy: string | null;
     private readonly _claimedAt: Date | null;
 
-    constructor(status: ClaimStatus, claimedBy: string | null = null, claimedAt: Date | null = null){
+    constructor(status: ClaimStatus, claimedBy: string | null = null, claimedAt: Date | null = null) {
         this._status = status;
         this._claimedBy = claimedBy;
         this._claimedAt = claimedAt;
@@ -19,9 +19,9 @@ export class ClaimDetailsVO {
 
     // Enforce the single-writer, multi-reader lock
     validateCanAct(adminId: string, isSuperAdmin: boolean): void {
-        if(isSuperAdmin) return; // Super admins bypass claim ownership rules
+        if (isSuperAdmin) return; // Super admins bypass claim ownership rules
 
-        if(this._status === ClaimStatus.UNCLAIMED){
+        if (this._status === ClaimStatus.UNCLAIMED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task must be claimed before taking action.');
         }
 
@@ -29,13 +29,13 @@ export class ClaimDetailsVO {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task is already resolved and immutable.');
         }
 
-        if (this._claimedBy !== adminId) {
+        if (!isSuperAdmin && this._claimedBy !== adminId) {
             throw new DomainException(ErrorCode.FORBIDDEN, 'Task is currently claimed by another administrator.');
         }
     }
 
-    claim(adminId: string): ClaimDetailsVO{
-        if(this._status === ClaimStatus.RESOLVED){
+    claim(adminId: string): ClaimDetailsVO {
+        if (this._status === ClaimStatus.RESOLVED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot claim a resolved task.');
         }
 
