@@ -40,7 +40,7 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
 
     const isOwner = task.claimStatus === 'CLAIMED' && task.claimedBy === currentAdminId;
     const isClaimedByOther = task.claimStatus === 'CLAIMED' && task.claimedBy !== currentAdminId;
-    const canResolve = isOwner || isSuperAdmin;
+    const canResolve = isOwner || (isSuperAdmin && task.claimStatus === 'CLAIMED');
     const isResolved = task.taskStatus !== 'PENDING';
 
     const handleAction = async (actionFn: () => Promise<any>, successCallback?: () => void) => {

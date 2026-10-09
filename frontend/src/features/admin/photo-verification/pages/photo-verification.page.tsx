@@ -119,7 +119,11 @@ export const PhotoVerificationPage: React.FC = () => {
                                     </td>
                                     <td>
                                         <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus === 'PENDING' ? 'REVIEW' : 'VIEW'}
+                                            {task.taskStatus !== 'PENDING' 
+                                                ? 'VIEW' 
+                                                : task.claimStatus === 'UNCLAIMED' 
+                                                    ? 'CLAIM' 
+                                                    : 'REVIEW'}
                                         </button>
                                     </td>
                                 </tr>
