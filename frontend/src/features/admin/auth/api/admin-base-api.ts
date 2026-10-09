@@ -72,6 +72,6 @@ export const adminBaseQueryWithReauth: BaseQueryFn<
 export const adminRootApi = createApi({
     reducerPath: 'adminApi',
     baseQuery: adminBaseQueryWithReauth,
-    tagTypes: ['AdminAuth', 'AdminUsers', 'AdminManagement', 'Admins', 'AdminUserDetails'],
+    tagTypes: ['AdminAuth', 'AdminUsers', 'AdminManagement', 'Admins', 'AdminUserDetails', 'PhotoTasks'],
     endpoints: () => ({}),
 });

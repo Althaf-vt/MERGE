@@ -6,25 +6,15 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserStatus } from "../../domain/enums/user.enums";
+import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
+import { UserFacadeMapper } from "../mappers/user-facade.mapper";
 
 @Injectable()
 export class UserManagementFacade implements IUserManagementFacade {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(STORAGE_SERVICE) private readonly _storageService: IStorageService,
     ) { }
-
-    // Maps the internal Aggregate to the boundary-safe DTO
-    private _mapToDto(user: UserAggregate): FacadeUserDto {
-        return {
-            id: user.id as string,
-            email: user.email.getValue(),
-            accountStatus: user.accountStatus as any,
-            kycCompleted: user.kycCompleted,
-            suspendedUntil: user.suspendedUntil ?? null,
-            statusReason: user.statusReason ?? null,
-            createdAt: user.createdAt as Date,
-        };
-    }
 
     async suspendUser(userId: string, duration: number, unit: FacadeSuspensionUnit, reason: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
@@ -72,7 +62,7 @@ export class UserManagementFacade implements IUserManagementFacade {
         const result = await this._userRepository.findAllPaginated(internalFilters);
 
         return {
-            data: result.data.map(user => this._mapToDto(user)),
+            data: result.data.map(user => UserFacadeMapper.toDto(user)),
             total: result.total,
             page: result.page,
             limit: result.limit
@@ -82,6 +72,15 @@ export class UserManagementFacade implements IUserManagementFacade {
     async getUserById(userId: string): Promise<FacadeUserDto | null> {
         const user = await this._userRepository.findById(userId);
         if (!user) return null;
-        return this._mapToDto(user);
+        return UserFacadeMapper.toDto(user);
+    }
+
+    async getPresignedMediaUrl(rawUrl: string, expiresInSeconds?: number): Promise<string | null> {
+        if(!rawUrl) return null;
+        try {
+            return await this._storageService.getPresignedUrl(rawUrl, expiresInSeconds)
+        } catch (error) {
+            return null;
+        }
     }
 }

@@ -45,13 +45,22 @@ import { ForceLogoutAdminUseCase } from "./application/use-cases/force-logout-ad
 import { GetAdminDetailsUseCase } from "./application/use-cases/get-admin-details.use-case";
 import { AdminRedisSessionService } from "./infrastructure/services/admin-redis-session.service";
 import { ADMIN_SESSION_SERVICE } from "./domain/interfaces/admin-session.interface";
+import { PHOTO_VERIFICATION_TASK_REPOSITORY } from "./domain/interfaces/photo-verification-task-repository.interface";
+import { MongoPhotoVerificationTaskRepository } from "./infrastructure/persistence/mongo-photo-verification-task.repository";
+import { APPROVE_PHOTO_VERIFICATION_USE_CASE, CLAIM_PHOTO_TASK_USE_CASE, CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, GET_PHOTO_TASKS_USE_CASE, REJECT_PHOTO_VERIFICATION_USE_CASE, RELEASE_PHOTO_TASK_CLAIM_USE_CASE, TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE } from "./application/interfaces/photo-verification.use-case.interface";
+import { GetPhotoTasksUseCase } from "./application/use-cases/get-photo-tasks.use-case";
+import { ApprovePhotoVerificationUseCase, ClaimPhotoTaskUseCase, CreatePhotoVerificationTaskUseCase, RejectPhotoVerificationUseCase, ReleasePhotoTaskClaimUseCase, TakeoverPhotoTaskClaimUseCase } from "./application/use-cases/manage-photo-verification.use-case";
+import { UserPhotoFlaggedListener } from "./application/listeners/user-photo-flagged.listener";
+import { PhotoVerificationController } from "./presentation/controllers/photo-verification.controller";
+import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from "./infrastructure/persistence/photo-verification-task.schema";
 
 @Module({
     imports: [
         UserModule,
         MongooseModule.forFeature([
             { name: Admin.name, schema: AdminSchema },
-            {name: ModerationLogSchemaClass.name, schema: ModerationLogSchema}
+            {name: ModerationLogSchemaClass.name, schema: ModerationLogSchema},
+            { name: PhotoVerificationTaskSchemaClass.name, schema: PhotoVerificationTaskSchema }
         ]),
     ],
 
@@ -59,6 +68,7 @@ import { ADMIN_SESSION_SERVICE } from "./domain/interfaces/admin-session.interfa
         AdminAuthController,
         AdminUsersController,
         AdminManagementController,
+        PhotoVerificationController,
     ],
 
     providers: [
@@ -155,7 +165,43 @@ import { ADMIN_SESSION_SERVICE } from "./domain/interfaces/admin-session.interfa
         {
             provide: ADMIN_SESSION_SERVICE,
             useClass: AdminRedisSessionService,
-        }
+        },
+
+        { 
+            provide: PHOTO_VERIFICATION_TASK_REPOSITORY, 
+            useClass: MongoPhotoVerificationTaskRepository
+        },
+        { 
+            provide: GET_PHOTO_TASKS_USE_CASE, 
+            useClass: GetPhotoTasksUseCase
+        },
+        { 
+            provide: CLAIM_PHOTO_TASK_USE_CASE,
+            useClass: ClaimPhotoTaskUseCase
+        },
+        { 
+            provide: RELEASE_PHOTO_TASK_CLAIM_USE_CASE, 
+            useClass: ReleasePhotoTaskClaimUseCase
+        },
+        { 
+            provide: TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE, 
+            useClass: TakeoverPhotoTaskClaimUseCase
+        },
+        { 
+            provide: APPROVE_PHOTO_VERIFICATION_USE_CASE, 
+            useClass: ApprovePhotoVerificationUseCase
+        },
+        { 
+            provide: REJECT_PHOTO_VERIFICATION_USE_CASE, 
+            useClass: RejectPhotoVerificationUseCase
+        },
+        { 
+            provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, 
+            useClass: CreatePhotoVerificationTaskUseCase
+        },
+        
+        // Register Event Listener
+        UserPhotoFlaggedListener,
     ],
     exports: [
         ADMIN_REPOSITORY,

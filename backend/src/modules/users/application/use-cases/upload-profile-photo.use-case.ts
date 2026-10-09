@@ -50,7 +50,7 @@ export class UploadProfilePhotoUseCase implements IUploadProfilePhotoUseCase {
             uploadedAt: new Date(),
         });
 
-        user.addPhoto(newPhoto);
+        user.addPhoto(newPhoto, kyc.liveSelfieS3);
         await this._userRepository.update(user);
     }
 }

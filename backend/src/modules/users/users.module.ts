@@ -104,6 +104,7 @@ import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, UNBLOCK_USER_USE_CASE 
 import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
 import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
 import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-users.use-case";
+import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-review.listener";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -381,6 +382,7 @@ import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-user
             provide: GET_BLOCKED_USERS_USE_CASE,
             useClass: GetBlockedUsersUseCase,
         },
+        AdminPhotoReviewListener,
     ],
 
     // Makes these repository and token service providers available to other modules.
