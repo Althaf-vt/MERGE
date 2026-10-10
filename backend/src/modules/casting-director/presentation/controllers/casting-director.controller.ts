@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints
 import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
+import { CastingSessionResponseDto } from "../../application/dtos/casting-session-response.dto";
 
 @Controller(API_ENDPOINTS.CASTING_DIRECTOR.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -21,12 +22,12 @@ export class CastingDirectorController {
 
     @Post(API_ENDPOINTS.CASTING_DIRECTOR.INITIALIZE)
     @HttpCode(HttpStatus.OK)
-    async initialize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<Record<string, unknown>>> {
+    async initialize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<CastingSessionResponseDto>> {
         const session = await this._initializeCastingSessionUseCase.execute(req.user.userId);
         return {
             success: true,
             message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED,
-            data: session.toJSON()
+            data: session.toJSON() as CastingSessionResponseDto
         };
     }
 
@@ -35,7 +36,7 @@ export class CastingDirectorController {
     async processMessage(
         @Req() req: AuthenticatedRequest, 
         @Body() dto: ProcessMessageDto
-    ): Promise<ApiResponse<Record<string, unknown>>> {
+    ): Promise<ApiResponse<CastingSessionResponseDto>> {
         const session = await this._processCastingMessageUseCase.execute(req.user.userId, dto.content);
         return {
             success: true,
