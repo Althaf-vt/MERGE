@@ -1,10 +1,12 @@
 import { UserAggregate } from "../../domain/entities/user.entity";
+import { UserResponseDto } from "../../application/dtos/user-response.dto";
 
-// Converts a UserEntity into a safe response object for the client.
-export class UserResponseMapper{
-
-    // Maps the UserEntity properties into the response format.
-    public static toResponse(entity: UserAggregate, presignedPhotoUrls?: Record<string, string>, presignedLiveSelfieUrl?: string | null){
+export class UserResponseMapper {
+    public static toResponse(
+        entity: UserAggregate, 
+        presignedPhotoUrls?: Record<string, string>, 
+        presignedLiveSelfieUrl?: string | null
+    ): UserResponseDto {
         return {
             id: entity.id,
             email: entity.email.getValue(),
@@ -13,10 +15,17 @@ export class UserResponseMapper{
             kycCompleted: entity.kycCompleted,
             accountStatus: entity.accountStatus,
             onboardingStep: entity.onboardingStep,
+
+            onboardingCompleted: entity.onboardingCompleted,
+            profileCompleted: entity.profileCompleted,
+            lumenEnabled: entity.lumenEnabled,
+
             castingDirectorCompleted: entity.castingDirectorCompleted,
+            
             profile: entity.profile ? entity.profile.toJSON() : null,
             preference: entity.preference ? entity.preference.toJSON() : null,
-            kycVerification: entity.kycVerification? {
+            
+            kycVerification: entity.kycVerification ? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,
                 verifiedDOB: entity.kycVerification.verifiedDOB,
@@ -31,6 +40,6 @@ export class UserResponseMapper{
             medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
             
             createdAt: entity.createdAt
-        }
+        };
     }
 }

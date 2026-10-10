@@ -20,6 +20,7 @@ import { ClientInfo, ClientInfoData } from "../../../../shared/infrastructure/se
 import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { UserResponseDto } from "../../application/dtos/user-response.dto";
 
 
 @Controller(API_ENDPOINTS.AUTH.BASE)
@@ -50,7 +51,7 @@ export class AuthController {
 
     @Post(API_ENDPOINTS.AUTH.VERIFY_OTP)
     @HttpCode(HttpStatus.OK)
-    async verifyOtp(@Body() dto: VerifyOtpDto): Promise<ApiResponse<Record<string, unknown>>> {
+    async verifyOtp(@Body() dto: VerifyOtpDto): Promise<ApiResponse<UserResponseDto>> {
         const user = await this._verifyOtpUseCase.execute(dto);
         return {
             success: true,
@@ -75,7 +76,7 @@ export class AuthController {
         @Body() dto: LoginUserDto, 
         @ClientInfo() client: ClientInfoData, 
         @Res({passthrough: true}) res: Response
-    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
+    ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._loginUserUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
         res.cookie('refreshToken', result.refreshToken, {
@@ -121,7 +122,7 @@ export class AuthController {
         @Body() dto: GoogleLoginDto,
         @ClientInfo() client: ClientInfoData,
         @Res({passthrough: true}) res: Response
-    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
+    ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._googleLoginUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
         res.cookie('refreshToken', result.refreshToken, {
@@ -146,7 +147,7 @@ export class AuthController {
     async refresh(
         @Req() req: Request, 
         @Res({passthrough: true}) res: Response
-    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
+    ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const refreshToken = req.cookies['refreshToken'];
         if(!refreshToken){
             throw new UnauthorizedException("No refresh token found");
