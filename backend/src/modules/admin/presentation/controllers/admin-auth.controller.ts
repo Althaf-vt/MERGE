@@ -6,28 +6,27 @@ import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 
 
-
-
-@Controller('admin/auth')
+@Controller(API_ENDPOINTS.ADMIN.AUTH.BASE)
 export class AdminAuthController {
     constructor(
-        @Inject(ADMIN_LOGIN_USE_CASE)
-        private readonly _adminLoginUseCase: IAdminLoginUseCase,
-        @Inject(ADMIN_FORGOT_PASSWORD_USE_CASE)
-        private readonly _forgotPasswordUseCase: IAdminForgotPasswordUseCase,
-        @Inject(ADMIN_RESET_PASSWORD_USE_CASE)
-        private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
-        @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE)
-        private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
-        @Inject(ADMIN_REFRESH_TOKEN_USE_CASE)
-        private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
+        @Inject(ADMIN_LOGIN_USE_CASE) private readonly _adminLoginUseCase: IAdminLoginUseCase,
+        @Inject(ADMIN_FORGOT_PASSWORD_USE_CASE) private readonly _forgotPasswordUseCase: IAdminForgotPasswordUseCase,
+        @Inject(ADMIN_RESET_PASSWORD_USE_CASE) private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
+        @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE) private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
+        @Inject(ADMIN_REFRESH_TOKEN_USE_CASE) private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
     ) { }
 
-    @Post('login')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.LOGIN)
     @HttpCode(HttpStatus.OK)
-    async login(@Body() dto: AdminLoginDto, @Res({ passthrough: true }) res: Response) {
+    async login(
+        @Body() dto: AdminLoginDto, 
+        @Res({ passthrough: true }) res: Response
+    ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const result = await this._adminLoginUseCase.execute(dto);
 
         res.cookie('adminRefreshToken', result.refreshToken, {
@@ -38,15 +37,21 @@ export class AdminAuthController {
         });
 
         return {
-            message: "Admin login successful",
-            accessToken: result.accessToken,
-            admin: AdminResponseMapper.toResponse(result.admin)
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
+            data: {
+                accessToken: result.accessToken,
+                admin: AdminResponseMapper.toResponse(result.admin)
+            }
         };
     }
 
-    @Post('refresh')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.REFRESH)
     @HttpCode(HttpStatus.OK)
-    async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    async refresh(
+        @Req() req: Request, 
+        @Res({ passthrough: true }) res: Response
+    ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const refreshToken = req.cookies['adminRefreshToken'];
 
         if (!refreshToken) {
@@ -60,43 +65,59 @@ export class AdminAuthController {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000
-        })
+        });
 
         return {
-            accessToken: result.accessToken,
-            admin: AdminResponseMapper.toResponse(result.admin)
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
+            data: {
+                accessToken: result.accessToken,
+                admin: AdminResponseMapper.toResponse(result.admin)
+            }
         };
     }
 
-    @Post('forgot-password')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.FORGOT_PASSWORD)
     @HttpCode(HttpStatus.OK)
-    async forgotPassword(@Body() dto: AdminForgotPasswordDto) {
+    async forgotPassword(@Body() dto: AdminForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return { message: "If an admin account exists, a reset code has been sent." };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT 
+        };
     }
 
-    @Post('verify-reset-otp')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.VERIFY_RESET_OTP)
     @HttpCode(HttpStatus.OK)
-    async verifyResetOtp(@Body() dto: AdminVerifyResetOtpDto) {
+    async verifyResetOtp(@Body() dto: AdminVerifyResetOtpDto): Promise<ApiResponse<undefined>> {
         await this._adminVerifyResetOtpUseCase.execute(dto);
-        return { message: "Verification code is valid." };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.AUTH.OTP_VERIFIED 
+        };
     }
 
-    @Post('reset-password')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.RESET_PASSWORD)
     @HttpCode(HttpStatus.OK)
-    async resetPassword(@Body() dto: AdminResetPasswordDto) {
+    async resetPassword(@Body() dto: AdminResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return { message: "Password reset successfully. You can now log in." };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS 
+        };
     }
 
-    @Post('logout')
+    @Post(API_ENDPOINTS.ADMIN.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
-    async logout(@Res({ passthrough: true }) res: Response) {
+    async logout(@Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
         res.clearCookie('adminRefreshToken', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         });
-        return { message: "Admin logged out successfully" };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS 
+        };
     }
 }

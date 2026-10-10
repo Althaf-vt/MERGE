@@ -5,13 +5,12 @@ import { AdminPermissionsGuard } from "../../../../shared/infrastructure/securit
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { GetPhotoTasksQueryDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
+import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
 import { AdminRole } from "../../domain/enums/admin.enums";
 import { 
     APPROVE_PHOTO_VERIFICATION_USE_CASE, 
     CLAIM_PHOTO_TASK_USE_CASE, 
     GET_PHOTO_TASKS_USE_CASE, 
-    HydratedPhotoTaskResult, 
     IApprovePhotoVerificationUseCase, 
     IClaimPhotoTaskUseCase, 
     IGetPhotoTasksUseCase, 
@@ -22,9 +21,13 @@ import {
     RELEASE_PHOTO_TASK_CLAIM_USE_CASE, 
     TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE 
 } from "../../application/interfaces/photo-verification.use-case.interface";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 import { PhotoTaskDtoMapper } from "../mappers/photo-task-dto.mapper";
+import { HydratedPhotoTaskResult } from "../../application/interfaces/photo-verification.use-case.interface";
 
-@Controller('admin/photo-verification')
+@Controller(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
 export class PhotoVerificationController {
     constructor(
@@ -39,58 +42,79 @@ export class PhotoVerificationController {
     @Get()
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_VIEW)
-    async getTasks(@Query() query: GetPhotoTasksQueryDto) {
+    async getTasks(@Query() query: GetPhotoTasksQueryDto): Promise<ApiResponse<PhotoVerificationTaskResponseDto[]>> {
         const result = await this._getPhotoTasksUseCase.execute(query);
-
+        
         const mappedData = result.data.map((item: HydratedPhotoTaskResult) => 
             PhotoTaskDtoMapper.toResponseDto(item.task, item.signedKycUrl, item.signedUploadedUrl)
         );
-        return { success: true, data: mappedData, meta: { total: result.total, page: result.page, limit: result.limit } };
+
+        return { 
+            success: true, 
+            data: mappedData, 
+            meta: { total: result.total, page: result.page, limit: result.limit } 
+        };
     }
 
-    @Post(':id/claim')
+    @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.CLAIM)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async claimTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest) {
+    async claimTask(
+        @Param('id') taskId: string, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         await this._claimTaskUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: 'Task claimed successfully.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED };
     }
 
-    @Post(':id/release')
+    @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.RELEASE)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async releaseClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest) {
+    async releaseClaim(
+        @Param('id') taskId: string, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
         await this._releaseClaimUseCase.execute(taskId, req.user.userId, isSuperAdmin);
-        return { success: true, message: 'Claim released successfully.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
     }
 
-    @Post(':id/takeover')
+    @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.TAKEOVER)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async takeoverClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest) {
+    async takeoverClaim(
+        @Param('id') taskId: string, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         if (req.user.role !== AdminRole.SUPER_ADMIN) {
-            return { success: false, message: 'Forbidden. Only Super Admins can take over claims.' };
+            return { success: false, error: { code: 'FORBIDDEN', message: 'Only Super Admins can take over claims.' } };
         }
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: 'Task forcefully claimed.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
     }
 
-    @Post(':id/approve')
+    @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.APPROVE)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async approvePhoto(@Param('id') taskId: string, @Req() req: AuthenticatedRequest) {
+    async approvePhoto(
+        @Param('id') taskId: string, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
         await this._approvePhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin);
-        return { success: true, message: 'Photo approved successfully.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_APPROVED };
     }
 
-    @Post(':id/reject')
+    @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.REJECT)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_REJECT)
-    async rejectPhoto(@Param('id') taskId: string, @Body() dto: RejectPhotoTaskDto, @Req() req: AuthenticatedRequest) {
+    async rejectPhoto(
+        @Param('id') taskId: string, 
+        @Body() dto: RejectPhotoTaskDto, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
         await this._rejectPhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin, dto);
-        return { success: true, message: 'Photo rejected successfully.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_REJECTED };
     }
 }

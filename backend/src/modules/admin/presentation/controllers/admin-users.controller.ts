@@ -8,26 +8,28 @@ import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUs
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { FacadeSuspensionUnit, FacadeUserDto, FacadeUserStatus } from "../../../users/application/interfaces/user-management-facade.interface";
 
-@Controller('admin/users')
+@Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
 export class AdminUsersController {
     constructor(
-        @Inject(MANAGE_USER_STATUS_USE_CASE) 
-        private readonly _manageUserStatusUseCase: IManageUserStatusUseCase,
-        @Inject(GET_ADMIN_USERS_USE_CASE) 
-        private readonly _getUsersUseCase: IGetAdminUsersUseCase,
+        @Inject(MANAGE_USER_STATUS_USE_CASE) private readonly _manageUserStatusUseCase: IManageUserStatusUseCase,
+        @Inject(GET_ADMIN_USERS_USE_CASE) private readonly _getUsersUseCase: IGetAdminUsersUseCase,
     ) {}
 
     @Get()
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
-    async listUsers(@Query() query: GetUsersQueryDto) {
+    async listUsers(@Query() query: GetUsersQueryDto): Promise<ApiResponse<FacadeUserDto[]>> {
         const result = await this._getUsersUseCase.execute({
             page: query.page ?? 1,
             limit: query.limit ?? 20,
             search: query.search,
-            status: query.status as any,
+            status: query.status as FacadeUserStatus,
             kycStatus: query.kycStatus,
         });
 
@@ -42,50 +44,66 @@ export class AdminUsersController {
         };
     }
 
-    @Get(':id')
+    @Get(API_ENDPOINTS.ADMIN.USERS.BY_ID)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
-    async getUserDetails(@Param('id') id: string) {
+    async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto | null>> {
         const user = await this._getUsersUseCase.getById(id);
         if (!user) {
-            return { success: false, message: 'User not found' };
+            return { success: false, error: { code: 'NOT_FOUND', message: 'User not found' } };
         }
         return { success: true, data: user };
     }
 
-    @Post(':id/suspend')
+    @Post(API_ENDPOINTS.ADMIN.USERS.SUSPEND)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
-    async suspendUser(@Param('id') targetUserId: string, @Body() dto: SuspendUserDto, @Req() req: AuthenticatedRequest) {
+    async suspendUser(
+        @Param('id') targetUserId: string, 
+        @Body() dto: SuspendUserDto, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
-        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit as any, dto.reason);
-        return { success: true, message: 'User suspended successfully' };
+        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit as FacadeSuspensionUnit, dto.reason);
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED };
     }
 
-    @Post(':id/unsuspend')
+    @Post(API_ENDPOINTS.ADMIN.USERS.UNSUSPEND)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
-    async unsuspendUser(@Param('id') targetUserId: string, @Body() dto: UnSuspendUserDto, @Req() req: AuthenticatedRequest) {
+    async unsuspendUser(
+        @Param('id') targetUserId: string, 
+        @Body() dto: UnSuspendUserDto, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unsuspendUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: 'User suspension lifted' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_UNSUSPENDED };
     }
 
-    @Post(':id/ban')
+    @Post(API_ENDPOINTS.ADMIN.USERS.BAN)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
-    async banUser(@Param('id') targetUserId: string, @Body() dto: BanUserDto, @Req() req: AuthenticatedRequest) {
+    async banUser(
+        @Param('id') targetUserId: string, 
+        @Body() dto: BanUserDto, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.banUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: 'User permanently banned.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_BANNED };
     }
 
-    @Post(':id/unban')
+    @Post(API_ENDPOINTS.ADMIN.USERS.UNBAN)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
-    async unbanUser(@Param('id') targetUserId: string, @Body() dto: UnbanUserDto, @Req() req: AuthenticatedRequest) {
+    async unbanUser(
+        @Param('id') targetUserId: string, 
+        @Body() dto: UnbanUserDto, 
+        @Req() req: AuthenticatedRequest
+    ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unbanUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: 'User ban reversed.' };
+        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_UNBANNED };
     }
 }

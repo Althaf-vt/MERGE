@@ -5,8 +5,12 @@ import { IProcessCastingMessageUseCase, PROCESS_CASTING_MESSAGE_USE_CASE } from 
 import { FINALIZE_CASTING_SESSION_USE_CASE, IFinalizeCastingSessionUseCase } from "../../application/interfaces/finalize-casting-session.use-case.interface";
 import { ProcessMessageDto } from "../../application/dtos/process-message.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 
-@Controller('casting-director')
+@Controller(API_ENDPOINTS.CASTING_DIRECTOR.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
 export class CastingDirectorController {
     constructor(
@@ -15,33 +19,38 @@ export class CastingDirectorController {
         @Inject(FINALIZE_CASTING_SESSION_USE_CASE) private readonly _finalizeCastingSessionUseCase: IFinalizeCastingSessionUseCase
     ) { }
 
-    @Post('initialize')
+    @Post(API_ENDPOINTS.CASTING_DIRECTOR.INITIALIZE)
     @HttpCode(HttpStatus.OK)
-    async initialize(@Req() req: any) {
+    async initialize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<Record<string, unknown>>> {
         const session = await this._initializeCastingSessionUseCase.execute(req.user.userId);
         return {
             success: true,
-            session: session.toJSON()
+            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED,
+            data: session.toJSON()
         };
     }
 
-    @Post('message')
+    @Post(API_ENDPOINTS.CASTING_DIRECTOR.MESSAGE)
     @HttpCode(HttpStatus.OK)
-    async processMessage(@Req() req: any, @Body() dto: ProcessMessageDto) {
+    async processMessage(
+        @Req() req: AuthenticatedRequest, 
+        @Body() dto: ProcessMessageDto
+    ): Promise<ApiResponse<Record<string, unknown>>> {
         const session = await this._processCastingMessageUseCase.execute(req.user.userId, dto.content);
         return {
             success: true,
-            session: session.toJSON(),
+            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.MESSAGE_PROCESSED,
+            data: session.toJSON(),
         };
     }
 
-    @Post('finalize')
+    @Post(API_ENDPOINTS.CASTING_DIRECTOR.FINALIZE)
     @HttpCode(HttpStatus.OK)
-    async finalize(@Req() req: any) {
+    async finalize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._finalizeCastingSessionUseCase.execute(req.user.userId);
         return {
             success: true,
-            message: 'Casting session finalized and personality vector generated.'
+            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_FINALIZED
         };
     }
 }
