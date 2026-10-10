@@ -17,12 +17,13 @@ import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ClientInfo, ClientInfoData } from "../../../../shared/infrastructure/security/decorators/client-info.decorator";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 
-// Handles authentication-related HTTP requests such as registration and OTP verfication.
-@Controller('auth')
-export class AuthController{
 
-    // Injects the use-cases responsible for registration and OTP verification.
+@Controller(API_ENDPOINTS.AUTH.BASE)
+export class AuthController {
     constructor(
         @Inject(REGISTER_USER_USE_CASE) private readonly _registerUserUseCase: IRegisterUserUseCase,
         @Inject(VERIFY_OTP_USE_CASE) private readonly _verifyOtpUseCase: IVerifyOtpUseCase,
@@ -35,111 +36,124 @@ export class AuthController{
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
     ){}
-    private readonly _logger = new Logger(AuthController.name)
+    private readonly _logger = new Logger(AuthController.name);
 
-    // Handles user registration requests. 
-    @Post('register')
+    @Post(API_ENDPOINTS.AUTH.REGISTER)
     @HttpCode(HttpStatus.CREATED)
-    async register(@Body() dto: RegisterUserDto){
+    async register(@Body() dto: RegisterUserDto): Promise<ApiResponse<undefined>> {
         await this._registerUserUseCase.execute(dto);
-
-        return{
-            message: "Registration started. Please check you mail for the OTP"
-        }
-    }
-
-    // Handles OTP verification requests.
-    @Post('verify-otp')
-    @HttpCode(HttpStatus.OK)
-    async verifyOtp(@Body() dto: VerifyOtpDto){
-        const user = await this._verifyOtpUseCase.execute(dto);
-
         return {
-            message: "Email verified successfully",
-            user: UserResponseMapper.toResponse(user),
-        }
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.REGISTER_SUCCESS
+        };
     }
 
-    @Post('resend-otp')
+    @Post(API_ENDPOINTS.AUTH.VERIFY_OTP)
     @HttpCode(HttpStatus.OK)
-    async resendOtp(@Body() dto: ResendOtpDto){
+    async verifyOtp(@Body() dto: VerifyOtpDto): Promise<ApiResponse<Record<string, unknown>>> {
+        const user = await this._verifyOtpUseCase.execute(dto);
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.EMAIL_VERIFIED,
+            data: UserResponseMapper.toResponse(user),
+        };
+    }
+
+    @Post(API_ENDPOINTS.AUTH.RESEND_OTP)
+    @HttpCode(HttpStatus.OK)
+    async resendOtp(@Body() dto: ResendOtpDto): Promise<ApiResponse<undefined>> {
         await this._resendOtpUseCase.execute(dto);
-        return {message: "A new verification code has been sent."}
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.REGISTER_SUCCESS // Reuse standard OTP message
+        };
     }
 
-    // Handle User Login Requests
-    @Post('login')
+    @Post(API_ENDPOINTS.AUTH.LOGIN)
     @HttpCode(HttpStatus.OK)
-    async login(@Body() dto: LoginUserDto, @ClientInfo() client: ClientInfoData, @Res({passthrough: true}) res: Response){
-
+    async login(
+        @Body() dto: LoginUserDto, 
+        @ClientInfo() client: ClientInfoData, 
+        @Res({passthrough: true}) res: Response
+    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
         const result = await this._loginUserUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
-        // Aet the refresh token as an HttpOnly, Secure cookie
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // True in prod (HTTPS)
-            sameSite: 'strict', // Prevents CSRF attacks
-            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000 // 7 days in ms
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000
         });
 
-        // Return only the access token and user data to the frontend
         return {
-            message: "Login Successful",
-            accessToken: result.accessToken,
-            user: UserResponseMapper.toResponse(result.user)
-        }
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
+            data: {
+                accessToken: result.accessToken,
+                user: UserResponseMapper.toResponse(result.user)
+            }
+        };
     }
 
-    @Post('forgot-password')
+    @Post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD)
     @HttpCode(HttpStatus.OK)
-    async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return { message: 'If an account exists, a reset code has been sent.' };
+        return { 
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT 
+        };
     }
 
-    @Post('reset-password')
+    @Post(API_ENDPOINTS.AUTH.RESET_PASSWORD)
     @HttpCode(HttpStatus.OK)
-    async resetPassword(@Body() dto: ResetPasswordDto) {
+    async resetPassword(@Body() dto: ResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return { message: 'Password has been successfully reset.' };
+        return { 
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS 
+        };
     }
 
-    @Post('google')
+    @Post(API_ENDPOINTS.AUTH.GOOGLE)
     @HttpCode(HttpStatus.OK)
     async googleLogin(
         @Body() dto: GoogleLoginDto,
         @ClientInfo() client: ClientInfoData,
         @Res({passthrough: true}) res: Response
-    ){
+    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
         const result = await this._googleLoginUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000 // 7 days in ms
-        })
+            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000
+        });
 
         return {
-            accessToken: result.accessToken,
-            user: result.user
-        }
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
+            data: {
+                accessToken: result.accessToken,
+                user: UserResponseMapper.toResponse(result.user)
+            }
+        };
     }
 
-    @Post('refresh')
+    @Post(API_ENDPOINTS.AUTH.REFRESH)
     @HttpCode(HttpStatus.OK)
-    async refresh(@Req() req: Request, @Res({passthrough: true}) res: Response){
-        // Extract the token directly from the incoming cookie
+    async refresh(
+        @Req() req: Request, 
+        @Res({passthrough: true}) res: Response
+    ): Promise<ApiResponse<{ accessToken: string; user: Record<string, unknown> }>> {
         const refreshToken = req.cookies['refreshToken'];
-
         if(!refreshToken){
             throw new UnauthorizedException("No refresh token found");
         }
 
-        // Execute the use case by passing the extracted string directly
         const result = await this._refreshTokenUseCase.execute({refreshToken});
 
-        // Rotate the refresh token by setting a fresh cookie
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -147,37 +161,40 @@ export class AuthController{
             maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000,
         });
 
-        // Return the new access token to the frontend
         return {
-            accessToken: result.accessToken,
-            user: UserResponseMapper.toResponse(result.user)
-        }
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
+            data: {
+                accessToken: result.accessToken,
+                user: UserResponseMapper.toResponse(result.user)
+            }
+        };
     }
 
-    @Post('logout')
+    @Post(API_ENDPOINTS.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
-    async logout(@Req() req: Request, @Res({passthrough: true}) res: Response){
+    async logout(@Req() req: Request, @Res({passthrough: true}) res: Response): Promise<ApiResponse<undefined>> {
         const refreshToken = req.cookies['refreshToken'];
 
         if(refreshToken){
             try {
-                // Decode the token to get the embedded sessionId, then explicitly kill it in redis
                 const payload = this._tokenService.verifyRefreshToken(refreshToken);
                 if(payload && payload.userId && payload.sessionId){
                     await this._sessionService.revokeSession(payload.userId, payload.sessionId);
                 }
             } catch (error) {
-                // If the token is already expired or invalid, swallow the error
-                // and proceed to clear the dead cookie.
                 this._logger.debug('Refresh token invalid during logout; proceeding with cookie cleanup.');
             }
         }
-        // Clear the cookie matching the options used when set
         res.clearCookie('refreshToken', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         });
-        return { message: "Logged out successfully" };
+        
+        return { 
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS 
+        };
     }
 }

@@ -4,75 +4,63 @@ import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../application/
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { type Response } from "express";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { GENERATE_HANDOFF_SESSION_USE_CASE, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
+import { GENERATE_HANDOFF_SESSION_USE_CASE, GenerateHandoffResult, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
 import { IValidateHandoffUseCase, VALIDATE_HANDOFF_USE_CASE } from "../../application/interfaces/validate-handoff.interface.use-case";
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
+import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 
-
-@Controller('verification/phone-handoff')
-export class HandoffController{
+@Controller(API_ENDPOINTS.HANDOFF.BASE)
+export class HandoffController {
     constructor(
-        @Inject(GENERATE_HANDOFF_SESSION_USE_CASE)
-        private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
-
-        @Inject(VALIDATE_HANDOFF_USE_CASE)
-        private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
-
-        @Inject(HANDOFF_NOTIFICATION_SERVICE)
-        private readonly _handoffGateway: IHandoffNotificationService,
-
-        @Inject(TOKEN_SERVICE)
-        private readonly _tokenService: ITokenservice,
-
-        @Inject(HANDOFF_SERVICE)
-        private readonly _handoffService: IHandoffSessionService,
-
-        @Inject(USER_REPOSITORY)
-        private readonly _userRepository: IUserRepository,
+        @Inject(GENERATE_HANDOFF_SESSION_USE_CASE) private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
+        @Inject(VALIDATE_HANDOFF_USE_CASE) private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
+        @Inject(HANDOFF_NOTIFICATION_SERVICE) private readonly _handoffGateway: IHandoffNotificationService,
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
+        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
     ){}
 
-    // Called by the desktop to generate the QR code token.
-    // Requires the desktop to already be logged in (JwtAuthGuard)
-    @Post('session')
+    @Post(API_ENDPOINTS.HANDOFF.SESSION)
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     async generateSession(
-        @Req() req: any,
-        @Headers('origin') origin: string // Capture the exact URL frontent is currenlty using
-    ){
-        // req.user is populated by your JwtAuthGuard
+        @Req() req: AuthenticatedRequest,
+        @Headers('origin') origin: string
+    ): Promise<ApiResponse<GenerateHandoffResult>> {
         const userId = req.user.userId;
-        return await this._generateSessionUseCase.execute(userId, origin);
+        const data = await this._generateSessionUseCase.execute(userId, origin);
+        
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.KYC.HANDOFF_CREATED,
+            data
+        };
     }
 
-    // Called by the Mobie Phone after scanning the QR code.
-    // This is a public route (no guard) because the phone is not logged in yet.
-    @Get(':sessionId')
+    @Get(API_ENDPOINTS.HANDOFF.VALIDATE)
     async validateMobileSession(
         @Param('sessionId') sessionId: string,
         @Res({passthrough: true}) res: Response
-    ){
-        //1. Retrives the userId from Redis and notifies the desktop
+    ): Promise<ApiResponse<{ accessToken: string; status: string }>> {
         const userId = await this._validateHandoffUseCase.execute(sessionId);
 
-        // 2.Fetch the user from MongoDB to contruct the required ITokenPayload
         const user = await this._userRepository.findById(userId);
         if(!user){
-            throw new BadGatewayException('User associated with this session is no longer exists.');
+            throw new BadGatewayException('User associated with this session no longer exists.');
         }
 
-        // 3. Construct the payload matching your exact interface
         const tokenPayload: ITokenPayload = {
             userId: user.id as string,
             email: user.email.getValue(),
             role: 'USER'
-        }
+        };
 
-        // 4. Generate the specific tokens using your defined methods
         const accessToken = await this._tokenService.generateAccessToken(tokenPayload);
         const refreshToken = await this._tokenService.generateRefreshToken(tokenPayload);
 
-        // 5. Set the HttpOnly cookie so the mobile phon enow fully authenticated
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -83,35 +71,40 @@ export class HandoffController{
 
         return {
             success: true,
+            message: RESPONSE_MESSAGES.HANDOFF.PHONE_CONNECTED,
             data: {
                 accessToken: accessToken,
                 status: 'PHONE_CONNECTED'
             }
-
-        }
+        };
     }
 
-    // Called by the Mobile Phone when the biometric selfie is done
-    @Post(':sessionId/complete')
-    @UseGuards(JwtAuthGuard) // requires the mobile to be authenticated
-    @HttpCode(HttpStatus.OK)
-    async completeSession(@Param('sessionId') sessionId: string){
-        // Notify desktop to redirect to the next phase
-        this._handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
-
-        // Destroy the Redis token so it cannot be reused
-        await this._handoffService.deleteSession(sessionId);
-        
-        return {success: true, message: 'Phone handoff completed successfully'};
-    }
-
-    // Called by the Desktop if the user closes the QR modal
-    @Post(':sessionId/cancel')
+    @Post(API_ENDPOINTS.HANDOFF.COMPLETE)
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
-    async cancelSession(@Param('sessionId') sessionId: string){
+    async completeSession(
+        @Param('sessionId') sessionId: string
+    ): Promise<ApiResponse<undefined>> {
+        this._handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
         await this._handoffService.deleteSession(sessionId);
-        return {success: true, message: "Session cancelled"};
+        
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.HANDOFF.COMPLETED 
+        };
     }
 
+    @Post(API_ENDPOINTS.HANDOFF.CANCEL)
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    async cancelSession(
+        @Param('sessionId') sessionId: string
+    ): Promise<ApiResponse<undefined>> {
+        await this._handoffService.deleteSession(sessionId);
+        
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.HANDOFF.CANCELLED
+        };
+    }
 }
