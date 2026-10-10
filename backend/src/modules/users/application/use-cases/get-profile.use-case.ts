@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IGetProfileUseCase } from '../interfaces/get-profile.use-case.interface';
+import { GetProfileDataResult, IGetProfileUseCase } from '../interfaces/get-profile.use-case.interface';
 import { IUserRepository, USER_REPOSITORY } from '../../domain/interfaces/user-repository.interface';
 import { IStorageService, STORAGE_SERVICE } from '../interfaces/storage-service.interface';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
@@ -12,7 +12,7 @@ export class GetProfileUseCase implements IGetProfileUseCase {
         @Inject(STORAGE_SERVICE) private readonly _storageService: IStorageService,
     ) {}
 
-    async execute(userId: string): Promise<any> {
+    async execute(userId: string): Promise<GetProfileDataResult> {
         const user = await this._userRepository.findById(userId);
         if (!user) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
@@ -29,7 +29,7 @@ export class GetProfileUseCase implements IGetProfileUseCase {
         );
 
         return {
-            id: user.id,
+            id: user.id as string,
             email: user.email.getValue(),
             profile: user.profile ? user.profile.toJSON() : null,
             preference: user.preference ? user.preference.toJSON() : null,

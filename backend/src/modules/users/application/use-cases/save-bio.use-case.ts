@@ -6,12 +6,12 @@ import { ISaveBioUseCase } from "../interfaces/save-bio.use-case.interface";
 import { SaveBioDto } from "../dtos/save-bio.dto";
 
 @Injectable()
-export class SaveBioUseCase implements ISaveBioUseCase{
+export class SaveBioUseCase implements ISaveBioUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository 
     ){}
 
-    async execute(userId: string, payload: SaveBioDto): Promise<{ success: boolean; message: string; }> {
+    async execute(userId: string, payload: SaveBioDto): Promise<void> {
         const user = await this._userRepository.findById(userId);
 
         if(!user || !user.profile){
@@ -22,17 +22,12 @@ export class SaveBioUseCase implements ISaveBioUseCase{
             payload.bio,
             payload.selectedTraits,
             payload.interests
-        )
+        );
 
         user.attachProfile(user.profile);
         user.markProfileCompleted();
-        user.finalizeOnboarding()
+        user.finalizeOnboarding();
 
         await this._userRepository.update(user);
-
-        return {
-            success: true,
-            message: "Bio saved successfully"
-        }
     }
 }
