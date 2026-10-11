@@ -1,12 +1,12 @@
-import type {PayloadAction} from '@reduxjs/toolkit';
-import {createSlice} from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import type { UserPhoto } from '../../profile/types/profile.types';
 
 // Represents the current step of the user registration flow
-type RegistrationStep = 'REGISTER' | 'OTP';
+export type RegistrationStep = 'REGISTER' | 'OTP';
 
 // Defines the shape of the authenticated user data stored in the client state
-export interface AuthUser{
+export interface AuthUser {
     id: string;
     email: string;
     authProvider?: string;
@@ -16,11 +16,11 @@ export interface AuthUser{
     profileCompleted?: boolean;
     onboardingCompleted?: boolean;
     castingDirectorCompleted?: boolean;
-    profile?: Record<string, any> | null;
-    preference?: Record<string, any> | null;
+    profile?: Record<string, unknown> | null;
+    preference?: Record<string, unknown> | null;
     photos?: UserPhoto[];
-    medicalRecord?: Record<string, any> | null; 
-    privacySettings?: Record<string, any> | null;
+    medicalRecord?: Record<string, unknown> | null;
+    privacySettings?: Record<string, unknown> | null;
     kycVerification?: {
         verificationStatus: string;
         documentType?: string;
@@ -28,13 +28,13 @@ export interface AuthUser{
         verificationSubmitted?: boolean;
         passedPrompts?: string[];
         reviewDecision?: string;
-        verifiedDOB?: Date | string
-    }
-    createdAt?: Date | string
+        verifiedDOB?: Date | string;
+    };
+    createdAt?: Date | string;
 }
 
 // Stores the authentication-related UI state used during registration
-interface AuthState{
+interface AuthState {
     currentStep: RegistrationStep;
     registeredEmail: string | null;
 
@@ -46,7 +46,7 @@ interface AuthState{
 }
 
 // Payload contract for setting authenticated session credentials
-interface SetCredentialsPayload{
+interface SetCredentialsPayload {
     accessToken: string;
     user?: AuthUser;
 }
@@ -61,7 +61,7 @@ const initialState: AuthState = {
     user: null,
     isAuthenticated: false,
     isInitializing: true,
-}
+};
 
 const authSlice = createSlice({
     name: 'auth',
@@ -84,10 +84,9 @@ const authSlice = createSlice({
         },
 
         setCredentials: (state, action: PayloadAction<SetCredentialsPayload>) => {
-
             state.accessToken = action.payload.accessToken;
             state.isAuthenticated = true;
-            if(action.payload.user){
+            if (action.payload.user) {
                 state.user = action.payload.user;
             }
             state.isInitializing = false;
@@ -101,20 +100,19 @@ const authSlice = createSlice({
             state.accessToken = null;
             state.user = null;
             state.isAuthenticated = false;
-            state.currentStep = 'REGISTER',
+            state.currentStep = 'REGISTER';
             state.registeredEmail = null;
-        }
-    }
-})
+        },
+    },
+});
 
 export const {
-    setRegistrationStep, 
-    setRegisteredEmail, 
+    setRegistrationStep,
+    setRegisteredEmail,
     resetRegistration,
     setCredentials,
     setInitialized,
     logout,
-
 } = authSlice.actions;
 
 export default authSlice.reducer;
