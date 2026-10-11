@@ -21,7 +21,6 @@ export interface CastingSession {
     updatedAt: string;
 }
 
-export interface CastingResponse {
-    success: boolean;
-    session: CastingSession;
+export interface ProcessCastingMessagePayload {
+    content: string;
 }

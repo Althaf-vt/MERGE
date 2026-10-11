@@ -1,33 +1,38 @@
 import { rootApi } from '../../../shared/api/base-api';
-import type { CastingResponse } from '../types/casting.types';
+import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../shared/types/api-response.types';
+import type { CastingSession, ProcessCastingMessagePayload } from '../types/casting.types';
 
 export const castingDirectorApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        initializeSession: builder.mutation<CastingResponse, void>({
+        initializeCastingSession: builder.mutation<ApiResponse<CastingSession>, void>({
             query: () => ({
-                url: '/casting-director/initialize',
+                url: API_ENDPOINTS.CASTING_DIRECTOR.INITIALIZE,
                 method: 'POST',
             }),
         }),
-        processMessage: builder.mutation<CastingResponse, { content: string }>({
+
+        sendCastingMessage: builder.mutation<ApiResponse<CastingSession>, ProcessCastingMessagePayload>({
             query: (body) => ({
-                url: '/casting-director/message',
+                url: API_ENDPOINTS.CASTING_DIRECTOR.MESSAGE,
                 method: 'POST',
                 body,
             }),
         }),
-        finalizeSession: builder.mutation<{ success: boolean; message: string }, void>({
+
+        finalizeCastingSession: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
-                url: '/casting-director/finalize',
+                url: API_ENDPOINTS.CASTING_DIRECTOR.FINALIZE,
                 method: 'POST',
             }),
+            invalidatesTags: ['User', 'Profile'],
         }),
     }),
     overrideExisting: false,
 });
 
 export const {
-    useInitializeSessionMutation,
-    useProcessMessageMutation,
-    useFinalizeSessionMutation,
+    useInitializeCastingSessionMutation,
+    useSendCastingMessageMutation,
+    useFinalizeCastingSessionMutation,
 } = castingDirectorApi;
