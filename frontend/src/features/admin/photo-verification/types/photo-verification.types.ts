@@ -15,24 +15,15 @@ export interface PhotoVerificationTask {
     rejectionReason?: string;
     resolvedAt: string | null;
     createdAt: string;
+    updatedAt: string;
 }
 
-export interface GetPhotoTasksParams {
+export interface GetPhotoTasksQueryParams {
     page?: number;
     limit?: number;
     status?: PhotoTaskStatus;
     claimStatus?: ClaimStatus;
     claimedBy?: string;
-}
-
-export interface PaginatedPhotoTasksResponse {
-    success: boolean;
-    data: PhotoVerificationTask[];
-    meta: {
-        total: number;
-        page: number;
-        limit: number;
-    };
 }
 
 export interface RejectPhotoTaskPayload {
