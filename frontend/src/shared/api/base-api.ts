@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
-import { logout, setCredentials } from '../../features/auth/slices/auth.slice';
+import { logout, setCredentials, type AuthUser } from '../../features/auth/slices/auth.slice';
 import type { RootState } from '../../app/store';
 import { ErrorCode } from '../enums/ErrorCode';
 import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
@@ -32,7 +32,7 @@ export const baseQueryWithReauth: BaseQueryFn<
 
     // --- GLOBAL DDD ERROR HANDLING ---
     if (result.error && result.error.data) {
-        const responseData = result.error.data as ApiResponse<unknown>; 
+        const responseData = result.error.data as ApiResponse<unknown>;
         const backendError = responseData.error;
 
         if (backendError) {
@@ -41,7 +41,7 @@ export const baseQueryWithReauth: BaseQueryFn<
                     window.location.href = '/onboarding/kyc?session=expired';
                     break;
                 case ErrorCode.INTERNAL_SERVER_ERROR:
-                    console.error("System error occurred. Please try again later.");
+                    console.error('System error occurred. Please try again later.');
                     break;
                 case ErrorCode.USER_SUSPENDED:
                     api.dispatch(logout());
@@ -75,22 +75,24 @@ export const baseQueryWithReauth: BaseQueryFn<
                 );
 
                 if (refreshResult.data) {
-                    const response = refreshResult.data as ApiResponse<{ accessToken: string; user: any }>; 
+                    const response = refreshResult.data as ApiResponse<{ accessToken: string; user: AuthUser }>;
                     if (response.success && response.data) {
-                        api.dispatch(setCredentials({
-                            accessToken: response.data.accessToken,
-                            user: response.data.user
-                        }));
+                        api.dispatch(
+                            setCredentials({
+                                accessToken: response.data.accessToken,
+                                user: response.data.user,
+                            })
+                        );
                         result = await baseQuery(args, api, extraOptions);
                     } else {
-                        throw new Error("Refresh failed payload extraction");
+                        throw new Error('Refresh failed payload extraction');
                     }
                 } else {
                     api.dispatch(logout());
                     api.dispatch({ type: 'api/resetApiState' });
                     window.location.href = '/login';
                 }
-            } catch (e) {
+            } catch {
                 api.dispatch(logout());
                 api.dispatch({ type: 'api/resetApiState' });
                 window.location.href = '/login';

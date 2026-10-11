@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
-import { adminLogout, setAdminCredentials } from '../slices/admin-auth.slice';
+import { adminLogout, setAdminCredentials, type AdminUser } from '../slices/admin-auth.slice';
 import type { RootState } from '../../../../app/store';
-import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant'; // <-- IMPORT ADDED
-import type { ApiResponse } from '../../../../shared/types/api-response.types';      // <-- IMPORT ADDED
+import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
 
 const adminMutex = new Mutex();
 
@@ -48,26 +48,27 @@ export const adminBaseQueryWithReauth: BaseQueryFn<
                 );
 
                 if (refreshResult.data) {
-                    // <-- EXPECT THE WRAPPED RESPONSE
-                    const response = refreshResult.data as ApiResponse<{ accessToken: string; admin: any }>;
+                    const response = refreshResult.data as ApiResponse<{ accessToken: string; admin: AdminUser }>;
                     if (response.success && response.data) {
-                        api.dispatch(setAdminCredentials({
-                            accessToken: response.data.accessToken,
-                            admin: response.data.admin
-                        }));
+                        api.dispatch(
+                            setAdminCredentials({
+                                accessToken: response.data.accessToken,
+                                admin: response.data.admin,
+                            })
+                        );
                         result = await adminBaseQuery(args, api, extraOptions);
                     } else {
-                        throw new Error("Admin refresh payload extraction failed");
+                        throw new Error('Admin refresh payload extraction failed');
                     }
                 } else {
                     api.dispatch(adminLogout());
                     api.dispatch({ type: 'adminApi/resetApiState' });
                     window.location.href = '/admin/login';
                 }
-            } catch (e) {
-                 api.dispatch(adminLogout());
-                 api.dispatch({ type: 'adminApi/resetApiState' });
-                 window.location.href = '/admin/login';
+            } catch {
+                api.dispatch(adminLogout());
+                api.dispatch({ type: 'adminApi/resetApiState' });
+                window.location.href = '/admin/login';
             } finally {
                 release();
             }
