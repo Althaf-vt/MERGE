@@ -1,27 +1,8 @@
+import type { ApiResponse } from '../../../shared/types/api-response.types';
+
 export type InfectiousVisibility = 'MATCH_ONLY' | 'EVERYONE' | 'HIDDEN';
 export type PhotoVerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type ProfileVisibility = 'VISIBLE' | 'PAUSED' | 'HIDDEN';
-
-export interface GetProfileResponse {
-    success: boolean;
-    data: {
-        id: string;
-        email: string;
-        profile: any;
-        photos: Array<{
-            id: string;
-            url: string; // This will now be the fresh AWS Presigned URL!
-            isPrimary: boolean;
-            status: string;
-            faceMatchScore?: number;
-            uploadedAt: string;
-        }>;
-        privacySettings: any;
-        medicalRecord: any;
-        kycCompleted: boolean;
-        onboardingCompleted: boolean;
-    };
-}
 
 export interface UserPhoto {
     id: string;
@@ -32,26 +13,6 @@ export interface UserPhoto {
     uploadedAt: string;
 }
 
-export interface UserMedical {
-    diabetes?: string;
-    bloodPressure?: string;
-    fertility?: string;
-    genetic?: string;
-    infectious?: string;
-    infectiousVisibility: InfectiousVisibility;
-    disability?: string;
-    updatedAt: string;
-}
-
-export interface UserPrivacy {
-    showAge: boolean;
-    showOccupation: boolean;
-    blurPhotos: boolean;
-    profileVisibility: ProfileVisibility;
-    updatedAt: string;
-}
-
-// Request Payloads
 export interface FertilityRecord {
     status: string;
     details?: string;
@@ -72,13 +33,95 @@ export interface DisabilityRecord {
     details?: string;
 }
 
+export interface UserMedical {
+    diabetes?: string;
+    bloodPressure?: string;
+    fertility?: FertilityRecord | string;
+    genetic?: GeneticRecord | string;
+    infectious?: InfectiousRecord | string;
+    infectiousVisibility: InfectiousVisibility;
+    disability?: DisabilityRecord | string;
+    updatedAt?: string;
+}
+
+export interface UserPrivacy {
+    showAge: boolean;
+    showOccupation: boolean;
+    blurPhotos: boolean;
+    profileVisibility: ProfileVisibility;
+    outnessLevel?: number;
+    updatedAt?: string;
+}
+
+export interface UserProfileDetails {
+    id?: string;
+    displayName?: string;
+    customLabel?: string;
+    bio?: string;
+    bioGenerationAttempts?: number;
+    phoneNumber?: string;
+    pronouns?: string;
+    genderIdentity?: string;
+    sexualOrientation?: string;
+    intersex?: string;
+    outnessLevel?: number;
+    city?: string;
+    state?: string;
+    country?: string;
+    heightCm?: number;
+    languages?: string[];
+    selectedTraits?: string[];
+    interests?: string[];
+    education?: string[];
+    occupation?: string;
+    incomeRange?: string[];
+    religion?: string;
+    disability?: string;
+    diet?: string;
+    smokingHabit?: string;
+    drinkingHabit?: string;
+    relationshipGoal?: string;
+    relationshipStatus?: string;
+    maritalStatus?: string;
+    immigrationReady?: string;
+    openToAdoption?: string;
+    profileCompletion?: number;
+    isProfileVisible?: boolean;
+}
+
+export interface UserPreferenceDetails {
+    preferredGender?: string[];
+    preferredAgeMin?: number;
+    preferredAgeMax?: number;
+    relationshipGoals?: string[];
+    minimumOutnessLevel?: number;
+    openToAdoption?: string[];
+    immigrationReady?: string[];
+    partnerExpectations?: string;
+}
+
+export interface GetProfileData {
+    id: string;
+    email: string;
+    profile: UserProfileDetails | null;
+    preference?: UserPreferenceDetails | null;
+    photos: UserPhoto[];
+    privacySettings: UserPrivacy | null;
+    medicalRecord: UserMedical | null;
+    kycCompleted: boolean;
+    onboardingCompleted: boolean;
+}
+
+export type GetProfileResponse = ApiResponse<GetProfileData>;
+export type ProfileStandardResponse = ApiResponse<undefined>;
+
 export interface UpdateMedicalRequest {
     diabetes?: string;
     bloodPressure?: string;
     fertility?: FertilityRecord;
     genetic?: GeneticRecord;
     infectious?: InfectiousRecord;
-    infectiousVisibility?: string;
+    infectiousVisibility?: InfectiousVisibility | string;
     disability?: DisabilityRecord;
 }
 
@@ -94,15 +137,11 @@ export interface SetPrimaryPhotoRequest {
     photoId: string;
 }
 
-export interface ProfileStandardResponse {
-    success: boolean;
-    message: string;
-}
-
 export interface UpdateFullProfileRequest {
     displayName?: string;
     customLabel?: string;
     bio?: string;
+    phoneNumber?: string;
     pronouns?: string;
     genderIdentity?: string;
     sexualOrientation?: string;
@@ -126,23 +165,29 @@ export interface UpdateFullProfileRequest {
     interests?: string[];
 }
 
-// --- SECURITY & SESSION TYPES ---
+export interface UpdateFullPreferencesRequest {
+    preferredGender: string[];
+    preferredAgeMin: number;
+    preferredAgeMax: number;
+    relationshipGoals: string[];
+    minimumOutnessLevel: number;
+    openToAdoption: string[];
+    immigrationReady: string[];
+    partnerExpectations?: string;
+}
 
+// --- SECURITY & SESSION TYPES ---
 export interface UserSessionData {
     sessionId: string;
     userId: string;
     deviceInfo: string;
     ipAddress: string;
-    lastActive: string; // ISO Date string
-    createdAt: string;  // ISO Date string
+    lastActive: string;
+    createdAt: string;
 }
 
-export interface GetActiveSessionsResponse {
-    success: boolean;
-    data: UserSessionData[];
-}
+export type GetActiveSessionsResponse = ApiResponse<UserSessionData[]>;
 
-// Request Payloads
 export interface UpdateSecurityPasswordRequest {
     otp: string;
     newPassword: string;
@@ -159,7 +204,6 @@ export interface ConfirmEmailChangeRequest {
 }
 
 // --- BLOCKED USERS TYPES ---
-
 export interface BlockedUser {
     blockedId: string;
     displayName: string;
@@ -172,12 +216,14 @@ export interface BlockedUser {
     isDeleted: boolean;
 }
 
-export interface GetBlockedUsersResponse {
-    success: boolean;
-    data: BlockedUser[];
-}
+export type GetBlockedUsersResponse = ApiResponse<BlockedUser[]>;
 
 export interface BlockUserRequest {
     blockedId: string;
     reason?: string;
+}
+
+export interface GetBlockedUsersQueryParams {
+    search?: string;
+    sortBy?: 'RECENT' | 'OLDEST';
 }

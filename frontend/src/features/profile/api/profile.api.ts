@@ -1,24 +1,29 @@
 import { rootApi } from '../../../shared/api/base-api';
+import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../shared/types/api-response.types';
 import type {
     BlockUserRequest,
     ConfirmEmailChangeRequest,
     GetActiveSessionsResponse,
+    GetBlockedUsersQueryParams,
     GetBlockedUsersResponse,
     GetProfileResponse,
     InitiateEmailChangeRequest,
     ProfileStandardResponse,
     SetPrimaryPhotoRequest,
+    UpdateFullPreferencesRequest,
     UpdateFullProfileRequest,
     UpdateMedicalRequest,
     UpdatePrivacyRequest,
-    UpdateSecurityPasswordRequest
+    UpdateSecurityPasswordRequest,
+    UserPreferenceDetails,
 } from '../types/profile.types';
 
 export const profileApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
         getProfile: builder.query<GetProfileResponse, void>({
             query: () => ({
-                url: '/profile',
+                url: API_ENDPOINTS.PROFILE.BASE,
                 method: 'GET',
             }),
             providesTags: ['Profile'],
@@ -26,7 +31,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         updateFullProfile: builder.mutation<ProfileStandardResponse, UpdateFullProfileRequest>({
             query: (body) => ({
-                url: '/profile/full',
+                url: API_ENDPOINTS.PROFILE.FULL,
                 method: 'PATCH',
                 body,
             }),
@@ -38,7 +43,7 @@ export const profileApi = rootApi.injectEndpoints({
                 const formData = new FormData();
                 formData.append('photo', file);
                 return {
-                    url: '/profile/photos',
+                    url: API_ENDPOINTS.PROFILE.PHOTOS,
                     method: 'POST',
                     body: formData,
                 };
@@ -48,7 +53,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         setPrimaryPhoto: builder.mutation<ProfileStandardResponse, SetPrimaryPhotoRequest>({
             query: (body) => ({
-                url: '/profile/photos/primary',
+                url: API_ENDPOINTS.PROFILE.PHOTOS_PRIMARY,
                 method: 'PATCH',
                 body,
             }),
@@ -57,7 +62,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         removeProfilePhoto: builder.mutation<ProfileStandardResponse, string>({
             query: (photoId) => ({
-                url: `/profile/photos/${photoId}`,
+                url: API_ENDPOINTS.PROFILE.PHOTO_BY_ID(photoId),
                 method: 'DELETE',
             }),
             invalidatesTags: ['Profile', 'User'],
@@ -65,16 +70,19 @@ export const profileApi = rootApi.injectEndpoints({
 
         updateMedicalRecord: builder.mutation<ProfileStandardResponse, UpdateMedicalRequest>({
             query: (body) => ({
-                url: '/profile/medical',
+                url: API_ENDPOINTS.PROFILE.MEDICAL,
                 method: 'PATCH',
                 body,
             }),
             invalidatesTags: ['Profile', 'User'],
         }),
 
-        saveUserFullPreferences: builder.mutation<ProfileStandardResponse, any>({
+        saveUserFullPreferences: builder.mutation<
+            ApiResponse<{ preferences: UserPreferenceDetails }>,
+            UpdateFullPreferencesRequest
+        >({
             query: (body) => ({
-                url: '/profile/preferences',
+                url: API_ENDPOINTS.PROFILE.PREFERENCES,
                 method: 'PATCH',
                 body,
             }),
@@ -83,7 +91,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         updatePrivacySettings: builder.mutation<ProfileStandardResponse, UpdatePrivacyRequest>({
             query: (body) => ({
-                url: '/profile/privacy',
+                url: API_ENDPOINTS.PROFILE.PRIVACY,
                 method: 'PATCH',
                 body,
             }),
@@ -92,22 +100,22 @@ export const profileApi = rootApi.injectEndpoints({
 
         requestSecurityOtp: builder.mutation<ProfileStandardResponse, void>({
             query: () => ({
-                url: '/profile/security/otp/request', // Fixed path to match backend
+                url: API_ENDPOINTS.PROFILE.SECURITY_OTP_REQUEST,
                 method: 'POST',
             }),
         }),
 
         updateSecurityPassword: builder.mutation<ProfileStandardResponse, UpdateSecurityPasswordRequest>({
             query: (body) => ({
-                url: '/profile/security/password', // Fixed path to match backend
-                method: 'PATCH', // Fixed method to match backend
+                url: API_ENDPOINTS.PROFILE.SECURITY_PASSWORD,
+                method: 'PATCH',
                 body,
             }),
         }),
 
         initiateEmailChange: builder.mutation<ProfileStandardResponse, InitiateEmailChangeRequest>({
             query: (body) => ({
-                url: '/profile/security/email/initiate',
+                url: API_ENDPOINTS.PROFILE.SECURITY_EMAIL_INITIATE,
                 method: 'POST',
                 body,
             }),
@@ -115,7 +123,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         confirmEmailChange: builder.mutation<ProfileStandardResponse, ConfirmEmailChangeRequest>({
             query: (body) => ({
-                url: '/profile/security/email/confirm',
+                url: API_ENDPOINTS.PROFILE.SECURITY_EMAIL_CONFIRM,
                 method: 'PATCH',
                 body,
             }),
@@ -124,7 +132,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         deactivateAccount: builder.mutation<ProfileStandardResponse, void>({
             query: () => ({
-                url: '/profile/security/account/deactivate',
+                url: API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DEACTIVATE,
                 method: 'PATCH',
             }),
             invalidatesTags: ['Profile', 'User', 'Sessions'],
@@ -132,7 +140,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         deleteAccount: builder.mutation<ProfileStandardResponse, void>({
             query: () => ({
-                url: '/profile/security/account/delete',
+                url: API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DELETE,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Profile', 'User', 'Sessions'],
@@ -140,7 +148,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         getActiveSessions: builder.query<GetActiveSessionsResponse, void>({
             query: () => ({
-                url: '/profile/security/sessions',
+                url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS,
                 method: 'GET',
             }),
             providesTags: ['Sessions'],
@@ -148,7 +156,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         revokeSession: builder.mutation<ProfileStandardResponse, string>({
             query: (sessionId) => ({
-                url: `/profile/security/sessions/${sessionId}`,
+                url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_REVOKE(sessionId),
                 method: 'DELETE',
             }),
             invalidatesTags: ['Sessions'],
@@ -156,30 +164,24 @@ export const profileApi = rootApi.injectEndpoints({
 
         revokeOtherSessions: builder.mutation<ProfileStandardResponse, void>({
             query: () => ({
-                url: '/profile/security/sessions/other',
+                url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_OTHER,
                 method: 'DELETE',
             }),
             invalidatesTags: ['Sessions'],
         }),
 
-        getBlockedUsers: builder.query<GetBlockedUsersResponse, { search?: string; sortBy?: 'RECENT' | 'OLDEST' } | void>({
-            query: (params) => {
-                let url = '/profile/blocked';
-                const queryParams = new URLSearchParams();
-                if (params?.search) queryParams.append('search', params.search);
-                if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
-                
-                const queryString = queryParams.toString();
-                if (queryString) url += `?${queryString}`;
-
-                return { url, method: 'GET' };
-            },
+        getBlockedUsers: builder.query<GetBlockedUsersResponse, GetBlockedUsersQueryParams | void>({
+            query: (params) => ({
+                url: API_ENDPOINTS.PROFILE.BLOCKED,
+                method: 'GET',
+                params: params || undefined,
+            }),
             providesTags: ['BlockedUsers'],
         }),
 
         blockUser: builder.mutation<ProfileStandardResponse, BlockUserRequest>({
             query: (body) => ({
-                url: '/profile/blocked',
+                url: API_ENDPOINTS.PROFILE.BLOCKED,
                 method: 'POST',
                 body,
             }),
@@ -188,7 +190,7 @@ export const profileApi = rootApi.injectEndpoints({
 
         unblockUser: builder.mutation<ProfileStandardResponse, string>({
             query: (blockedId) => ({
-                url: `/profile/blocked/${blockedId}`,
+                url: API_ENDPOINTS.PROFILE.BLOCKED_BY_ID(blockedId),
                 method: 'DELETE',
             }),
             invalidatesTags: ['BlockedUsers'],
