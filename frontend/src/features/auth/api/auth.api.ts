@@ -1,74 +1,86 @@
 import { rootApi } from '../../../shared/api/base-api';
-import type { LoginUserDto, RegisterUserDto, VerifyOtpDto } from '../types';
+import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../shared/types/api-response.types';
+import type {
+    AuthSessionData,
+    AuthUser,
+    ForgotPasswordDto,
+    GoogleLoginDto,
+    LoginUserDto,
+    RegisterUserDto,
+    ResendOtpDto,
+    ResetPasswordDto,
+    VerifyOtpDto,
+} from '../types';
 
 export const authApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        registerUser: builder.mutation<any, RegisterUserDto>({
+        registerUser: builder.mutation<ApiResponse<undefined>, RegisterUserDto>({
             query: (credentials) => ({
-                url: '/auth/register',
+                url: API_ENDPOINTS.AUTH.REGISTER,
                 method: 'POST',
                 body: credentials,
-            })
+            }),
         }),
 
-        verifyOtp: builder.mutation<any, VerifyOtpDto>({
+        verifyOtp: builder.mutation<ApiResponse<AuthUser>, VerifyOtpDto>({
             query: (data) => ({
-                url: '/auth/verify-otp',
+                url: API_ENDPOINTS.AUTH.VERIFY_OTP,
                 method: 'POST',
-                body: data
-            })
+                body: data,
+            }),
         }),
 
-        resendOtp: builder.mutation<any, { email: string }>({
+        resendOtp: builder.mutation<ApiResponse<undefined>, ResendOtpDto>({
             query: (data) => ({
-                url: '/auth/resend-otp',
+                url: API_ENDPOINTS.AUTH.RESEND_OTP,
                 method: 'POST',
-                body: data
-            })
+                body: data,
+            }),
         }),
 
-        loginUser: builder.mutation<any, LoginUserDto>({
+        loginUser: builder.mutation<ApiResponse<AuthSessionData>, LoginUserDto>({
             query: (credentials) => ({
-                url: '/auth/login',
+                url: API_ENDPOINTS.AUTH.LOGIN,
                 method: 'POST',
-                body: credentials
-            })
+                body: credentials,
+            }),
         }),
 
-        forgotPassword: builder.mutation<any, { email: string }>({
+        forgotPassword: builder.mutation<ApiResponse<undefined>, ForgotPasswordDto>({
             query: (data) => ({
-                url: '/auth/forgot-password',
+                url: API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
                 method: 'POST',
-                body: data
-            })
+                body: data,
+            }),
         }),
 
-        resetPassword: builder.mutation<any, any>({
+        resetPassword: builder.mutation<ApiResponse<undefined>, ResetPasswordDto>({
             query: (data) => ({
-                url: '/auth/reset-password',
+                url: API_ENDPOINTS.AUTH.RESET_PASSWORD,
                 method: 'POST',
-                body: data
-            })
+                body: data,
+            }),
         }),
 
-        googleLogin: builder.mutation<any, { idToken: string }>({
+        googleLogin: builder.mutation<ApiResponse<AuthSessionData>, GoogleLoginDto>({
             query: (data) => ({
-                url: '/auth/google',
+                url: API_ENDPOINTS.AUTH.GOOGLE,
                 method: 'POST',
-                body: data
-            })
+                body: data,
+            }),
         }),
 
-        refresh: builder.mutation<{ accessToken: string, user: any }, void>({
+        refresh: builder.mutation<ApiResponse<AuthSessionData>, void>({
             query: () => ({
-                url: '/auth/refresh',
-                method: 'POST'
-            })
+                url: API_ENDPOINTS.AUTH.REFRESH,
+                method: 'POST',
+            }),
         }),
 
-        logoutUser: builder.mutation<{ message: string }, void>({
+        logoutUser: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
-                url: '/auth/logout',
+                url: API_ENDPOINTS.AUTH.LOGOUT,
                 method: 'POST',
             }),
         }),
@@ -85,5 +97,5 @@ export const {
     useResetPasswordMutation,
     useGoogleLoginMutation,
     useRefreshMutation,
-    useLogoutUserMutation
+    useLogoutUserMutation,
 } = authApi;
