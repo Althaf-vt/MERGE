@@ -4,16 +4,8 @@ import { Mutex } from 'async-mutex';
 import { logout, setCredentials } from '../../features/auth/slices/auth.slice';
 import type { RootState } from '../../app/store';
 import { ErrorCode } from '../enums/ErrorCode';
-
-// Define the shape of our standard backend error response
-interface ApiErrorResponse {
-    success: boolean;
-    error: {
-        code: ErrorCode;
-        message: string;
-    };
-    timestamp: string;
-}
+import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
+import type { ApiResponse } from '../types/api-response.types';
 
 const mutex = new Mutex();
 
@@ -40,7 +32,8 @@ export const baseQueryWithReauth: BaseQueryFn<
 
     // --- GLOBAL DDD ERROR HANDLING ---
     if (result.error && result.error.data) {
-        const backendError = (result.error.data as ApiErrorResponse).error;
+        const responseData = result.error.data as ApiResponse<unknown>; 
+        const backendError = responseData.error;
 
         if (backendError) {
             switch (backendError.code) {
@@ -62,38 +55,45 @@ export const baseQueryWithReauth: BaseQueryFn<
     // --------------------------------------------------------------
 
     const requestUrl = typeof args === 'string' ? args : args.url;
-    const isRefreshRequest = requestUrl === '/auth/refresh';
+    const isRefreshRequest = requestUrl === API_ENDPOINTS.AUTH.REFRESH;
     const isAuthRequest =
-        requestUrl === '/auth/login' ||
-        requestUrl === '/auth/google' ||
-        requestUrl === '/auth/register' ||
-        requestUrl === '/auth/verify-otp' ||
-        requestUrl === '/auth/forgot-password' ||
-        requestUrl === '/auth/reset-password';
+        requestUrl === API_ENDPOINTS.AUTH.LOGIN ||
+        requestUrl === API_ENDPOINTS.AUTH.GOOGLE ||
+        requestUrl === API_ENDPOINTS.AUTH.REGISTER ||
+        requestUrl === API_ENDPOINTS.AUTH.VERIFY_OTP ||
+        requestUrl === API_ENDPOINTS.AUTH.FORGOT_PASSWORD ||
+        requestUrl === API_ENDPOINTS.AUTH.RESET_PASSWORD;
 
     if (result.error && result.error.status === 401 && !isRefreshRequest && !isAuthRequest) {
         if (!mutex.isLocked()) {
             const release = await mutex.acquire();
             try {
                 const refreshResult = await baseQuery(
-                    { url: '/auth/refresh', method: 'POST' },
+                    { url: API_ENDPOINTS.AUTH.REFRESH, method: 'POST' },
                     api,
                     extraOptions
                 );
 
                 if (refreshResult.data) {
-                    const data = refreshResult.data as any;
-                    api.dispatch(setCredentials({
-                        accessToken: data.accessToken,
-                        user: data.user
-                    }));
-                    result = await baseQuery(args, api, extraOptions);
+                    const response = refreshResult.data as ApiResponse<{ accessToken: string; user: any }>; 
+                    if (response.success && response.data) {
+                        api.dispatch(setCredentials({
+                            accessToken: response.data.accessToken,
+                            user: response.data.user
+                        }));
+                        result = await baseQuery(args, api, extraOptions);
+                    } else {
+                        throw new Error("Refresh failed payload extraction");
+                    }
                 } else {
                     api.dispatch(logout());
-                    // We dispatch a generic clear action to wipe the store
-                    api.dispatch({ type: 'rootApi/resetApiState' });
+                    api.dispatch({ type: 'api/resetApiState' });
                     window.location.href = '/login';
                 }
+            } catch (e) {
+                api.dispatch(logout());
+                api.dispatch({ type: 'api/resetApiState' });
+                window.location.href = '/login';
             } finally {
                 release();
             }
@@ -107,7 +107,7 @@ export const baseQueryWithReauth: BaseQueryFn<
 };
 
 export const rootApi = createApi({
-    reducerPath: 'api', // Note: Name changed to just 'api' to serve as the unified root
+    reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
     tagTypes: ['User', 'Profile', 'Sessions', 'BlockedUsers'],
     endpoints: () => ({}),
