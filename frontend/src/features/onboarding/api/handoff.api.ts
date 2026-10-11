@@ -1,44 +1,47 @@
 import { rootApi } from '../../../shared/api/base-api';
+import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../shared/types/api-response.types';
 
-interface HandoffSessionResponse {
-    success: boolean;
-    message: string;
-    data: {
-        sessionId: string;
-        qrCodeUrl: string;
-        expiresAt: string;
-    };
+export interface HandoffSessionData {
+    sessionId: string;
+    qrCodeUrl: string;
+    expiresAt: string;
+}
+
+export interface ValidateMobileSessionData {
+    accessToken: string;
+    status: string;
 }
 
 export const handoffApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        generateSession: builder.mutation<HandoffSessionResponse, void>({
+        generateSession: builder.mutation<ApiResponse<HandoffSessionData>, void>({
             query: () => ({
-                url: '/verification/phone-handoff/session',
-                method: 'POST'
-            })
-        }),
-
-        cancelSession: builder.mutation<{ success: boolean }, string>({
-            query: (sessionId) => ({
-                url: `/verification/phone-handoff/${sessionId}/cancel`,
+                url: API_ENDPOINTS.HANDOFF.SESSION,
                 method: 'POST',
-            })
+            }),
         }),
 
-        validateMobileSession: builder.query<{ success: boolean, data: { accessToken: string } }, string>({
+        cancelSession: builder.mutation<ApiResponse<undefined>, string>({
             query: (sessionId) => ({
-                url: `/verification/phone-handoff/${sessionId}`,
-                method: 'GET'
-            })
-        }),
-
-        completeMobileSession: builder.mutation<{ success: boolean }, string>({
-            query: (sessionId) => ({
-                url: `verification/phone-handoff/${sessionId}/complete`,
+                url: API_ENDPOINTS.HANDOFF.CANCEL(sessionId),
                 method: 'POST',
-            })
-        })
+            }),
+        }),
+
+        validateMobileSession: builder.query<ApiResponse<ValidateMobileSessionData>, string>({
+            query: (sessionId) => ({
+                url: API_ENDPOINTS.HANDOFF.VALIDATE(sessionId),
+                method: 'GET',
+            }),
+        }),
+
+        completeMobileSession: builder.mutation<ApiResponse<undefined>, string>({
+            query: (sessionId) => ({
+                url: API_ENDPOINTS.HANDOFF.COMPLETE(sessionId),
+                method: 'POST',
+            }),
+        }),
     }),
     overrideExisting: false,
 });
@@ -47,5 +50,5 @@ export const {
     useGenerateSessionMutation,
     useCancelSessionMutation,
     useValidateMobileSessionQuery,
-    useCompleteMobileSessionMutation
+    useCompleteMobileSessionMutation,
 } = handoffApi;
