@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { 
-    useReinviteAdminMutation, 
-    useCancelAdminInviteMutation 
-} from '../api/admin-management.api';
+import { useReinviteAdminMutation, useCancelAdminInviteMutation } from '../api/admin-management.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './admin-modal.module.css';
 
 export type InviteActionType = 'REINVITE' | 'CANCEL';
@@ -17,7 +15,11 @@ interface AdminInviteActionModalProps {
 }
 
 export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
-    isOpen, onClose, adminId, adminName, actionType
+    isOpen,
+    onClose,
+    adminId,
+    adminName,
+    actionType,
 }) => {
     const [reinviteAdmin, { isLoading: isReinviting }] = useReinviteAdminMutation();
     const [cancelAdminInvite, { isLoading: isCanceling }] = useCancelAdminInviteMutation();
@@ -39,8 +41,8 @@ export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
                 await cancelAdminInvite(adminId).unwrap();
             }
             onClose();
-        } catch (err: any) {
-            setErrorMsg(err?.data?.error?.message || `Failed to ${actionType.toLowerCase()} invitation.`);
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, `Failed to ${actionType.toLowerCase()} invitation.`));
         }
     };
 
@@ -79,10 +81,19 @@ export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
             >
                 <div className={styles.header}>
                     <h2 className={styles.title}>{getTitle()}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>&times;</button>
+                    <button onClick={onClose} className={styles.closeBtn}>
+                        &times;
+                    </button>
                 </div>
 
-                <div style={{ padding: '24px 24px 0 24px', fontSize: '13px', color: 'var(--admin-text-secondary)', lineHeight: '1.6' }}>
+                <div
+                    style={{
+                        padding: '24px 24px 0 24px',
+                        fontSize: '13px',
+                        color: 'var(--admin-text-secondary)',
+                        lineHeight: '1.6',
+                    }}
+                >
                     {getMessage()}
                 </div>
 
@@ -93,11 +104,19 @@ export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
                         <button type="button" onClick={onClose} className={styles.btnCancel} disabled={isLoading}>
                             Close
                         </button>
-                        <button 
-                            type="submit" 
-                            disabled={isLoading} 
+                        <button
+                            type="submit"
+                            disabled={isLoading}
                             className={`${styles.btnSubmit} ${actionType === 'CANCEL' ? styles.suspendBtn : ''}`}
-                            style={actionType === 'REINVITE' ? { backgroundColor: 'var(--badge-active-bg)', borderColor: 'var(--badge-active-bg)', color: 'var(--badge-active-text)' } : {}}
+                            style={
+                                actionType === 'REINVITE'
+                                    ? {
+                                          backgroundColor: 'var(--badge-active-bg)',
+                                          borderColor: 'var(--badge-active-bg)',
+                                          color: 'var(--badge-active-text)',
+                                      }
+                                    : {}
+                            }
                         >
                             {getBtnText()}
                         </button>

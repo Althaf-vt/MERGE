@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useUpdateAdminMutation } from '../api/admin-management.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './admin-modal.module.css';
 import { ADMIN_PERMISSIONS, type AdminPermission, type AdminRole } from '../types/admin-management.types';
 
@@ -14,7 +15,12 @@ interface UpdateAdminModalProps {
 }
 
 export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
-    isOpen, onClose, adminId, currentRole, currentPermissions, adminName
+    isOpen,
+    onClose,
+    adminId,
+    currentRole,
+    currentPermissions,
+    adminName,
 }) => {
     const [updateAdmin, { isLoading }] = useUpdateAdminMutation();
 
@@ -32,10 +38,8 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
     if (!isOpen) return null;
 
     const handlePermissionToggle = (permission: AdminPermission) => {
-        setSelectedPermissions(prev =>
-            prev.includes(permission)
-                ? prev.filter(p => p !== permission)
-                : [...prev, permission]
+        setSelectedPermissions((prev) =>
+            prev.includes(permission) ? prev.filter((p) => p !== permission) : [...prev, permission]
         );
     };
 
@@ -48,13 +52,13 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                 adminId,
                 data: {
                     role,
-                    permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions
-                }
+                    permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions,
+                },
             }).unwrap();
 
             onClose();
-        } catch (err: any) {
-            setErrorMsg(err?.data?.error?.message || 'Failed to update admin.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to update admin.'));
         }
     };
 
@@ -77,7 +81,9 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
             >
                 <div className={styles.header}>
                     <h2 className={styles.title}>UPDATE PERSONNEL: {adminName}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>&times;</button>
+                    <button onClick={onClose} className={styles.closeBtn}>
+                        &times;
+                    </button>
                 </div>
 
                 {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
@@ -85,7 +91,7 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
                         <label>Role</label>
-                        <select value={role} onChange={e => setRole(e.target.value as AdminRole)}>
+                        <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)}>
                             <option value="ADMIN">Administrator</option>
                             <option value="SUPER_ADMIN">Super Admin</option>
                         </select>
@@ -110,7 +116,9 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
                     )}
 
                     <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.btnCancel}>Cancel</button>
+                        <button type="button" onClick={onClose} className={styles.btnCancel}>
+                            Cancel
+                        </button>
                         <button type="submit" disabled={isLoading} className={styles.btnSubmit}>
                             {isLoading ? 'Saving...' : 'Save Changes'}
                         </button>
