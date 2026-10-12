@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../app/hooks';
 import { useGoogleLoginMutation } from '../api/auth.api';
@@ -13,7 +13,7 @@ export const GoogleAuthButton: React.FC = () => {
     const [googleLogin, { isLoading }] = useGoogleLoginMutation();
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const handleSuccess = async (credentialResponse: any) => {
+    const handleSuccess = async (credentialResponse: CredentialResponse) => {
         setErrorMessage(null);
         const idToken = credentialResponse.credential;
 
@@ -24,21 +24,24 @@ export const GoogleAuthButton: React.FC = () => {
 
         try {
             const response = await googleLogin({ idToken }).unwrap();
+            if (!response.data) {
+                throw new Error('Invalid Google authentication payload.');
+            }
 
             dispatch(
                 setCredentials({
-                    accessToken: response.accessToken,
-                    user: response.user,
+                    accessToken: response.data.accessToken,
+                    user: response.data.user,
                 })
             );
 
             // Redirect according to the user's progress
-            if (response.user.onboardingCompleted) {
+            if (response.data.user.onboardingCompleted) {
                 navigate('/profile-live', { replace: true });
             } else {
                 navigate('/onboarding/kyc', { replace: true });
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Google backend authentication error:', err);
             setErrorMessage(getErrorMessage(err, 'Google authentication failed.'));
         }
