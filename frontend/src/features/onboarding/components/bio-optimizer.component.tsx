@@ -17,7 +17,7 @@ export const BioOptimizer = () => {
 
     const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-    
+
     const [generatedBios, setGeneratedBios] = useState<string[]>([]);
     const [selectedBioIndex, setSelectedBioIndex] = useState<number | null>(null);
     const [editableBio, setEditableBio] = useState('');
@@ -27,7 +27,7 @@ export const BioOptimizer = () => {
     // Toggles selection with a max limit of 5
     const toggleSelection = (item: string, list: string[], setList: React.Dispatch<React.SetStateAction<string[]>>) => {
         if (list.includes(item)) {
-            setList(list.filter(i => i !== item));
+            setList(list.filter((i) => i !== item));
         } else if (list.length < 5) {
             setList([...list, item]);
         }
@@ -35,18 +35,20 @@ export const BioOptimizer = () => {
 
     const handleGenerate = async () => {
         if (selectedTraits.length === 0 || selectedInterests.length === 0) {
-            setError("Please select at least 1 trait and 1 interest.");
+            setError('Please select at least 1 trait and 1 interest.');
             return;
         }
         setError(null);
 
         try {
             const res = await generateBio({ selectedTraits, interests: selectedInterests }).unwrap();
-            setGeneratedBios(res.bios);
-            setRemainingGenerations(res.remainingAttempts);
+            if (res.data) {
+                setGeneratedBios(res.data.bios);
+                setRemainingGenerations(res.data.remainingAttempts);
+            }
             setSelectedBioIndex(null); // Reset selection on new generation
-        } catch (err: any) {
-            setError(getErrorMessage(err, "Generation failed."));
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Generation failed.'));
         }
     };
 
@@ -57,7 +59,7 @@ export const BioOptimizer = () => {
 
     const handleSave = async () => {
         if (selectedBioIndex === null || !editableBio.trim()) {
-            setError("Please select and finalize a bio.");
+            setError('Please select and finalize a bio.');
             return;
         }
 
@@ -65,25 +67,27 @@ export const BioOptimizer = () => {
             await saveFinalBio({
                 bio: editableBio,
                 selectedTraits,
-                interests: selectedInterests
+                interests: selectedInterests,
             }).unwrap();
 
             if (user && accessToken) {
-                dispatch(setCredentials({
-                    accessToken,
-                    user: { 
-                        ...user, 
-                        onboardingStep: 14, 
-                        profileCompleted: true,
-                        onboardingCompleted: true 
-                    }
-                }));
+                dispatch(
+                    setCredentials({
+                        accessToken,
+                        user: {
+                            ...user,
+                            onboardingStep: 14,
+                            profileCompleted: true,
+                            onboardingCompleted: true,
+                        },
+                    })
+                );
             }
-            
+
             // Navigate to Dashboard or Success Screen
             navigate('/dashboard', { replace: true });
-        } catch (err) {
-            setError("Failed to save profile.");
+        } catch {
+            setError('Failed to save profile.');
         }
     };
 
@@ -91,7 +95,9 @@ export const BioOptimizer = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.title}>What makes you, you?</h1>
-                <p className={styles.subtitle}>Select up to 5 traits. Our AI will craft your perfect bio based on your unique personality mix.</p>
+                <p className={styles.subtitle}>
+                    Select up to 5 traits. Our AI will craft your perfect bio based on your unique personality mix.
+                </p>
             </div>
 
             {error && <div className={styles.errorBanner}>{error}</div>}
@@ -104,7 +110,7 @@ export const BioOptimizer = () => {
                         <span className={styles.counter}>{selectedTraits.length}/5 Selected</span>
                     </div>
                     <div className={styles.pillGrid}>
-                        {BIO_TRAITS.map(trait => (
+                        {BIO_TRAITS.map((trait) => (
                             <button
                                 key={trait}
                                 type="button"
@@ -121,29 +127,40 @@ export const BioOptimizer = () => {
                         <span className={styles.counter}>{selectedInterests.length}/5 Selected</span>
                     </div>
                     <div className={styles.pillGrid}>
-                        {BIO_INTERESTS.map(interest => (
+                        {BIO_INTERESTS.map((interest) => (
                             <button
                                 key={interest}
                                 type="button"
                                 onClick={() => toggleSelection(interest, selectedInterests, setSelectedInterests)}
-                                className={`${styles.pill} ${selectedInterests.includes(interest) ? styles.pillActive : ''}`}
+                                className={`${styles.pill} ${
+                                    selectedInterests.includes(interest) ? styles.pillActive : ''
+                                }`}
                             >
                                 {interest}
                             </button>
                         ))}
                     </div>
 
-                    <button 
-                        onClick={handleGenerate} 
+                    <button
+                        onClick={handleGenerate}
                         disabled={isGenerating || remainingGenerations === 0}
                         className={styles.secondaryBtn}
                         type="button"
                     >
                         <span>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 3l1.912 5.886a2 2 0 0 0 1.272 1.272L21 12l-5.816 1.842a2 2 0 0 0-1.272 1.272L12 21l-1.912-5.886a2 2 0 0 0-1.272-1.272L3 12l5.816-1.842a2 2 0 0 0 1.272-1.272L12 3z"/>
-                                <path d="M5 3v4"/>
-                                <path d="M3 5h4"/>
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M12 3l1.912 5.886a2 2 0 0 0 1.272 1.272L21 12l-5.816 1.842a2 2 0 0 0-1.272 1.272L12 21l-1.912-5.886a2 2 0 0 0-1.272-1.272L3 12l5.816-1.842a2 2 0 0 0 1.272-1.272L12 3z" />
+                                <path d="M5 3v4" />
+                                <path d="M3 5h4" />
                             </svg>
                             {isGenerating ? 'Generating...' : 'Generate Bio'}
                         </span>
@@ -154,27 +171,36 @@ export const BioOptimizer = () => {
                 {/* Right Column: AI Results */}
                 <div>
                     {generatedBios.length === 0 ? (
-                        <div className={styles.emptyPlaceholder}>
-                            Your AI-crafted bios will appear here.
-                        </div>
+                        <div className={styles.emptyPlaceholder}>Your AI-crafted bios will appear here.</div>
                     ) : (
                         <>
                             {generatedBios.map((bio, idx) => (
-                                <div 
-                                    key={idx} 
+                                <div
+                                    key={idx}
                                     onClick={() => handleSelectBio(idx)}
-                                    className={`${styles.bioOptionCard} ${selectedBioIndex === idx ? styles.bioOptionSelected : ''}`}
+                                    className={`${styles.bioOptionCard} ${
+                                        selectedBioIndex === idx ? styles.bioOptionSelected : ''
+                                    }`}
                                 >
                                     {selectedBioIndex === idx && (
                                         <div className={styles.checkIcon}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <svg
+                                                width="12"
+                                                height="12"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="3.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         </div>
                                     )}
                                     {selectedBioIndex === idx ? (
-                                        <textarea 
-                                            value={editableBio} 
+                                        <textarea
+                                            value={editableBio}
                                             onChange={(e) => setEditableBio(e.target.value)}
                                             className={styles.editableTextarea}
                                             rows={4}
@@ -194,14 +220,23 @@ export const BioOptimizer = () => {
 
             <div className={styles.footer}>
                 <button onClick={() => navigate('/onboarding/preferences')} className={styles.backBtn} type="button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
                         <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                     Back
                 </button>
-                <button 
-                    onClick={handleSave} 
-                    disabled={isSaving || selectedBioIndex === null} 
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving || selectedBioIndex === null}
                     className={styles.primaryBtn}
                     type="button"
                 >

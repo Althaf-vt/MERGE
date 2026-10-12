@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useUpdatePreferencesMutation } from '../api/profile.api';
 import { setCredentials } from '../../auth/slices/auth.slice';
-import { getErrorMessage } from '../../.././shared/utils/error.util';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import {
     DEFAULT_IDENTITY_TAGS,
     SUGGESTED_IDENTITY_TAGS,
@@ -27,16 +27,22 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
     // Reference previously stored preferences from Redux
     const savedPrefs = user?.preference;
 
+    const initialRelationshipGoal = Array.isArray(savedPrefs?.relationshipGoals)
+        ? savedPrefs.relationshipGoals[0] || 'LONG_TERM_RELATIONSHIP'
+        : savedPrefs?.relationshipGoals || 'LONG_TERM_RELATIONSHIP';
+
     // Form states
-    const [selectedGenders, setSelectedGenders] = useState<string[]>(savedPrefs?.preferredGender || ['Trans Man', 'Non-Binary']);
+    const [selectedGenders, setSelectedGenders] = useState<string[]>(
+        savedPrefs?.preferredGender || ['Trans Man', 'Non-Binary']
+    );
     const [customGenderInput, setCustomGenderInput] = useState('');
-    const [relationshipGoal, setRelationshipGoal] = useState(savedPrefs?.relationshipGoals || savedPrefs?.relationShipGoals || 'LONG_TERM_RELATIONSHIP');
-    const [ageMin, setAgeMin] = useState(savedPrefs?.preferredAgeMin ?? 24);
-    const [ageMax, setAgeMax] = useState(savedPrefs?.preferredAgeMax ?? savedPrefs?.prefferedAgeMax ?? 35);
-    const [outnessTolerance, setOutnessTolerance] = useState(savedPrefs?.minimumOutnessLevel ?? 3);
-    const [openToAdoption, setOpenToAdoption] = useState(savedPrefs?.openToAdoption ?? true);
-    const [immigrationReady, setImmigrationReady] = useState(savedPrefs?.immigrationReady ?? false);
-    const [partnerExpectations, setPartnerExpectations] = useState(savedPrefs?.partnerExpectations || '');
+    const [relationshipGoal, setRelationshipGoal] = useState<string>(initialRelationshipGoal);
+    const [ageMin, setAgeMin] = useState<number>(savedPrefs?.preferredAgeMin ?? 24);
+    const [ageMax, setAgeMax] = useState<number>(savedPrefs?.preferredAgeMax ?? 35);
+    const [outnessTolerance, setOutnessTolerance] = useState<number>(savedPrefs?.minimumOutnessLevel ?? 3);
+    const [openToAdoption, setOpenToAdoption] = useState<boolean>(Boolean(savedPrefs?.openToAdoption ?? true));
+    const [immigrationReady, setImmigrationReady] = useState<boolean>(Boolean(savedPrefs?.immigrationReady ?? false));
+    const [partnerExpectations, setPartnerExpectations] = useState<string>(savedPrefs?.partnerExpectations || '');
 
     // Synchronize state when Redux user rehydrates or updates
     useEffect(() => {
@@ -44,12 +50,15 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
             if (savedPrefs.preferredGender) {
                 setSelectedGenders(savedPrefs.preferredGender);
             }
-            setRelationshipGoal(savedPrefs.relationshipGoals || savedPrefs.relationShipGoals || 'LONG_TERM_RELATIONSHIP');
+            const nextGoal = Array.isArray(savedPrefs.relationshipGoals)
+                ? savedPrefs.relationshipGoals[0] || 'LONG_TERM_RELATIONSHIP'
+                : savedPrefs.relationshipGoals || 'LONG_TERM_RELATIONSHIP';
+            setRelationshipGoal(nextGoal);
             setAgeMin(savedPrefs.preferredAgeMin ?? 24);
-            setAgeMax(savedPrefs.preferredAgeMax ?? savedPrefs.prefferedAgeMax ?? 35);
+            setAgeMax(savedPrefs.preferredAgeMax ?? 35);
             setOutnessTolerance(savedPrefs.minimumOutnessLevel ?? 3);
-            setOpenToAdoption(savedPrefs.openToAdoption ?? true);
-            setImmigrationReady(savedPrefs.immigrationReady ?? false);
+            setOpenToAdoption(Boolean(savedPrefs.openToAdoption ?? true));
+            setImmigrationReady(Boolean(savedPrefs.immigrationReady ?? false));
             setPartnerExpectations(savedPrefs.partnerExpectations || '');
         }
     }, [savedPrefs]);
@@ -103,21 +112,21 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
 
             const res = await updatePreferences(payload).unwrap();
 
-            if (user && accessToken) {
+            if (user && accessToken && res.data) {
                 dispatch(
                     setCredentials({
                         accessToken,
                         user: {
                             ...user,
                             onboardingStep: Math.max(user.onboardingStep ?? 0, 5),
-                            preference: res.preferences
+                            preference: res.data.preferences,
                         },
                     })
                 );
             }
 
             onSuccess();
-        } catch (err: any) {
+        } catch (err: unknown) {
             setError(getErrorMessage(err, 'Failed to update preferences.'));
         }
     };
@@ -140,7 +149,9 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                             <button
                                 key={gender}
                                 type="button"
-                                className={`${styles.pillBtn} ${selectedGenders.includes(gender) ? styles.pillBtnActive : ''}`}
+                                className={`${styles.pillBtn} ${
+                                    selectedGenders.includes(gender) ? styles.pillBtnActive : ''
+                                }`}
                                 onClick={() => toggleGender(gender)}
                             >
                                 {gender}
@@ -149,7 +160,10 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                     </div>
 
                     <div className={styles.searchInputWrapper}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                         <input
                             className={styles.searchInput}
                             placeholder="Search or add identity..."
@@ -166,7 +180,9 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                                 <button
                                     key={sug}
                                     type="button"
-                                    className={`${styles.pillBtn} ${selectedGenders.includes(sug) ? styles.pillBtnActive : ''}`}
+                                    className={`${styles.pillBtn} ${
+                                        selectedGenders.includes(sug) ? styles.pillBtnActive : ''
+                                    }`}
                                     onClick={() => toggleGender(sug)}
                                 >
                                     {sug}
@@ -184,7 +200,9 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                             <button
                                 key={rg.value}
                                 type="button"
-                                className={`${styles.pillBtn} ${relationshipGoal === rg.value ? styles.pillBtnActive : ''}`}
+                                className={`${styles.pillBtn} ${
+                                    relationshipGoal === rg.value ? styles.pillBtnActive : ''
+                                }`}
                                 onClick={() => setRelationshipGoal(rg.value)}
                             >
                                 {rg.label}
@@ -197,12 +215,22 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                 <div className={styles.glassCard}>
                     <div className={styles.cardTitle}>
                         <span>Age Range</span>
-                        <span style={{ color: '#6D28D9', fontSize: '0.95rem' }}>{ageMin} - {ageMax}</span>
+                        <span style={{ color: '#6D28D9', fontSize: '0.95rem' }}>
+                            {ageMin} - {ageMax}
+                        </span>
                     </div>
                     <div className={styles.sliderContainer}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#71717a', marginBottom: '4px' }}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        fontSize: '0.8rem',
+                                        color: '#71717a',
+                                        marginBottom: '4px',
+                                    }}
+                                >
                                     <span>Min Age</span>
                                     <span>{ageMin}</span>
                                 </div>
@@ -217,7 +245,15 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                             </div>
 
                             <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#71717a', marginBottom: '4px' }}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        fontSize: '0.8rem',
+                                        color: '#71717a',
+                                        marginBottom: '4px',
+                                    }}
+                                >
                                     <span>Max Age</span>
                                     <span>{ageMax}</span>
                                 </div>
@@ -234,7 +270,9 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
 
                         <div className={styles.sliderLabels} style={{ marginTop: '8px' }}>
                             <span>18</span>
-                            <span>{ageMin} - {ageMax}</span>
+                            <span>
+                                {ageMin} - {ageMax}
+                            </span>
                             <span>70+</span>
                         </div>
                     </div>
@@ -314,12 +352,7 @@ export const UserPreferences: React.FC<UserPreferencesProps> = ({ onSuccess }) =
                     <span>← Back</span>
                 </button>
 
-                <button
-                    type="button"
-                    className={styles.primaryBtn}
-                    onClick={handleSubmit}
-                    disabled={isLoading}
-                >
+                <button type="button" className={styles.primaryBtn} onClick={handleSubmit} disabled={isLoading}>
                     <span>{isLoading ? 'Saving Preference...' : 'Save & Continue →'}</span>
                 </button>
             </div>

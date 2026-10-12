@@ -66,7 +66,7 @@ export interface UpdatePreferencesPayload {
     preferredGender: string[];
     preferredAgeMin: number;
     preferredAgeMax: number;
-    relationshipGoals: string[];
+    relationshipGoals: string | string[];
     minimumOutnessLevel: number;
     openToAdoption: boolean | string[];
     immigrationReady: boolean | string[];
