@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useSubmitKycMutation } from "../api/kyc.api"
+import { useState } from 'react';
+import { useSubmitKycMutation } from '../api/kyc.api';
 import styles from './kyc-document-upload.module.css';
-import { useAppDispatch } from "../../../app/hooks";
-import { setExtractedData, setKycStep } from "../slices/kyc.slice";
-import { getErrorMessage } from "../../../shared/utils/error.util";
+import { useAppDispatch } from '../../../app/hooks';
+import { setExtractedData, setKycStep } from '../slices/kyc.slice';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 
 export const KycDocumentUpload = () => {
-    const dispatch = useAppDispatch()
-    const [submitKyc, {isLoading}] = useSubmitKycMutation();
+    const dispatch = useAppDispatch();
+    const [submitKyc, { isLoading }] = useSubmitKycMutation();
 
     const [documentType, setDocumentType] = useState('AADHAAR_XML');
     const [issuingCountry, setIssuingCountry] = useState('IN');
@@ -15,23 +15,23 @@ export const KycDocumentUpload = () => {
     const [shareCode, setShareCode] = useState('');
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if(!documentFile) return setError("Cryptographic document file is required.");
+        if (!documentFile) return setError('Cryptographic document file is required.');
 
-        if(documentType === 'AADHAAR_XML' && shareCode.length !== 4){
-            return setError("A 4-digit share code is required to unlock the ZIP.");
+        if (documentType === 'AADHAAR_XML' && shareCode.length !== 4) {
+            return setError('A 4-digit share code is required to unlock the ZIP.');
         }
-        
+
         setError(null);
 
         const formData = new FormData();
-        formData.append('documentType',documentType);
-        formData.append('issuingCountry',issuingCountry);
+        formData.append('documentType', documentType);
+        formData.append('issuingCountry', issuingCountry);
         formData.append('document', documentFile);
 
-        if(documentType === 'AADHAAR_XML'){
+        if (documentType === 'AADHAAR_XML') {
             formData.append('shareCode', shareCode);
         }
 
@@ -39,13 +39,15 @@ export const KycDocumentUpload = () => {
             // Passed form data directly to RTK Query
             const result = await submitKyc(formData).unwrap();
 
-            dispatch(setExtractedData(result.extractedData));
+            if (result.data?.extractedData) {
+                dispatch(setExtractedData(result.data.extractedData));
+            }
             dispatch(setKycStep('DEVICE_SELECTION'));
-        } catch (error: any) {
-            console.error(error);
-            setError(getErrorMessage(error, "Cryptographic verification failed. Ensure the file is unmodified."));
+        } catch (err: unknown) {
+            console.error(err);
+            setError(getErrorMessage(err, 'Cryptographic verification failed. Ensure the file is unmodified.'));
         }
-    }
+    };
 
     return (
         <div className={styles.container}>
@@ -54,12 +56,27 @@ export const KycDocumentUpload = () => {
                 <p className={styles.subtitle}>Step 1 of 5: Help us keep MERGE safe, authentic, and trusted.</p>
 
                 <h3 className={styles.sectionTitle}>Why Verification Is Required</h3>
-                <p className={styles.descriptionText}>Identity verification helps us reduce fake profiles, prevent catfishing, and create a safer environment for everyone on MERGE.</p>
-                
+                <p className={styles.descriptionText}>
+                    Identity verification helps us reduce fake profiles, prevent catfishing, and create a safer
+                    environment for everyone on MERGE.
+                </p>
+
                 <div className={styles.featuresGrid}>
                     <div className={styles.featureCard}>
                         <div className={styles.iconWrapper}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#6D28D9"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
                         </div>
                         <div>
                             <h4>Verified Community</h4>
@@ -68,7 +85,18 @@ export const KycDocumentUpload = () => {
                     </div>
                     <div className={styles.featureCard}>
                         <div className={styles.iconWrapper}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#6D28D9"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
                         </div>
                         <div>
                             <h4>Anti-Catfishing</h4>
@@ -77,7 +105,19 @@ export const KycDocumentUpload = () => {
                     </div>
                     <div className={styles.featureCard}>
                         <div className={styles.iconWrapper}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#6D28D9"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
                         </div>
                         <div>
                             <h4>Privacy Protected</h4>
@@ -86,7 +126,21 @@ export const KycDocumentUpload = () => {
                     </div>
                     <div className={styles.featureCard}>
                         <div className={styles.iconWrapper}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#6D28D9"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
                         </div>
                         <div>
                             <h4>Human Review</h4>
@@ -96,7 +150,18 @@ export const KycDocumentUpload = () => {
                 </div>
 
                 <div className={styles.securityBanner}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#6B7280"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
                     <span>Your documents are encrypted in transit and at rest and are never displayed publicly.</span>
                 </div>
             </div>
@@ -104,13 +169,17 @@ export const KycDocumentUpload = () => {
             <div className={styles.rightPanel}>
                 <div className={styles.glassCard}>
                     <h2 className={styles.formTitle}>Identity Verification</h2>
-                    
+
                     <form className={styles.form} onSubmit={handleSubmit}>
                         {error && <div className={styles.errorBanner}>{error}</div>}
 
                         <div className={styles.inputGroup}>
                             <label className={styles.inputLabel}>Document Type</label>
-                            <select className={styles.input} value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+                            <select
+                                className={styles.input}
+                                value={documentType}
+                                onChange={(e) => setDocumentType(e.target.value)}
+                            >
                                 <option value="AADHAAR_XML">Offline e-KYC (ZIP/XML)</option>
                                 <option value="EPAN_PDF">e-PAN (Signed PDF)</option>
                                 <option value="DIGILOCKER_DL">DigiLocker Driving License</option>
@@ -120,7 +189,11 @@ export const KycDocumentUpload = () => {
 
                         <div className={styles.inputGroup}>
                             <label className={styles.inputLabel}>Issuing Country</label>
-                            <select className={styles.input} value={issuingCountry} onChange={(e) => setIssuingCountry(e.target.value)}>
+                            <select
+                                className={styles.input}
+                                value={issuingCountry}
+                                onChange={(e) => setIssuingCountry(e.target.value)}
+                            >
                                 <option value="IN">India</option>
                                 <option value="US">United States</option>
                             </select>
@@ -147,33 +220,66 @@ export const KycDocumentUpload = () => {
                             <div className={styles.fileUploadBox}>
                                 <label className={styles.fileLabel}>
                                     <div className={styles.uploadIcon}>
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="12"></line><line x1="15" y1="15" x2="12" y2="12"></line></svg>
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="#6D28D9"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                                            <line x1="9" y1="15" x2="12" y2="12"></line>
+                                            <line x1="15" y1="15" x2="12" y2="12"></line>
+                                        </svg>
                                     </div>
-                                    <span className={styles.uploadTextTitle}>{documentFile ? documentFile.name : "Document File"}</span>
+                                    <span className={styles.uploadTextTitle}>
+                                        {documentFile ? documentFile.name : 'Document File'}
+                                    </span>
                                     <span className={styles.uploadTextSubtitle}>Click to upload or drag and drop</span>
-                                    <input 
-                                        type="file" 
-                                        accept=".zip,.pdf,.xml" 
-                                        className={styles.hiddenInput} 
-                                        onChange={(e) => setDocumentFile(e.target.files?.[0] || null)} 
+                                    <input
+                                        type="file"
+                                        accept=".zip,.pdf,.xml"
+                                        className={styles.hiddenInput}
+                                        onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
                                     />
                                 </label>
                             </div>
                         </div>
 
                         <div className={styles.formFooterBanner}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            <span>Your identity documents are used only for verification purposes and are never displayed publicly.</span>
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#6B7280"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span>
+                                Your identity documents are used only for verification purposes and are never displayed
+                                publicly.
+                            </span>
                         </div>
 
                         <div className={styles.buttonWrapper}>
                             <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                                <span>{isLoading ? "Running PKI Validation..." : "Continue →"}</span>
+                                <span>{isLoading ? 'Running PKI Validation...' : 'Continue →'}</span>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
