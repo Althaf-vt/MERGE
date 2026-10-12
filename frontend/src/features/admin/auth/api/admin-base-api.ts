@@ -1,8 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
-import { adminLogout, setAdminCredentials } from '../slices/admin-auth.slice';
+import { adminLogout, setAdminCredentials, type AdminUser } from '../slices/admin-auth.slice';
 import type { RootState } from '../../../../app/store';
+import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
 
 const adminMutex = new Mutex();
 
@@ -28,35 +30,45 @@ export const adminBaseQueryWithReauth: BaseQueryFn<
     let result = await adminBaseQuery(args, api, extraOptions);
 
     const requestUrl = typeof args === 'string' ? args : args.url;
-    const isRefreshRequest = requestUrl === '/admin/auth/refresh';
+    const isRefreshRequest = requestUrl === API_ENDPOINTS.ADMIN.AUTH.REFRESH;
     const isAuthRequest =
-        requestUrl === '/admin/auth/login' ||
-        requestUrl === '/admin/auth/forgot-password' ||
-        requestUrl === '/admin/auth/reset-password' ||
-        requestUrl === '/admin/auth/verify-reset-otp';
+        requestUrl === API_ENDPOINTS.ADMIN.AUTH.LOGIN ||
+        requestUrl === API_ENDPOINTS.ADMIN.AUTH.FORGOT_PASSWORD ||
+        requestUrl === API_ENDPOINTS.ADMIN.AUTH.RESET_PASSWORD ||
+        requestUrl === API_ENDPOINTS.ADMIN.AUTH.VERIFY_RESET_OTP;
 
     if (result.error && result.error.status === 401 && !isRefreshRequest && !isAuthRequest) {
         if (!adminMutex.isLocked()) {
             const release = await adminMutex.acquire();
             try {
                 const refreshResult = await adminBaseQuery(
-                    { url: '/admin/auth/refresh', method: 'POST' },
+                    { url: API_ENDPOINTS.ADMIN.AUTH.REFRESH, method: 'POST' },
                     api,
                     extraOptions
                 );
 
                 if (refreshResult.data) {
-                    const data = refreshResult.data as { accessToken: string; admin: any };
-                    api.dispatch(setAdminCredentials({
-                        accessToken: data.accessToken,
-                        admin: data.admin
-                    }));
-                    result = await adminBaseQuery(args, api, extraOptions);
+                    const response = refreshResult.data as ApiResponse<{ accessToken: string; admin: AdminUser }>;
+                    if (response.success && response.data) {
+                        api.dispatch(
+                            setAdminCredentials({
+                                accessToken: response.data.accessToken,
+                                admin: response.data.admin,
+                            })
+                        );
+                        result = await adminBaseQuery(args, api, extraOptions);
+                    } else {
+                        throw new Error('Admin refresh payload extraction failed');
+                    }
                 } else {
                     api.dispatch(adminLogout());
                     api.dispatch({ type: 'adminApi/resetApiState' });
                     window.location.href = '/admin/login';
                 }
+            } catch {
+                api.dispatch(adminLogout());
+                api.dispatch({ type: 'adminApi/resetApiState' });
+                window.location.href = '/admin/login';
             } finally {
                 release();
             }

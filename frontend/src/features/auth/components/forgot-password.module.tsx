@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useForgotPasswordMutation, useResetPasswordMutation } from "../api/auth.api";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForgotPasswordMutation, useResetPasswordMutation } from '../api/auth.api';
 import styles from './login-form.module.css';
-import { getErrorMessage } from "../../../shared/utils/error.util";
+import { getErrorMessage } from '../../../shared/utils/error.util';
 
 export const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -26,7 +26,7 @@ export const ForgotPassword = () => {
         hasUpper: /[A-Z]/.test(newPassword),
         hasLower: /[a-z]/.test(newPassword),
         hasNumber: /[0-9]/.test(newPassword),
-        hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(newPassword),
+        hasSpecial: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(newPassword),
         noSpaces: newPassword.length > 0 && !/\s/.test(newPassword),
     };
 
@@ -45,13 +45,13 @@ export const ForgotPassword = () => {
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (!email.trim()) return setError("Please enter your email.");
+        if (!email.trim()) return setError('Please enter your email.');
 
         try {
             await forgotPassword({ email: email.trim() }).unwrap();
             setStep(2);
-        } catch (err: any) {
-            setError(getErrorMessage(err, "Failed to send reset code. Try again."));
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to send reset code. Try again.'));
         }
     };
 
@@ -60,55 +60,73 @@ export const ForgotPassword = () => {
         setError(null);
 
         if (!otp.trim() || otp.length !== 6) {
-            return setError("Please enter the complete 6-digit verification code.");
+            return setError('Please enter the complete 6-digit verification code.');
         }
 
         if (!passwordChecks.length) {
-            return setError("Password must be between 8 and 128 characters long.");
+            return setError('Password must be between 8 and 128 characters long.');
         }
 
         if (!passwordChecks.hasUpper) {
-            return setError("Password must contain at least one uppercase letter.");
+            return setError('Password must contain at least one uppercase letter.');
         }
 
         if (!passwordChecks.hasLower) {
-            return setError("Password must contain at least one lowercase letter.");
+            return setError('Password must contain at least one lowercase letter.');
         }
 
         if (!passwordChecks.hasNumber) {
-            return setError("Password must contain at least one number.");
+            return setError('Password must contain at least one number.');
         }
 
         if (!passwordChecks.hasSpecial) {
-            return setError("Password must contain at least one special character.");
+            return setError('Password must contain at least one special character.');
         }
 
         if (!passwordChecks.noSpaces) {
-            return setError("Password cannot contain spaces.");
+            return setError('Password cannot contain spaces.');
         }
 
         if (newPassword !== confirmPassword) {
-            return setError("Passwords do not match.");
+            return setError('Passwords do not match.');
         }
 
         try {
             await resetPassword({ email: email.trim(), otp: otp.trim(), newPassword }).unwrap();
             navigate('/login', { replace: true });
-        } catch (err: any) {
-            setError(getErrorMessage(err, "Failed to reset password."));
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to reset password.'));
         }
     };
 
     // SVG Icons for the password toggle
     const EyeIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
             <circle cx="12" cy="12" r="3"></circle>
         </svg>
     );
 
     const EyeOffIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
             <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
             <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
@@ -121,34 +139,32 @@ export const ForgotPassword = () => {
             <div className={styles.branding}>
                 <h1 className={styles.title}>Reset Password</h1>
                 <p className={styles.subtitle}>
-                    {step === 1 ? "Enter your email to receive a code." : "Enter the code and confirm your new password."}
+                    {step === 1
+                        ? 'Enter your email to receive a code.'
+                        : 'Enter the code and confirm your new password.'}
                 </p>
             </div>
 
             <form className={styles.form} onSubmit={step === 1 ? handleSendCode : handleReset}>
-                {error && (
-                    <div className={styles.errorBanner}>
-                        {error}
-                    </div>
-                )}
+                {error && <div className={styles.errorBanner}>{error}</div>}
 
                 {step === 1 ? (
                     <div className={styles.inputGroup}>
-                        <input 
+                        <input
                             className={styles.input}
-                            type="email" 
+                            type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email Address" 
+                            placeholder="Email Address"
                             required
                         />
                     </div>
                 ) : (
                     <>
                         <div className={styles.inputGroup}>
-                            <input 
+                            <input
                                 className={styles.input}
-                                type="text" 
+                                type="text"
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
                                 placeholder="6-digit Code"
@@ -158,15 +174,19 @@ export const ForgotPassword = () => {
                         </div>
 
                         <div className={styles.inputGroup}>
-                            <input 
+                            <input
                                 className={styles.input}
-                                type={showNewPassword ? "text" : "password"} 
+                                type={showNewPassword ? 'text' : 'password'}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="New Password" 
+                                placeholder="New Password"
                                 required
                             />
-                            <button type="button" className={styles.iconBtn} onClick={() => setShowNewPassword(!showNewPassword)}>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                            >
                                 {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </button>
                         </div>
@@ -176,7 +196,7 @@ export const ForgotPassword = () => {
                             <div className={styles.passwordMeterContainer}>
                                 <div className={styles.meterRow}>
                                     <span className={styles.meterHeaderTitle}>Security Level</span>
-                                    <span className={`${styles.meterLabel} ${strength.className}`}>
+                                    <span className={`${styles.meterLabel}${strength.className}`}>
                                         {strength.text}
                                     </span>
                                 </div>
@@ -185,7 +205,7 @@ export const ForgotPassword = () => {
                                     {[1, 2, 3, 4].map((index) => (
                                         <div
                                             key={index}
-                                            className={`${styles.meterBar} ${
+                                            className={`${styles.meterBar}${
                                                 index <= strength.activeBars ? strength.className : ''
                                             }`}
                                         />
@@ -194,23 +214,65 @@ export const ForgotPassword = () => {
 
                                 {passedCount < 6 && (
                                     <ul className={styles.rulesList}>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.length ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+ chars
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.length ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.length ? '✓' : '•'}
+                                            </span>{' '}
+                                            8+ chars
                                         </li>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.hasUpper ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> 1 uppercase
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.hasUpper ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.hasUpper ? '✓' : '•'}
+                                            </span>{' '}
+                                            1 uppercase
                                         </li>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.hasLower ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> 1 lowercase
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.hasLower ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.hasLower ? '✓' : '•'}
+                                            </span>{' '}
+                                            1 lowercase
                                         </li>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.hasNumber ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> 1 number
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.hasNumber ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.hasNumber ? '✓' : '•'}
+                                            </span>{' '}
+                                            1 number
                                         </li>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.hasSpecial ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> 1 symbol
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.hasSpecial ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.hasSpecial ? '✓' : '•'}
+                                            </span>{' '}
+                                            1 symbol
                                         </li>
-                                        <li className={`${styles.ruleItem} ${passwordChecks.noSpaces ? styles.rulePassed : ''}`}>
-                                            <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> no spaces
+                                        <li
+                                            className={`${styles.ruleItem}${
+                                                passwordChecks.noSpaces ? styles.rulePassed : ''
+                                            }`}
+                                        >
+                                            <span className={styles.ruleIcon}>
+                                                {passwordChecks.noSpaces ? '✓' : '•'}
+                                            </span>{' '}
+                                            no spaces
                                         </li>
                                     </ul>
                                 )}
@@ -218,15 +280,19 @@ export const ForgotPassword = () => {
                         )}
 
                         <div className={styles.inputGroup}>
-                            <input 
+                            <input
                                 className={styles.input}
-                                type={showConfirmPassword ? "text" : "password"} 
+                                type={showConfirmPassword ? 'text' : 'password'}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Confirm New Password" 
+                                placeholder="Confirm New Password"
                                 required
                             />
-                            <button type="button" className={styles.iconBtn} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                            <button
+                                type="button"
+                                className={styles.iconBtn}
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
                                 {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </button>
                         </div>
@@ -234,12 +300,23 @@ export const ForgotPassword = () => {
                 )}
 
                 <button type="submit" className={styles.primaryBtn} disabled={isSending || isResetting}>
-                    <span>{isSending ? "Sending..." : isResetting ? "Resetting..." : step === 1 ? "Send Reset Code" : "Update Password"}</span>
+                    <span>
+                        {isSending
+                            ? 'Sending...'
+                            : isResetting
+                              ? 'Resetting...'
+                              : step === 1
+                                ? 'Send Reset Code'
+                                : 'Update Password'}
+                    </span>
                 </button>
             </form>
 
             <p className={styles.footerText} style={{ marginTop: '1.5rem' }}>
-                Remembered it? <Link to="/login" className={styles.footerLink}>Back to Login.</Link>
+                Remembered it?{' '}
+                <Link to="/login" className={styles.footerLink}>
+                    Back to Login.
+                </Link>
             </p>
         </div>
     );

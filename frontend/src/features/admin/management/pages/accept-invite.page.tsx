@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAcceptAdminInviteMutation } from '../api/admin-management.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './accept-invite.module.css';
 
 export const AdminAcceptInvitePage = () => {
@@ -49,8 +50,8 @@ export const AdminAcceptInvitePage = () => {
             setTimeout(() => {
                 navigate('/admin/login', { replace: true });
             }, 3000);
-        } catch (err: any) {
-            setErrorMsg(err?.data?.error?.message || 'Failed to activate account. The link may have expired.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to activate account. The link may have expired.'));
         }
     };
 
@@ -58,7 +59,9 @@ export const AdminAcceptInvitePage = () => {
         <div className={styles.container}>
             <div className={styles.card}>
                 <div className={styles.header}>
-                    <h1>MERGE <span>ADMIN</span></h1>
+                    <h1>
+                        MERGE <span>ADMIN</span>
+                    </h1>
                     <p>Set up your secure administrative account.</p>
                 </div>
 
@@ -83,10 +86,26 @@ export const AdminAcceptInvitePage = () => {
                         {password.length > 0 && (
                             <div className={styles.validationBox}>
                                 <div className={styles.strengthMeter}>
-                                    <div className={`${styles.strengthBar} ${strengthScore >= 1 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
-                                    <div className={`${styles.strengthBar} ${strengthScore >= 3 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
-                                    <div className={`${styles.strengthBar} ${strengthScore >= 4 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
-                                    <div className={`${styles.strengthBar} ${strengthScore >= 5 ? styles.active : ''} ${strengthScore === 5 ? styles.full : ''}`} />
+                                    <div
+                                        className={`${styles.strengthBar} ${strengthScore >= 1 ? styles.active : ''} ${
+                                            strengthScore === 5 ? styles.full : ''
+                                        }`}
+                                    />
+                                    <div
+                                        className={`${styles.strengthBar} ${strengthScore >= 3 ? styles.active : ''} ${
+                                            strengthScore === 5 ? styles.full : ''
+                                        }`}
+                                    />
+                                    <div
+                                        className={`${styles.strengthBar} ${strengthScore >= 4 ? styles.active : ''} ${
+                                            strengthScore === 5 ? styles.full : ''
+                                        }`}
+                                    />
+                                    <div
+                                        className={`${styles.strengthBar} ${strengthScore >= 5 ? styles.active : ''} ${
+                                            strengthScore === 5 ? styles.full : ''
+                                        }`}
+                                    />
                                 </div>
                                 <ul className={styles.reqList}>
                                     <li className={reqs.length ? styles.met : ''}>At least 8 characters</li>
@@ -115,9 +134,9 @@ export const AdminAcceptInvitePage = () => {
                             )}
                         </div>
 
-                        <button 
-                            type="submit" 
-                            className={styles.submitBtn} 
+                        <button
+                            type="submit"
+                            className={styles.submitBtn}
                             disabled={isLoading || !isPasswordValid || !passwordsMatch}
                         >
                             {isLoading ? 'Activating...' : 'Activate Account'}

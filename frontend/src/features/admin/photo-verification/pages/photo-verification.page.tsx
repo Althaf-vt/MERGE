@@ -30,10 +30,10 @@ export const PhotoVerificationPage: React.FC = () => {
     });
 
     const tasks = data?.data || [];
-    const total = data?.meta.total || 0;
+    const total = data?.meta?.total || 0;
     const totalPages = Math.ceil(total / limit) || 1;
 
-    const activeTask = selectedTask ? tasks.find(t => t.id === selectedTask.id) || selectedTask : null;
+    const activeTask = selectedTask ? tasks.find((t) => t.id === selectedTask.id) || selectedTask : null;
 
     return (
         <AdminPageTransition className={styles.container}>
@@ -43,10 +43,13 @@ export const PhotoVerificationPage: React.FC = () => {
                     <p className={styles.subtitle}>REVIEW FLAGGED PROFILE PHOTOS AGAINST BIOMETRIC BASELINES.</p>
                 </div>
                 <div className={styles.controls}>
-                    <select 
-                        className={styles.select} 
-                        value={statusFilter} 
-                        onChange={e => { setStatusFilter(e.target.value as PhotoTaskStatus | ''); setPage(1); }}
+                    <select
+                        className={styles.select}
+                        value={statusFilter}
+                        onChange={(e) => {
+                            setStatusFilter(e.target.value as PhotoTaskStatus | '');
+                            setPage(1);
+                        }}
                     >
                         <option value="">ALL STATUSES</option>
                         <option value="PENDING">PENDING REVIEW</option>
@@ -54,10 +57,13 @@ export const PhotoVerificationPage: React.FC = () => {
                         <option value="REJECTED">REJECTED</option>
                     </select>
 
-                    <select 
-                        className={styles.select} 
-                        value={claimStatusFilter} 
-                        onChange={e => { setClaimStatusFilter(e.target.value as ClaimStatus | ''); setPage(1); }}
+                    <select
+                        className={styles.select}
+                        value={claimStatusFilter}
+                        onChange={(e) => {
+                            setClaimStatusFilter(e.target.value as ClaimStatus | '');
+                            setPage(1);
+                        }}
                     >
                         <option value="">ALL CLAIMS</option>
                         <option value="UNCLAIMED">UNCLAIMED</option>
@@ -65,14 +71,17 @@ export const PhotoVerificationPage: React.FC = () => {
                         <option value="RESOLVED">RESOLVED</option>
                     </select>
 
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         className={styles.input}
-                        placeholder="ADMIN ID..." 
-                        value={claimedByFilter} 
-                        onChange={e => { setClaimedByFilter(e.target.value); setPage(1); }}
+                        placeholder="ADMIN ID..."
+                        value={claimedByFilter}
+                        onChange={(e) => {
+                            setClaimedByFilter(e.target.value);
+                            setPage(1);
+                        }}
                     />
-                    
+
                     <button className={styles.actionBtn} onClick={() => refetch()}>
                         REFRESH
                     </button>
@@ -93,9 +102,17 @@ export const PhotoVerificationPage: React.FC = () => {
                     </thead>
                     <tbody>
                         {isLoading ? (
-                            <tr><td colSpan={6} className={styles.loading}>INITIALIZING DATA STREAM...</td></tr>
+                            <tr>
+                                <td colSpan={6} className={styles.loading}>
+                                    INITIALIZING DATA STREAM...
+                                </td>
+                            </tr>
                         ) : tasks.length === 0 ? (
-                            <tr><td colSpan={6} className={styles.emptyState}>NO PHOTO TASKS FOUND.</td></tr>
+                            <tr>
+                                <td colSpan={6} className={styles.emptyState}>
+                                    NO PHOTO TASKS FOUND.
+                                </td>
+                            </tr>
                         ) : (
                             tasks.map((task) => (
                                 <tr key={task.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
@@ -121,11 +138,11 @@ export const PhotoVerificationPage: React.FC = () => {
                                     </td>
                                     <td>
                                         <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus !== 'PENDING' 
-                                                ? 'VIEW' 
-                                                : task.claimStatus === 'UNCLAIMED' 
-                                                    ? 'CLAIM' 
-                                                    : 'REVIEW'}
+                                            {task.taskStatus !== 'PENDING'
+                                                ? 'VIEW'
+                                                : task.claimStatus === 'UNCLAIMED'
+                                                  ? 'CLAIM'
+                                                  : 'REVIEW'}
                                         </button>
                                     </td>
                                 </tr>
@@ -137,17 +154,27 @@ export const PhotoVerificationPage: React.FC = () => {
 
             {!isLoading && tasks.length > 0 && (
                 <div className={styles.pagination}>
-                    <span>DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, total)} OF {total}</span>
+                    <span>
+                        DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, total)} OF {total}
+                    </span>
                     <div className={styles.pageControls}>
-                        <button className={styles.actionBtn} disabled={page === 1} onClick={() => setPage(p => p - 1)}>PREV</button>
-                        <button className={styles.actionBtn} disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>NEXT</button>
+                        <button className={styles.actionBtn} disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                            PREV
+                        </button>
+                        <button
+                            className={styles.actionBtn}
+                            disabled={page >= totalPages}
+                            onClick={() => setPage((p) => p + 1)}
+                        >
+                            NEXT
+                        </button>
                     </div>
                 </div>
             )}
 
             <AnimatePresence>
                 {activeTask && (
-                    <PhotoReviewModal 
+                    <PhotoReviewModal
                         isOpen={!!activeTask}
                         task={activeTask}
                         currentAdminId={currentAdminId}

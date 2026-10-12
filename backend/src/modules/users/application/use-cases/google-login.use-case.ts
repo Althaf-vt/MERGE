@@ -12,7 +12,7 @@ import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfac
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 
 @Injectable()
-export class GoogleLoginUseCase implements IGoogleLoginUseCase{
+export class GoogleLoginUseCase implements IGoogleLoginUseCase {
     private readonly _googleClient: OAuth2Client;
 
     constructor(
@@ -31,7 +31,6 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
                 idToken: dto.idToken,
                 audience: process.env.GOOGLE_CLIENT_ID
             })
-
             payload = ticket.getPayload();
         } catch (error: any) {
             throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Google token verification failed.");
@@ -45,7 +44,6 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         let user = await this._userRepository.findByEmail(emailVo.getValue());
 
         if (!user) {
-            // Register new OAuth user (automatically verified by Google)
             user = new UserAggregate({
                 email: emailVo,
                 passwordHash: null,
@@ -64,14 +62,9 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
             });
 
             await this._userRepository.create(user);
-
-            // Re-fetch to ensure the generated database ID is present
             const persistedUser = await this._userRepository.findByEmail(emailVo.getValue());
             if(persistedUser) user = persistedUser;
-        }else{
-            // STRICT DDD FIX: We removed the manual accountStatus check here.
-            // We delegate entirely to the Domain Entity which automatically lifts suspensions,
-            // triggers reactivations, or throws errors for banned/deleted states
+        } else {
             user.recordLogin();
             await this._userRepository.update(user);
         }
@@ -83,7 +76,6 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
         const sessionId = await this._sessionService.createSession(user.id!, deviceInfo, ipAddress, ttlSeconds);
 
-        // Generate tokens
         const tokenPayload = {
             userId: user.id,
             email: user.email.getValue(),
@@ -97,7 +89,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase{
         return {
             accessToken,
             refreshToken,
-            user: user.toJSON()
+            user: user
         }
     }
 }

@@ -1,53 +1,58 @@
+import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
+import type { AdminAuthSessionData, AdminForgotPasswordPayload, AdminLoginPayload, AdminResetPasswordPayload, AdminVerifyResetOtpPayload } from '../types';
 import { adminRootApi } from './admin-base-api';
+
+
 
 export const adminAuthApi = adminRootApi.injectEndpoints({
     endpoints: (builder) => ({
-        adminLogin: builder.mutation<any, { email: string; password: string }>({
+        adminLogin: builder.mutation<ApiResponse<AdminAuthSessionData>, AdminLoginPayload>({
             query: (credentials) => ({
-                url: '/admin/auth/login',
+                url: API_ENDPOINTS.ADMIN.AUTH.LOGIN,
                 method: 'POST',
                 body: credentials,
             }),
             invalidatesTags: ['AdminAuth'],
         }),
 
-        adminForgotPassword: builder.mutation<{ message: string }, { email: string }>({
+        adminForgotPassword: builder.mutation<ApiResponse<undefined>, AdminForgotPasswordPayload>({
             query: (body) => ({
-                url: '/admin/auth/forgot-password',
+                url: API_ENDPOINTS.ADMIN.AUTH.FORGOT_PASSWORD,
                 method: 'POST',
                 body,
             }),
         }),
 
-        adminResetPassword: builder.mutation<{ message: string }, any>({
+        adminResetPassword: builder.mutation<ApiResponse<undefined>, AdminResetPasswordPayload>({
             query: (body) => ({
-                url: '/admin/auth/reset-password',
+                url: API_ENDPOINTS.ADMIN.AUTH.RESET_PASSWORD,
                 method: 'POST',
                 body,
             }),
         }),
 
-        adminVerifyResetOtp: builder.mutation<{ message: string }, { email: string; otp: string }>({
+        adminVerifyResetOtp: builder.mutation<ApiResponse<undefined>, AdminVerifyResetOtpPayload>({
             query: (body) => ({
-                url: '/admin/auth/verify-reset-otp',
+                url: API_ENDPOINTS.ADMIN.AUTH.VERIFY_RESET_OTP,
                 method: 'POST',
                 body,
             }),
         }),
 
-        adminLogout: builder.mutation<{ message: string }, void>({
+        adminLogout: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
-                url: '/admin/auth/logout',
-                method: "POST",
+                url: API_ENDPOINTS.ADMIN.AUTH.LOGOUT,
+                method: 'POST',
             }),
             invalidatesTags: ['AdminAuth'],
         }),
 
-        adminRefresh: builder.mutation<{ accessToken: string, admin: any }, void>({
+        adminRefresh: builder.mutation<ApiResponse<AdminAuthSessionData>, void>({
             query: () => ({
-                url: '/admin/auth/refresh',
-                method: 'POST'
-            })
+                url: API_ENDPOINTS.ADMIN.AUTH.REFRESH,
+                method: 'POST',
+            }),
         }),
     }),
     overrideExisting: false,
@@ -59,5 +64,5 @@ export const {
     useAdminResetPasswordMutation,
     useAdminVerifyResetOtpMutation,
     useAdminLogoutMutation,
-    useAdminRefreshMutation
+    useAdminRefreshMutation,
 } = adminAuthApi;

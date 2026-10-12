@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useAppSelector, useAppDispatch } from "../../../app/hooks";
-import { useUpdateLifestyleMutation } from "../api/profile.api";
-import { setCredentials } from "../../auth/slices/auth.slice";
-import { getErrorMessage } from "../../../shared/utils/error.util";
+import React, { useEffect, useState } from 'react';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { useUpdateLifestyleMutation } from '../api/profile.api';
+import { setCredentials } from '../../auth/slices/auth.slice';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import {
     EDUCATION_LEVELS,
     INCOME_RANGES,
@@ -13,9 +13,9 @@ import {
     DISABILITY_OPTIONS,
     RELATIONSHIP_STATUS_OPTIONS,
     MARITAL_STATUS_OPTIONS,
-} from "../constants/lifestyle-options.constant";
-import styles from "./lifestyle-background.module.css";
-import { useNavigate } from "react-router-dom";
+} from '../constants/lifestyle-options.constant';
+import styles from './lifestyle-background.module.css';
+import { useNavigate } from 'react-router-dom';
 
 interface LifestyleBackgroundProps {
     onSuccess: () => void;
@@ -34,24 +34,22 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Pre-populate education tags from saved data if present
-    const [educationTags, setEducationTags] = useState<string[]>(
-        savedProfile?.education || []
-    );
-    const [educationInput, setEducationInput] = useState("");
+    const [educationTags, setEducationTags] = useState<string[]>(savedProfile?.education || []);
+    const [educationInput, setEducationInput] = useState('');
 
     // Initialize state directly from savedProfile fallbacking to defaults
     const [formData, setFormData] = useState({
-        occupation: savedProfile?.occupation || "",
-        incomeRange: Array.isArray(savedProfile?.incomeRange) 
-            ? savedProfile.incomeRange[0] || "" 
-            : savedProfile?.incomeRange || "",
-        religion: savedProfile?.religion || "",
-        disability: savedProfile?.disability || "NO",
-        diet: savedProfile?.diet || "VEGETARIAN",
-        smokingHabit: savedProfile?.smokingHabit || "NO",
-        drinkingHabit: savedProfile?.drinkingHabit || "NO",
-        relationshipStatus: savedProfile?.relationshipStatus || "SINGLE",
-        maritalStatus: savedProfile?.maritalStatus || "NEVER_MARRIED",
+        occupation: savedProfile?.occupation || '',
+        incomeRange: Array.isArray(savedProfile?.incomeRange)
+            ? savedProfile.incomeRange[0] || ''
+            : savedProfile?.incomeRange || '',
+        religion: savedProfile?.religion || '',
+        disability: savedProfile?.disability || 'NO',
+        diet: savedProfile?.diet || 'VEGETARIAN',
+        smokingHabit: savedProfile?.smokingHabit || 'NO',
+        drinkingHabit: savedProfile?.drinkingHabit || 'NO',
+        relationshipStatus: savedProfile?.relationshipStatus || 'SINGLE',
+        maritalStatus: savedProfile?.maritalStatus || 'NEVER_MARRIED',
     });
 
     // Sync whenever user context changes/rehydrates
@@ -61,17 +59,17 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                 setEducationTags(savedProfile.education);
             }
             setFormData({
-                occupation: savedProfile.occupation || "",
+                occupation: savedProfile.occupation || '',
                 incomeRange: Array.isArray(savedProfile.incomeRange)
-                    ? savedProfile.incomeRange[0] || ""
-                    : savedProfile.incomeRange || "",
-                religion: savedProfile.religion || "",
-                disability: savedProfile.disability || "NO",
-                diet: savedProfile.diet || "VEGETARIAN",
-                smokingHabit: savedProfile.smokingHabit || "NO",
-                drinkingHabit: savedProfile.drinkingHabit || "NO",
-                relationshipStatus: savedProfile.relationshipStatus || "SINGLE",
-                maritalStatus: savedProfile.maritalStatus || "NEVER_MARRIED",
+                    ? savedProfile.incomeRange[0] || ''
+                    : savedProfile.incomeRange || '',
+                religion: savedProfile.religion || '',
+                disability: savedProfile.disability || 'NO',
+                diet: savedProfile.diet || 'VEGETARIAN',
+                smokingHabit: savedProfile.smokingHabit || 'NO',
+                drinkingHabit: savedProfile.drinkingHabit || 'NO',
+                relationshipStatus: savedProfile.relationshipStatus || 'SINGLE',
+                maritalStatus: savedProfile.maritalStatus || 'NEVER_MARRIED',
             });
         }
     }, [savedProfile]);
@@ -80,21 +78,21 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
         const errors: Record<string, string> = {};
 
         if (educationTags.length === 0 && !educationInput.trim()) {
-            errors.education = "Provide at least one educational qualification.";
+            errors.education = 'Provide at least one educational qualification.';
         }
 
         if (!formData.occupation.trim()) {
-            errors.occupation = "Occupation is required.";
+            errors.occupation = 'Occupation is required.';
         } else if (formData.occupation.trim().length < 2) {
-            errors.occupation = "Occupation must be at least 2 characters.";
+            errors.occupation = 'Occupation must be at least 2 characters.';
         }
 
         if (!formData.incomeRange) {
-            errors.incomeRange = "Income range is required.";
+            errors.incomeRange = 'Income range is required.';
         }
 
         if (!formData.religion) {
-            errors.religion = "Religious or philosophical belief is required.";
+            errors.religion = 'Religious or philosophical belief is required.';
         }
 
         setFieldErrors(errors);
@@ -106,9 +104,9 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
         if (trimmed && !educationTags.includes(trimmed)) {
             setEducationTags([...educationTags, trimmed]);
         }
-        setEducationInput("");
+        setEducationInput('');
         if (fieldErrors.education) {
-            setFieldErrors((prev) => ({ ...prev, education: "" }));
+            setFieldErrors((prev) => ({ ...prev, education: '' }));
         }
     };
 
@@ -117,12 +115,12 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
     };
 
     const handleEducationKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" || e.key === ",") {
+        if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault();
             if (educationInput.trim()) {
                 handleAddEducation(educationInput);
             }
-        } else if (e.key === "Backspace" && !educationInput && educationTags.length > 0) {
+        } else if (e.key === 'Backspace' && !educationInput && educationTags.length > 0) {
             handleRemoveEducation(educationTags[educationTags.length - 1]);
         }
     };
@@ -131,7 +129,7 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
         if (fieldErrors[name]) {
-            setFieldErrors((prev) => ({ ...prev, [name]: "" }));
+            setFieldErrors((prev) => ({ ...prev, [name]: '' }));
         }
     };
 
@@ -155,22 +153,22 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
 
             const res = await updateLifestyle(payload).unwrap();
 
-            if (user && accessToken) {
+            if (user && accessToken && res.data) {
                 dispatch(
                     setCredentials({
                         accessToken,
-                        user: { 
-                            ...user, 
+                        user: {
+                            ...user,
                             onboardingStep: Math.max(user.onboardingStep ?? 0, 4),
-                            profile: res.profile,
+                            profile: res.data.profile,
                         },
                     })
                 );
             }
 
             onSuccess();
-        } catch (err: any) {
-            setError(getErrorMessage(err, "Failed to save lifestyle and background details."));
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to save lifestyle and background details.'));
         }
     };
 
@@ -178,7 +176,9 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
         <div className={styles.glassContainer}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Lifestyle & Background</h1>
-                <p className={styles.subtitle}>Help us understand your day-to-day rhythm, background, and life values.</p>
+                <p className={styles.subtitle}>
+                    Help us understand your day-to-day rhythm, background, and life values.
+                </p>
             </div>
 
             {error && <div className={styles.errorBanner}>{error}</div>}
@@ -209,8 +209,8 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                                     onKeyDown={handleEducationKeyDown}
                                     placeholder={
                                         educationTags.length === 0
-                                            ? "Type degree & press Enter (or select below)"
-                                            : ""
+                                            ? 'Type degree & press Enter (or select below)'
+                                            : ''
                                     }
                                     list="education-defaults"
                                 />
@@ -282,9 +282,7 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                                     </option>
                                 ))}
                             </select>
-                            {fieldErrors.religion && (
-                                <span className={styles.fieldError}>{fieldErrors.religion}</span>
-                            )}
+                            {fieldErrors.religion && <span className={styles.fieldError}>{fieldErrors.religion}</span>}
                         </div>
 
                         <div className={styles.inputGroup}>
@@ -410,11 +408,7 @@ export const LifestyleBackground: React.FC<LifestyleBackgroundProps> = ({ onSucc
                         <span>← Back</span>
                     </button>
 
-                    <button
-                        type="submit"
-                        className={styles.primaryBtn}
-                        disabled={isLoading}
-                    >
+                    <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
                         <span>{isLoading ? 'Saving Background...' : 'Save & Continue →'}</span>
                     </button>
                 </div>

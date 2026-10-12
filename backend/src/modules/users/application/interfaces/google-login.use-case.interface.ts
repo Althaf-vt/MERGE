@@ -1,3 +1,4 @@
+import { UserAggregate } from "../../domain/entities/user.entity";
 import { GoogleLoginDto } from "../dtos/google-login.dto";
 
 export const GOOGLE_LOGIN_USE_CASE = 'GOOGLE_LOGIN_USE_CASE';
@@ -5,7 +6,7 @@ export const GOOGLE_LOGIN_USE_CASE = 'GOOGLE_LOGIN_USE_CASE';
 export interface IGoogleLoginResult {
     accessToken: string;
     refreshToken: string;
-    user: any;
+    user: UserAggregate;
 }
 
 export interface IGoogleLoginUseCase {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRequestSecurityOtpMutation, useUpdateSecurityPasswordMutation } from '../api/profile.api';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './security-modals.module.css';
 
 interface PasswordChangeModalProps {
@@ -17,7 +18,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    
+
     const [timeLeft, setTimeLeft] = useState(60);
 
     // Trigger OTP send on mount
@@ -35,7 +36,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
     // Timer countdown logic
     useEffect(() => {
         if (!isOpen || timeLeft <= 0) return;
-        const timerId = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+        const timerId = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
         return () => clearInterval(timerId);
     }, [isOpen, timeLeft]);
 
@@ -44,7 +45,7 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
             await requestOtp().unwrap();
             setTimeLeft(60);
             setError('');
-        } catch (err: any) {
+        } catch {
             setError('Failed to send verification code. Please try again.');
         }
     };
@@ -86,11 +87,8 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
         try {
             await updatePassword({ otp, newPassword, confirmPassword }).unwrap();
             onSuccess(); // Triggers frontend logout
-        } catch (err: any) {
-            const apiMessage = err?.data?.message;
-            if (Array.isArray(apiMessage)) setError(apiMessage.join(' • '));
-            else if (typeof apiMessage === 'string') setError(apiMessage);
-            else setError('Failed to update password.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to update password.'));
         }
     };
 
@@ -101,7 +99,10 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
             <div className={styles.modalContent}>
                 <div className={styles.modalHeader}>
                     <div className={styles.iconWrapper}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
                     </div>
                     <h3 className={styles.title}>Update Password</h3>
                 </div>
@@ -110,10 +111,13 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
 
                 {step === 1 ? (
                     <>
-                        <p className={styles.description}>We've sent a 6-digit verification code to your registered email address to authorize this change.</p>
+                        <p className={styles.description}>
+                            We've sent a 6-digit verification code to your registered email address to authorize this
+                            change.
+                        </p>
                         <div className={styles.inputGroup}>
                             <label>Verification Code</label>
-                            <input 
+                            <input
                                 className={`${styles.input} ${styles.otpInput}`}
                                 value={otp}
                                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -124,20 +128,29 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
                             <span style={{ color: '#6b7280' }}>
                                 {timeLeft > 0 ? `Resend code in ${timeLeft}s` : 'Did not receive code?'}
                             </span>
-                            <button type="button" className={styles.resendBtn} disabled={timeLeft > 0} onClick={handleRequestOtp}>
+                            <button
+                                type="button"
+                                className={styles.resendBtn}
+                                disabled={timeLeft > 0}
+                                onClick={handleRequestOtp}
+                            >
                                 Resend Code
                             </button>
                         </div>
                         <div className={styles.actionRow}>
-                            <button type="button" className={styles.btnSecondary} onClick={onClose}>Cancel</button>
-                            <button type="button" className={styles.btnPrimary} onClick={handleNext}>Next →</button>
+                            <button type="button" className={styles.btnSecondary} onClick={onClose}>
+                                Cancel
+                            </button>
+                            <button type="button" className={styles.btnPrimary} onClick={handleNext}>
+                                Next →
+                            </button>
                         </div>
                     </>
                 ) : (
                     <>
                         <div className={styles.inputGroup}>
                             <label>New Password</label>
-                            <input 
+                            <input
                                 type="password"
                                 className={styles.input}
                                 value={newPassword}
@@ -145,21 +158,26 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
                                 placeholder="Enter new password"
                             />
                             <div className={styles.strengthMeter}>
-                                {[1, 2, 3, 4].map(level => (
-                                    <div 
-                                        key={level} 
+                                {[1, 2, 3, 4].map((level) => (
+                                    <div
+                                        key={level}
                                         className={styles.strengthBar}
-                                        style={{ backgroundColor: strength >= level ? strengthColors[strength] : '#e5e7eb' }}
+                                        style={{
+                                            backgroundColor: strength >= level ? strengthColors[strength] : '#e5e7eb',
+                                        }}
                                     />
                                 ))}
                             </div>
-                            <div className={styles.strengthText} style={{ color: strength > 0 ? strengthColors[strength] : '#6b7280' }}>
+                            <div
+                                className={styles.strengthText}
+                                style={{ color: strength > 0 ? strengthColors[strength] : '#6b7280' }}
+                            >
                                 {newPassword ? strengthLabels[strength] : 'Enter a password'}
                             </div>
                         </div>
                         <div className={styles.inputGroup}>
                             <label>Confirm Password</label>
-                            <input 
+                            <input
                                 type="password"
                                 className={styles.input}
                                 value={confirmPassword}
@@ -168,8 +186,15 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
                             />
                         </div>
                         <div className={styles.actionRow}>
-                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}>← Back</button>
-                            <button type="button" className={styles.btnPrimary} onClick={handleSubmit} disabled={isLoading}>
+                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}>
+                                ← Back
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.btnPrimary}
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                            >
                                 {isLoading ? 'Saving...' : 'Save Password'}
                             </button>
                         </div>

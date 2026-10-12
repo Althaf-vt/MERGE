@@ -1,12 +1,11 @@
-// frontend/src/features/admin/management/components/admin-status-modal.component.tsx
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { 
-    useSuspendAdminMutation, 
-    useDeactivateAdminMutation, 
-    useReactivateAdminMutation 
+import {
+    useSuspendAdminMutation,
+    useDeactivateAdminMutation,
+    useReactivateAdminMutation,
 } from '../api/admin-management.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './admin-modal.module.css';
 
 export type AdminActionType = 'SUSPEND' | 'DEACTIVATE' | 'REACTIVATE';
@@ -20,7 +19,11 @@ interface AdminStatusModalProps {
 }
 
 export const AdminStatusModal: React.FC<AdminStatusModalProps> = ({
-    isOpen, onClose, adminId, adminName, actionType
+    isOpen,
+    onClose,
+    adminId,
+    adminName,
+    actionType,
 }) => {
     const [suspendAdmin, { isLoading: isSuspending }] = useSuspendAdminMutation();
     const [deactivateAdmin, { isLoading: isDeactivating }] = useDeactivateAdminMutation();
@@ -62,8 +65,8 @@ export const AdminStatusModal: React.FC<AdminStatusModalProps> = ({
                 await reactivateAdmin({ adminId, reason }).unwrap();
             }
             onClose();
-        } catch (err: any) {
-            setErrorMsg(err?.data?.error?.message || `Failed to ${actionType.toLowerCase()} admin.`);
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, `Failed to ${actionType.toLowerCase()} admin.`));
         }
     };
 
@@ -97,10 +100,19 @@ export const AdminStatusModal: React.FC<AdminStatusModalProps> = ({
             >
                 <div className={styles.header}>
                     <h2 className={styles.title}>{getTitle()}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>&times;</button>
+                    <button onClick={onClose} className={styles.closeBtn}>
+                        &times;
+                    </button>
                 </div>
 
-                <div style={{ padding: '0 24px', marginTop: '16px', fontSize: '12px', color: 'var(--admin-text-secondary)' }}>
+                <div
+                    style={{
+                        padding: '0 24px',
+                        marginTop: '16px',
+                        fontSize: '12px',
+                        color: 'var(--admin-text-secondary)',
+                    }}
+                >
                     Target: <strong style={{ color: 'var(--admin-text-primary)' }}>{adminName}</strong>
                 </div>
 
@@ -111,17 +123,17 @@ export const AdminStatusModal: React.FC<AdminStatusModalProps> = ({
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <div className={styles.inputGroup} style={{ flex: 1 }}>
                                 <label>Duration</label>
-                                <input 
-                                    type="number" 
-                                    min="1" 
-                                    value={duration} 
-                                    onChange={e => setDuration(Number(e.target.value))} 
-                                    required 
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={duration}
+                                    onChange={(e) => setDuration(Number(e.target.value))}
+                                    required
                                 />
                             </div>
                             <div className={styles.inputGroup} style={{ flex: 1 }}>
                                 <label>Unit</label>
-                                <select value={unit} onChange={e => setUnit(e.target.value as 'HOURS' | 'DAYS')}>
+                                <select value={unit} onChange={(e) => setUnit(e.target.value as 'HOURS' | 'DAYS')}>
                                     <option value="HOURS">Hours</option>
                                     <option value="DAYS">Days</option>
                                 </select>
@@ -131,22 +143,32 @@ export const AdminStatusModal: React.FC<AdminStatusModalProps> = ({
 
                     <div className={styles.inputGroup}>
                         <label>Audit Reason (Required)</label>
-                        <input 
-                            type="text" 
-                            value={reason} 
-                            onChange={e => setReason(e.target.value)} 
+                        <input
+                            type="text"
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
                             placeholder="Enter reason for audit logs..."
-                            required 
+                            required
                         />
                     </div>
 
                     <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.btnCancel}>Cancel</button>
-                        <button 
-                            type="submit" 
-                            disabled={isLoading} 
+                        <button type="button" onClick={onClose} className={styles.btnCancel}>
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
                             className={`${styles.btnSubmit} ${actionType === 'REACTIVATE' ? '' : styles.suspendBtn}`}
-                            style={actionType === 'REACTIVATE' ? { backgroundColor: 'var(--badge-active-bg)', borderColor: 'var(--badge-active-bg)', color: 'var(--badge-active-text)' } : {}}
+                            style={
+                                actionType === 'REACTIVATE'
+                                    ? {
+                                          backgroundColor: 'var(--badge-active-bg)',
+                                          borderColor: 'var(--badge-active-bg)',
+                                          color: 'var(--badge-active-text)',
+                                      }
+                                    : {}
+                            }
                         >
                             {getBtnText()}
                         </button>

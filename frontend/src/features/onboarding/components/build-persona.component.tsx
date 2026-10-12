@@ -1,14 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useAppSelector, useAppDispatch } from "../../../app/hooks";
-import { useUpdatePersonaMutation } from "../api/profile.api";
-import { setCredentials } from "../../auth/slices/auth.slice";
-import { getErrorMessage } from "../../../shared/utils/error.util";
+import React, { useState, useRef, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { useUpdatePersonaMutation } from '../api/profile.api';
+import { setCredentials } from '../../auth/slices/auth.slice';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import {
     PRONOUN_SUGGESTIONS,
     GENDER_IDENTITY_OPTIONS,
     LANGUAGE_SUGGESTIONS,
     INDIAN_LOCATION_DATA,
-} from "../constants/persona-options.constant";
+} from '../constants/persona-options.constant';
 import styles from './build-persona.module.css';
 
 interface BuildPersonaProps {
@@ -29,13 +29,11 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
     // Dynamic Multi-Select & Autocomplete States
-    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
-        savedProfile?.languages || []
-    );
+    const [selectedLanguages, setSelectedLanguages] = useState<string[]>(savedProfile?.languages || []);
     const [languageInput, setLanguageInput] = useState('');
     const [showLangSuggestions, setShowLangSuggestions] = useState(false);
 
-    const [pronounInput, setPronounInput] = useState(savedProfile?.pronouns || '');
+    const [pronounInput, setPronounInput] = useState<string>(savedProfile?.pronouns || '');
     const [showPronounSuggestions, setShowPronounSuggestions] = useState(false);
 
     // Click-outside reference listeners
@@ -60,8 +58,9 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
         immigrationReady: savedProfile?.immigrationReady || 'OPEN_TO_DISCUSSION',
     });
 
-    const availableStates = Object.keys(INDIAN_LOCATION_DATA);
-    const availableCities = formData.state ? INDIAN_LOCATION_DATA[formData.state] || [] : [];
+    const locationMap: Record<string, string[]> = INDIAN_LOCATION_DATA;
+    const availableStates = Object.keys(locationMap);
+    const availableCities: string[] = formData.state ? locationMap[formData.state] || [] : [];
 
     // Close floating dropdowns on click outside
     useEffect(() => {
@@ -73,15 +72,14 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                 setShowPronounSuggestions(false);
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     // Filter dynamic suggestions based on user input
     const filteredLanguages = LANGUAGE_SUGGESTIONS.filter(
         (lang) =>
-            lang.toLowerCase().includes(languageInput.toLowerCase().trim()) &&
-            !selectedLanguages.includes(lang)
+            lang.toLowerCase().includes(languageInput.toLowerCase().trim()) && !selectedLanguages.includes(lang)
     );
 
     const filteredPronouns = PRONOUN_SUGGESTIONS.filter((p) =>
@@ -122,35 +120,35 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
         const cleanName = formData.displayName.trim();
         if (cleanName.length < 3 || cleanName.length > 30) {
-            errors.displayName = "Display name must be between 3 and 30 characters.";
+            errors.displayName = 'Display name must be between 3 and 30 characters.';
         } else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(cleanName)) {
-            errors.displayName = "Display name can only contain letters and single spaces between words.";
+            errors.displayName = 'Display name can only contain letters and single spaces between words.';
         }
 
         const rawPhone = formData.phoneNumber.trim().replace(/^(\+91|0)/, '');
         if (!/^[6-9]\d{9}$/.test(rawPhone)) {
-            errors.phoneNumber = "Please enter a valid 10-digit Indian phone number starting with 6-9.";
+            errors.phoneNumber = 'Please enter a valid 10-digit Indian phone number starting with 6-9.';
         }
 
         const heightNum = parseInt(formData.heightCm, 10);
         if (isNaN(heightNum) || heightNum < 100 || heightNum > 250) {
-            errors.heightCm = "Height must be a valid number between 100 cm and 250 cm.";
+            errors.heightCm = 'Height must be a valid number between 100 cm and 250 cm.';
         }
 
         if (!formData.genderIdentity) {
-            errors.genderIdentity = "Gender identity is required.";
+            errors.genderIdentity = 'Gender identity is required.';
         }
 
         if (!formData.state) {
-            errors.state = "State selection is required.";
+            errors.state = 'State selection is required.';
         }
 
         if (!formData.city) {
-            errors.city = "City selection is required.";
+            errors.city = 'City selection is required.';
         }
 
         if (selectedLanguages.length === 0 && !languageInput.trim()) {
-            errors.languages = "At least one language is required.";
+            errors.languages = 'At least one language is required.';
         }
 
         setFieldErrors(errors);
@@ -196,38 +194,40 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
             const res = await updatePersona(payload).unwrap();
 
             // Hydrate Redux with onboardingStep progression
-            if (user && accessToken) {
+            if (user && accessToken && res.data) {
                 dispatch(
                     setCredentials({
                         accessToken,
                         user: {
                             ...user,
                             onboardingStep: Math.max(user.onboardingStep ?? 0, 3),
-                            profile: res.profile
+                            profile: res.data.profile,
                         },
                     })
                 );
             }
 
             onSuccess();
-        } catch (err: any) {
-            setError(getErrorMessage(err, "Failed to save persona details. Please try again."));
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to save persona details. Please try again.'));
         }
     };
 
     const displayDob = verifiedDOB
         ? new Date(verifiedDOB).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        })
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+          })
         : 'Loading verified data...';
 
     return (
         <div className={styles.glassContainer}>
             <div className={styles.header}>
                 <h1 className={styles.title}>Build Your Persona</h1>
-                <p className={styles.subtitle}>Let's start with the basics. How do you present yourself to the world?</p>
+                <p className={styles.subtitle}>
+                    Let's start with the basics. How do you present yourself to the world?
+                </p>
             </div>
 
             {error && <div className={styles.errorBanner}>{error}</div>}
@@ -255,7 +255,17 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                         <div className={styles.inputGroup}>
                             <label className={styles.label}>
                                 Date of Birth
-                                <svg className={styles.lockIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                    className={styles.lockIcon}
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#9CA3AF"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
@@ -297,9 +307,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                                 className={styles.input}
                                 placeholder="175"
                             />
-                            {fieldErrors.heightCm && (
-                                <span className={styles.fieldError}>{fieldErrors.heightCm}</span>
-                            )}
+                            {fieldErrors.heightCm && <span className={styles.fieldError}>{fieldErrors.heightCm}</span>}
                         </div>
                     </div>
                 </div>
@@ -366,7 +374,12 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
                         <div className={styles.inputGroup}>
                             <label className={styles.label}>Intersex Status</label>
-                            <select name="intersex" value={formData.intersex} onChange={handleChange} className={styles.select}>
+                            <select
+                                name="intersex"
+                                value={formData.intersex}
+                                onChange={handleChange}
+                                className={styles.select}
+                            >
                                 <option value="NO">No</option>
                                 <option value="YES">Yes</option>
                             </select>
@@ -417,9 +430,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                                     </option>
                                 ))}
                             </select>
-                            {fieldErrors.state && (
-                                <span className={styles.fieldError}>{fieldErrors.state}</span>
-                            )}
+                            {fieldErrors.state && <span className={styles.fieldError}>{fieldErrors.state}</span>}
                         </div>
 
                         <div className={styles.inputGroup}>
@@ -433,25 +444,20 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                                 disabled={!formData.state}
                             >
                                 <option value="">{formData.state ? 'Select City' : 'Select State First'}</option>
-                                {availableCities.map((city) => (
+                                {availableCities.map((city: string) => (
                                     <option key={city} value={city}>
                                         {city}
                                     </option>
                                 ))}
                             </select>
-                            {fieldErrors.city && (
-                                <span className={styles.fieldError}>{fieldErrors.city}</span>
-                            )}
+                            {fieldErrors.city && <span className={styles.fieldError}>{fieldErrors.city}</span>}
                         </div>
 
                         {/* Chip-Based Multi-Select Language Field */}
                         <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
                             <label className={styles.label}>Languages Spoken *</label>
                             <div className={styles.autocompleteWrapper} ref={langWrapperRef}>
-                                <div
-                                    className={styles.tagContainer}
-                                    onClick={() => setShowLangSuggestions(true)}
-                                >
+                                <div className={styles.tagContainer} onClick={() => setShowLangSuggestions(true)}>
                                     {selectedLanguages.map((lang) => (
                                         <span key={lang} className={styles.tagChip}>
                                             {lang}
@@ -476,7 +482,11 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                                         }}
                                         onFocus={() => setShowLangSuggestions(true)}
                                         onKeyDown={handleLanguageKeyDown}
-                                        placeholder={selectedLanguages.length === 0 ? "Type language & press comma or enter" : ""}
+                                        placeholder={
+                                            selectedLanguages.length === 0
+                                                ? 'Type language & press comma or enter'
+                                                : ''
+                                        }
                                         autoComplete="off"
                                     />
                                 </div>
@@ -573,7 +583,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
 
                 <div className={styles.footer}>
                     <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                        <span>{isLoading ? "Saving Persona..." : "Save & Continue →"}</span>
+                        <span>{isLoading ? 'Saving Persona...' : 'Save & Continue →'}</span>
                     </button>
                 </div>
             </form>

@@ -1,13 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useGetProfileQuery, useSaveUserFullPreferencesMutation } from '../api/profile.api';
+import { getErrorMessage } from '../../../shared/utils/error.util';
+import type { UpdateFullPreferencesRequest } from '../types/profile.types';
 import {
     GENDER_ORIENTATION_OPTIONS,
     RELATIONSHIP_INTENT_OPTIONS,
     ADOPTION_PREFERENCE_OPTIONS,
     HEALTH_OPTION_VALUES,
     HEALTH_CATEGORIES,
-} from '../constants/preference-form.constants'
+} from '../constants/preference-form.constants';
 import styles from './user-preferences.module.css';
+
+type HealthPreferenceKey =
+    | 'diabeteBpPreference'
+    | 'fertilityPreference'
+    | 'geneticPreference'
+    | 'infectiousPreference'
+    | 'disablilityPreferece';
+
+interface PreferencesFormData {
+    preferredGender: string[];
+    preferredAgeMin: number;
+    preferredAgeMax: number;
+    relationshipGoals: string;
+    openToAdoptionState: string; // 'true' | 'false' | 'maybe'
+    diabeteBpPreference: string;
+    fertilityPreference: string;
+    geneticPreference: string;
+    infectiousPreference: string;
+    disablilityPreferece: string;
+}
 
 export const UserPreferencesPage: React.FC = () => {
     const { data: profileResponse, isLoading: isLoadingProfile } = useGetProfileQuery();
@@ -15,14 +37,14 @@ export const UserPreferencesPage: React.FC = () => {
 
     const [globalError, setGlobalError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
-    const [initialData, setInitialData] = useState<any>(null);
+    const [initialData, setInitialData] = useState<PreferencesFormData | null>(null);
 
-    const [formData, setFormData] = useState({
-        preferredGender: [] as string[],
+    const [formData, setFormData] = useState<PreferencesFormData>({
+        preferredGender: [],
         preferredAgeMin: 18,
         preferredAgeMax: 45,
         relationshipGoals: 'LONG_TERM_RELATIONSHIP',
-        openToAdoptionState: 'maybe', // 'true' | 'false' | 'maybe'
+        openToAdoptionState: 'maybe',
         diabeteBpPreference: 'no_preference',
         fertilityPreference: 'no_preference',
         geneticPreference: 'no_preference',
@@ -34,18 +56,22 @@ export const UserPreferencesPage: React.FC = () => {
         if (!profileResponse?.data) return;
 
         // Check both potential response keys: preference or preferences
-        const pref = (profileResponse.data as any)?.preference || (profileResponse.data as any)?.preferences;
+        const pref = profileResponse.data.preference || profileResponse.data.preferences;
 
         if (pref) {
             let adoptionVal = 'maybe';
             if (pref.openToAdoption === true) adoptionVal = 'true';
             if (pref.openToAdoption === false) adoptionVal = 'false';
 
-            const mapped = {
+            const resolvedGoals = Array.isArray(pref.relationshipGoals)
+                ? pref.relationshipGoals[0] || 'LONG_TERM_RELATIONSHIP'
+                : pref.relationShipGoals || pref.relationshipGoals || 'LONG_TERM_RELATIONSHIP';
+
+            const mapped: PreferencesFormData = {
                 preferredGender: pref.preferredGender || ['Women', 'Non-Binary'],
                 preferredAgeMin: pref.preferredAgeMin ?? 18,
                 preferredAgeMax: pref.prefferedAgeMax ?? pref.preferredAgeMax ?? 45,
-                relationshipGoals: pref.relationShipGoals || pref.relationshipGoals || 'LONG_TERM_RELATIONSHIP',
+                relationshipGoals: resolvedGoals,
                 openToAdoptionState: adoptionVal,
                 diabeteBpPreference: pref.diabeteBpPreference || 'no_preference',
                 fertilityPreference: pref.fertilityPreference || 'no_preference',
@@ -56,13 +82,13 @@ export const UserPreferencesPage: React.FC = () => {
             setFormData(mapped);
             setInitialData(mapped);
         } else {
-            // FIX: If user has no preference record yet, baseline initialData with current default formData
+            // If user has no preference record yet, baseline initialData with current default formData
             setInitialData({ ...formData });
         }
     }, [profileResponse]);
 
     // Sorting arrays ensures order difference doesn't disrupt dirty checking
-    const getNormalizedString = (data: typeof formData | null) => {
+    const getNormalizedString = (data: PreferencesFormData | null) => {
         if (!data) return '';
         return JSON.stringify({
             ...data,
@@ -82,7 +108,7 @@ export const UserPreferencesPage: React.FC = () => {
         });
     };
 
-    const handleHealthChange = (key: string, value: string) => {
+    const handleHealthChange = (key: HealthPreferenceKey, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
@@ -96,7 +122,7 @@ export const UserPreferencesPage: React.FC = () => {
         setGlobalError('');
         setSuccessMsg('');
 
-        const payload: any = {
+        const payload: UpdateFullPreferencesRequest = {
             preferredGender: formData.preferredGender,
             preferredAgeMin: Number(formData.preferredAgeMin),
             preferredAgeMax: Number(formData.preferredAgeMax),
@@ -106,7 +132,8 @@ export const UserPreferencesPage: React.FC = () => {
             geneticPreference: formData.geneticPreference,
             infectiousPreference: formData.infectiousPreference,
             disablilityPreferece: formData.disablilityPreferece,
-            openToAdoption: formData.openToAdoptionState === 'maybe' ? undefined : formData.openToAdoptionState === 'true',
+            openToAdoption:
+                formData.openToAdoptionState === 'maybe' ? undefined : formData.openToAdoptionState === 'true',
         };
 
         try {
@@ -114,30 +141,47 @@ export const UserPreferencesPage: React.FC = () => {
             setInitialData({ ...formData });
             setSuccessMsg('Preferences saved successfully.');
             setTimeout(() => setSuccessMsg(''), 4000);
-        } catch (err: any) {
-            const apiMessage = err?.data?.message;
-            if (Array.isArray(apiMessage)) {
-                setGlobalError(apiMessage.join(' • '));
-            } else if (typeof apiMessage === 'string') {
-                setGlobalError(apiMessage);
-            } else {
-                setGlobalError(err?.data?.error || 'Failed to update preferences.');
-            }
+        } catch (err: unknown) {
+            setGlobalError(getErrorMessage(err, 'Failed to update preferences.'));
         }
     };
 
     const renderIcon = (type: string) => {
         switch (type) {
             case 'activity':
-                return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>;
+                return (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                );
             case 'heart':
-                return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>;
+                return (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                );
             case 'git-commit':
-                return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4" /><line x1="1.05" y1="12" x2="7" y2="12" /><line x1="17.01" y1="12" x2="22.96" y2="12" /></svg>;
+                return (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="4" />
+                        <line x1="1.05" y1="12" x2="7" y2="12" />
+                        <line x1="17.01" y1="12" x2="22.96" y2="12" />
+                    </svg>
+                );
             case 'shield':
-                return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
+                return (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                );
             default:
-                return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><polyline points="17 11 19 13 23 9" /></svg>;
+                return (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="8.5" cy="7" r="4" />
+                        <polyline points="17 11 19 13 23 9" />
+                    </svg>
+                );
         }
     };
 
@@ -149,7 +193,9 @@ export const UserPreferencesPage: React.FC = () => {
         <div className={styles.pageContainer}>
             <header className={styles.header}>
                 <h1 className={styles.title}>Preferences</h1>
-                <p className={styles.subtitle}>Control who appears in your discovery experience and improve match relevance.</p>
+                <p className={styles.subtitle}>
+                    Control who appears in your discovery experience and improve match relevance.
+                </p>
             </header>
 
             {globalError && <div className={styles.errorMsg}>{globalError}</div>}
@@ -161,14 +207,18 @@ export const UserPreferencesPage: React.FC = () => {
                     {/* Discovery Preferences */}
                     <div className={styles.card}>
                         <div className={styles.cardHeaderWithIcon}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                            </svg>
                             <h2 className={styles.cardTitle}>Discovery Preferences</h2>
                         </div>
 
                         <div className={styles.fieldSection}>
                             <div className={styles.labelRow}>
                                 <label>Age Range</label>
-                                <span className={styles.accentValue}>{formData.preferredAgeMin} - {formData.preferredAgeMax}</span>
+                                <span className={styles.accentValue}>
+                                    {formData.preferredAgeMin} - {formData.preferredAgeMax}
+                                </span>
                             </div>
                             <div className={styles.rangeSliders}>
                                 <input
@@ -176,7 +226,12 @@ export const UserPreferencesPage: React.FC = () => {
                                     min="18"
                                     max="80"
                                     value={formData.preferredAgeMin}
-                                    onChange={(e) => setFormData(p => ({ ...p, preferredAgeMin: Math.min(Number(e.target.value), p.preferredAgeMax) }))}
+                                    onChange={(e) =>
+                                        setFormData((p) => ({
+                                            ...p,
+                                            preferredAgeMin: Math.min(Number(e.target.value), p.preferredAgeMax),
+                                        }))
+                                    }
                                     className={styles.rangeInput}
                                 />
                                 <input
@@ -184,7 +239,12 @@ export const UserPreferencesPage: React.FC = () => {
                                     min="18"
                                     max="80"
                                     value={formData.preferredAgeMax}
-                                    onChange={(e) => setFormData(p => ({ ...p, preferredAgeMax: Math.max(Number(e.target.value), p.preferredAgeMin) }))}
+                                    onChange={(e) =>
+                                        setFormData((p) => ({
+                                            ...p,
+                                            preferredAgeMax: Math.max(Number(e.target.value), p.preferredAgeMin),
+                                        }))
+                                    }
                                     className={styles.rangeInput}
                                 />
                             </div>
@@ -214,7 +274,9 @@ export const UserPreferencesPage: React.FC = () => {
                     {/* Relationship Preferences */}
                     <div className={styles.card}>
                         <div className={styles.cardHeaderWithIcon}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
                             <h2 className={styles.cardTitle}>Relationship Preferences</h2>
                         </div>
 
@@ -226,13 +288,26 @@ export const UserPreferencesPage: React.FC = () => {
                                     return (
                                         <div
                                             key={intent.value}
-                                            onClick={() => setFormData(p => ({ ...p, relationshipGoals: intent.value }))}
-                                            className={`${styles.intentCard} ${isSelected ? styles.intentCardActive : ''}`}
+                                            onClick={() =>
+                                                setFormData((p) => ({ ...p, relationshipGoals: intent.value }))
+                                            }
+                                            className={`${styles.intentCard} ${
+                                                isSelected ? styles.intentCardActive : ''
+                                            }`}
                                         >
                                             <div className={styles.intentHeader}>
                                                 <strong>{intent.label}</strong>
                                                 {isSelected && (
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
+                                                    <svg
+                                                        width="16"
+                                                        height="16"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="#6D28D9"
+                                                        strokeWidth="3"
+                                                    >
+                                                        <polyline points="20 6 9 17 4 12" />
+                                                    </svg>
                                                 )}
                                             </div>
                                             <p>{intent.desc}</p>
@@ -252,7 +327,12 @@ export const UserPreferencesPage: React.FC = () => {
                                             name="openToAdoptionState"
                                             value={opt.value}
                                             checked={formData.openToAdoptionState === opt.value}
-                                            onChange={(e) => setFormData(p => ({ ...p, openToAdoptionState: e.target.value }))}
+                                            onChange={(e) =>
+                                                setFormData((p) => ({
+                                                    ...p,
+                                                    openToAdoptionState: e.target.value,
+                                                }))
+                                            }
                                         />
                                         <span>{opt.label}</span>
                                     </label>
@@ -264,58 +344,77 @@ export const UserPreferencesPage: React.FC = () => {
                     {/* Health & Medical Compatibility */}
                     <div className={styles.card}>
                         <div className={styles.cardHeaderWithIcon}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 8v8" /><path d="M8 12h8" /></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <path d="M12 8v8" />
+                                <path d="M8 12h8" />
+                            </svg>
                             <h2 className={styles.cardTitle}>Health & Medical Compatibility</h2>
                         </div>
                         <p className={styles.cardDesc}>
-                            Optional. Set how open you are to different health conditions in a match — this affects match relevance, not a hard filter.
+                            Optional. Set how open you are to different health conditions in a match — this affects
+                            match relevance, not a hard filter.
                         </p>
 
                         <div className={styles.noticeBox}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
                             <div>
-                                This reflects your own openness, not a verified requirement. A partner's medical info is self-declared and not verified by MERGE.
+                                This reflects your own openness, not a verified requirement. A partner's medical info is
+                                self-declared and not verified by MERGE.
                             </div>
                         </div>
 
                         <div className={styles.healthList}>
-                            {HEALTH_CATEGORIES.map((cat) => (
-                                <div key={cat.key} className={styles.healthCategory}>
-                                    <div className={styles.healthCategoryHeader}>
-                                        {renderIcon(cat.icon)}
-                                        <h4>{cat.title}</h4>
+                            {HEALTH_CATEGORIES.map((cat) => {
+                                const categoryKey = cat.key as HealthPreferenceKey;
+                                return (
+                                    <div key={cat.key} className={styles.healthCategory}>
+                                        <div className={styles.healthCategoryHeader}>
+                                            {renderIcon(cat.icon)}
+                                            <h4>{cat.title}</h4>
+                                        </div>
+                                        <div className={styles.healthOptionsWrap}>
+                                            {HEALTH_OPTION_VALUES.map((opt) => {
+                                                const active = formData[categoryKey] === opt.value;
+                                                return (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => handleHealthChange(categoryKey, opt.value)}
+                                                        className={`${styles.optionChip} ${
+                                                            active ? styles.optionChipActive : ''
+                                                        }`}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {'subtext' in cat && <p className={styles.subtext}>{cat.subtext}</p>}
                                     </div>
-                                    <div className={styles.healthOptionsWrap}>
-                                        {HEALTH_OPTION_VALUES.map((opt) => {
-                                            const active = (formData as any)[cat.key] === opt.value;
-                                            return (
-                                                <button
-                                                    key={opt.value}
-                                                    type="button"
-                                                    onClick={() => handleHealthChange(cat.key, opt.value)}
-                                                    className={`${styles.optionChip} ${active ? styles.optionChipActive : ''}`}
-                                                >
-                                                    {opt.label}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                    {'subtext' in cat && <p className={styles.subtext}>{cat.subtext}</p>}
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
 
-                {/* Right Sidebar[cite: 7] */}
+                {/* Right Sidebar */}
                 <div className={styles.sidebarColumn}>
-                    {/* Active Filters[cite: 7] */}
+                    {/* Active Filters */}
                     <div className={styles.sideCard}>
                         <h3 className={styles.sideCardTitle}>ACTIVE FILTERS</h3>
                         <div className={styles.activeTagWrap}>
-                            <span className={styles.activeTag}>Age: {formData.preferredAgeMin}-{formData.preferredAgeMax}</span>
+                            <span className={styles.activeTag}>
+                                Age: {formData.preferredAgeMin}-{formData.preferredAgeMax}
+                            </span>
                             {formData.preferredGender.slice(0, 3).map((g) => (
-                                <span key={g} className={styles.activeTag}>{g}</span>
+                                <span key={g} className={styles.activeTag}>
+                                    {g}
+                                </span>
                             ))}
                             {formData.preferredGender.length > 3 && (
                                 <span className={styles.activeTag}>+{formData.preferredGender.length - 3} more</span>
@@ -323,10 +422,13 @@ export const UserPreferencesPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Promotional Locked Premium Card[cite: 7] */}
+                    {/* Promotional Locked Premium Card */}
                     <div className={styles.premiumCard}>
                         <div className={styles.premiumHeader}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" strokeWidth="2"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" strokeWidth="2">
+                                <circle cx="12" cy="8" r="7" />
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                            </svg>
                             <h3>Advanced Filters</h3>
                         </div>
                         <p className={styles.premiumDesc}>
@@ -334,9 +436,48 @@ export const UserPreferencesPage: React.FC = () => {
                         </p>
 
                         <ul className={styles.lockedFeatures}>
-                            <li><span>Income Level</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></li>
-                            <li><span>Education</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></li>
-                            <li><span>Family Plans</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></li>
+                            <li>
+                                <span>Income Level</span>{' '}
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#9ca3af"
+                                    strokeWidth="2"
+                                >
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </li>
+                            <li>
+                                <span>Education</span>{' '}
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#9ca3af"
+                                    strokeWidth="2"
+                                >
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </li>
+                            <li>
+                                <span>Family Plans</span>{' '}
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#9ca3af"
+                                    strokeWidth="2"
+                                >
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </li>
                         </ul>
 
                         <button type="button" className={styles.upgradeBtn}>
@@ -351,7 +492,9 @@ export const UserPreferencesPage: React.FC = () => {
                 <button
                     type="button"
                     className={styles.resetBtn}
-                    onClick={() => { if (initialData) setFormData(initialData); }}
+                    onClick={() => {
+                        if (initialData) setFormData(initialData);
+                    }}
                     disabled={!isDirty}
                 >
                     Reset Preferences

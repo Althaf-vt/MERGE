@@ -1,3 +1,5 @@
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
+
 export type AdminUserStatus = 'ACTIVE' | 'SUSPENDED' | 'BANNED' | 'DELETED';
 export type SuspensionUnit = 'HOURS' | 'DAYS';
 
@@ -11,17 +13,9 @@ export interface AdminUserDto {
     createdAt: string;
 }
 
-export interface PaginatedUsersResponse{
-    success: boolean;
-    data: AdminUserDto[];
-    meta: {
-        total: number;
-        page: number;
-        limit: number;
-    };
-}
+export type PaginatedUsersResponse = ApiResponse<AdminUserDto[]>;
 
-export interface GetUsersParams{
+export interface GetUsersParams {
     page?: number;
     limit?: number;
     search?: string;
@@ -29,14 +23,14 @@ export interface GetUsersParams{
     kycStatus?: string;
 }
 
-export interface SuspendUserPayload{
+export interface SuspendUserPayload {
     userId: string;
     duration: number;
     unit: SuspensionUnit;
     reason: string;
 }
 
-export interface ActionReasonPayload{
+export interface ActionReasonPayload {
     userId: string;
     reason: string;
 }

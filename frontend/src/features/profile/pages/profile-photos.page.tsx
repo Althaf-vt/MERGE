@@ -1,5 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { useUploadProfilePhotoMutation, useRemoveProfilePhotoMutation, useSetPrimaryPhotoMutation, useUpdatePrivacySettingsMutation, useGetProfileQuery } from '../api/profile.api';
+import {
+    useUploadProfilePhotoMutation,
+    useRemoveProfilePhotoMutation,
+    useSetPrimaryPhotoMutation,
+    useUpdatePrivacySettingsMutation,
+    useGetProfileQuery,
+} from '../api/profile.api';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './profile-photos.module.css';
 
 export const ProfilePhotosPage: React.FC = () => {
@@ -24,9 +31,9 @@ export const ProfilePhotosPage: React.FC = () => {
 
     // Calculate Verification Stats
     const stats = {
-        approved: photos.filter(p => p.status === 'APPROVED').length,
-        pending: photos.filter(p => p.status === 'PENDING').length,
-        rejected: photos.filter(p => p.status === 'REJECTED').length,
+        approved: photos.filter((p) => p.status === 'APPROVED').length,
+        pending: photos.filter((p) => p.status === 'PENDING').length,
+        rejected: photos.filter((p) => p.status === 'REJECTED').length,
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +44,9 @@ export const ProfilePhotosPage: React.FC = () => {
         try {
             await uploadPhoto(file).unwrap();
             await refetchProfile(); // Refresh signed URLs instantly
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to upload photo:', err);
-            setErrorMsg(err?.data?.error?.message || 'Failed to upload photo. Ensure your face is clearly visible.');
+            setErrorMsg(getErrorMessage(err, 'Failed to upload photo. Ensure your face is clearly visible.'));
         } finally {
             if (fileInputRef.current) fileInputRef.current.value = '';
         }
@@ -52,8 +59,8 @@ export const ProfilePhotosPage: React.FC = () => {
             await removePhoto(photoToDelete).unwrap();
             await refetchProfile();
             setPhotoToDelete(null);
-        } catch (err: any) {
-            setErrorMsg('Failed to remove photo.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to remove photo.'));
         }
     };
 
@@ -66,29 +73,74 @@ export const ProfilePhotosPage: React.FC = () => {
         try {
             await setPrimaryPhoto({ photoId }).unwrap();
             await refetchProfile();
-        } catch (err: any) {
-            setErrorMsg('Failed to set primary photo.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to set primary photo.'));
         }
     };
 
     const handleTogglePrivacy = async (field: 'blurPhotos' | 'profileVisibility') => {
         if (!privacy) return;
         try {
-            const payload = field === 'blurPhotos'
-                ? { blurPhotos: !privacy.blurPhotos }
-                : { profileVisibility: privacy.profileVisibility === 'VISIBLE' ? 'HIDDEN' as const : 'VISIBLE' as const };
+            const payload =
+                field === 'blurPhotos'
+                    ? { blurPhotos: !privacy.blurPhotos }
+                    : {
+                          profileVisibility:
+                              privacy.profileVisibility === 'VISIBLE' ? ('HIDDEN' as const) : ('VISIBLE' as const),
+                      };
 
             await updatePrivacy(payload).unwrap();
             await refetchProfile();
-        } catch (err: any) {
-            setErrorMsg('Failed to update privacy settings.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to update privacy settings.'));
         }
     };
 
     // Reusable SVG Icons
-    const CheckIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
-    const ClockIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
-    const XIcon = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+    const CheckIcon = (
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    );
+    const ClockIcon = (
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+    );
+    const XIcon = (
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    );
 
     return (
         <div className={styles.pageContainer}>
@@ -105,7 +157,9 @@ export const ProfilePhotosPage: React.FC = () => {
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <h2 className={styles.cardTitle}>Profile Gallery</h2>
-                            <span className={styles.photoCount}>{photos.length}/{maxPhotos} Photos</span>
+                            <span className={styles.photoCount}>
+                                {photos.length}/{maxPhotos} Photos
+                            </span>
                         </div>
                         <p className={styles.cardDesc}>
                             The first approved photo automatically becomes your primary profile photo.
@@ -114,19 +168,38 @@ export const ProfilePhotosPage: React.FC = () => {
                         <div className={styles.galleryGrid}>
                             {/* Render Existing Photos with Presigned URLs */}
                             {photos.map((photo) => (
-                                <div key={photo.id} className={`${styles.photoItem} ${photo.isPrimary ? styles.primaryItem : ''}`}>
+                                <div
+                                    key={photo.id}
+                                    className={`${styles.photoItem} ${photo.isPrimary ? styles.primaryItem : ''}`}
+                                >
                                     <img
                                         src={photo.url}
                                         alt="Profile"
-                                        className={`${styles.image} ${photo.status !== 'APPROVED' ? styles.blurredImage : ''}`}
+                                        className={`${styles.image} ${
+                                            photo.status !== 'APPROVED' ? styles.blurredImage : ''
+                                        }`}
                                     />
 
                                     {/* Badges */}
                                     <div className={styles.badgeContainer}>
-                                        {photo.isPrimary && <span className={`${styles.badge} ${styles.badgePrimary}`}>Primary</span>}
-                                        {photo.status === 'APPROVED' && <span className={`${styles.badge} ${styles.badgeVerified}`}>{CheckIcon} Verified</span>}
-                                        {photo.status === 'PENDING' && <span className={`${styles.badge} ${styles.badgePending}`}>{ClockIcon} Verifying</span>}
-                                        {photo.status === 'REJECTED' && <span className={`${styles.badge} ${styles.badgeRejected}`}>{XIcon} Rejected</span>}
+                                        {photo.isPrimary && (
+                                            <span className={`${styles.badge} ${styles.badgePrimary}`}>Primary</span>
+                                        )}
+                                        {photo.status === 'APPROVED' && (
+                                            <span className={`${styles.badge} ${styles.badgeVerified}`}>
+                                                {CheckIcon} Verified
+                                            </span>
+                                        )}
+                                        {photo.status === 'PENDING' && (
+                                            <span className={`${styles.badge} ${styles.badgePending}`}>
+                                                {ClockIcon} Verifying
+                                            </span>
+                                        )}
+                                        {photo.status === 'REJECTED' && (
+                                            <span className={`${styles.badge} ${styles.badgeRejected}`}>
+                                                {XIcon} Rejected
+                                            </span>
+                                        )}
                                     </div>
 
                                     {/* Hover Action Overlay */}
@@ -153,14 +226,21 @@ export const ProfilePhotosPage: React.FC = () => {
 
                             {/* Render ONE Empty Slot if limit not reached */}
                             {showEmptySlot && (
-                                <div className={styles.emptySlot} onClick={() => !isUploading && fileInputRef.current?.click()}>
+                                <div
+                                    className={styles.emptySlot}
+                                    onClick={() => !isUploading && fileInputRef.current?.click()}
+                                >
                                     {isUploading ? (
                                         <div className={styles.spinner}></div>
                                     ) : (
                                         <>
                                             <span className={styles.addIcon}>+</span>
                                             <span className={styles.addText}>Upload Photo</span>
-                                            <span className={styles.addLimits}>JPG, PNG, WEBP<br />Max 5MB</span>
+                                            <span className={styles.addLimits}>
+                                                JPG, PNG, WEBP
+                                                <br />
+                                                Max 5MB
+                                            </span>
                                         </>
                                     )}
                                 </div>
@@ -175,10 +255,18 @@ export const ProfilePhotosPage: React.FC = () => {
                     <div className={styles.sideCard}>
                         <h3 className={styles.sideCardTitle}>Photo Guidelines</h3>
                         <ul className={styles.guidelineList}>
-                            <li className={styles.valid}><span className={styles.iconWrapper}>{CheckIcon}</span> Clear, well-lit photos</li>
-                            <li className={styles.valid}><span className={styles.iconWrapper}>{CheckIcon}</span> Face clearly visible</li>
-                            <li className={styles.invalid}><span className={styles.iconWrapper}>{XIcon}</span> No heavy filters or sunglasses</li>
-                            <li className={styles.invalid}><span className={styles.iconWrapper}>{XIcon}</span> No group photos</li>
+                            <li className={styles.valid}>
+                                <span className={styles.iconWrapper}>{CheckIcon}</span> Clear, well-lit photos
+                            </li>
+                            <li className={styles.valid}>
+                                <span className={styles.iconWrapper}>{CheckIcon}</span> Face clearly visible
+                            </li>
+                            <li className={styles.invalid}>
+                                <span className={styles.iconWrapper}>{XIcon}</span> No heavy filters or sunglasses
+                            </li>
+                            <li className={styles.invalid}>
+                                <span className={styles.iconWrapper}>{XIcon}</span> No group photos
+                            </li>
                         </ul>
                         <p className={styles.sideCardNote}>
                             All photos undergo AI face-matching against your KYC baseline to ensure authenticity.
@@ -234,7 +322,18 @@ export const ProfilePhotosPage: React.FC = () => {
                         </div>
 
                         <div className={styles.infoBox}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
                             Private photos can only be viewed by approved users.
                         </div>
                     </div>
@@ -257,7 +356,9 @@ export const ProfilePhotosPage: React.FC = () => {
                         <h3>Delete Photo?</h3>
                         <p>Are you sure you want to delete this photo? This action cannot be undone.</p>
                         <div className={styles.modalActions}>
-                            <button onClick={() => setPhotoToDelete(null)} className={styles.modalCancel}>Cancel</button>
+                            <button onClick={() => setPhotoToDelete(null)} className={styles.modalCancel}>
+                                Cancel
+                            </button>
                             <button onClick={confirmRemove} disabled={isRemoving} className={styles.modalConfirm}>
                                 {isRemoving ? 'Deleting...' : 'Delete Photo'}
                             </button>

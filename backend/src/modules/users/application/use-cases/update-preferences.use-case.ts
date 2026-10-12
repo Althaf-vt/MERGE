@@ -4,15 +4,15 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IUpdatePreferencesUseCase } from "../interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../dtos/update-preferences.dto";
-import { UserPreference } from "../../domain/entities/user-preference.entity";
+import { UserPreference, UserPreferenceProps } from "../../domain/entities/user-preference.entity";
 
 @Injectable()
-export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
+export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
-    async execute(userId: string, payload: UpdatePreferencesDto): Promise<{ success: boolean; message: string; preferences: any; }> {
+    async execute(userId: string, payload: UpdatePreferencesDto): Promise<UserPreferenceProps> {
         const user = await this._userRepository.findById(userId);
 
         if(!user){
@@ -23,7 +23,7 @@ export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Minimum age cannot exceed maximum age.");
         }
 
-        const preferences = user.preference || new UserPreference({})
+        const preferences = user.preference || new UserPreference({});
 
         preferences.updatePreferences({
             preferredGender: payload.preferredGender,
@@ -34,17 +34,13 @@ export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase{
             openToAdoption: payload.openToAdoption,
             immigrationReady: payload.immigrationReady,
             partnerExpectations: payload.partnerExpectations
-        })
+        });
 
         user.attatchPreferences(preferences);
         user.advanceOnboardingStep(5);
 
         await this._userRepository.update(user);
 
-        return {
-            success: true,
-            message: "Preference updated successfully",
-            preferences: preferences.toJSON()
-        }
+        return preferences.toJSON();
     }
 }

@@ -1,3 +1,5 @@
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
+
 export type AdminRole = 'SUPER_ADMIN' | 'ADMIN';
 
 export const ADMIN_PERMISSIONS = {
@@ -20,7 +22,7 @@ export const ADMIN_PERMISSIONS = {
     BILLING_EDIT: 'billing:edit',
 } as const;
 
-export type AdminPermission = typeof ADMIN_PERMISSIONS[keyof typeof ADMIN_PERMISSIONS];
+export type AdminPermission = (typeof ADMIN_PERMISSIONS)[keyof typeof ADMIN_PERMISSIONS];
 
 export interface InviteAdminRequest {
     email: string;
@@ -40,12 +42,16 @@ export interface UpdateAdminRequest {
     permissions?: AdminPermission[];
 }
 
-export interface AdminManagementResponse {
-    success: boolean;
-    message: string;
-}
+export type AdminManagementResponse = ApiResponse<undefined>;
 
 export type AdminStatus = 'INVITED' | 'ACTIVE' | 'SUSPENDED' | 'DEACTIVATED';
+
+export interface AdminStatusLog {
+    status: AdminStatus;
+    reason: string;
+    actionBy: string;
+    timestamp: string;
+}
 
 export interface AdminDetails {
     id: string;
@@ -69,15 +75,7 @@ export interface GetAdminsRequest {
     search?: string;
 }
 
-export interface GetAdminsResponse {
-    success: boolean;
-    data: AdminDetails[];
-    meta: {
-        total: number;
-        page: number;
-        limit: number;
-    };
-}
+export type GetAdminsResponse = ApiResponse<AdminDetails[]>;
 
 export interface SuspendAdminRequest {
     adminId: string;
@@ -91,14 +89,4 @@ export interface AdminStatusReasonRequest {
     reason: string;
 }
 
-export interface AdminStatusLog {
-    status: AdminStatus;
-    reason: string;
-    actionBy: string; 
-    timestamp: string;
-}
-
-export interface GetAdminDetailsResponse {
-    success: boolean;
-    data: AdminDetails;
-}
+export type GetAdminDetailsResponse = ApiResponse<AdminDetails>;

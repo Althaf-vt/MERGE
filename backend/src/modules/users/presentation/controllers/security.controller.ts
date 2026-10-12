@@ -3,8 +3,13 @@ import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCO
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
+import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
+import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
 
-@Controller('profile/security')
+@Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
 export class SecurityController {
     constructor(
@@ -19,74 +24,119 @@ export class SecurityController {
         @Inject(CONFIRM_EMAIL_CHANGE_USE_CASE) private readonly _confirmEmailChangeUseCase: IConfirmEmailChangeUseCase,
     ) { }
 
-    @Post('otp/request')
+    @Post('security/otp/request')
     @HttpCode(HttpStatus.OK)
-    async requestOtp(@Req() req: any){
+    async requestOtp(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._requestOtpUseCase.execute(req.user.userId);
-        return {success: true, message: 'Verification code sent to your registered email.'}
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.OTP_REQUESTED 
+        };
     }
 
-    @Patch('password')
+    @Patch('security/password')
     @HttpCode(HttpStatus.OK)
-    async updatePassword(@Req() req: any, @Body() dto: UpdateSecurityPasswordDto) {
+    async updatePassword(
+        @Req() req: AuthenticatedRequest, 
+        @Body() dto: UpdateSecurityPasswordDto
+    ): Promise<ApiResponse<undefined>> {
         await this._updatePasswordUseCase.execute(req.user.userId, dto);
-        return { success: true, message: 'Password updated successfully. You will be logged out of all devices.' };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.PASSWORD_UPDATED 
+        };
     }
 
-    @Patch('account/deactivate')
+    @Patch('security/account/deactivate')
     @HttpCode(HttpStatus.OK)
-    async deactivateAccount(@Req() req: any) {
+    async deactivateAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deactivateUseCase.execute(req.user.userId);
-        return { success: true, message: 'Account has been deactivated. You have been logged out.' };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DEACTIVATED 
+        };
     }
 
-    @Delete('account/delete')
+    @Delete('security/account/delete')
     @HttpCode(HttpStatus.OK)
-    async deleteAccount(@Req() req: any) {
+    async deleteAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deleteUseCase.execute(req.user.userId);
-        return { success: true, message: 'Account scheduled for permanent deletion.' };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DELETED 
+        };
     }
 
-    @Post('email/initiate')
+    @Post('security/email/initiate')
     @HttpCode(HttpStatus.OK)
-    async initiateEmailChange(@Req() req: any, @Body() dto: InitiateEmailChangeDto) {
+    async initiateEmailChange(
+        @Req() req: AuthenticatedRequest, 
+        @Body() dto: InitiateEmailChangeDto
+    ): Promise<ApiResponse<undefined>> {
         await this._initiateEmailChangeUseCase.execute(req.user.userId, dto);
         return { 
             success: true, 
-            message: 'Current email verified. A new verification code has been sent to your new email address.' 
+            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGE_INITIATED 
         };
     }
 
-    @Patch('email/confirm')
+    @Patch('security/email/confirm')
     @HttpCode(HttpStatus.OK)
-    async confirmEmailChange(@Req() req: any, @Body() dto: ConfirmEmailChangeDto) {
+    async confirmEmailChange(
+        @Req() req: AuthenticatedRequest, 
+        @Body() dto: ConfirmEmailChangeDto
+    ): Promise<ApiResponse<undefined>> {
         await this._confirmEmailChangeUseCase.execute(req.user.userId, dto);
         return { 
             success: true, 
-            message: 'Email address updated successfully. You have been logged out of all devices. Please log in again.' 
+            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGED 
         };
     }
 
-    @Get('sessions')
+    @Get('security/sessions')
     @HttpCode(HttpStatus.OK)
-    async getActiveSessions(@Req() req: any) {
+    async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<UserSessionData[]>> {
         const sessions = await this._getSessionsUseCase.execute(req.user.userId);
-        return { success: true, data: sessions };
+        return { 
+            success: true, 
+            data: sessions 
+        };
     }
 
-    @Delete('sessions/other')
+    // @Get('security/sessions')
+    // @HttpCode(HttpStatus.OK)
+    // async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<Record<string, unknown>[]>> {
+    //     const sessions = await this._getSessionsUseCase.execute(req.user.userId);
+    //     return { 
+    //         success: true, 
+    //         data: sessions 
+    //     };
+    // }
+
+    @Delete('security/sessions/other')
     @HttpCode(HttpStatus.OK)
-    async revokeAllOtherSessions(@Req() req: any) {
-        // Requires passing the current sessionId inside the JWT payload in auth flows
+    async revokeAllOtherSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         const currentSessionId = req.user.sessionId; 
+        // Strict runtime check to prevent deleting everything accidentally
+        if(!currentSessionId) throw new Error("Session ID is required to revoke other sessions");
+        
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);
-        return { success: true, message: 'Successfully signed out of all other devices.' };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.ALL_SESSIONS_REVOKED 
+        };
     }
 
-    @Delete('sessions/:sessionId')
+    @Delete('security/sessions/:sessionId')
     @HttpCode(HttpStatus.OK)
-    async revokeSession(@Req() req: any, @Param('sessionId') sessionId: string) {
+    async revokeSession(
+        @Req() req: AuthenticatedRequest, 
+        @Param('sessionId') sessionId: string
+    ): Promise<ApiResponse<undefined>> {
         await this._revokeSessionUseCase.execute(req.user.userId, { sessionId });
-        return { success: true, message: 'Session terminated successfully.' };
+        return { 
+            success: true, 
+            message: RESPONSE_MESSAGES.SECURITY.SESSION_REVOKED 
+        };
     }
 }

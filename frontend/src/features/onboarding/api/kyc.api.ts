@@ -1,45 +1,81 @@
 import { rootApi } from '../../../shared/api/base-api';
+import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../shared/types/api-response.types';
 import type { LivenessResponse } from '../types';
+
+export interface ExtractedKycData {
+    legalName: string;
+    dateOfBirth: string;
+    fullName?: string;
+    dob?: string;
+    gender?: string;
+    documentNumber?: string;
+    documentType?: string;
+    [key: string]: unknown;
+}
+
+export interface SubmitKycDocumentData {
+    extractedData?: ExtractedKycData;
+    verifiedName?: string;
+    verifiedDOB?: string;
+    documentType?: string;
+    verificationStatus?: string;
+}
+
+export interface SubmitLiveSelfieData {
+    status: string;
+    faceMatchScore?: number;
+    photoUrl?: string;
+}
+
+export interface SubmitFinalVerificationData {
+    status: string;
+    kycCompleted?: boolean;
+}
 
 export const kycApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        submitKyc: builder.mutation<any, FormData>({
+        submitKyc: builder.mutation<ApiResponse<SubmitKycDocumentData>, FormData>({
             query: (formData) => ({
-                url: '/kyc/submit',
+                url: API_ENDPOINTS.KYC.SUBMIT,
                 method: 'POST',
                 body: formData,
-            })
+            }),
+            invalidatesTags: ['User', 'Profile'],
         }),
 
-        submitLiveSelfie: builder.mutation<{ success: boolean, message: string }, FormData>({
+        submitLiveSelfie: builder.mutation<ApiResponse<SubmitLiveSelfieData>, FormData>({
             query: (formData) => ({
-                url: '/kyc/selfie',
+                url: API_ENDPOINTS.KYC.SELFIE,
                 method: 'POST',
-                body: formData
-            })
+                body: formData,
+            }),
+            invalidatesTags: ['User', 'Profile'],
         }),
 
-        submitLiveness: builder.mutation<LivenessResponse, FormData>({
+        submitLiveness: builder.mutation<ApiResponse<LivenessResponse>, FormData>({
             query: (formData) => ({
-                url: '/kyc/liveness',
+                url: API_ENDPOINTS.KYC.LIVENESS,
                 method: 'POST',
-                body: formData
-            })
+                body: formData,
+            }),
+            invalidatesTags: ['User', 'Profile'],
         }),
 
-        submitFinalVerification: builder.mutation<{ success: boolean, status: string }, void>({
+        submitFinalVerification: builder.mutation<ApiResponse<SubmitFinalVerificationData>, void>({
             query: () => ({
-                url: '/kyc/submit-verification',
-                method: 'POST'
-            })
-        })
+                url: API_ENDPOINTS.KYC.SUBMIT_VERIFICATION,
+                method: 'POST',
+            }),
+            invalidatesTags: ['User', 'Profile'],
+        }),
     }),
     overrideExisting: false,
 });
 
-export const { 
+export const {
     useSubmitKycMutation,
-    useSubmitLiveSelfieMutation, 
+    useSubmitLiveSelfieMutation,
     useSubmitLivenessMutation,
-    useSubmitFinalVerificationMutation
+    useSubmitFinalVerificationMutation,
 } = kycApi;

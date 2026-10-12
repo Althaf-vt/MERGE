@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useRegisterUserMutation } from "../api/auth.api";
-import { setRegisteredEmail, setRegistrationStep } from "../slices/auth.slice";
-import { useAppDispatch } from "../../../app/hooks";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useRegisterUserMutation } from '../api/auth.api';
+import { setRegisteredEmail, setRegistrationStep } from '../slices/auth.slice';
+import { useAppDispatch } from '../../../app/hooks';
 import styles from './register-form.module.css';
-import { getErrorMessage } from "../../../shared/utils/error.util";
-import { GoogleAuthButton } from "./google-auth.component";
+import { getErrorMessage } from '../../../shared/utils/error.util';
+import { GoogleAuthButton } from './google-auth.component';
 
 export const RegisterForm = () => {
     const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ export const RegisterForm = () => {
         hasUpper: /[A-Z]/.test(password),
         hasLower: /[a-z]/.test(password),
         hasNumber: /[0-9]/.test(password),
-        hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password),
+        hasSpecial: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(password),
         noSpaces: password.length > 0 && !/\s/.test(password),
     };
 
@@ -45,46 +45,64 @@ export const RegisterForm = () => {
         setClientError(null);
 
         if (!passwordChecks.length) {
-            return setClientError("Password must be between 8 and 128 characters long.");
+            return setClientError('Password must be between 8 and 128 characters long.');
         }
         if (!passwordChecks.hasUpper) {
-            return setClientError("Password must contain at least one uppercase letter.");
+            return setClientError('Password must contain at least one uppercase letter.');
         }
         if (!passwordChecks.hasLower) {
-            return setClientError("Password must contain at least one lowercase letter.");
+            return setClientError('Password must contain at least one lowercase letter.');
         }
         if (!passwordChecks.hasNumber) {
-            return setClientError("Password must contain at least one number.");
+            return setClientError('Password must contain at least one number.');
         }
         if (!passwordChecks.hasSpecial) {
-            return setClientError("Password must contain at least one special character.");
+            return setClientError('Password must contain at least one special character.');
         }
         if (!passwordChecks.noSpaces) {
-            return setClientError("Password cannot contain spaces.");
+            return setClientError('Password cannot contain spaces.');
         }
         if (password !== confirmPassword) {
-            return setClientError("Passwords do not match.");
+            return setClientError('Passwords do not match.');
         }
 
         try {
             await register({ email, password, confirmPassword }).unwrap();
             dispatch(setRegisteredEmail(email));
-            dispatch(setRegistrationStep("OTP"));
-        } catch (err: any) {
+            dispatch(setRegistrationStep('OTP'));
+        } catch (err: unknown) {
             console.error('Registration failed: ', err);
             setClientError(getErrorMessage(err, 'Registration failed.'));
         }
     };
 
     const EyeIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
             <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
             <circle cx="12" cy="12" r="3"></circle>
         </svg>
     );
 
     const EyeOffIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
             <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
             <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
@@ -104,8 +122,8 @@ export const RegisterForm = () => {
                 {error && <div className={styles.errorBanner}>Registration failed. Please check your credentials.</div>}
 
                 <div className={styles.inputGroup}>
-                    <input 
-                        type="email" 
+                    <input
+                        type="email"
                         className={styles.input}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -115,8 +133,8 @@ export const RegisterForm = () => {
                 </div>
 
                 <div className={styles.inputGroup}>
-                    <input 
-                        type={showPassword ? "text" : "password"} 
+                    <input
+                        type={showPassword ? 'text' : 'password'}
                         className={styles.input}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -134,7 +152,7 @@ export const RegisterForm = () => {
                             <span className={styles.meterTitle}>Security Level</span>
                             <span className={`${styles.meterLabel} ${strength.className}`}>{strength.text}</span>
                         </div>
-                        
+
                         <div className={styles.meterBars}>
                             {[1, 2, 3, 4].map((index) => (
                                 <div
@@ -149,22 +167,30 @@ export const RegisterForm = () => {
                         {passedCount < 6 && (
                             <ul className={styles.rulesList}>
                                 <li className={passwordChecks.length ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+ chars
+                                    <span className={styles.ruleIcon}>{passwordChecks.length ? '✓' : '•'}</span> 8+
+                                    chars
                                 </li>
                                 <li className={passwordChecks.hasUpper ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span> Uppercase
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasUpper ? '✓' : '•'}</span>{' '}
+                                    Uppercase
                                 </li>
                                 <li className={passwordChecks.hasLower ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span> Lowercase
+                                    <span className={passwordChecks.hasLower ? styles.rulePassed : styles.rulePending}>
+                                        <span className={styles.ruleIcon}>{passwordChecks.hasLower ? '✓' : '•'}</span>{' '}
+                                        Lowercase
+                                    </span>
                                 </li>
                                 <li className={passwordChecks.hasNumber ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span> Number
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasNumber ? '✓' : '•'}</span>{' '}
+                                    Number
                                 </li>
                                 <li className={passwordChecks.hasSpecial ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span> Special
+                                    <span className={styles.ruleIcon}>{passwordChecks.hasSpecial ? '✓' : '•'}</span>{' '}
+                                    Special
                                 </li>
                                 <li className={passwordChecks.noSpaces ? styles.rulePassed : styles.rulePending}>
-                                    <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> No spaces
+                                    <span className={styles.ruleIcon}>{passwordChecks.noSpaces ? '✓' : '•'}</span> No
+                                    spaces
                                 </li>
                             </ul>
                         )}
@@ -172,21 +198,25 @@ export const RegisterForm = () => {
                 )}
 
                 <div className={styles.inputGroup}>
-                    <input 
-                        type={showConfirmPassword ? "text" : "password"} 
+                    <input
+                        type={showConfirmPassword ? 'text' : 'password'}
                         className={styles.input}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Confirm Password"
                         required
                     />
-                    <button type="button" className={styles.iconBtn} onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                    <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
                         {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
                     </button>
                 </div>
 
                 <button type="submit" className={styles.primaryBtn} disabled={isLoading}>
-                    <span>{isLoading ? "Creating account..." : "Create Account"}</span>
+                    <span>{isLoading ? 'Creating account...' : 'Create Account'}</span>
                 </button>
             </form>
 
@@ -197,7 +227,10 @@ export const RegisterForm = () => {
             <GoogleAuthButton />
 
             <p className={styles.footerText}>
-                Already have an account? <Link to="/login" className={styles.footerLink}>Sign in</Link>
+                Already have an account?{' '}
+                <Link to="/login" className={styles.footerLink}>
+                    Sign in
+                </Link>
             </p>
         </div>
     );

@@ -2,6 +2,7 @@ import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/commo
 import { Response } from 'express';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { ErrorCode } from '../../domain/enums/error-code.enum';
+import { ApiResponse } from '../../domain/interfaces/api-response.interface';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
@@ -13,14 +14,16 @@ export class DomainExceptionFilter implements ExceptionFilter {
         const status = this._mapToHttpStatus(exception.code);
 
         // Standardized Error Response Format
-        response.status(status).json({
+        const errorResponse: ApiResponse<undefined> = {
             success: false,
             error: {
                 code: exception.code,
                 message: exception.message,
             },
             timestamp: new Date().toISOString(),
-        });
+        };
+
+        response.status(status).json(errorResponse);
     }
 
     private _mapToHttpStatus(code: ErrorCode): HttpStatus {

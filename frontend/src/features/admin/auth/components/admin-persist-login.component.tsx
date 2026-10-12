@@ -17,14 +17,18 @@ export const AdminPersistLogin = () => {
         const verifyRefreshToken = async () => {
             try {
                 const response = await adminRefresh().unwrap();
-                dispatch(setAdminCredentials({
-                    accessToken: response.accessToken,
-                    admin: response.admin
-                }));
-            } catch (error) {
-                // If it fails, the cookie is expired or missing. 
+                if (response.data) {
+                    dispatch(
+                        setAdminCredentials({
+                            accessToken: response.data.accessToken,
+                            admin: response.data.admin,
+                        })
+                    );
+                }
+            } catch {
+                // If it fails, the cookie is expired or missing.
                 // The ProtectedRoute guard will naturally catch the unauthenticated state.
-                console.error("Admin silent refresh failed. Token may be expired.");
+                console.error('Admin silent refresh failed. Token may be expired.');
             } finally {
                 dispatch(setAdminInitialized());
             }

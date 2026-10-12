@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useInviteAdminMutation } from '../api/admin-management.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './admin-modal.module.css';
 import { ADMIN_PERMISSIONS, type AdminPermission, type AdminRole } from '../types/admin-management.types';
 
@@ -16,15 +17,13 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
     const [fullName, setFullName] = useState('');
     const [role, setRole] = useState<AdminRole>('ADMIN');
     const [selectedPermissions, setSelectedPermissions] = useState<AdminPermission[]>([]);
-    const [_errorMsg, setErrorMsg] = useState('');
+    const [, setErrorMsg] = useState('');
 
     if (!isOpen) return null;
 
     const handlePermissionToggle = (permission: AdminPermission) => {
-        setSelectedPermissions(prev =>
-            prev.includes(permission)
-                ? prev.filter(p => p !== permission)
-                : [...prev, permission]
+        setSelectedPermissions((prev) =>
+            prev.includes(permission) ? prev.filter((p) => p !== permission) : [...prev, permission]
         );
     };
 
@@ -37,7 +36,7 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                 email,
                 fullName,
                 role,
-                permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions
+                permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions,
             }).unwrap();
 
             // Reset and close on success
@@ -46,8 +45,8 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
             setRole('ADMIN');
             setSelectedPermissions([]);
             onClose();
-        } catch (err: any) {
-            setErrorMsg(err?.data?.error?.message || 'Failed to send invitation.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Failed to send invitation.'));
         }
     };
 
@@ -70,23 +69,25 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
             >
                 <div className={styles.header}>
                     <h2 className={styles.title}>INVITE ADMINISTRATOR</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>&times;</button>
+                    <button onClick={onClose} className={styles.closeBtn}>
+                        &times;
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
                         <label>Email Address</label>
-                        <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     </div>
 
                     <div className={styles.inputGroup}>
                         <label>Full Name</label>
-                        <input type="text" value={fullName} onChange={e => setFullName(e.target.value)} required />
+                        <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
                     </div>
 
                     <div className={styles.inputGroup}>
                         <label>Role</label>
-                        <select value={role} onChange={e => setRole(e.target.value as AdminRole)}>
+                        <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)}>
                             <option value="ADMIN">Administrator</option>
                             <option value="SUPER_ADMIN">Super Admin</option>
                         </select>
@@ -111,13 +112,14 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                     )}
 
                     <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.cancelBtn}>Cancel</button>
+                        <button type="button" onClick={onClose} className={styles.cancelBtn}>
+                            Cancel
+                        </button>
                         <button type="submit" disabled={isLoading} className={styles.submitBtn}>
                             {isLoading ? 'Sending...' : 'Send Invitation'}
                         </button>
                     </div>
                 </form>
-
             </motion.div>
         </motion.div>
     );

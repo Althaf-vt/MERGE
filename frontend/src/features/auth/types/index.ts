@@ -1,29 +1,42 @@
-// Pure TS interfaces - no decorators, no heavy libs
-export interface RegisterUserDto{
+import type { AuthUser } from '../slices/auth.slice';
+
+export type { AuthUser };
+
+export interface RegisterUserDto {
     email: string;
     password: string;
-    confirmPassword: string;
+    confirmPassword?: string;
 }
 
-export interface VerifyOtpDto{
+export interface VerifyOtpDto {
     email: string;
     otp: string;
 }
 
-export interface LoginUserDto{
+export interface ResendOtpDto {
+    email: string;
+}
+
+export interface LoginUserDto {
     email: string;
     password: string;
 }
 
-// shape of the successful response
-export interface AuthResponse {
-    message: string;
-    user: {
-        id: string;
-        email: string;
-        isEmailVerified: boolean;
-        accountStatus: string;
-        onboardingStep: number;
-        createdAt: string
-    }
+export interface ForgotPasswordDto {
+    email: string;
+}
+
+export interface ResetPasswordDto {
+    email: string;
+    otp: string;
+    newPassword: string;
+}
+
+export interface GoogleLoginDto {
+    idToken: string;
+}
+
+export interface AuthSessionData {
+    accessToken: string;
+    user: AuthUser;
 }

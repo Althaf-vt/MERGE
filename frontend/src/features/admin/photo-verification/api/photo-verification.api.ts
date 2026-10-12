@@ -1,74 +1,62 @@
+import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant';
+import type { ApiResponse } from '../../../../shared/types/api-response.types';
 import { adminRootApi } from '../../auth/api/admin-base-api';
-import type { 
-    GetPhotoTasksParams, 
-    PaginatedPhotoTasksResponse, 
-    RejectPhotoTaskPayload 
+import type {
+    GetPhotoTasksQueryParams,
+    PhotoVerificationTask,
+    RejectPhotoTaskPayload,
 } from '../types/photo-verification.types';
 
-export const adminPhotoVerificationApi = adminRootApi.injectEndpoints({
+export const photoVerificationApi = adminRootApi.injectEndpoints({
     endpoints: (builder) => ({
-        getPhotoTasks: builder.query<PaginatedPhotoTasksResponse, GetPhotoTasksParams>({
+        getPhotoTasks: builder.query<ApiResponse<PhotoVerificationTask[]>, GetPhotoTasksQueryParams>({
             query: (params) => ({
-                url: '/admin/photo-verification',
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.BASE,
                 method: 'GET',
                 params,
             }),
-            // Auto-refetch when tasks are mutated
-            providesTags: (result) => 
-                result 
-                    ? [
-                        ...result.data.map(({ id }) => ({ type: 'PhotoTasks' as const, id })),
-                        { type: 'PhotoTasks', id: 'LIST' }
-                      ]
-                    : [{ type: 'PhotoTasks', id: 'LIST' }],
+            providesTags: ['PhotoTasks'],
         }),
 
-        claimTask: builder.mutation<{ success: boolean; message: string }, string>({
+        claimTask: builder.mutation<ApiResponse<undefined>, string>({
             query: (taskId) => ({
-                url: `/admin/photo-verification/${taskId}/claim`,
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.CLAIM(taskId),
                 method: 'POST',
             }),
-            invalidatesTags: (_result, _error, taskId) => [{ type: 'PhotoTasks', id: taskId }],
+            invalidatesTags: ['PhotoTasks'],
         }),
 
-        releaseTask: builder.mutation<{ success: boolean; message: string }, string>({
+        releaseTask: builder.mutation<ApiResponse<undefined>, string>({
             query: (taskId) => ({
-                url: `/admin/photo-verification/${taskId}/release`,
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.RELEASE(taskId),
                 method: 'POST',
             }),
-            invalidatesTags: (_result, _error, taskId) => [{ type: 'PhotoTasks', id: taskId }],
+            invalidatesTags: ['PhotoTasks'],
         }),
 
-        takeoverTask: builder.mutation<{ success: boolean; message: string }, string>({
+        takeoverTask: builder.mutation<ApiResponse<undefined>, string>({
             query: (taskId) => ({
-                url: `/admin/photo-verification/${taskId}/takeover`,
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.TAKEOVER(taskId),
                 method: 'POST',
             }),
-            invalidatesTags: (_result, _error, taskId) => [{ type: 'PhotoTasks', id: taskId }],
+            invalidatesTags: ['PhotoTasks'],
         }),
 
-        approvePhoto: builder.mutation<{ success: boolean; message: string }, string>({
+        approvePhoto: builder.mutation<ApiResponse<undefined>, string>({
             query: (taskId) => ({
-                url: `/admin/photo-verification/${taskId}/approve`,
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.APPROVE(taskId),
                 method: 'POST',
             }),
-            // Invalidates the specific task and the list to reflect the status change
-            invalidatesTags: (_result, _error, taskId) => [
-                { type: 'PhotoTasks', id: taskId },
-                { type: 'PhotoTasks', id: 'LIST' }
-            ],
+            invalidatesTags: ['PhotoTasks'],
         }),
 
-        rejectPhoto: builder.mutation<{ success: boolean; message: string }, RejectPhotoTaskPayload>({
+        rejectPhoto: builder.mutation<ApiResponse<undefined>, RejectPhotoTaskPayload>({
             query: ({ taskId, reason }) => ({
-                url: `/admin/photo-verification/${taskId}/reject`,
+                url: API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.REJECT(taskId),
                 method: 'POST',
                 body: { reason },
             }),
-            invalidatesTags: (_result, _error, { taskId }) => [
-                { type: 'PhotoTasks', id: taskId },
-                { type: 'PhotoTasks', id: 'LIST' }
-            ],
+            invalidatesTags: ['PhotoTasks'],
         }),
     }),
     overrideExisting: false,
@@ -81,4 +69,4 @@ export const {
     useTakeoverTaskMutation,
     useApprovePhotoMutation,
     useRejectPhotoMutation,
-} = adminPhotoVerificationApi;
+} = photoVerificationApi;

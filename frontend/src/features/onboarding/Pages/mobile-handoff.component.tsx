@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { useAppDispatch } from "../../../app/hooks";
-import { setCredentials } from "../../auth/slices/auth.slice";
-import { useCompleteMobileSessionMutation, useValidateMobileSessionQuery } from "../api/handoff.api";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAppDispatch } from '../../../app/hooks';
+import { setCredentials } from '../../auth/slices/auth.slice';
+import { useCompleteMobileSessionMutation, useValidateMobileSessionQuery } from '../api/handoff.api';
 
-import { LiveSelfieCapture } from "../components/live-selfie-capture.component"; 
-import { LivenessChallenge } from "../components/liveness-challenge.component";
-import styles from './mobile-handoff.module.css'; 
+import { LiveSelfieCapture } from '../components/live-selfie-capture.component';
+import { LivenessChallenge } from '../components/liveness-challenge.component';
+import styles from './mobile-handoff.module.css';
 
 // 1. Local progression tracking strictly for the mobile device's internal flow
 type MobileBiometricStep = 'SELFIE' | 'LIVENESS' | 'DONE';
@@ -19,7 +19,7 @@ export const MobileHandoff = () => {
 
     // 3. RTK Query Hooks for backend communication
     const [completeMobileSession] = useCompleteMobileSessionMutation();
-    
+
     // Automatically trigger the silent authentication if a token exists in the URL
     const { data, error, isLoading } = useValidateMobileSessionQuery(token || '', {
         skip: !token, // Prevent firing if the user navigates here without a token
@@ -32,7 +32,7 @@ export const MobileHandoff = () => {
     // 5. Silent Authentication Synchronization
     // Once the token is validated, we securely lock the mobile browser into the user's session
     useEffect(() => {
-        if (data?.success) {
+        if (data?.success && data.data) {
             dispatch(setCredentials({ accessToken: data.data.accessToken }));
             setAuthSuccess(true);
         }
@@ -55,7 +55,9 @@ export const MobileHandoff = () => {
             <div className={styles.wrapper}>
                 <div className={styles.glassCard}>
                     <h2 className={styles.errorTitle}>Invalid Link</h2>
-                    <p className={styles.subtitle}>No session token provided. Please scan the QR code from your desktop screen again.</p>
+                    <p className={styles.subtitle}>
+                        No session token provided. Please scan the QR code from your desktop screen again.
+                    </p>
                 </div>
             </div>
         );
@@ -77,7 +79,9 @@ export const MobileHandoff = () => {
             <div className={styles.wrapper}>
                 <div className={styles.glassCard}>
                     <h2 className={styles.errorTitle}>Session Expired</h2>
-                    <p className={styles.subtitle}>This QR code has expired or is invalid. Please generate a new one on your desktop.</p>
+                    <p className={styles.subtitle}>
+                        This QR code has expired or is invalid. Please generate a new one on your desktop.
+                    </p>
                 </div>
             </div>
         );
@@ -88,7 +92,6 @@ export const MobileHandoff = () => {
     if (authSuccess) {
         return (
             <div className={styles.wrapper}>
-                
                 {/* Step A: Live Selfie Capture */}
                 {mobileStep === 'SELFIE' && (
                     <div className={styles.glassCardFull}>
@@ -111,10 +114,23 @@ export const MobileHandoff = () => {
                 {mobileStep === 'DONE' && (
                     <div className={styles.glassCard}>
                         <div className={styles.successIconWrapper}>
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg
+                                width="32"
+                                height="32"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="#10B981"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
                         </div>
                         <h2 className={styles.title}>Verification Complete</h2>
-                        <p className={styles.subtitle}>You may now close this window and return to your desktop screen.</p>
+                        <p className={styles.subtitle}>
+                            You may now close this window and return to your desktop screen.
+                        </p>
                     </div>
                 )}
             </div>

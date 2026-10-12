@@ -1,21 +1,22 @@
+import { API_ENDPOINTS } from '../../../../shared/constants/api-endpoints.constant';
 import { adminRootApi } from '../../auth/api/admin-base-api';
-import type { 
-    AcceptAdminInviteRequest, 
-    AdminManagementResponse, 
-    AdminStatusReasonRequest, 
-    GetAdminDetailsResponse, 
-    GetAdminsRequest, 
-    GetAdminsResponse, 
-    InviteAdminRequest, 
-    SuspendAdminRequest, 
-    UpdateAdminRequest 
+import type {
+    AcceptAdminInviteRequest,
+    AdminManagementResponse,
+    AdminStatusReasonRequest,
+    GetAdminDetailsResponse,
+    GetAdminsRequest,
+    GetAdminsResponse,
+    InviteAdminRequest,
+    SuspendAdminRequest,
+    UpdateAdminRequest,
 } from '../types/admin-management.types';
 
 export const adminManagementApi = adminRootApi.injectEndpoints({
     endpoints: (builder) => ({
         getAdmins: builder.query<GetAdminsResponse, GetAdminsRequest>({
             query: (params) => ({
-                url: '/admin/management',
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.BASE,
                 method: 'GET',
                 params,
             }),
@@ -24,16 +25,16 @@ export const adminManagementApi = adminRootApi.injectEndpoints({
 
         inviteAdmin: builder.mutation<AdminManagementResponse, InviteAdminRequest>({
             query: (body) => ({
-                url: '/admin/management/invite',
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.INVITE,
                 method: 'POST',
                 body,
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         acceptAdminInvite: builder.mutation<AdminManagementResponse, AcceptAdminInviteRequest>({
             query: (body) => ({
-                url: '/admin/management/accept-invite',
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.ACCEPT_INVITE,
                 method: 'POST',
                 body,
             }),
@@ -42,50 +43,50 @@ export const adminManagementApi = adminRootApi.injectEndpoints({
 
         reinviteAdmin: builder.mutation<AdminManagementResponse, string>({
             query: (adminId) => ({
-                url: `/admin/management/${adminId}/reinvite`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.REINVITE(adminId),
                 method: 'POST',
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         cancelAdminInvite: builder.mutation<AdminManagementResponse, string>({
             query: (adminId) => ({
-                url: `/admin/management/${adminId}/cancel-invite`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.CANCEL_INVITE(adminId),
                 method: 'DELETE',
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         updateAdmin: builder.mutation<AdminManagementResponse, { adminId: string; data: UpdateAdminRequest }>({
             query: ({ adminId, data }) => ({
-                url: `/admin/management/${adminId}`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.BY_ID(adminId),
                 method: 'PATCH',
                 body: data,
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         suspendAdmin: builder.mutation<AdminManagementResponse, SuspendAdminRequest>({
             query: ({ adminId, ...body }) => ({
-                url: `/admin/management/${adminId}/suspend`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.SUSPEND(adminId),
                 method: 'PATCH',
                 body,
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         deactivateAdmin: builder.mutation<AdminManagementResponse, AdminStatusReasonRequest>({
             query: ({ adminId, ...body }) => ({
-                url: `/admin/management/${adminId}/deactivate`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.DEACTIVATE(adminId),
                 method: 'PATCH',
                 body,
             }),
             invalidatesTags: ['Admins'],
         }),
-        
+
         reactivateAdmin: builder.mutation<AdminManagementResponse, AdminStatusReasonRequest>({
             query: ({ adminId, ...body }) => ({
-                url: `/admin/management/${adminId}/reactivate`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.REACTIVATE(adminId),
                 method: 'PATCH',
                 body,
             }),
@@ -94,7 +95,7 @@ export const adminManagementApi = adminRootApi.injectEndpoints({
 
         getAdminDetails: builder.query<GetAdminDetailsResponse, string>({
             query: (adminId) => ({
-                url: `/admin/management/${adminId}`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.BY_ID(adminId),
                 method: 'GET',
             }),
             providesTags: (_result, _error, id) => [{ type: 'Admins', id }, 'Admins'],
@@ -102,7 +103,7 @@ export const adminManagementApi = adminRootApi.injectEndpoints({
 
         forceLogoutAdmin: builder.mutation<AdminManagementResponse, string>({
             query: (adminId) => ({
-                url: `/admin/management/${adminId}/force-logout`,
+                url: API_ENDPOINTS.ADMIN.MANAGEMENT.FORCE_LOGOUT(adminId),
                 method: 'POST',
             }),
             invalidatesTags: (_result, _error, id) => [{ type: 'Admins', id }],
