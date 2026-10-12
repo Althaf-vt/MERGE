@@ -36,11 +36,11 @@ export interface DisabilityRecord {
 export interface UserMedical {
     diabetes?: string;
     bloodPressure?: string;
-    fertility?: FertilityRecord | string;
-    genetic?: GeneticRecord | string;
-    infectious?: InfectiousRecord | string;
+    fertility?: FertilityRecord;
+    genetic?: GeneticRecord;
+    infectious?: InfectiousRecord;
     infectiousVisibility: InfectiousVisibility;
-    disability?: DisabilityRecord | string;
+    disability?: DisabilityRecord;
     updatedAt?: string;
 }
 
@@ -93,11 +93,18 @@ export interface UserPreferenceDetails {
     preferredGender?: string[];
     preferredAgeMin?: number;
     preferredAgeMax?: number;
-    relationshipGoals?: string[];
+    prefferedAgeMax?: number;
+    relationshipGoals?: string | string[];
+    relationShipGoals?: string;
     minimumOutnessLevel?: number;
     openToAdoption?: boolean;
     immigrationReady?: boolean;
     partnerExpectations?: string;
+    diabeteBpPreference?: string;
+    fertilityPreference?: string;
+    geneticPreference?: string;
+    infectiousPreference?: string;
+    disablilityPreferece?: string;
 }
 
 export interface GetProfileData {
@@ -105,6 +112,7 @@ export interface GetProfileData {
     email: string;
     profile: UserProfileDetails | null;
     preference?: UserPreferenceDetails | null;
+    preferences?: UserPreferenceDetails | null;
     photos: UserPhoto[];
     privacySettings: UserPrivacy | null;
     medicalRecord: UserMedical | null;
@@ -169,11 +177,16 @@ export interface UpdateFullPreferencesRequest {
     preferredGender: string[];
     preferredAgeMin: number;
     preferredAgeMax: number;
-    relationshipGoals: string[];
-    minimumOutnessLevel: number;
-    openToAdoption: boolean | string[];
-    immigrationReady: boolean | string[];
+    relationshipGoals: string | string[];
+    minimumOutnessLevel?: number;
+    openToAdoption?: boolean | string[];
+    immigrationReady?: boolean | string[];
     partnerExpectations?: string;
+    diabeteBpPreference?: string;
+    fertilityPreference?: string;
+    geneticPreference?: string;
+    infectiousPreference?: string;
+    disablilityPreferece?: string;
 }
 
 // --- SECURITY & SESSION TYPES ---
