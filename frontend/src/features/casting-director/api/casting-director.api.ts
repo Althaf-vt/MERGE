@@ -5,14 +5,14 @@ import type { CastingSession, ProcessCastingMessagePayload } from '../types/cast
 
 export const castingDirectorApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        initializeCastingSession: builder.mutation<ApiResponse<CastingSession>, void>({
+        initializeSession: builder.mutation<ApiResponse<CastingSession>, void>({
             query: () => ({
                 url: API_ENDPOINTS.CASTING_DIRECTOR.INITIALIZE,
                 method: 'POST',
             }),
         }),
 
-        sendCastingMessage: builder.mutation<ApiResponse<CastingSession>, ProcessCastingMessagePayload>({
+        processMessage: builder.mutation<ApiResponse<CastingSession>, ProcessCastingMessagePayload>({
             query: (body) => ({
                 url: API_ENDPOINTS.CASTING_DIRECTOR.MESSAGE,
                 method: 'POST',
@@ -20,7 +20,7 @@ export const castingDirectorApi = rootApi.injectEndpoints({
             }),
         }),
 
-        finalizeCastingSession: builder.mutation<ApiResponse<undefined>, void>({
+        finalizeSession: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
                 url: API_ENDPOINTS.CASTING_DIRECTOR.FINALIZE,
                 method: 'POST',
@@ -32,7 +32,7 @@ export const castingDirectorApi = rootApi.injectEndpoints({
 });
 
 export const {
-    useInitializeCastingSessionMutation,
-    useSendCastingMessageMutation,
-    useFinalizeCastingSessionMutation,
+    useInitializeSessionMutation,
+    useProcessMessageMutation,
+    useFinalizeSessionMutation,
 } = castingDirectorApi;

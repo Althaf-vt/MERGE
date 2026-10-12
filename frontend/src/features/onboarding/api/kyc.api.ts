@@ -3,7 +3,17 @@ import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant'
 import type { ApiResponse } from '../../../shared/types/api-response.types';
 import type { LivenessResponse } from '../types';
 
+export interface ExtractedKycData {
+    fullName?: string;
+    dob?: string;
+    gender?: string;
+    documentNumber?: string;
+    documentType?: string;
+    [key: string]: unknown;
+}
+
 export interface SubmitKycDocumentData {
+    extractedData?: ExtractedKycData;
     verifiedName?: string;
     verifiedDOB?: string;
     documentType?: string;
