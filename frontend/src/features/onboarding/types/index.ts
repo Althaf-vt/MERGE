@@ -1,3 +1,5 @@
+import type { UserPreferenceDetails, UserProfileDetails } from '../../profile/types/profile.types';
+
 export const DocumentType = {
     AADHAAR_XML: 'AADHAAR_XML',
     EPAN_PDF: 'EPAN_PDF',
@@ -21,7 +23,7 @@ export interface LivenessResponse {
 export interface UpdatePersonaPayload {
     displayName: string;
     phoneNumber: string;
-    pronouns: string;
+    pronouns?: string;
     genderIdentity: string;
     customLabel?: string;
     city: string;
@@ -29,17 +31,17 @@ export interface UpdatePersonaPayload {
     country: string;
     heightCm: number;
     languages: string[];
-    intersex: string;
+    intersex?: string;
     outnessLevel: number;
-    relationshipStatus: string;
-    relationshipGoal: string;
-    maritalStatus: string;
-    openToAdoption: string;
-    immigrationReady: string;
+    relationshipStatus?: string;
+    relationshipGoal?: string;
+    maritalStatus?: string;
+    openToAdoption?: string;
+    immigrationReady?: string;
 }
 
 export interface UpdatePersonaResponseData {
-    profile: Record<string, unknown>;
+    profile: UserProfileDetails;
     verifiedDOB?: string | Date;
 }
 
@@ -57,7 +59,7 @@ export interface UpdateLifestylePayload {
 }
 
 export interface UpdateLifestyleResponseData {
-    profile: Record<string, unknown>;
+    profile: UserProfileDetails;
 }
 
 export interface UpdatePreferencesPayload {
@@ -66,13 +68,13 @@ export interface UpdatePreferencesPayload {
     preferredAgeMax: number;
     relationshipGoals: string[];
     minimumOutnessLevel: number;
-    openToAdoption: string[];
-    immigrationReady: string[];
+    openToAdoption: boolean | string[];
+    immigrationReady: boolean | string[];
     partnerExpectations?: string;
 }
 
 export interface UpdatePreferencesResponseData {
-    preferences: Record<string, unknown>;
+    preferences: UserPreferenceDetails;
 }
 
 export interface GenerateBioPayload {
