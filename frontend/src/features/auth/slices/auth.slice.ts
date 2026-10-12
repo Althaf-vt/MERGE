@@ -1,6 +1,12 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type { UserPhoto } from '../../profile/types/profile.types';
+import type {
+    UserMedical,
+    UserPhoto,
+    UserPreferenceDetails,
+    UserPrivacy,
+    UserProfileDetails,
+} from '../../profile/types/profile.types';
 
 // Represents the current step of the user registration flow
 export type RegistrationStep = 'REGISTER' | 'OTP';
@@ -16,11 +22,11 @@ export interface AuthUser {
     profileCompleted?: boolean;
     onboardingCompleted?: boolean;
     castingDirectorCompleted?: boolean;
-    profile?: Record<string, unknown> | null;
-    preference?: Record<string, unknown> | null;
+    profile?: UserProfileDetails | null;
+    preference?: UserPreferenceDetails | null;
     photos?: UserPhoto[];
-    medicalRecord?: Record<string, unknown> | null;
-    privacySettings?: Record<string, unknown> | null;
+    medicalRecord?: UserMedical | null;
+    privacySettings?: UserPrivacy | null;
     kycVerification?: {
         verificationStatus: string;
         documentType?: string;
@@ -67,17 +73,14 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // Changes the current step of the registration flow.
         setRegistrationStep: (state, action: PayloadAction<RegistrationStep>) => {
             state.currentStep = action.payload;
         },
 
-        // Stores the email after successful registration for OTP verification
         setRegisteredEmail: (state, action: PayloadAction<string>) => {
             state.registeredEmail = action.payload;
         },
 
-        // Resets the registration flow back to its initial state
         resetRegistration: (state) => {
             state.currentStep = 'REGISTER';
             state.registeredEmail = null;

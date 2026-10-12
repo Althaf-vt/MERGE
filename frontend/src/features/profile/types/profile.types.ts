@@ -95,8 +95,8 @@ export interface UserPreferenceDetails {
     preferredAgeMax?: number;
     relationshipGoals?: string[];
     minimumOutnessLevel?: number;
-    openToAdoption?: string[];
-    immigrationReady?: string[];
+    openToAdoption?: boolean;
+    immigrationReady?: boolean;
     partnerExpectations?: string;
 }
 
@@ -171,8 +171,8 @@ export interface UpdateFullPreferencesRequest {
     preferredAgeMax: number;
     relationshipGoals: string[];
     minimumOutnessLevel: number;
-    openToAdoption: string[];
-    immigrationReady: string[];
+    openToAdoption: boolean | string[];
+    immigrationReady: boolean | string[];
     partnerExpectations?: string;
 }
 
