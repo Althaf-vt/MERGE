@@ -3,13 +3,14 @@ import { motion } from 'motion/react';
 import styles from './photo-review-modal.module.css';
 import type { PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoComparison } from './photo-comparison.component';
-import { 
-    useApprovePhotoMutation, 
-    useClaimTaskMutation, 
-    useRejectPhotoMutation, 
-    useReleaseTaskMutation, 
-    useTakeoverTaskMutation 
+import {
+    useApprovePhotoMutation,
+    useClaimTaskMutation,
+    useRejectPhotoMutation,
+    useReleaseTaskMutation,
+    useTakeoverTaskMutation,
 } from '../api/photo-verification.api';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 
 interface PhotoReviewModalProps {
     isOpen: boolean;
@@ -24,7 +25,7 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
     task,
     currentAdminId,
     isSuperAdmin,
-    onClose
+    onClose,
 }) => {
     const [rejectReason, setRejectReason] = useState('');
     const [isRejecting, setIsRejecting] = useState(false);
@@ -43,13 +44,13 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
     const canResolve = isOwner || (isSuperAdmin && task.claimStatus === 'CLAIMED');
     const isResolved = task.taskStatus !== 'PENDING';
 
-    const handleAction = async (actionFn: () => Promise<any>, successCallback?: () => void) => {
+    const handleAction = async (actionFn: () => Promise<unknown>, successCallback?: () => void) => {
         setErrorMsg('');
         try {
             await actionFn();
             if (successCallback) successCallback();
-        } catch (err: any) {
-            setErrorMsg(err.data?.message || err?.data?.error?.message || 'Operation failed.');
+        } catch (err: unknown) {
+            setErrorMsg(getErrorMessage(err, 'Operation failed.'));
         }
     };
 
@@ -66,7 +67,7 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
         >
             <motion.div
                 className={styles.modal}
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 initial={{ opacity: 0, y: 18, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 18, scale: 0.97 }}
@@ -74,7 +75,9 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
             >
                 <header className={styles.header}>
                     <h2 className={styles.title}>REVIEW PROFILE PHOTO</h2>
-                    <button className={styles.closeBtn} onClick={onClose}>&times;</button>
+                    <button className={styles.closeBtn} onClick={onClose}>
+                        &times;
+                    </button>
                 </header>
 
                 <div className={styles.body}>
@@ -91,7 +94,15 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
 
                     {isClaimedByOther && !isResolved && (
                         <div className={styles.lockBanner}>
-                            <svg className={styles.lockedIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg
+                                className={styles.lockedIcon}
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                             </svg>
@@ -105,7 +116,7 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                         </div>
                     )}
 
-                    <PhotoComparison 
+                    <PhotoComparison
                         kycSelfieUrl={task.kycSelfieUrl}
                         uploadedPhotoUrl={task.uploadedPhotoUrl}
                         faceMatchScore={task.faceMatchScore}
@@ -113,10 +124,16 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
 
                     {isRejecting && canResolve && !isResolved && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                            <label style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', textTransform: 'uppercase' }}>
+                            <label
+                                style={{
+                                    fontSize: '11px',
+                                    color: 'var(--admin-text-subtle)',
+                                    textTransform: 'uppercase',
+                                }}
+                            >
                                 REASON FOR REJECTION
                             </label>
-                            <textarea 
+                            <textarea
                                 className={styles.rejectInput}
                                 placeholder="ENTER REJECTION REASON..."
                                 value={rejectReason}
@@ -135,19 +152,31 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                     </button>
 
                     {task.claimStatus === 'UNCLAIMED' && !isResolved && (
-                        <button className={styles.btnSubmit} onClick={() => handleAction(() => claimTask(task.id).unwrap())} disabled={isLoading}>
+                        <button
+                            className={styles.btnSubmit}
+                            onClick={() => handleAction(() => claimTask(task.id).unwrap())}
+                            disabled={isLoading}
+                        >
                             CLAIM TASK
                         </button>
                     )}
 
                     {isClaimedByOther && isSuperAdmin && !isResolved && (
-                        <button className={styles.btnDanger} onClick={() => handleAction(() => takeoverTask(task.id).unwrap())} disabled={isLoading}>
+                        <button
+                            className={styles.btnDanger}
+                            onClick={() => handleAction(() => takeoverTask(task.id).unwrap())}
+                            disabled={isLoading}
+                        >
                             FORCE TAKEOVER
                         </button>
                     )}
 
                     {isOwner && !isResolved && (
-                        <button className={styles.btnCancel} onClick={() => handleAction(() => releaseTask(task.id).unwrap())} disabled={isLoading}>
+                        <button
+                            className={styles.btnCancel}
+                            onClick={() => handleAction(() => releaseTask(task.id).unwrap())}
+                            disabled={isLoading}
+                        >
                             RELEASE CLAIM
                         </button>
                     )}
@@ -157,19 +186,29 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                             <button className={styles.btnDanger} onClick={() => setIsRejecting(true)} disabled={isLoading}>
                                 REJECT
                             </button>
-                            <button className={styles.btnSuccess} onClick={() => handleAction(() => approvePhoto(task.id).unwrap(), onClose)} disabled={isLoading}>
+                            <button
+                                className={styles.btnSuccess}
+                                onClick={() => handleAction(() => approvePhoto(task.id).unwrap(), onClose)}
+                                disabled={isLoading}
+                            >
                                 APPROVE
                             </button>
                         </>
                     )}
 
                     {isRejecting && canResolve && !isResolved && (
-                        <button 
-                            className={styles.btnDanger} 
+                        <button
+                            className={styles.btnDanger}
                             onClick={() => {
-                                if (!rejectReason.trim()) { setErrorMsg('REASON REQUIRED'); return; }
-                                handleAction(() => rejectPhoto({ taskId: task.id, reason: rejectReason }).unwrap(), onClose);
-                            }} 
+                                if (!rejectReason.trim()) {
+                                    setErrorMsg('REASON REQUIRED');
+                                    return;
+                                }
+                                handleAction(
+                                    () => rejectPhoto({ taskId: task.id, reason: rejectReason }).unwrap(),
+                                    onClose
+                                );
+                            }}
                             disabled={isLoading}
                         >
                             CONFIRM REJECTION
