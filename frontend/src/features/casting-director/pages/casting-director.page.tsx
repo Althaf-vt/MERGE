@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../../app/hooks';
-import { 
-    useInitializeSessionMutation, 
-    useProcessMessageMutation, 
-    useFinalizeSessionMutation 
+import {
+    useInitializeSessionMutation,
+    useProcessMessageMutation,
+    useFinalizeSessionMutation,
 } from '../api/casting-director.api';
 import styles from './casting-director.module.css';
 import type { CastingSession } from '../types/casting.types';
 
 export const CastingDirectorPage = () => {
     const navigate = useNavigate();
-    
+
     // Pull the user from Redux state to check completion status
     const { user } = useAppSelector((state) => state.auth);
 
@@ -40,12 +40,14 @@ export const CastingDirectorPage = () => {
         const init = async () => {
             try {
                 const res = await initializeSession().unwrap();
-                setSession(res.session);
-            } catch (err) {
+                if (res.data) {
+                    setSession(res.data);
+                }
+            } catch (err: unknown) {
                 console.error('Failed to initialize casting session', err);
             }
         };
-        
+
         init();
     }, [initializeSession, user]);
 
@@ -61,8 +63,8 @@ export const CastingDirectorPage = () => {
                 try {
                     await finalizeSession().unwrap();
                     // Force hard redirect to homepage to refresh Redux session state
-                    window.location.href = '/'; 
-                } catch (err) {
+                    window.location.href = '/';
+                } catch (err: unknown) {
                     console.error('Failed to finalize session', err);
                 }
             };
@@ -80,17 +82,25 @@ export const CastingDirectorPage = () => {
         setInputValue('');
 
         // Optimistically update UI
-        setSession(prev => prev ? {
-            ...prev,
-            transcript: [...prev.transcript, { role: 'user', content: messageContent, timestamp: new Date().toISOString() }]
-        } : null);
+        setSession((prev) =>
+            prev
+                ? {
+                      ...prev,
+                      transcript: [
+                          ...prev.transcript,
+                          { role: 'user', content: messageContent, timestamp: new Date().toISOString() },
+                      ],
+                  }
+                : null
+        );
 
         try {
             const res = await processMessage({ content: messageContent }).unwrap();
-            setSession(res.session);
-        } catch (err) {
+            if (res.data) {
+                setSession(res.data);
+            }
+        } catch (err: unknown) {
             console.error('Failed to send message', err);
-            // Revert optimistic update here if needed
         }
     };
 
@@ -113,28 +123,28 @@ export const CastingDirectorPage = () => {
 
                 <div className={styles.transcriptArea}>
                     {session?.transcript.map((msg, index) => (
-                        <div 
-                            key={index} 
-                            className={`${styles.messageWrapper} ${msg.role === 'ai' ? styles.aiMessage : styles.userMessage}`}
+                        <div
+                            key={index}
+                            className={`${styles.messageWrapper} ${
+                                msg.role === 'ai' ? styles.aiMessage : styles.userMessage
+                            }`}
                         >
-                            <div className={styles.messageBubble}>
-                                {msg.content}
-                            </div>
+                            <div className={styles.messageBubble}>{msg.content}</div>
                         </div>
                     ))}
-                    
+
                     {isProcessing && (
                         <div className={`${styles.messageWrapper} ${styles.aiMessage}`}>
                             <div className={styles.typingIndicator}>
-                                <span></span><span></span><span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
                         </div>
                     )}
-                    
+
                     {session?.status === 'ANALYZING' && (
-                        <div className={styles.systemMessage}>
-                            Generating your unique personality vector...
-                        </div>
+                        <div className={styles.systemMessage}>Generating your unique personality vector...</div>
                     )}
                     <div ref={messagesEndRef} />
                 </div>
@@ -149,8 +159,8 @@ export const CastingDirectorPage = () => {
                         className={styles.textInput}
                         autoFocus
                     />
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={!inputValue.trim() || isProcessing || session?.status !== 'IN_PROGRESS'}
                         className={styles.sendButton}
                     >
