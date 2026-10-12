@@ -36,7 +36,6 @@ export const KycDocumentUpload = () => {
         }
 
         try {
-            // Passed form data directly to RTK Query
             const result = await submitKyc(formData).unwrap();
 
             if (result.data?.extractedData) {

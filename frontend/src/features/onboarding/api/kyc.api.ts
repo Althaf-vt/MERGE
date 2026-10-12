@@ -4,6 +4,8 @@ import type { ApiResponse } from '../../../shared/types/api-response.types';
 import type { LivenessResponse } from '../types';
 
 export interface ExtractedKycData {
+    legalName: string;
+    dateOfBirth: string;
     fullName?: string;
     dob?: string;
     gender?: string;
