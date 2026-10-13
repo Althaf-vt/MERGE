@@ -5,7 +5,7 @@ import { DocumentType } from "../../domain/enums/user.enums";
 import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { type IKycHashService, type IPkiVerificationService, KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "../../domain/interfaces/kyc-service.interface";
 import { UserKyc } from "../../domain/entities/kyc-verification.entity";
-import { ISubmitKycDocumentUseCase, SubmitKycPayload } from "../interfaces/submit-kyc-document.use-case.interface";
+import { ISubmitKycDocumentUseCase, SubmitKycDocumentResult, SubmitKycPayload } from "../interfaces/submit-kyc-document.use-case.interface";
 
 @Injectable()
 export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
@@ -13,11 +13,10 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(PKI_VERIFICATION_SERVICE) private readonly _pkiService: IPkiVerificationService,
         @Inject(KYC_HASH_SERVICE) private readonly _hashService: IKycHashService,
-    ) { };
+    ) {}
 
-    async execute(userId: string, payload: SubmitKycPayload) {
+    async execute(userId: string, payload: SubmitKycPayload): Promise<SubmitKycDocumentResult> {
         const user = await this._userRepository.findById(userId);
-
         let extractedData;
 
         if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found");
@@ -48,13 +47,12 @@ export class SubmitKycDocumentUseCase implements ISubmitKycDocumentUseCase {
             legalName: extractedData.legalName,
             verifiedDOB: extractedData.dateOfBirth,
             hashedDocumentNumber,
-        })
+        });
 
         user.updateKycVerification(kycEntity);
         await this._userRepository.update(user);
 
         return {
-            message: "Cryptographic validation successful",
             extractedData: {
                 legalName: extractedData.legalName,
                 dateOfBirth: extractedData.dateOfBirth,

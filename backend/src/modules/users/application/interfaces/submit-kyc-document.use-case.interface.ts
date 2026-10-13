@@ -7,11 +7,10 @@ export interface SubmitKycPayload extends SubmitKycDto {
 }
 
 export interface SubmitKycDocumentResult {
-    message: string;
     extractedData: {
-        legalName: string,
-        dateOfBirth: Date,
-    }
+        legalName: string;
+        dateOfBirth: Date;
+    };
 }
 
 export interface ISubmitKycDocumentUseCase {
