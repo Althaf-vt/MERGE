@@ -33,7 +33,7 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
     }
 
     async findByBlockerId(blockerId: string, options?: BlockedUsersQueryOptions): Promise<BlockedRelationship[]> {
-        const query: any = { blockerId: new Types.ObjectId(blockerId) };
+        const query: Record<string, unknown> = { blockerId: new Types.ObjectId(blockerId) };
         const sortDirection = options?.sortBy === SortOrder.OLDEST ? 1 : -1;
 
         const docs = await this._model.find(query)
@@ -56,10 +56,7 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
 
     async getHydratedBlockedUsers(blockerId: string, options?: BlockedUsersQueryOptions): Promise<BlockedUserReadModel[]> {
         const pipeline: PipelineStage[] = [
-            // 1. Isolate the user's blocks
             { $match: { blockerId: new Types.ObjectId(blockerId) } },
-            
-            // 2. Lookup target user document
             {
                 $lookup: {
                     from: 'users',
@@ -68,8 +65,6 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
                     as: 'targetUser'
                 }
             },
-            
-            // 3. Unwind but preserve records if the target account was deleted
             { 
                 $unwind: { 
                     path: '$targetUser', 
@@ -78,7 +73,6 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
             }
         ];
 
-        // 4. DB-Level Search Filtering (Regex applied pre-projection)
         if (options?.search) {
             pipeline.push({
                 $match: {
@@ -90,11 +84,9 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
             });
         }
 
-        // 5. Sort via domain rules
         const sortDirection = options?.sortBy === SortOrder.OLDEST ? 1 : -1;
         pipeline.push({ $sort: { createdAt: sortDirection } });
 
-        // 6. Project only the required Read Model fields (Memory Optimization)
         pipeline.push({
             $project: {
                 _id: 0,
@@ -108,7 +100,6 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
                 city: { $ifNull: ['$targetUser.profile.city', null] },
                 state: { $ifNull: ['$targetUser.profile.state', null] },
                 
-                // Extract ONLY the URL of the primary, approved photo using native array filtering
                 avatarUrl: {
                     $let: {
                         vars: {
