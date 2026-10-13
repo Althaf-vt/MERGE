@@ -66,7 +66,6 @@ export const App = () => {
                             <Route path='/admin/users' element={<AdminUsersPage />} />
                             <Route path='/admin/users/:id' element={<AdminUserDetailsPage />} />
                             <Route path='/admin/management' element={<AdminManagementPage />} />
-                            <Route path='/admin/management' element={<AdminManagementPage />} />
                             <Route path='/admin/management/:id' element={<AdminDetailsPage />} />
                             <Route path='/admin/photo-verification' element={<PhotoVerificationPage />} />
                         </Route>
