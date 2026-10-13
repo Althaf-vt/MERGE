@@ -8,7 +8,7 @@ import {
 
 @ValidatorConstraint({ name: 'IsStrongPasswordConstraint', async: false })
 export class IsStrongPasswordConstraint implements ValidatorConstraintInterface {
-    validate(value: any, _args: ValidationArguments): boolean {
+    validate(value: unknown, _args: ValidationArguments): boolean {
         if (typeof value !== 'string') return false;
 
         // NIST / OWASP password policy:
@@ -24,7 +24,7 @@ export class IsStrongPasswordConstraint implements ValidatorConstraintInterface 
     }
 
     defaultMessage(_args: ValidationArguments): string {
-        return 'Password must be between 8-128 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character with no spaces.';
+        return 'Password must be at least 8 characters long, contain 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.';    
     }
 }
 
@@ -34,6 +34,7 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
             target: object.constructor,
             propertyName,
             options: validationOptions,
+            constraints: [],
             validator: IsStrongPasswordConstraint,
         });
     };
