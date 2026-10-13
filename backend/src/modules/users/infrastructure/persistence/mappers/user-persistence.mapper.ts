@@ -11,15 +11,15 @@ import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from
 import { UserPhoto } from "../../../domain/entities/user-photo.entity";
 
 // Maps between domain UserEntity objects and Mongoose persistence documents.
-export class UserPersistenceMapper{
+export class UserPersistenceMapper {
 
     // Converts a MongoDB/Mongoose User document into a domain UserEntity.
-    public static toDomain(raw: UserDocument): UserAggregate{
+    public static toDomain(raw: UserDocument): UserAggregate {
 
         // Reconstruct the UserKyc entity if the data exists in the database
         let kycEntity: UserKyc | undefined;
 
-        if(raw.kycVerification){
+        if (raw.kycVerification) {
             kycEntity = new UserKyc({
                 userId: raw._id.toString(),
                 verificationStatus: raw.kycVerification.verificationStatus,
@@ -45,13 +45,13 @@ export class UserPersistenceMapper{
                 submittedAt: raw.kycVerification.submittedAt,
                 approvedAt: raw.kycVerification.approvedAt,
                 rejectedAt: raw.kycVerification.rejectedAt,
-            })
+            });
         }
 
         // Reconstruct the UserProfile entity if profile data exists
         let profileEntity: UserProfile | undefined;
 
-        if(raw.profile){
+        if (raw.profile) {
             profileEntity = new UserProfile({
                 displayName: raw.profile.displayName,
                 customLabel: raw.profile.customLabel,
@@ -84,14 +84,14 @@ export class UserPersistenceMapper{
                 openToAdoption: raw.profile.openToAdoption,
                 profileCompletion: raw.profile.profileCompletion,
                 isProfileVisible: raw.profile.isProfileVisible,
-            })
+            });
         }
 
         // Reconstruct UserPreference entity if preference data exists
         let preferenceEntity: UserPreference | undefined;
 
-        if ((raw as any).preference) {
-            const rawPref = (raw as any).preference;
+        if (raw.preference) {
+            const rawPref = raw.preference;
             preferenceEntity = new UserPreference({
                 userId: raw._id.toString(),
                 preferredGender: rawPref.preferredGender,
@@ -107,8 +107,6 @@ export class UserPersistenceMapper{
                 geneticPreference: rawPref.geneticPreference,
                 infectiousPreference: rawPref.infectiousPreference,
                 disablilityPreferece: rawPref.disablilityPreferece,
-                createdAt: rawPref.createdAt,
-                updatedAt: rawPref.updatedAt,
             });
         }
 
@@ -166,7 +164,7 @@ export class UserPersistenceMapper{
             lastLogin: raw.lastLogin,
             profile: profileEntity,
             preferences: preferenceEntity,
-            kycVerification: kycEntity, //  Attach to the root aggregate
+            kycVerification: kycEntity,
             medicalRecord: medicalEntity,
             privacySettings: privacyEntity,
             photos: photosArray,
@@ -176,7 +174,7 @@ export class UserPersistenceMapper{
     }
 
     // Converts a domain UserEntity into a plain object that can be stored in MongoDB.
-    public static toPersistence(entity: UserAggregate): any{
+    public static toPersistence(entity: UserAggregate): Record<string, unknown> {
         const data = entity.toJSON();
         return {
             email: data.email,
@@ -231,7 +229,7 @@ export class UserPersistenceMapper{
                 isProfileVisible: data.profile.isProfileVisible,
             } : null,
 
-            // Flatten preferences for persistence (MATCH user.schema.ts prop name: preference)
+            // Flatten preferences for persistence
             preference: data.preference ? {
                 preferredGender: data.preference.preferredGender,
                 preferredAgeMin: data.preference.preferredAgeMin,
@@ -289,7 +287,7 @@ export class UserPersistenceMapper{
                 updatedAt: data.privacySettings.updatedAt,
             } : null,
 
-            photos: data.photos || [], // Already mapped to plain object by UserPhoto.toJSON() inside UserAggregate.toJSON()
+            photos: data.photos || [],
         };
     }
 }
