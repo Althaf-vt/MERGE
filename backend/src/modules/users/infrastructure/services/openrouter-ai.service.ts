@@ -19,7 +19,7 @@ export class OpenRouterAiService implements IAiService {
         const appUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
         const appTitle = process.env.APP_NAME || 'MERGE Platform';
 
-        // Configure standart OpenAi client to route through OpenRouter
+        // Configure standard OpenAi client to route through OpenRouter
         this._client = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
             apiKey: apiKey || '',
@@ -29,6 +29,7 @@ export class OpenRouterAiService implements IAiService {
             },
         });
     }
+
     // Sends demographic and personality context to the LLM to generate bio options.
     async generateDatingBios(promptContext: BioGenerationContext): Promise<string[]> {
         try {
@@ -49,7 +50,7 @@ export class OpenRouterAiService implements IAiService {
                     { role: "user", content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
                 ],
                 temperature: 0.7,
-            })
+            });
 
             const rawContent = completion.choices[0]?.message?.content || "[]";
 
@@ -73,18 +74,20 @@ export class OpenRouterAiService implements IAiService {
 
             // Normalize response into a string array regardless of structure
             if (Array.isArray(parsed)) {
-                return parsed.map((item) => String(item).trim()).filter(Boolean);
+                return parsed.map((item: unknown) => String(item).trim()).filter(Boolean);
             }
-            if (parsed.bios && Array.isArray(parsed.bios)) {
-                return parsed.bios.map((item: any) => String(item).trim()).filter(Boolean);
+            if (typeof parsed === 'object' && parsed !== null && 'bios' in parsed && Array.isArray((parsed as Record<string, unknown>).bios)) {
+                const parsedRecord = parsed as { bios: unknown[] };
+                return parsedRecord.bios.map((item: unknown) => String(item).trim()).filter(Boolean);
             }
 
             return Object.values(parsed).filter((val): val is string => typeof val === 'string');
-        } catch (error: any) {
-            this._logger.error('OpenRouter Service Error Details:', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown AI service failure';
+            this._logger.error(`OpenRouter Service Error Details: ${errorMessage}`);
             throw new DomainException(
                 ErrorCode.INTERNAL_SERVER_ERROR,
-                error?.message || 'Failed to generate bios from AI service.'
+                errorMessage || 'Failed to generate bios from AI service.'
             );
         }
     }
