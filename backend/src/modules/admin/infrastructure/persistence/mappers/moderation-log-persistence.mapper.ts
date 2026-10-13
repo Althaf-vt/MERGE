@@ -15,7 +15,7 @@ export class ModerationLogPersistenceMapper {
         });
     }
 
-    public static toPersistence(entity: ModerationLog): any {
+    public static toPersistence(entity: ModerationLog): Record<string, unknown> {
         return {
             targetUserId: entity.targetUserId,
             adminId: entity.adminId,
