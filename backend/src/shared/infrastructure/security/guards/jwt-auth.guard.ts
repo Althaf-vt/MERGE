@@ -1,52 +1,31 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { ErrorCode } from "../../../domain/enums/error-code.enum";
-import { JwtService } from "@nestjs/jwt";
-import { Request } from "express";
-import { DomainException } from "../../../domain/exceptions/domain.exception";
-
-// Extend the Express Request to include our custom user property
-interface AuthenticatedRequest extends Request{
-    user?: any;
-}
+import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { ITokenservice, TOKEN_SERVICE } from '../../../domain/interfaces/token-service.interface';
+import { DomainException } from '../../../domain/exceptions/domain.exception';
+import { ErrorCode } from '../../../domain/enums/error-code.enum';
+import { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate{
-    constructor(private readonly _jwtService: JwtService){}
+export class JwtAuthGuard implements CanActivate {
+    constructor(
+        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice
+    ) {}
 
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-
-        // 1. Access the incoming HTTP request before it reached the controller
+    canActivate(context: ExecutionContext): boolean {
         const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+        const authHeader = request.headers.authorization;
 
-        // 2. Pluck the token out of the 'Authorization' header
-        const token = this.extractTokenFromHeader(request);
-
-        if(!token){
-            throw new DomainException(ErrorCode.TOKEN_INVALID, "Authentication token is missing");
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Missing or invalid authorization header.');
         }
 
+        const token = authHeader.split(' ')[1];
+        
         try {
-            // 3. Cryptographically verify the token hasn't been tampered with or expired
-            const payload = await this._jwtService.verifyAsync(token, {
-                secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret'
-            });
-
-            // 4. Mount the decoded data onto the request object
-            // This is the magic step that makes 'req.user.userId' work in your controllers
+            const payload = this._tokenService.verifyAccessToken(token);
             request.user = payload;
-
-        } catch (error) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
+            return true;
+        } catch (error: unknown) {
+            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Invalid or expired access token.');
         }
-
-        // 5. Green light. Let the request proceed to the route handler
-        return true
-    
-    }
-
-    // Helper to split "Bearer <token> and return just the token string"
-    private extractTokenFromHeader(request: Request): string | undefined{
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
     }
 }
