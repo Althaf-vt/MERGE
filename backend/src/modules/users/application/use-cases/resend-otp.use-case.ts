@@ -11,12 +11,9 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 @Injectable()
 export class ResendOtpUseCase implements IResendOtpUseCase{
     constructor(
-        @Inject(USER_REPOSITORY)
-        private readonly _userRepository: IUserRepository,
-        @Inject(OTP_SERVICE)
-        private readonly _otpService: IOtpService,
-        @Inject(EMAIL_SERVICE)
-        private readonly _emailService: IEmailService
+        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
+        @Inject(OTP_SERVICE) private readonly _otpService: IOtpService,
+        @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService
     ){}
 
     async execute(dto: ResendOtpDto): Promise<void> {
@@ -37,11 +34,12 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
             await this._emailService.sendOtpEmail(standardizedEmail, newOtp)
 
 
-        } catch (error: any) {
-            if (error.message.includes('expired')) {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred.';
+            if (errorMessage.includes('expired')) {
                 throw new DomainException(ErrorCode.OTP_EXPIRED, 'Session expired. Please restart registration.');
             }
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, error.message || 'Failed to resend OTP.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, errorMessage || 'Failed to resend OTP.');
         }
     }
 }
