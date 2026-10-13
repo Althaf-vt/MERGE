@@ -16,7 +16,6 @@ import type {
     UpdateMedicalRequest,
     UpdatePrivacyRequest,
     UpdateSecurityPasswordRequest,
-    UserPreferenceDetails,
 } from '../types/profile.types';
 
 export const profileApi = rootApi.injectEndpoints({
@@ -77,16 +76,13 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile', 'User'],
         }),
 
-        saveUserFullPreferences: builder.mutation<
-            ApiResponse<{ preferences: UserPreferenceDetails }>,
-            UpdateFullPreferencesRequest
-        >({
-            query: (body) => ({
-                url: API_ENDPOINTS.PROFILE.PREFERENCES,
+        saveUserFullPreferences: builder.mutation<ApiResponse<undefined>, UpdateFullPreferencesRequest>({
+            query: (payload) => ({
+                url: API_ENDPOINTS.PROFILE.FULL_PREFERENCES, 
                 method: 'PATCH',
-                body,
+                body: payload,
             }),
-            invalidatesTags: ['Profile', 'User'],
+            invalidatesTags: ['Profile'],
         }),
 
         updatePrivacySettings: builder.mutation<ProfileStandardResponse, UpdatePrivacyRequest>({

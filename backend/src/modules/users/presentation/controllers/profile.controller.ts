@@ -4,13 +4,16 @@ import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE } from "../../applicatio
 import { UpdatePersonaDto } from "../../application/dtos/update-persona.dto";
 import { IUpdateLifestyleUseCase, UPDATE_LIFESTYLE_USE_CASE } from "../../application/interfaces/update-lifestyle.use-case.interface";
 import { UpdateLifestyleDto } from "../../application/dtos/update-lifestyle.dto";
-import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
-import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
 import { GenerateBioDto } from "../../application/dtos/generate-bio.dto";
 import { GENERATE_BIO_USE_CASE, IGenerateBioUseCase } from "../../application/interfaces/generate-bio.use-case.interface";
 import { ISaveBioUseCase, SAVE_BIO_USE_CASE } from "../../application/interfaces/save-bio.use-case.interface";
 import { SaveBioDto } from "../../application/dtos/save-bio.dto";
-import { IRemoveProfilePhotoUseCase, ISetPrimaryPhotoUseCase, IUpdateMedicalRecordUseCase, IUpdatePrivacySettingsUseCase, IUploadProfilePhotoUseCase, REMOVE_PROFILE_PHOTO_USE_CASE, SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE, UPLOAD_PROFILE_PHOTO_USE_CASE } from "../../application/interfaces/profile-management.use-case.interface";
+import { 
+            IRemoveProfilePhotoUseCase, ISetPrimaryPhotoUseCase, IUpdateMedicalRecordUseCase, 
+            IUpdatePrivacySettingsUseCase, IUploadProfilePhotoUseCase, REMOVE_PROFILE_PHOTO_USE_CASE, 
+            SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE, 
+            UPLOAD_PROFILE_PHOTO_USE_CASE 
+        } from "../../application/interfaces/profile-management.use-case.interface";
 import { SetPrimaryPhotoDto, UpdateMedicalRecordDto, UpdatePrivacySettingsDto } from "../../application/dtos/profile-management.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
@@ -23,7 +26,7 @@ import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints
 import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 import { UserProfileProps } from "../../domain/entities/user-profile.entity";
-import { UserPreferenceProps } from "../../domain/entities/user-preference.entity";
+import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -31,7 +34,6 @@ export class ProfileController {
     constructor(
         @Inject(UPDATE_PERSONA_USE_CASE) private readonly _updatePersonaUseCase: IUpdatePersonaUseCase,
         @Inject(UPDATE_LIFESTYLE_USE_CASE) private readonly _updateLifestyleUseCase: IUpdateLifestyleUseCase,
-        @Inject(UPDATE_PREFERENCES_USE_CASE) private readonly _updatePreferencesUseCase: IUpdatePreferencesUseCase,
         @Inject(GENERATE_BIO_USE_CASE) private readonly _generateBioUseCase: IGenerateBioUseCase,
         @Inject(SAVE_BIO_USE_CASE) private readonly _saveBioUseCase: ISaveBioUseCase,
         @Inject(UPDATE_MEDICAL_RECORD_USE_CASE) private readonly _updateMedicalRecordUseCase: IUpdateMedicalRecordUseCase,
@@ -76,19 +78,16 @@ export class ProfileController {
         };
     }
 
-    @Patch(API_ENDPOINTS.PROFILE.PREFERENCES)
+    @Patch(API_ENDPOINTS.PROFILE.FULL_PREFERENCES)
     @HttpCode(HttpStatus.OK)
-    async updatePreferences(
-        @Req() req: AuthenticatedRequest, 
-        @Body() dto: UpdatePreferencesDto
-    ): Promise<ApiResponse<{ preferences: UserPreferenceProps }>> {
-        const userId = req.user.userId;
-        const result = await this._updatePreferencesUseCase.execute(userId, dto);
-        
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED,
-            data: { preferences: result }
+    async updateFullPreferences(
+        @Req() req: AuthenticatedRequest,
+        @Body() dto: UpdateFullPreferencesDto
+    ): Promise<ApiResponse<undefined>> {
+        await this._updateFullPreferencesUseCase.execute(req.user.userId, dto);
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED
         };
     }
 
