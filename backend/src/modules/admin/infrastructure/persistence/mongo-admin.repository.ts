@@ -13,18 +13,17 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, AdminDocument> implements IAdminRepository {
     constructor(
         @InjectModel(Admin.name) model: Model<AdminDocument>,
-        eventEmitter: EventEmitter2 // Inject the event emitter
+        eventEmitter: EventEmitter2 
     ) {
-        super(model, eventEmitter); // Pass both to the BaseRepo
+        super(model, eventEmitter); 
     }
 
-    // fullfil the abstract mappign requirements from the Base Class
     protected toDomain(document: AdminDocument): AdminAggregate {
         return AdminPersistenceMapper.toDomain(document);
     }
 
-    protected toPersistence(entity: AdminAggregate): any {
-        return AdminPersistenceMapper.toPersistence(entity)
+    protected toPersistence(entity: AdminAggregate): Record<string, unknown> {
+        return AdminPersistenceMapper.toPersistence(entity);
     }
 
     async findByEmail(email: string): Promise<AdminAggregate | null> {
@@ -43,10 +42,10 @@ export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, Ad
         const limit = filters.limit || 10;
         const skip = (page - 1) * limit;
 
-        const query: any = {};
+        const query: Record<string, unknown> = {};
 
         if (filters.excludeAdminId) {
-            query._id = { $ne: filters.excludeAdminId }
+            query._id = { $ne: filters.excludeAdminId };
         }
         if (filters.role) query.role = filters.role;
         if (filters.status) query.status = filters.status;
@@ -63,7 +62,7 @@ export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, Ad
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as any)),
+            data: documents.map(doc => this.toDomain(doc as unknown as AdminDocument)),
             total,
             page,
             limit

@@ -21,13 +21,13 @@ export class MongoPhotoVerificationTaskRepository extends BaseMongoRepository<Ph
         return PhotoTaskPersistenceMapper.toDomain(document);
     }
 
-    protected toPersistence(entity: PhotoVerificationTask): any {
+    protected toPersistence(entity: PhotoVerificationTask): Record<string, unknown> {
         return PhotoTaskPersistenceMapper.toPersistence(entity);
     }
 
     async findAllPaginated(filters: GetPhotoTasksFilters): Promise<PaginatedPhotoTasksResult> {
         const skip = (filters.page - 1) * filters.limit;
-        const query: any = {};
+        const query: Record<string, unknown> = {};
 
         if (filters.status) query.taskStatus = filters.status;
         if (filters.claimStatus) query['claimDetails.status'] = filters.claimStatus;
@@ -39,7 +39,7 @@ export class MongoPhotoVerificationTaskRepository extends BaseMongoRepository<Ph
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as any)),
+            data: documents.map(doc => this.toDomain(doc as unknown as PhotoVerificationTaskDocument)),
             total,
             page: filters.page,
             limit: filters.limit
