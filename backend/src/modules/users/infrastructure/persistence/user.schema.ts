@@ -2,12 +2,9 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { AdoptionPreference, AuthProvider, DietType, DisabilityOption, DocumentType, DrinkingHabit, HealthConditionPreference, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, ReviewDecision, SelfieVerificationStatus, SmokingHabit, UserStatus, VerificationDevice, VerificationStatus } from '../../domain/enums/user.enums';
 import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from '../../domain/enums/profile.enums';
-// Defines the MongoDB/Mongoose schema for storing User data in the DB.
 
-// Mongoose document type combining the User schema with a MongoDb document.
 export type UserDocument = User & Document;
 
-// Sub-schema for user profile data
 @Schema({_id: false})
 export class UserProfileSchema{
     @Prop()
@@ -104,8 +101,7 @@ export class UserProfileSchema{
     isProfileVisible: boolean;
 }
 
-// Defining a sub-schema for the KYC data
-@Schema({_id: false}) // _id is false coz it belongs to the parent User document
+@Schema({_id: false})
 class KycVerificationSchema{
     @Prop({type: String, enum: VerificationStatus, default: VerificationStatus.NOT_STARTED})
     verificationStatus: VerificationStatus;
@@ -140,14 +136,11 @@ class KycVerificationSchema{
     @Prop()
     verifiedDOB?: Date;
 
-    // This is the critical field we query against for duplicated
     @Prop({index: true})
     hashedDocumentNumber?: string;
 
     @Prop()
     ocrConfidence?: number;
-
-    // --- Phase 8A: Identity Baseline ---
 
     @Prop()
     liveSelfieS3?: string;
@@ -161,9 +154,8 @@ class KycVerificationSchema{
     @Prop({ type: String, enum: SelfieVerificationStatus, default: SelfieVerificationStatus.NOT_STARTED })
     selfieVerificationStatus?: SelfieVerificationStatus;
 
-    // --- Phase 8B: Active Liveness Challenge ---
     @Prop({ type: [{ prompt: String, score: Number, status: String, videoS3: String }], default: [] })
-    livenessResults?: any[];
+    livenessResults?: Array<{ prompt: string; score: number; status: string; videoS3?: string }>;
 
     @Prop({ default: false })
     verificationSubmitted?: boolean;
@@ -295,9 +287,6 @@ export class UserPhotoSchema {
     uploadedAt: Date;
 }
 
-// export type UserDocument = User & Document;
-
-// Defines the User collection and enables automatic createdAt and updatedAt timestamps.
 @Schema({timestamps: true, collection: 'users'})
 export class User{
     @Prop({required: true, unique: true, lowercase: true, trim: true})
@@ -307,12 +296,10 @@ export class User{
         type: String,
         default: null,
         validate: {
-            validator: function(this: any, val: string | null) {
-                // If authProvider is EMAIL, passwordHash must be a valid non-empty string
+            validator: function(this: User, val: string | null) {
                 if (this.authProvider === AuthProvider.EMAIL) {
                     return typeof val === 'string' && val.trim().length > 0;
                 }
-                // For OAuth (Google, etc.), null or undefined is completely valid
                 return true;
             },
             message: 'Path `passwordHash` is required for email registration.'
@@ -362,7 +349,6 @@ export class User{
     @Prop({default: null})
     lastLogin: Date;
 
-    // Embed the KYC schema
     @Prop({type: KycVerificationSchema, default: null})
     kycVerification: KycVerificationSchema;
 
@@ -385,5 +371,4 @@ export class User{
     updatedAt: Date;
 }
 
-// Create the Mongoose schema from the User class definition.
 export const UserSchema = SchemaFactory.createForClass(User);

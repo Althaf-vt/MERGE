@@ -5,19 +5,16 @@ import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { AggregateRoot } from "../../domain/events/aggregate-root";
 
-export abstract class BaseMongoRepository<TAggregate extends AggregateRoot, TDocument extends Document> implements IBaseRepository<TAggregate> {
+export abstract class BaseMongoRepository<TAggregate extends AggregateRoot & { id?: string }, TDocument extends Document> implements IBaseRepository<TAggregate> {
 
     constructor(
         protected readonly _model: Model<TDocument>,
-        // Inject the event emitter to dispatch collected events
         protected readonly _eventEmitter: EventEmitter2
     ) { }
 
-    // Abstract methods force child classes to define how to map their specific entities
     protected abstract toDomain(document: TDocument): TAggregate;
-    protected abstract toPersistence(entity: TAggregate): any;
+    protected abstract toPersistence(entity: TAggregate): Record<string, unknown>;
 
-    // Helper to dispactch and clear events
     protected async dispatchEvents(entity: TAggregate): Promise<void> {
         const events = entity.domainEvents;
         for (const event of events) {
@@ -29,7 +26,7 @@ export abstract class BaseMongoRepository<TAggregate extends AggregateRoot, TDoc
     async findById(id: string): Promise<TAggregate | null> {
         const document = await this._model.findById(id).exec();
         if (!document) return null;
-        return this.toDomain(document as TDocument);
+        return this.toDomain(document as unknown as TDocument);
     }
 
     async create(entity: TAggregate): Promise<TAggregate> {
@@ -37,26 +34,22 @@ export abstract class BaseMongoRepository<TAggregate extends AggregateRoot, TDoc
         const created = new this._model(persistenceData);
         const document = await created.save();
 
-        // Dispatch events after successful DB commit
         await this.dispatchEvents(entity);
 
-        return this.toDomain(document as TDocument);
+        return this.toDomain(document as unknown as TDocument);
     }
 
     async update(entity: TAggregate): Promise<TAggregate> {
         const persistenceData = this.toPersistence(entity);
 
-        // Assumes your Domain Aggregate has an 'id' getter. 
-        // Cast to any to bypass strict typing on the generic T for the ID field.
         const document = await this._model
-            .findByIdAndUpdate((entity as any).id, persistenceData, { returnDocument: 'after' })
+            .findByIdAndUpdate(entity.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!document) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Entity not found");
 
-        // Dispatch events after successful DB commit
         await this.dispatchEvents(entity);
 
-        return this.toDomain(document as TDocument);
+        return this.toDomain(document as unknown as TDocument);
     }
 }

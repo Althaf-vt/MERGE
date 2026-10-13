@@ -1,32 +1,31 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { ISubmitLivenessCheckUseCase } from "../interfaces/submit-liveness-check.use-case.interface";
+import { ISubmitLivenessCheckUseCase, SubmitLivenessCheckResult } from "../interfaces/submit-liveness-check.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, IBiometricService } from "../../domain/interfaces/biometric-service.interface";
-import { VerificationStatus } from "../../domain/enums/user.enums";
 import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
 
 @Injectable()
-export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
+export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(BIOMETRIC_SERVICE) private readonly _biometricService: IBiometricService,
         @Inject(STORAGE_SERVICE) private readonly _s3Service: IStorageService,
-    ){}
+    ) {}
 
-    async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<{ success: boolean; message: string; livenessScore: number; status: VerificationStatus }> {
+    async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<SubmitLivenessCheckResult> {
         const user = await this._userRepository.findById(userId);
-        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
 
         const kyc = user.kycVerification;
 
-        if(!kyc || !kyc.selfieFaceEmbedding || kyc.selfieFaceEmbedding.length === 0){
+        if (!kyc || !kyc.selfieFaceEmbedding || kyc.selfieFaceEmbedding.length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Live Selfie is missing. Please complete the live selfie step first.");
         }
 
         // 1. Pass the target prompt to the ML worker for specific landmark analysis
-        const {livenessScore, passed} = await this._biometricService.analyzeLiveness(videoBuffer, promptType);
+        const { livenessScore, passed } = await this._biometricService.analyzeLiveness(videoBuffer, promptType);
 
         // 2. Upload liveness clip to S3
         const livenessVideoS3 = await this._s3Service.uploadVideo(userId, videoBuffer, 'video/webm');
@@ -51,10 +50,8 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase{
         }
 
         return {
-            success: true,
-            message: `Prompt ${promptType} verified successfully.`,
             livenessScore,
             status: kyc.verificationStatus!,
-        }
+        };
     }
 }

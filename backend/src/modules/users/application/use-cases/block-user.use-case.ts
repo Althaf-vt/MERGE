@@ -14,7 +14,7 @@ export class BlockUserUseCase implements IBlockUserUseCase {
     ) { }
 
     async execute(blockerId: string, dto: BlockUserDto): Promise<void> {
-        const user = await this._userRepository.findByEmail(blockerId);
+        const user = await this._userRepository.findById(blockerId);
         if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
 
         const targetUser = await this._userRepository.findById(dto.blockedId);

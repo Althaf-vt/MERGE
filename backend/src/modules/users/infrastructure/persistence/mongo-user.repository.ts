@@ -9,30 +9,24 @@ import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-ver
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
-// MongoDB implementation of the UserRepository.
-// Handles User persistence and converts between domain entities and MongoDB documents.
 @Injectable()
 export class MongoUserRepository extends BaseMongoRepository<UserAggregate, UserDocument> implements IUserRepository{
 
-    // Injects the Mongoose User model used to perform database operations.
     constructor(
         @InjectModel(User.name) model: Model<UserDocument>,
         eventEmitter: EventEmitter2
     ){
-        // Passes the model and event emitter to the BaseMongoRepository
         super(model, eventEmitter);
     }
 
-    // Fulfill the abstract mapping requirements from the Base Class
     protected toDomain(document: UserDocument): UserAggregate {
         return UserPersistenceMapper.toDomain(document);
     }
 
-    protected toPersistence(entity: UserAggregate): any {
+    protected toPersistence(entity: UserAggregate): Record<string, unknown> {
         return UserPersistenceMapper.toPersistence(entity);
     }
 
-    // Finds a user by email and converts the document into a domain entity.
     async findByEmail(email: string): Promise<UserAggregate | null> {
         const document = await this._model.findOne({email}).exec();
         if(!document) return null;
@@ -45,14 +39,10 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
         }).exec();
         if(!document) return null;
         
-        //  Convert the raw document to our Domain Aggregate
         const userAggregate = UserPersistenceMapper.toDomain(document);
-
-        // Extract and return just the KYC portion
         return userAggregate.kycVerification || null;
     }
 
-    // Atomic operation: Appends result directly without serializing/overwriting the entire aggregate
     async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
         await this._model.updateOne(
             {_id: userId},
@@ -65,7 +55,7 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
     }
 
     async findAllPaginated(filters: UserFilters): Promise<PaginatedResult<UserAggregate>> {
-        const query: any = {};
+        const query: Record<string, unknown> = {};
 
         if(filters.search){
             query['email'] = {$regex: filters.search, $options: 'i'};
@@ -81,10 +71,10 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as UserDocument)),
+            data: documents.map(doc => this.toDomain(doc as unknown as UserDocument)),
             total,
             page: filters.page,
             limit: filters.limit
-        }
+        };
     }
 }

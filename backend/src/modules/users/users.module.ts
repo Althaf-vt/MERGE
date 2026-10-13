@@ -15,7 +15,7 @@ import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-doc
 import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/kyc-service.interface";
 import { KycHashService } from "./infrastructure/services/kyc-hash.service";
 import { JwtAuthGuard } from "../../shared/infrastructure/security/guards/jwt-auth.guard";
-import { AadharPkiService } from "./infrastructure/services/aadhaar-pki.service";
+import { AadhaarPkiService } from "./infrastructure/services/aadhaar-pki.service";
 import { HandoffController } from "./presentation/controllers/handoff.controller";
 import { HandoffGateway } from "./presentation/gateways/handoff.gateway";
 import { ValidateHandoffUseCase } from "./application/use-cases/validate-handoff.use-case";
@@ -237,7 +237,7 @@ import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-re
         },
         {
             provide: PKI_VERIFICATION_SERVICE,
-            useClass: AadharPkiService,
+            useClass: AadhaarPkiService,
         },
         // 
         {

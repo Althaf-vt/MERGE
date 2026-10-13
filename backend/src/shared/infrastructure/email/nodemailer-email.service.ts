@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import * as nodemailer from 'nodemailer'
+import * as nodemailer from 'nodemailer';
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
 import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { DomainException } from "../../domain/exceptions/domain.exception";
@@ -48,8 +48,9 @@ export class NodeMailerEmailService implements IEmailService {
         try {
             await this._transporter.sendMail(mailOptions);
             this._logger.log(`User OTP email sent successfully to ${to}`);
-        } catch (error: any) {
-            this._logger.error(`Failed to send User OTP email to ${to}`, error.stack);
+        } catch (error: unknown) {
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to send User OTP email to ${to}`, errorStack);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch verification email. Please try again later.');
         }
     }
@@ -86,8 +87,9 @@ export class NodeMailerEmailService implements IEmailService {
         try {
             await this._transporter.sendMail(mailOptions);
             this._logger.log(`Admin Password Reset email sent successfully to ${to}`);
-        } catch (error: any) {
-            this._logger.error(`Failed to send Admin Password Reset email to ${to}`, error.stack);
+        } catch (error: unknown) {
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to send Admin Password Reset email to ${to}`, errorStack);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative security email.');
         }
     }
@@ -116,8 +118,9 @@ export class NodeMailerEmailService implements IEmailService {
                 html: htmlTemplate,
             });
             this._logger.log(`Ban notification sent to ${to}`);
-        } catch (error: any) {
-            this._logger.error(`Failed to send ban notification to ${to}`, error.stack);
+        } catch (error: unknown) {
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to send ban notification to ${to}`, errorStack);
         }
     }
 
@@ -145,8 +148,9 @@ export class NodeMailerEmailService implements IEmailService {
                 html: htmlTemplate,
             });
             this._logger.log(`Suspension notification sent to ${to}`);
-        } catch (error: any) {
-            this._logger.error(`Failed to send suspension notification to ${to}`, error.stack);
+        } catch (error: unknown) {
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to send suspension notification to ${to}`, errorStack);
         }
     }
 
@@ -182,8 +186,9 @@ export class NodeMailerEmailService implements IEmailService {
                 html: htmlTemplate,
             });
             this._logger.log(`Admin Invite email sent successfully to ${to}`);
-        } catch (error: any) {
-            this._logger.error(`Failed to send Admin Invite email to ${to}`, error.stack);
+        } catch (error: unknown) {
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to send Admin Invite email to ${to}`, errorStack);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative invite email.');
         }
     }

@@ -1,31 +1,28 @@
-import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
-// 1. The actual validation logic
-@ValidatorConstraint({name: "Match"})
-export class MatchConstraint implements ValidatorConstraintInterface{
-    validate(value: any, args: ValidationArguments){
+@ValidatorConstraint({ name: 'match', async: false })
+export class MatchConstraint implements ValidatorConstraintInterface {
+    validate(value: unknown, args: ValidationArguments): boolean {
         const [relatedPropertyName] = args.constraints;
-        const relatedValue = (args.object as any)[relatedPropertyName];
-
-        // Returns true if the field match, false it they dont
+        const relatedValue = (args.object as Record<string, unknown>)[relatedPropertyName];
+        
         return value === relatedValue;
     }
 
-    defaultMessage(args: ValidationArguments){
-        // Standart error message if not overridden in the DTO
-        return `${args.property} must match ${args.constraints[0]}`
+    defaultMessage(args: ValidationArguments): string {
+        const [relatedPropertyName] = args.constraints;
+        return `${args.property} must match ${relatedPropertyName}`;
     }
 }
 
-// 2. The Decorator function that you attach to your DTO property
-export function Match(property: string, validationOptions?: ValidationOptions){
-    return (object: any, propertyName: string) => {
+export function Match(property: string, validationOptions?: ValidationOptions) {
+    return function (object: object, propertyName: string) {
         registerDecorator({
             target: object.constructor,
-            propertyName,
+            propertyName: propertyName,
             options: validationOptions,
             constraints: [property],
-            validator: MatchConstraint
-        })
-    }
+            validator: MatchConstraint,
+        });
+    };
 }

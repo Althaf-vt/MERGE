@@ -1,5 +1,3 @@
-// backend/src/modules/casting-director/infrastructure/services/openrouter-casting-ai.service.ts
-
 import { Injectable, Logger } from "@nestjs/common";
 import { ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
 import OpenAI from 'openai';
@@ -17,7 +15,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
     // We use the free router for chat to bypass traffic/billing limits during dev
     private readonly _chatModel = 'openrouter/free';
 
-    // we use an OpenRouter supported embedding model for the RAG vector
+    // We use an OpenRouter supported embedding model for the RAG vector
     private readonly _embeddingModel = 'openai/text-embedding-3-small';
 
     constructor() {
@@ -51,15 +49,16 @@ export class OpenRouterCastingAiService implements ICastingAiService {
             });
 
             return completion.choices[0]?.message?.content || 'Hello! What does a perfect Sunday look like for you?';
-        } catch (error: any) {
-            this._logger.error('Failed to generate opening question', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this._logger.error(`Failed to generate opening question: ${errorMessage}`);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to generate an opening question.');
         }
     }
 
     async generateFollowUpQuestion(context: CastingUserContextDto, transcript: TranscriptEntry[]): Promise<string> {
         try {
-            const messages: any[] = [
+            const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
                 { role: 'system', content: CastingPrompts.getSystemPrompt(context) }
             ];
 
@@ -78,15 +77,16 @@ export class OpenRouterCastingAiService implements ICastingAiService {
             });
 
             return completion.choices[0]?.message?.content || 'That is fascinating. Tell me more about how that impacts your relationships?';
-        } catch (error: any) {
-            this._logger.error('Failed to generate follow up question', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this._logger.error(`Failed to generate follow up question: ${errorMessage}`);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to generate a follow-up question.');
         }
     }
 
     async extractSummaryAndVector(context: CastingUserContextDto, transcript: TranscriptEntry[]): Promise<{ aiSummary: string; personalityVector: number[]; }> {
         try {
-            const messages: any[] = [
+            const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
                 { role: 'system', content: CastingPrompts.getSummarySystemPrompt() },
                 { role: 'user', content: CastingPrompts.getSummaryUserPrompt(context, transcript) }
             ];
@@ -108,8 +108,9 @@ export class OpenRouterCastingAiService implements ICastingAiService {
             const personalityVector = embeddingResponse.data[0].embedding;
 
             return { aiSummary, personalityVector };
-        } catch (error: any) {
-            this._logger.error('Failed to generate summary and vector', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this._logger.error(`Failed to generate summary and vector: ${errorMessage}`);
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to process final interview data.');
         }
     }

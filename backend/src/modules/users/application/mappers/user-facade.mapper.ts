@@ -1,12 +1,12 @@
 import { UserAggregate } from "../../domain/entities/user.entity";
-import { FacadeUserDto } from "../interfaces/user-management-facade.interface";
+import { FacadeUserDto, FacadeUserStatus } from "../interfaces/user-management-facade.interface";
 
 export class UserFacadeMapper {
     public static toDto(user: UserAggregate): FacadeUserDto {
         return {
             id: user.id as string,
             email: user.email.getValue(),
-            accountStatus: user.accountStatus as any,
+            accountStatus: user.accountStatus as FacadeUserStatus,
             kycCompleted: user.kycCompleted,
             suspendedUntil: user.suspendedUntil ?? null,
             statusReason: user.statusReason ?? null,

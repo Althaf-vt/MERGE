@@ -3,16 +3,10 @@ import { VerificationStatus } from "../../domain/enums/user.enums";
 export const SUBMIT_LIVENESS_CHECK_USE_CASE = Symbol("SUBMIT_LIVENESS_CHECK_USE_CASE");
 
 export interface SubmitLivenessCheckResult {
-    status: string;
-    livenessScore?: number;
-    [key: string]: unknown;
+    status: VerificationStatus;
+    livenessScore: number;
 }
 
-export interface ISubmitLivenessCheckUseCase{
-    execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<{
-        success: boolean;
-        message: string;
-        livenessScore: number,
-        status: VerificationStatus;
-    }>;
+export interface ISubmitLivenessCheckUseCase {
+    execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<SubmitLivenessCheckResult>;
 }

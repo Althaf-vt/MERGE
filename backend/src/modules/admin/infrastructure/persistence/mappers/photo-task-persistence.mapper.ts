@@ -28,7 +28,7 @@ export class PhotoTaskPersistenceMapper {
         });
     }
 
-    public static toPersistence(entity: PhotoVerificationTask): any {
+    public static toPersistence(entity: PhotoVerificationTask): Record<string, unknown> {
         const json = entity.toJSON();
         return {
             targetUserId: json.targetUserId,

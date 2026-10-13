@@ -8,13 +8,21 @@ import * as fs from 'fs';
 import { SignedXml } from "xml-crypto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 
+interface ICustomSignedXml {
+    publicCert: string;
+    key: string;
+    validationErrors?: string[];
+    loadSignature(signatureNode: unknown): void;
+    checkSignature(xmlStr: string): boolean;
+}
+
 @Injectable()
-export class AadharPkiService implements IPkiVerificationService{
-    private readonly _logger = new Logger(AadharPkiService.name);
+export class AadhaarPkiService implements IPkiVerificationService {
+    private readonly _logger = new Logger(AadhaarPkiService.name);
     private readonly _rootCertPath = path.join(process.cwd(), 'assets', 'kyc-docs-public-keys', 'uidai_offline_publickey.cer');
 
-    private parseAadhaarDate(dobStr: string): Date{
-        if(!dobStr){
+    private _parseAadhaarDate(dobStr: string): Date {
+        if (!dobStr) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Date of Birth attribute is missing in e-KYC XML.");
         }
 
@@ -36,28 +44,26 @@ export class AadharPkiService implements IPkiVerificationService{
         }
 
         const parsedDate = new Date(dobStr);
-        if(isNaN(parsedDate.getTime())){
+        if (isNaN(parsedDate.getTime())) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, `Unrecognized Date of Birth format: ${dobStr}`);
         }
 
         return parsedDate;
     }
 
-    private normalizePem(certContent: string): {pem: string, base64: string}{
+    private _normalizePem(certContent: string): { pem: string, base64: string } {
         const base64 = certContent
             .replace(/-----BEGIN CERTIFICATE-----/g, '')
             .replace(/-----END CERTIFICATE-----/g, '')
             .replace(/\s+/g, '');
 
         const pem = `-----BEGIN CERTIFICATE-----\n${base64.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
-        return {pem, base64};
+        return { pem, base64 };
     }
 
     async verifyAadhaarXml(zipBuffer: Buffer, shareCode: string): Promise<IPkiResult> {
         try {
-
-
-            if(!zipBuffer || zipBuffer.length === 0){
+            if (!zipBuffer || zipBuffer.length === 0) {
                 throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Zip buffer is empty or invalid.');
             }
 
@@ -69,7 +75,7 @@ export class AadharPkiService implements IPkiVerificationService{
             const zip = new AdmZip(zipBuffer);
             const zipEntries = zip.getEntries();
 
-            if(!zipEntries || zipEntries.length === 0){
+            if (!zipEntries || zipEntries.length === 0) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Invalid or empty ZIP archive.');
             }
 
@@ -83,7 +89,7 @@ export class AadharPkiService implements IPkiVerificationService{
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Invalid Share code or failed to decrypt ZIP file.");
             }
 
-            if(!xmlBuffer || xmlBuffer.length === 0){
+            if (!xmlBuffer || xmlBuffer.length === 0) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Failed to extract XML content from ZIP.');
             }
 
@@ -92,13 +98,12 @@ export class AadharPkiService implements IPkiVerificationService{
             // 2. Parse the XML structure
             const doc = new DOMParser({
                 errorHandler: (level: 'warning' | 'error' | 'fatalError', msg: string) => {
-                    if(level === 'error'){
+                    if (level === 'error') {
                         throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `XML Parsing Error: ${msg}`);
                     }
-                    if(level === 'fatalError'){
+                    if (level === 'fatalError') {
                         throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `Fatal XML Parsing Error: ${msg}`);
                     }
-
                     // warning is ignored
                 }
             }).parseFromString(xmlString, 'text/xml');
@@ -111,14 +116,14 @@ export class AadharPkiService implements IPkiVerificationService{
 
             const rawCert = fs.readFileSync(this._rootCertPath, 'utf-8');
 
-            const {pem: publicKeyPem, base64: publicKeyBase64} = this.normalizePem(rawCert)
+            const { pem: publicKeyPem } = this._normalizePem(rawCert);
 
             // 4. Locate the Signature Node (Namespace-tolerant)
             const signature = doc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature")[0]
                 || doc.getElementsByTagName("ds:Signature")[0]
                 || doc.getElementsByTagName("Signature")[0];
 
-            if(!signature){
+            if (!signature) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Digital signature missing from XML.');
             }
 
@@ -127,19 +132,19 @@ export class AadharPkiService implements IPkiVerificationService{
 
             let signingKeyPem = publicKeyPem;
 
-            if(x509Node && x509Node.textContent){
+            if (x509Node && x509Node.textContent) {
                 const embeddedBase64 = x509Node.textContent.replace(/\s+/g, '');
                 signingKeyPem = `-----BEGIN CERTIFICATE-----\n${embeddedBase64.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
             }
 
-            const sig = new SignedXml() as any;
+            const sig = new SignedXml() as unknown as ICustomSignedXml;
             sig.publicCert = signingKeyPem;
             sig.key = signingKeyPem;
 
             sig.loadSignature(signature);
             const isValid = sig.checkSignature(xmlString);
 
-            if(!isValid){
+            if (!isValid) {
                 const validationErrors = sig.validationErrors?.join(', ') || 'Unknown signature mismatch';
                 this._logger.warn(`Signature validation failed: ${validationErrors}`);
                 throw new DomainException(ErrorCode.AADHAAR_VERIFICATION_FAILED, 'Cryptographic signature verification failed. File may be tampered with.');
@@ -149,29 +154,31 @@ export class AadharPkiService implements IPkiVerificationService{
             const poiNode = doc.getElementsByTagName("Poi")[0] || doc.getElementsByTagNameNS("*", "Poi")[0];
             const referenceId = doc.documentElement?.getAttribute("referenceId") || doc.getElementsByTagName("OfflinePaperlessKyc")[0]?.getAttribute("referenceId");
 
-
-            if(!poiNode){
+            if (!poiNode) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Proof of Identity (Poi) node missing in verified XML.');
             }
 
             const legalName = poiNode.getAttribute("name");
             const rawDob = poiNode.getAttribute("dob");
 
-            if(!legalName || !rawDob){
+            if (!legalName || !rawDob) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Name or DOB attribute is missing in identity node.");
             }
 
-            const verifiedDOB = this.parseAadhaarDate(rawDob);
+            const verifiedDOB = this._parseAadhaarDate(rawDob);
 
             return {
                 legalName: legalName as string,
                 dateOfBirth: verifiedDOB,
-                documentNumber: referenceId || 'VERIFIED_OFFLINE_DOC'// Masked identifier for hashing
-            }
+                documentNumber: referenceId || 'VERIFIED_OFFLINE_DOC' // Masked identifier for hashing
+            };
 
-        } catch (error: any) {
-            this._logger.error(`Aadhaar XML verification error: ${error.message}`, error.stack);
-            if(error instanceof DomainException) throw error;
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Aadhaar XML verification error: ${errorMessage}`, errorStack);
+            
+            if (error instanceof DomainException) throw error;
             throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Failed to process Offline e-KYC document.");
         }
     }

@@ -5,6 +5,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SuspendAdminDto } from "../dtos/admin-status.dto";
 import { AdminSuspensionDurationVO } from "../../domain/value-objects/admin-suspension-duration.vo";
+import { AdminSuspensionUnit } from "../../domain/enums/admin.enums";
 
 @Injectable()
 export class SuspendAdminUseCase implements ISuspendAdminUseCase {
@@ -14,9 +15,9 @@ export class SuspendAdminUseCase implements ISuspendAdminUseCase {
         const admin = await this._adminRepository.findById(targetAdminId);
         if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
 
-        const durationVO = new AdminSuspensionDurationVO(dto.duration, dto.unit as any);
+        const durationVO = new AdminSuspensionDurationVO(dto.duration, dto.unit as AdminSuspensionUnit);
 
         admin.suspendAccount(durationVO, dto.reason, actionByAdminId);
-        this._adminRepository.update(admin);
+        await this._adminRepository.update(admin);
     }
 }

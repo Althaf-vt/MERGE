@@ -1,6 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { OnEvent } from "@nestjs/event-emitter";
+import { PhotoApprovedDomainEvent } from "../../../admin/domain/events/photo-approved.domain-event";
+import { PhotoRejectedDomainEvent } from "../../../admin/domain/events/photo-rejected.domain-event";
 
 @Injectable()
 export class AdminPhotoReviewListener{
@@ -11,7 +13,7 @@ export class AdminPhotoReviewListener{
     ) {}
 
     @OnEvent('admin.photo.approved', {async: true})
-    async handleApproved(event: any): Promise<void>{
+    async handleApproved(event: PhotoApprovedDomainEvent): Promise<void>{
         this._logger.log(`Processing admin approval for photo ${event.photoId} (User: ${event.targetUserId})`);
 
         const user = await this._userRepository.findById(event.targetUserId);
@@ -22,7 +24,7 @@ export class AdminPhotoReviewListener{
     }
 
     @OnEvent('admin.photo.rejected', {async: true})
-    async handleRejected(event: any): Promise<void>{
+    async handleRejected(event: PhotoRejectedDomainEvent): Promise<void>{
         this._logger.log(`Processing admin rejection for photo ${event.photoId} (User: ${event.targetUserId})`);
 
         const user = await this._userRepository.findById(event.targetUserId);

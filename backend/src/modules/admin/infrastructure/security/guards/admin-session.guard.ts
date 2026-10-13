@@ -3,8 +3,7 @@ import { Request } from 'express';
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from '../../../domain/interfaces/admin-session.interface';
 import { ErrorCode } from '../../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../../shared/domain/exceptions/domain.exception';
-
-interface AuthenticatedRequest extends Request { user?: any; }
+import { AuthenticatedRequest } from '../../../../../shared/infrastructure/security/interfaces/authenticated-request.interface';
 
 @Injectable()
 export class AdminSessionGuard implements CanActivate {

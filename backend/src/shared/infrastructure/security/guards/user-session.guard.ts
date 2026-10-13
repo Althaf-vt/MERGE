@@ -1,17 +1,9 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
-import { Request } from 'express';
 import { ErrorCode } from '../../../domain/enums/error-code.enum';
 import { DomainException } from '../../../domain/exceptions/domain.exception';
 import { IUserSessionService, USER_SESSION_SERVICE } from '../../../domain/interfaces/user-session.interface';
+import { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
-
-interface AuthenticatedRequest extends Request {
-    user?: {
-        userId: string;
-        sessionId: string;
-        [key: string]: any;
-    };
-}
 
 @Injectable()
 export class UserSessionGuard implements CanActivate {

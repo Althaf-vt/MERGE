@@ -9,7 +9,8 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
-import { AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 
 @Injectable()
 export class InviteAdminUseCase implements IInviteAdminUseCase {
@@ -33,9 +34,9 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         const newAdmin = new AdminAggregate({
             email: emailVo,
             fullName: dto.fullName,
-            role: dto.role as any,
+            role: dto.role as AdminRole,
             status: AdminStatus.INVITED,
-            permissions: dto.permissions as any[] ?? [],
+            permissions: (dto.permissions as AdminPermission[]) ?? [],
             passwordHash: null,
             inviteExpiresAt: expiresAt,
             createdBy: inviterId,

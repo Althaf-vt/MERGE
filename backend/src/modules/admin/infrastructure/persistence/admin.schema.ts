@@ -14,7 +14,7 @@ export class Admin {
         type: String,
         default: null,
         validate: {
-            validator: function (this: any, val: string | null) {
+            validator: function (this: Admin, val: string | null) {
                 if (this.status !== 'INVITED') {
                     return typeof val === 'string' && val.trim().length > 0;
                 }

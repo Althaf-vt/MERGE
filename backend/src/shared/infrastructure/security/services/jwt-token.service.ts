@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import * as jwt from 'jsonwebtoken';
 import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-service.interface";
 import { DomainException } from "../../../domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../domain/enums/error-code.enum";
@@ -14,14 +15,14 @@ export class JwtTokenService implements ITokenservice{
     generateAccessToken(payload: ITokenPayload): string {
         return this._jwtService.sign(payload, {
             secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
-            expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as any
+            expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn']
         })
     }
 
     generateRefreshToken(payload: ITokenPayload): string {
         return this._jwtService.sign(payload, {
             secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret',
-            expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as any
+            expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn']
         });
     }
 

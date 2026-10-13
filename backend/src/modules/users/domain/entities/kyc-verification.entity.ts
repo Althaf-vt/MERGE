@@ -76,8 +76,6 @@ export interface RejectManualReviewPayload {
     rejectionReason: string;
 }
 
-
-
 export class UserKyc {
     private _props: UserKycProps;
 
@@ -95,41 +93,43 @@ export class UserKyc {
             verificationDevice: props.verificationDevice ?? VerificationDevice.CURRENT_DEVICE,
             selfieFaceEmbedding: props.selfieFaceEmbedding ?? [],
             selfieVerificationStatus: props.selfieVerificationStatus ?? SelfieVerificationStatus.NOT_STARTED,
-        }
+        };
     }
 
-    get id(): string | undefined { return this._props.id };
-    get userId(): string | undefined { return this._props.userId };
-    get verificationStatus(): VerificationStatus | undefined { return this._props.verificationStatus };
-    get reviewDecision(): ReviewDecision | undefined { return this._props.reviewDecision };
-    get verificationAttempt(): number | undefined { return this._props.verificationAttempt };
-    get documentType(): DocumentType | undefined { return this._props.documentType };
-    get issuingCountry(): string | undefined { return this._props.issuingCountry };
-    get verificationDevice(): VerificationDevice | undefined { return this._props.verificationDevice };
-    get qrSessionId(): string | undefined { return this._props.qrSessionId };
-    get legalName(): string | undefined { return this._props.legalName };
-    get verifiedDOB(): Date | undefined { return this._props.verifiedDOB };
-    get hashedDocumentNumber(): string | undefined { return this._props.hashedDocumentNumber };
-    get liveSelfieS3(): string | undefined { return this._props.liveSelfieS3 };
-    get selfieFaceEmbedding(): number[] | undefined { return this._props.selfieFaceEmbedding };
-    get selfieVerificationStatus(): SelfieVerificationStatus | undefined { return this._props.selfieVerificationStatus };
-    get selfieConfidence(): number | undefined { return this._props.selfieConfidence };
-    get livenessResults(): any[] | undefined { return this._props.livenessResults; }
+    get id(): string | undefined { return this._props.id; }
+    get userId(): string | undefined { return this._props.userId; }
+    get verificationStatus(): VerificationStatus | undefined { return this._props.verificationStatus; }
+    get reviewDecision(): ReviewDecision | undefined { return this._props.reviewDecision; }
+    get verificationAttempt(): number | undefined { return this._props.verificationAttempt; }
+    get documentType(): DocumentType | undefined { return this._props.documentType; }
+    get issuingCountry(): string | undefined { return this._props.issuingCountry; }
+    get verificationDevice(): VerificationDevice | undefined { return this._props.verificationDevice; }
+    get qrSessionId(): string | undefined { return this._props.qrSessionId; }
+    get legalName(): string | undefined { return this._props.legalName; }
+    get verifiedDOB(): Date | undefined { return this._props.verifiedDOB; }
+    get hashedDocumentNumber(): string | undefined { return this._props.hashedDocumentNumber; }
+    get liveSelfieS3(): string | undefined { return this._props.liveSelfieS3; }
+    get selfieFaceEmbedding(): number[] | undefined { return this._props.selfieFaceEmbedding; }
+    get selfieVerificationStatus(): SelfieVerificationStatus | undefined { return this._props.selfieVerificationStatus; }
+    get selfieConfidence(): number | undefined { return this._props.selfieConfidence; }
+    get livenessResults(): UserKycProps['livenessResults'] { return this._props.livenessResults; }
     get verificationSubmitted(): boolean | undefined { return this._props.verificationSubmitted; }
+
     // Returns an array of prompt names that have successfully passed
     get passedPrompts(): string[] {
         return this._props.livenessResults
             ?.filter(r => r.status === 'PASSED')
             .map(r => r.prompt) ?? [];
     }
-    get manualReviewRequired(): boolean | undefined { return this._props.manualReviewRequired };
-    get adminReviewedBy(): string | undefined { return this._props.adminReviewedBy };
-    get rejectionReason(): string | undefined { return this._props.rejectionReason };
-    get submittedAt(): Date | undefined { return this._props.submittedAt };
-    get approvedAt(): Date | undefined { return this._props.approvedAt };
-    get rejectedAt(): Date | undefined { return this._props.rejectedAt };
-    get createdAt(): Date | undefined { return this._props.createdAt };
-    get updatedAt(): Date | undefined { return this._props.updatedAt };
+
+    get manualReviewRequired(): boolean | undefined { return this._props.manualReviewRequired; }
+    get adminReviewedBy(): string | undefined { return this._props.adminReviewedBy; }
+    get rejectionReason(): string | undefined { return this._props.rejectionReason; }
+    get submittedAt(): Date | undefined { return this._props.submittedAt; }
+    get approvedAt(): Date | undefined { return this._props.approvedAt; }
+    get rejectedAt(): Date | undefined { return this._props.rejectedAt; }
+    get createdAt(): Date | undefined { return this._props.createdAt; }
+    get updatedAt(): Date | undefined { return this._props.updatedAt; }
 
     // Instant PKI validation
     recordPkiValidation(payload: SubmitPkiDocumentsPayload): void {
@@ -148,7 +148,6 @@ export class UserKyc {
 
     // Live Selfie
     recordSelfie(payload: RecordSelfiePayload): void {
-
         // Always save the S3 link and confidence, regardless of pass/fail, for audit logs
         this._props.liveSelfieS3 = payload.liveSelfieS3;
         this._props.selfieConfidence = payload.selfieConfidence;
@@ -161,7 +160,6 @@ export class UserKyc {
             this._props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
             this._props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
         }
-
     }
 
     // Liveness Test : Evaluates a single liveness prompt incrementally
@@ -196,7 +194,7 @@ export class UserKyc {
 
         // DDD Encapsulation: The entity decides how to interpret historical data.
         // Group by prompt so we only evaluate the user's most recent attempt for each action.
-        const latestResultsMap = new Map<string, any>();
+        const latestResultsMap = new Map<string, NonNullable<UserKycProps['livenessResults']>[number]>();
         for (const record of results) {
             latestResultsMap.set(record.prompt, record);
         }
@@ -216,7 +214,6 @@ export class UserKyc {
             this._props.reviewDecision = ReviewDecision.AUTO_REJECTED;
             this._props.rejectionReason = "One or more liveness prompts failed verification.";
         } else {
-
             // Calculate aggregate scores to determine if we can bypass manual review
             const averageLivenessScore = latestResults.reduce((acc, curr) => acc + curr.score, 0) / passedCount;
             const selfieConfidence = this._props.selfieConfidence ?? 0;
@@ -232,7 +229,6 @@ export class UserKyc {
                 this._props.reviewDecision = ReviewDecision.MANUAL_REVIEW;
                 this._props.manualReviewRequired = true;
             }
-
         }
 
         this._props.verificationSubmitted = true;
@@ -241,7 +237,6 @@ export class UserKyc {
     }
 
     evaluateFaceMatch(newEmbedding: number[], confidence: number): { score: number, status: PhotoVerificationStatus } {
-        
         const baseline = this._props.selfieFaceEmbedding;
 
         if (!baseline || baseline.length === 0) {
@@ -252,8 +247,8 @@ export class UserKyc {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Embedding dimension mismatch.');
         }
 
-        if(!newEmbedding || newEmbedding.length === 0 || confidence < 80 || baseline.length !== newEmbedding.length){
-            return {score: 999, status: PhotoVerificationStatus.PENDING};
+        if (!newEmbedding || newEmbedding.length === 0 || confidence < 80 || baseline.length !== newEmbedding.length) {
+            return { score: 999, status: PhotoVerificationStatus.PENDING };
         }
 
         // 1. calculate L2 norm (Euclidean distance)
@@ -297,7 +292,6 @@ export class UserKyc {
         if (!payload.rejectionReason || payload.rejectionReason.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Rejection reason is required when rejecting KYC');
         }
-
 
         this._props.verificationStatus = VerificationStatus.REJECTED;
         this._props.reviewDecision = ReviewDecision.MANUAL_REJECTED;

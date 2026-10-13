@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
         PHOTO_BY_ID: (photoId: string) => `/profile/photos/${photoId}`,
         MEDICAL: '/profile/medical',
         PREFERENCES: '/profile/preferences',
+        FULL_PREFERENCES: '/profile/preferences/full',
         PRIVACY: '/profile/privacy',
         PERSONA: '/profile/persona',
         LIFESTYLE: '/profile/lifestyle',
