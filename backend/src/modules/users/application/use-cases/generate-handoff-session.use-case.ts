@@ -1,17 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../interfaces/handoff-service.interface";
-import { IGenerateHandoffSessionUseCase } from "../interfaces/generate-handoff-session.use-case.interface";
-
+import { GenerateHandoffResult, IGenerateHandoffSessionUseCase } from "../interfaces/generate-handoff-session.use-case.interface";
 
 @Injectable()
 export class GenerateHandoffSessionUseCase implements IGenerateHandoffSessionUseCase {
-    // we inject the Interface (token), not the specific Redis class.
-    // This keeps the architecture clean and decoupled
     constructor(
         @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
     ) { }
 
-    async execute(userId: string, clientOrigin?: string) {
+    async execute(userId: string, clientOrigin?: string): Promise<GenerateHandoffResult> {
         const TTL_SECONDS = 300; // 5min
 
         // 1. Create the secure session in Redis
@@ -25,13 +22,9 @@ export class GenerateHandoffSessionUseCase implements IGenerateHandoffSessionUse
         const qrCodeUrl = `${baseUrl}/handoff?token=${sessionId}`;
 
         return {
-            success: true,
-            message: 'Phone handoff session created',
-            data: {
-                sessionId,
-                qrCodeUrl,
-                expiresAt: expiresAt.toISOString(),
-            },
+            sessionId,
+            qrCodeUrl,
+            expiresAt: expiresAt.toISOString(),
         };
     }
 }
