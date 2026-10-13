@@ -2,7 +2,7 @@ import { CastingSession } from "../../../domain/entities/casting-session.entity"
 import { CastingSessionStatus, TranscriptRole } from "../../../domain/enums/casting.enums";
 import { CastingSessionDocument } from "../casting-session.schema";
 
-export class CastingSessionPersistenceMapper{
+export class CastingSessionPersistenceMapper {
     // Converts the Mongoose document into our pure Domain Entity
     public static toDomain(raw: CastingSessionDocument): CastingSession {
         return new CastingSession({
@@ -24,7 +24,7 @@ export class CastingSessionPersistenceMapper{
     }
 
     // Flattens the Domain Entity into a plain object for MongoDB
-    public static toPersistence(entity: CastingSession): any {
+    public static toPersistence(entity: CastingSession): Record<string, unknown> {
         const data = entity.toJSON();
         return {
             userId: data.userId,
