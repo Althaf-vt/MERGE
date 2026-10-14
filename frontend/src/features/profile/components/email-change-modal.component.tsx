@@ -49,8 +49,8 @@ export const EmailChangeModal: React.FC<EmailChangeModalProps> = ({ isOpen, onCl
             await requestOtp().unwrap();
             setTimeLeft(60);
             setError('');
-        } catch {
-            setError('Failed to request verification code.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to request verification code.'));
         }
     };
 

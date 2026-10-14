@@ -45,8 +45,8 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
             await requestOtp().unwrap();
             setTimeLeft(60);
             setError('');
-        } catch {
-            setError('Failed to send verification code. Please try again.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to send verification code. Please try again.'));
         }
     };
 
