@@ -27,6 +27,8 @@ import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.i
 import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 import { UserProfileProps } from "../../domain/entities/user-profile.entity";
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
+import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
+import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -43,6 +45,7 @@ export class ProfileController {
         @Inject(REMOVE_PROFILE_PHOTO_USE_CASE) private readonly _removeProfilePhotoUseCase: IRemoveProfilePhotoUseCase,
         @Inject(UPDATE_FULL_PROFILE_USE_CASE) private readonly _updateFullProfileUseCase: IUpdateFullProfileUseCase,
         @Inject(GET_PROFILE_USE_CASE) private readonly _getProfileUseCase: IGetProfileUseCase,
+        @Inject(UPDATE_PREFERENCES_USE_CASE) private readonly _updatePreferences: IUpdatePreferencesUseCase,
         @Inject(UPDATE_FULL_PREFERENCES_USE_CASE) private readonly _updateFullPreferencesUseCase: IUpdateFullPreferencesUseCase,
     ){}
 
@@ -75,6 +78,19 @@ export class ProfileController {
             success: true,
             message: RESPONSE_MESSAGES.PROFILE.LIFESTYLE_UPDATED,
             data: { profile: result }
+        };
+    }
+
+    @Patch(API_ENDPOINTS.PROFILE.PREFERENCES)
+    @HttpCode(HttpStatus.OK)
+    async updatePreferences(
+        @Req() req: AuthenticatedRequest,
+        @Body() dto: UpdatePreferencesDto
+    ): Promise<ApiResponse<undefined>> {
+        await this._updatePreferences.execute(req.user.userId, dto);
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED
         };
     }
 
