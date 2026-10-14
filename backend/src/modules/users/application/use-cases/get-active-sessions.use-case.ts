@@ -8,8 +8,13 @@ export class GetActiveSessionsUseCase implements IGetActiveSessionsUseCase {
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
     ) {}
 
-    async execute(userId: string): Promise<UserSessionData[]> {
-        // Direct delegation to the Infrastructure Redis service
-        return await this._sessionService.getSessions(userId);
+    async execute(userId: string, currentSessionId: string): Promise<UserSessionData[]> {
+        const sessions = await this._sessionService.getSessions(userId);
+        
+        // Map the sessions to identify the active one before passing to the presentation layer
+        return sessions.map(session => ({
+            ...session,
+            isCurrentSession: session.sessionId === currentSessionId
+        }));
     }
 }

@@ -7,6 +7,7 @@ export interface UserSessionData {
     ipAddress: string;
     lastActive: Date;
     createdAt: Date;
+    isCurrentSession?: boolean;
 }
 
 export interface IUserSessionService {
