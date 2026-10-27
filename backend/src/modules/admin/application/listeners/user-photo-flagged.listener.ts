@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, ICreatePhotoVerificationTaskUseCase } from "../interfaces/photo-verification.use-case.interface";
 import { OnEvent } from "@nestjs/event-emitter";
-import { UserPhotoFlaggedDomainEvent } from "../../../users/domain/events/user-photo-flagged.domain-event";
+import { IUserPhotoFlaggedEventPayload, PHOTO_MODERATION_EVENTS } from "../../../../shared/domain/events/photo-moderation-events.contract";
 
 @Injectable()
 export class UserPhotoFlaggedListener {
@@ -11,8 +11,8 @@ export class UserPhotoFlaggedListener {
         @Inject(CREATE_PHOTO_VERIFICATION_TASK_USE_CASE) private readonly _createTaskUseCase: ICreatePhotoVerificationTaskUseCase
     ) {}
 
-    @OnEvent('user.photo.flagged', { async: true })
-    async handle(event: UserPhotoFlaggedDomainEvent): Promise<void> {
+    @OnEvent(PHOTO_MODERATION_EVENTS.USER_PHOTO_FLAGGED, { async: true })
+    async handle(event: IUserPhotoFlaggedEventPayload): Promise<void> {
         this._logger.log(`Received flagged photo event for user ${event.userId}, photo ${event.photoId}`);
 
         try {
