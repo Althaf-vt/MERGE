@@ -10,6 +10,7 @@ import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
 import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
+import { LogoutUseCase } from "./application/use-cases/logout.use-case";
 import { KycController } from "./presentation/controllers/kyc.controller";
 import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
 import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/kyc-service.interface";
@@ -55,6 +56,7 @@ import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use
 import { GENERATE_HANDOFF_SESSION_USE_CASE } from "./application/interfaces/generate-handoff-session.use-case.interface";
 import { LOGIN_USER_USE_CASE } from "./application/interfaces/login-user.use-case.interface";
 import { REFRESH_TOKEN_USE_CASE } from "./application/interfaces/refresh-token.use-case.interface";
+import { LOGOUT_USE_CASE } from "./application/interfaces/logout.use-case.interface";
 import { REGISTER_USER_USE_CASE } from "./application/interfaces/register-user.use-case.interface";
 import { SUBMIT_KYC_DOCUMENT_USE_CASE } from "./application/interfaces/submit-kyc-document.use-case.interface";
 import { SUBMIT_LIVE_SELFIE_USE_CASE } from "./application/interfaces/submit-live-selfie.use-case.interface";
@@ -195,6 +197,10 @@ import { GoogleAuthService } from "./infrastructure/services/google-auth.service
         {
             provide: REFRESH_TOKEN_USE_CASE,
             useClass: RefreshTokenUseCase,
+        },
+        {
+            provide: LOGOUT_USE_CASE,
+            useClass: LogoutUseCase,
         },
         {
             provide: REGISTER_USER_USE_CASE,
