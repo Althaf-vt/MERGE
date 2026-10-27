@@ -6,9 +6,9 @@ import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 
 
 @Controller(API_ENDPOINTS.ADMIN.AUTH.BASE)
@@ -24,7 +24,7 @@ export class AdminAuthController {
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGIN)
     @HttpCode(HttpStatus.OK)
     async login(
-        @Body() dto: AdminLoginDto, 
+        @Body() dto: AdminLoginDto,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const result = await this._adminLoginUseCase.execute(dto);
@@ -49,7 +49,7 @@ export class AdminAuthController {
     @Post(API_ENDPOINTS.ADMIN.AUTH.REFRESH)
     @HttpCode(HttpStatus.OK)
     async refresh(
-        @Req() req: Request, 
+        @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const refreshToken = req.cookies['adminRefreshToken'];
@@ -81,9 +81,9 @@ export class AdminAuthController {
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() dto: AdminForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT
         };
     }
 
@@ -91,9 +91,9 @@ export class AdminAuthController {
     @HttpCode(HttpStatus.OK)
     async verifyResetOtp(@Body() dto: AdminVerifyResetOtpDto): Promise<ApiResponse<undefined>> {
         await this._adminVerifyResetOtpUseCase.execute(dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.AUTH.OTP_VERIFIED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.OTP_VERIFIED
         };
     }
 
@@ -101,9 +101,9 @@ export class AdminAuthController {
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() dto: AdminResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS
         };
     }
 
@@ -115,9 +115,9 @@ export class AdminAuthController {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         });
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS
         };
     }
 }

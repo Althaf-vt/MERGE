@@ -2,7 +2,7 @@ import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/commo
 import { Response } from 'express';
 import { DomainException } from '../../domain/exceptions/domain.exception';
 import { ErrorCode } from '../../domain/enums/error-code.enum';
-import { ApiResponse } from '../../domain/interfaces/api-response.interface';
+import { ApiResponse } from '../interfaces/api-response.interface';
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter {
