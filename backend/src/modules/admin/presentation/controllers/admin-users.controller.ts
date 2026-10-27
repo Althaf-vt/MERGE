@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Query
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { IManageUserStatusUseCase, MANAGE_USER_STATUS_USE_CASE } from "../../application/interfaces/manage-user-status.use-case.interface";
 import { GET_ADMIN_USERS_USE_CASE, IGetAdminUsersUseCase } from "../../application/interfaces/get-admin-users.use-case.interface";
+import { GET_ADMIN_USER_DETAILS_USE_CASE, IGetAdminUserDetailsUseCase } from "../../application/interfaces/get-admin-user-details.use-case.interface";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUserDto } from "../../application/dtos/user-management.dto";
@@ -19,6 +20,7 @@ export class AdminUsersController {
     constructor(
         @Inject(MANAGE_USER_STATUS_USE_CASE) private readonly _manageUserStatusUseCase: IManageUserStatusUseCase,
         @Inject(GET_ADMIN_USERS_USE_CASE) private readonly _getUsersUseCase: IGetAdminUsersUseCase,
+        @Inject(GET_ADMIN_USER_DETAILS_USE_CASE) private readonly _getUserDetailsUseCase: IGetAdminUserDetailsUseCase,
     ) { }
 
     @Get()
@@ -47,11 +49,8 @@ export class AdminUsersController {
     @Get(API_ENDPOINTS.ADMIN.USERS.BY_ID)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
-    async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto | null>> {
-        const user = await this._getUsersUseCase.getById(id);
-        if (!user) {
-            return { success: false, error: { code: 'NOT_FOUND', message: 'User not found' } };
-        }
+    async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto>> {
+        const user = await this._getUserDetailsUseCase.execute(id);
         return { success: true, data: user };
     }
 
