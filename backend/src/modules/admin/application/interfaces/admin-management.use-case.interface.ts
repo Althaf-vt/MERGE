@@ -5,7 +5,7 @@ export const ACCEPT_ADMIN_INVITE_USE_CASE = 'ACCEPT_ADMIN_INVITE_USE_CASE';
 export const UPDATE_ADMIN_USE_CASE = 'UPDATE_ADMIN_USE_CASE';
 
 export interface IInviteAdminUseCase {
-    execute(dto: InviteAdminDto, inviterName: string, inviterId: string): Promise<void>;
+    execute(dto: InviteAdminDto, inviterId: string, inviterEmail?: string): Promise<void>;
 }
 
 export interface IAcceptAdminInviteUseCase {
