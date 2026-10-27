@@ -59,7 +59,7 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         UserModule,
         MongooseModule.forFeature([
             { name: Admin.name, schema: AdminSchema },
-            {name: ModerationLogSchemaClass.name, schema: ModerationLogSchema},
+            { name: ModerationLogSchemaClass.name, schema: ModerationLogSchema },
             { name: PhotoVerificationTaskSchemaClass.name, schema: PhotoVerificationTaskSchema }
         ]),
     ],
@@ -167,45 +167,43 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
             useClass: AdminRedisSessionService,
         },
 
-        { 
-            provide: PHOTO_VERIFICATION_TASK_REPOSITORY, 
+        {
+            provide: PHOTO_VERIFICATION_TASK_REPOSITORY,
             useClass: MongoPhotoVerificationTaskRepository
         },
-        { 
-            provide: GET_PHOTO_TASKS_USE_CASE, 
+        {
+            provide: GET_PHOTO_TASKS_USE_CASE,
             useClass: GetPhotoTasksUseCase
         },
-        { 
+        {
             provide: CLAIM_PHOTO_TASK_USE_CASE,
             useClass: ClaimPhotoTaskUseCase
         },
-        { 
-            provide: RELEASE_PHOTO_TASK_CLAIM_USE_CASE, 
+        {
+            provide: RELEASE_PHOTO_TASK_CLAIM_USE_CASE,
             useClass: ReleasePhotoTaskClaimUseCase
         },
-        { 
-            provide: TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE, 
+        {
+            provide: TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE,
             useClass: TakeoverPhotoTaskClaimUseCase
         },
-        { 
-            provide: APPROVE_PHOTO_VERIFICATION_USE_CASE, 
+        {
+            provide: APPROVE_PHOTO_VERIFICATION_USE_CASE,
             useClass: ApprovePhotoVerificationUseCase
         },
-        { 
-            provide: REJECT_PHOTO_VERIFICATION_USE_CASE, 
+        {
+            provide: REJECT_PHOTO_VERIFICATION_USE_CASE,
             useClass: RejectPhotoVerificationUseCase
         },
-        { 
-            provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, 
+        {
+            provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE,
             useClass: CreatePhotoVerificationTaskUseCase
         },
-        
+
         // Register Event Listener
         UserPhotoFlaggedListener,
     ],
-    exports: [
-        ADMIN_REPOSITORY,
-    ],
+    exports: [],
 
 })
 export class AdminModule { }
