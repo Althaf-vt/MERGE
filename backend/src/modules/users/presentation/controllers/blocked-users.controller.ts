@@ -3,13 +3,12 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, IBlockUserUseCase, IGetBlockedUsersUseCase, IUnblockUserUseCase, UNBLOCK_USER_USE_CASE } from "../../application/interfaces/block-management.use-case.interface";
 import { BlockedUserResponseDto, BlockUserDto, GetBlockedUsersQueryDto } from "../../application/dtos/block-management.dto";
-
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 
-@Controller(API_ENDPOINTS.PROFILE.BASE)
+@Controller(API_ENDPOINTS.BLOCKED_USERS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
 export class BlockedUsersController {
     constructor(
@@ -18,7 +17,7 @@ export class BlockedUsersController {
         @Inject(GET_BLOCKED_USERS_USE_CASE) private readonly _getBlockedUsersUseCase: IGetBlockedUsersUseCase,
     ) { }
 
-    @Get('blocked') // Using relative path since controller handles base 'profile'
+    @Get(API_ENDPOINTS.BLOCKED_USERS.BLOCKED)
     @HttpCode(HttpStatus.OK)
     async getBlockedUsers(
         @Req() req: AuthenticatedRequest,
@@ -31,7 +30,7 @@ export class BlockedUsersController {
         };
     }
 
-    @Post('blocked')
+    @Post(API_ENDPOINTS.BLOCKED_USERS.BLOCKED)
     @HttpCode(HttpStatus.OK)
     async blockUser(
         @Req() req: AuthenticatedRequest,
@@ -44,7 +43,7 @@ export class BlockedUsersController {
         };
     }
 
-    @Delete('blocked/:blockedId')
+    @Delete(API_ENDPOINTS.BLOCKED_USERS.BLOCKED_BY_ID)
     @HttpCode(HttpStatus.OK)
     async unblockUser(
         @Req() req: AuthenticatedRequest,
