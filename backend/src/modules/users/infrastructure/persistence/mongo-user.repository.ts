@@ -54,6 +54,22 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
         ).exec();
     }
 
+    async saveLivenessUpdate(user: UserAggregate, record: LivenessEvaluationRecord): Promise<void> {
+        if (!user.id) return;
+        
+        await this._model.updateOne(
+            { _id: user.id },
+            {
+                $push: {
+                    'kycVerification.livenessResults': record
+                }
+            }
+        ).exec();
+
+        // Preserves aggregate cohesiveness by dispatching any domain events generated during the check
+        await this.dispatchEvents(user);
+    }
+
     async findAllPaginated(filters: UserFilters): Promise<PaginatedResult<UserAggregate>> {
         const query: Record<string, unknown> = {};
 
