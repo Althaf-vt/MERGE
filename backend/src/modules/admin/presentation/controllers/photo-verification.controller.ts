@@ -7,23 +7,23 @@ import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
 import { AdminRole } from "../../domain/enums/admin.enums";
-import { 
-    APPROVE_PHOTO_VERIFICATION_USE_CASE, 
-    CLAIM_PHOTO_TASK_USE_CASE, 
-    GET_PHOTO_TASKS_USE_CASE, 
-    IApprovePhotoVerificationUseCase, 
-    IClaimPhotoTaskUseCase, 
-    IGetPhotoTasksUseCase, 
-    IRejectPhotoVerificationUseCase, 
-    IReleasePhotoTaskClaimUseCase, 
-    ITakeoverPhotoTaskClaimUseCase, 
-    REJECT_PHOTO_VERIFICATION_USE_CASE, 
-    RELEASE_PHOTO_TASK_CLAIM_USE_CASE, 
-    TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE 
+import {
+    APPROVE_PHOTO_VERIFICATION_USE_CASE,
+    CLAIM_PHOTO_TASK_USE_CASE,
+    GET_PHOTO_TASKS_USE_CASE,
+    IApprovePhotoVerificationUseCase,
+    IClaimPhotoTaskUseCase,
+    IGetPhotoTasksUseCase,
+    IRejectPhotoVerificationUseCase,
+    IReleasePhotoTaskClaimUseCase,
+    ITakeoverPhotoTaskClaimUseCase,
+    REJECT_PHOTO_VERIFICATION_USE_CASE,
+    RELEASE_PHOTO_TASK_CLAIM_USE_CASE,
+    TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE
 } from "../../application/interfaces/photo-verification.use-case.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { PhotoTaskDtoMapper } from "../mappers/photo-task-dto.mapper";
 import { HydratedPhotoTaskResult } from "../../application/interfaces/photo-verification.use-case.interface";
 
@@ -37,22 +37,22 @@ export class PhotoVerificationController {
         @Inject(TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE) private readonly _takeoverClaimUseCase: ITakeoverPhotoTaskClaimUseCase,
         @Inject(APPROVE_PHOTO_VERIFICATION_USE_CASE) private readonly _approvePhotoUseCase: IApprovePhotoVerificationUseCase,
         @Inject(REJECT_PHOTO_VERIFICATION_USE_CASE) private readonly _rejectPhotoUseCase: IRejectPhotoVerificationUseCase,
-    ) {}
+    ) { }
 
     @Get()
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_VIEW)
     async getTasks(@Query() query: GetPhotoTasksQueryDto): Promise<ApiResponse<PhotoVerificationTaskResponseDto[]>> {
         const result = await this._getPhotoTasksUseCase.execute(query);
-        
-        const mappedData = result.data.map((item: HydratedPhotoTaskResult) => 
+
+        const mappedData = result.data.map((item: HydratedPhotoTaskResult) =>
             PhotoTaskDtoMapper.toResponseDto(item.task, item.signedKycUrl, item.signedUploadedUrl)
         );
 
-        return { 
-            success: true, 
-            data: mappedData, 
-            meta: { total: result.total, page: result.page, limit: result.limit } 
+        return {
+            success: true,
+            data: mappedData,
+            meta: { total: result.total, page: result.page, limit: result.limit }
         };
     }
 
@@ -60,7 +60,7 @@ export class PhotoVerificationController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async claimTask(
-        @Param('id') taskId: string, 
+        @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._claimTaskUseCase.execute(taskId, req.user.userId);
@@ -71,7 +71,7 @@ export class PhotoVerificationController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async releaseClaim(
-        @Param('id') taskId: string, 
+        @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
@@ -83,7 +83,7 @@ export class PhotoVerificationController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async takeoverClaim(
-        @Param('id') taskId: string, 
+        @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         if (req.user.role !== AdminRole.SUPER_ADMIN) {
@@ -97,7 +97,7 @@ export class PhotoVerificationController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async approvePhoto(
-        @Param('id') taskId: string, 
+        @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
@@ -109,8 +109,8 @@ export class PhotoVerificationController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_REJECT)
     async rejectPhoto(
-        @Param('id') taskId: string, 
-        @Body() dto: RejectPhotoTaskDto, 
+        @Param('id') taskId: string,
+        @Body() dto: RejectPhotoTaskDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;

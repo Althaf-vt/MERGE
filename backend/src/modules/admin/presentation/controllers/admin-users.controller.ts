@@ -8,9 +8,9 @@ import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUs
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { FacadeSuspensionUnit, FacadeUserDto, FacadeUserStatus } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
@@ -19,7 +19,7 @@ export class AdminUsersController {
     constructor(
         @Inject(MANAGE_USER_STATUS_USE_CASE) private readonly _manageUserStatusUseCase: IManageUserStatusUseCase,
         @Inject(GET_ADMIN_USERS_USE_CASE) private readonly _getUsersUseCase: IGetAdminUsersUseCase,
-    ) {}
+    ) { }
 
     @Get()
     @HttpCode(HttpStatus.OK)
@@ -59,8 +59,8 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
     async suspendUser(
-        @Param('id') targetUserId: string, 
-        @Body() dto: SuspendUserDto, 
+        @Param('id') targetUserId: string,
+        @Body() dto: SuspendUserDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
@@ -72,8 +72,8 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_SUSPEND)
     async unsuspendUser(
-        @Param('id') targetUserId: string, 
-        @Body() dto: UnSuspendUserDto, 
+        @Param('id') targetUserId: string,
+        @Body() dto: UnSuspendUserDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
@@ -85,8 +85,8 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
     async banUser(
-        @Param('id') targetUserId: string, 
-        @Body() dto: BanUserDto, 
+        @Param('id') targetUserId: string,
+        @Body() dto: BanUserDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
@@ -98,8 +98,8 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_BAN)
     async unbanUser(
-        @Param('id') targetUserId: string, 
-        @Body() dto: UnbanUserDto, 
+        @Param('id') targetUserId: string,
+        @Body() dto: UnbanUserDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
