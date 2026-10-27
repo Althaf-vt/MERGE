@@ -2,11 +2,7 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserResponseDto } from "../../application/dtos/user-response.dto";
 
 export class UserResponseMapper {
-    public static toResponse(
-        entity: UserAggregate, 
-        presignedPhotoUrls?: Record<string, string>, 
-        presignedLiveSelfieUrl?: string | null
-    ): UserResponseDto {
+    public static toResponse(entity: UserAggregate): UserResponseDto {
         return {
             id: entity.id,
             email: entity.email.getValue(),
