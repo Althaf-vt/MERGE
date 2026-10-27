@@ -25,6 +25,8 @@ import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-use
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
 import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
+import { GET_ADMIN_USER_DETAILS_USE_CASE } from "./application/interfaces/get-admin-user-details.use-case.interface";
+import { GetAdminUserDetailsUseCase } from "./application/use-cases/get-admin-user-details.use-case";
 import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
 import { AdminManagementController } from "./presentation/controllers/admin-management.controller";
 import { ADMIN_INVITE_SERVICE } from "./domain/interfaces/admin-invite.interface";
@@ -119,6 +121,10 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         {
             provide: GET_ADMIN_USERS_USE_CASE,
             useClass: GetAdminUsersUserCase,
+        },
+        {
+            provide: GET_ADMIN_USER_DETAILS_USE_CASE,
+            useClass: GetAdminUserDetailsUseCase,
         },
         {
             provide: ADMIN_INVITE_SERVICE,
