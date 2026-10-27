@@ -7,8 +7,11 @@ import {
     PRONOUN_SUGGESTIONS,
     GENDER_IDENTITY_OPTIONS,
     LANGUAGE_SUGGESTIONS,
-    INDIAN_LOCATION_DATA,
-} from '../constants/persona-options.constant';
+} from '../constants/profile-options.constant';
+import {
+    GLOBAL_LOCATION_DATA,
+    SupportedCountry,
+} from '../constants/location-data.constant';
 import styles from './build-persona.module.css';
 
 interface BuildPersonaProps {
@@ -45,7 +48,7 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
         phoneNumber: savedProfile?.phoneNumber?.replace(/^\+91/, '') || '',
         genderIdentity: savedProfile?.genderIdentity || '',
         customLabel: savedProfile?.customLabel || '',
-        country: savedProfile?.country || 'India',
+        country: savedProfile?.country || SupportedCountry.INDIA,
         state: savedProfile?.state || '',
         city: savedProfile?.city || '',
         heightCm: savedProfile?.heightCm ? savedProfile.heightCm.toString() : '',
@@ -58,7 +61,8 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
         immigrationReady: savedProfile?.immigrationReady || 'OPEN_TO_DISCUSSION',
     });
 
-    const locationMap: Record<string, string[]> = INDIAN_LOCATION_DATA;
+    const activeCountry = formData.country || SupportedCountry.INDIA;
+    const locationMap: Record<string, string[]> = GLOBAL_LOCATION_DATA[activeCountry] || {};
     const availableStates = Object.keys(locationMap);
     const availableCities: string[] = formData.state ? locationMap[formData.state] || [] : [];
 
@@ -139,6 +143,10 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
             errors.genderIdentity = 'Gender identity is required.';
         }
 
+        if (!formData.country) {
+            errors.country = 'Country selection is required.';
+        }
+
         if (!formData.state) {
             errors.state = 'State selection is required.';
         }
@@ -158,7 +166,9 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        if (name === 'state') {
+        if (name === 'country') {
+            setFormData((prev) => ({ ...prev, country: value, state: '', city: '' }));
+        } else if (name === 'state') {
             setFormData((prev) => ({ ...prev, state: value, city: '' }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
@@ -406,12 +416,20 @@ export const BuildPersona: React.FC<BuildPersonaProps> = ({ onSuccess }) => {
                     <div className={styles.grid}>
                         <div className={styles.inputGroup}>
                             <label className={styles.label}>Country *</label>
-                            <input
-                                disabled
+                            <select
+                                required
                                 name="country"
-                                value="India"
-                                className={`${styles.input} ${styles.disabledInput}`}
-                            />
+                                value={formData.country}
+                                onChange={handleChange}
+                                className={styles.select}
+                            >
+                                {Object.values(SupportedCountry).map((country) => (
+                                    <option key={country} value={country}>
+                                        {country}
+                                    </option>
+                                ))}
+                            </select>
+                            {fieldErrors.country && <span className={styles.fieldError}>{fieldErrors.country}</span>}
                         </div>
 
                         <div className={styles.inputGroup}>
