@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IManageUserStatusUseCase } from "../interfaces/manage-user-status.use-case.interface";
-import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
+import { FacadeSuspensionUnit, IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
 import { IModerationLogRepository, MODERATION_LOG_REPOSITORY } from "../../domain/interfaces/moderation-log-repository.interface";
-import { SuspensionUnit } from "../../../users/domain/value-objects/suspension-duration.vo";
-import {  ModerationLog } from "../../domain/entities/moderation-log.entity";
+import { ModerationLog } from "../../domain/entities/moderation-log.entity";
 import { ModerationAction } from "../../domain/enums/moderation.enums";
+import { AdminSuspensionUnitDto } from "../dtos/user-management.dto";
 
 @Injectable()
 export class ManageUserStatusUseCase implements IManageUserStatusUseCase {
@@ -13,11 +13,13 @@ export class ManageUserStatusUseCase implements IManageUserStatusUseCase {
         @Inject(MODERATION_LOG_REPOSITORY) private readonly _moderationLogRepo: IModerationLogRepository,
     ) { }
 
-    async suspendUser(adminId: string, targetUserId: string, duration: number, unit: SuspensionUnit, reason: string): Promise<void> {
-        // 1. Facade calls User module (which saves user and dispatched EDA events)
-        await this._userFacade.suspendUser(targetUserId, duration, unit, reason);
+    async suspendUser(adminId: string, targetUserId: string, duration: number, unit: AdminSuspensionUnitDto, reason: string): Promise<void> {
+        const facadeUnit: FacadeSuspensionUnit = unit === AdminSuspensionUnitDto.HOURS ? 'HOURS' : 'DAYS';
 
-        // 2. Local module handles audit trial
+        // 1. Facade calls User module (which saves user and dispatches EDA events)
+        await this._userFacade.suspendUser(targetUserId, duration, facadeUnit, reason);
+
+        // 2. Local module handles audit trail
         const log = new ModerationLog({
             adminId,
             targetUserId,

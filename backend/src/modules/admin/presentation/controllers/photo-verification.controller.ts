@@ -3,6 +3,7 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
+import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
@@ -74,21 +75,18 @@ export class PhotoVerificationController {
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._releaseClaimUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+        await this._releaseClaimUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.TAKEOVER)
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(AdminRole.SUPER_ADMIN)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async takeoverClaim(
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        if (req.user.role !== AdminRole.SUPER_ADMIN) {
-            return { success: false, error: { code: 'FORBIDDEN', message: 'Only Super Admins can take over claims.' } };
-        }
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
     }
@@ -100,8 +98,7 @@ export class PhotoVerificationController {
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._approvePhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+        await this._approvePhotoUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_APPROVED };
     }
 
@@ -113,8 +110,7 @@ export class PhotoVerificationController {
         @Body() dto: RejectPhotoTaskDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._rejectPhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin, dto);
+        await this._rejectPhotoUseCase.execute(taskId, req.user.userId, req.user.role, dto);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_REJECTED };
     }
 }

@@ -10,6 +10,7 @@ import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
 import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
+import { LogoutUseCase } from "./application/use-cases/logout.use-case";
 import { KycController } from "./presentation/controllers/kyc.controller";
 import { SubmitKycDocumentUseCase } from "./application/use-cases/submit-kyc-document.use-case";
 import { KYC_HASH_SERVICE, PKI_VERIFICATION_SERVICE } from "./domain/interfaces/kyc-service.interface";
@@ -20,6 +21,8 @@ import { HandoffController } from "./presentation/controllers/handoff.controller
 import { HandoffGateway } from "./presentation/gateways/handoff.gateway";
 import { ValidateHandoffUseCase } from "./application/use-cases/validate-handoff.use-case";
 import { GenerateHandoffSessionUseCase } from "./application/use-cases/generate-handoff-session.use-case";
+import { CompleteHandoffSessionUseCase } from "./application/use-cases/complete-handoff-session.use-case";
+import { CancelHandoffSessionUseCase } from "./application/use-cases/cancel-handoff-session.use-case";
 import { HANDOFF_SERVICE } from "./application/interfaces/handoff-service.interface";
 import { REDIS_CLIENT, RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
 import { HttpModule } from "@nestjs/axios";
@@ -53,8 +56,11 @@ import { FORGOT_PASSWORD_USE_CASE, RESET_PASSWORD_USE_CASE } from "./application
 import { GoogleLoginUseCase } from "./application/use-cases/google-login.use-case";
 import { GOOGLE_LOGIN_USE_CASE } from "./application/interfaces/google-login.use-case.interface";
 import { GENERATE_HANDOFF_SESSION_USE_CASE } from "./application/interfaces/generate-handoff-session.use-case.interface";
+import { COMPLETE_HANDOFF_SESSION_USE_CASE } from "./application/interfaces/complete-handoff-session.use-case.interface";
+import { CANCEL_HANDOFF_SESSION_USE_CASE } from "./application/interfaces/cancel-handoff-session.use-case.interface";
 import { LOGIN_USER_USE_CASE } from "./application/interfaces/login-user.use-case.interface";
 import { REFRESH_TOKEN_USE_CASE } from "./application/interfaces/refresh-token.use-case.interface";
+import { LOGOUT_USE_CASE } from "./application/interfaces/logout.use-case.interface";
 import { REGISTER_USER_USE_CASE } from "./application/interfaces/register-user.use-case.interface";
 import { SUBMIT_KYC_DOCUMENT_USE_CASE } from "./application/interfaces/submit-kyc-document.use-case.interface";
 import { SUBMIT_LIVE_SELFIE_USE_CASE } from "./application/interfaces/submit-live-selfie.use-case.interface";
@@ -189,12 +195,24 @@ import { GoogleAuthService } from "./infrastructure/services/google-auth.service
             useClass: GenerateHandoffSessionUseCase,
         },
         {
+            provide: COMPLETE_HANDOFF_SESSION_USE_CASE,
+            useClass: CompleteHandoffSessionUseCase,
+        },
+        {
+            provide: CANCEL_HANDOFF_SESSION_USE_CASE,
+            useClass: CancelHandoffSessionUseCase,
+        },
+        {
             provide: LOGIN_USER_USE_CASE,
             useClass: LoginUserUseCase,
         },
         {
             provide: REFRESH_TOKEN_USE_CASE,
             useClass: RefreshTokenUseCase,
+        },
+        {
+            provide: LOGOUT_USE_CASE,
+            useClass: LogoutUseCase,
         },
         {
             provide: REGISTER_USER_USE_CASE,

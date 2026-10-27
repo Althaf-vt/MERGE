@@ -1,22 +1,23 @@
 import { Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../application/interfaces/handoff-service.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { type Response } from "express";
 import { GENERATE_HANDOFF_SESSION_USE_CASE, GenerateHandoffResult, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
 import { IValidateHandoffUseCase, VALIDATE_HANDOFF_USE_CASE } from "../../application/interfaces/validate-handoff.interface.use-case";
-import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
+import { COMPLETE_HANDOFF_SESSION_USE_CASE, ICompleteHandoffSessionUseCase } from "../../application/interfaces/complete-handoff-session.use-case.interface";
+import { CANCEL_HANDOFF_SESSION_USE_CASE, ICancelHandoffSessionUseCase } from "../../application/interfaces/cancel-handoff-session.use-case.interface";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
 
 @Controller(API_ENDPOINTS.HANDOFF.BASE)
 export class HandoffController {
     constructor(
         @Inject(GENERATE_HANDOFF_SESSION_USE_CASE) private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
         @Inject(VALIDATE_HANDOFF_USE_CASE) private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
-        @Inject(HANDOFF_NOTIFICATION_SERVICE) private readonly _handoffGateway: IHandoffNotificationService,
-        @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
+        @Inject(COMPLETE_HANDOFF_SESSION_USE_CASE) private readonly _completeHandoffSessionUseCase: ICompleteHandoffSessionUseCase,
+        @Inject(CANCEL_HANDOFF_SESSION_USE_CASE) private readonly _cancelHandoffSessionUseCase: ICancelHandoffSessionUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.HANDOFF.SESSION)
@@ -44,13 +45,7 @@ export class HandoffController {
 
         const { accessToken, refreshToken } = await this._validateHandoffUseCase.execute(sessionId);
 
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, refreshToken, { sameSite: 'lax' });
 
         return {
             success: true,
@@ -68,8 +63,7 @@ export class HandoffController {
     async completeSession(
         @Param('sessionId') sessionId: string
     ): Promise<ApiResponse<undefined>> {
-        this._handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
-        await this._handoffService.deleteSession(sessionId);
+        await this._completeHandoffSessionUseCase.execute(sessionId);
 
         return {
             success: true,
@@ -83,7 +77,7 @@ export class HandoffController {
     async cancelSession(
         @Param('sessionId') sessionId: string
     ): Promise<ApiResponse<undefined>> {
-        await this._handoffService.deleteSession(sessionId);
+        await this._cancelHandoffSessionUseCase.execute(sessionId);
 
         return {
             success: true,

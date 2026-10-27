@@ -1,7 +1,7 @@
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UseGuards } from "@nestjs/common";
 import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
+import { SubmitLivenessCheckDto } from "../../application/dtos/submit-liveness-check.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
-import { FileInterceptor } from "@nestjs/platform-express";
 import 'multer';
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE, SubmitLivenessCheckResult } from "../../application/interfaces/submit-liveness-check.use-case.interface";
 import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE, SubmitFinalVerificationResult } from "../../application/interfaces/submit-final-verification.use-case.interface";
@@ -11,6 +11,7 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { RequiredFile, UploadFile, UploadImage, UploadVideo } from "../../../../shared/presentation/decorators/file-upload.decorator";
 
 @Controller(API_ENDPOINTS.KYC.BASE)
 @UseGuards(JwtAuthGuard)
@@ -24,17 +25,13 @@ export class KycController {
 
     @Post(API_ENDPOINTS.KYC.SUBMIT)
     @HttpCode(HttpStatus.OK)
-    @UseInterceptors(FileInterceptor('document'))
+    @UploadFile('document')
     async submitkyc(
         @Req() req: AuthenticatedRequest,
         @Body() dto: SubmitKycDto,
-        @UploadedFile() file: Express.Multer.File
+        @RequiredFile('Digital signature file is required') file: Express.Multer.File
     ): Promise<ApiResponse<SubmitKycDocumentResult>> {
         const userId = req.user.userId;
-
-        if (!file) {
-            throw new BadRequestException("Digital signature file is required");
-        }
 
         const data = await this._submitKycDocumentUseCase.execute(userId, {
             ...dto,
@@ -49,26 +46,13 @@ export class KycController {
     }
 
     @Post(API_ENDPOINTS.KYC.SELFIE)
-    @UseInterceptors(FileInterceptor('selfie', {
-        limits: { fileSize: 5 * 1024 * 1024 },
-        fileFilter(_req, file, callback) {
-            const allowedMineTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedMineTypes.includes(file.mimetype)) {
-                return callback(new BadRequestException('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'), false);
-            }
-            callback(null, true);
-        },
-    }))
     @HttpCode(HttpStatus.OK)
+    @UploadImage('selfie')
     async submitSelfie(
-        @UploadedFile() file: Express.Multer.File,
+        @RequiredFile('Live Selfie file is required.') file: Express.Multer.File,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<SubmitLiveSelfieResult>> {
         const userId = req.user.userId;
-
-        if (!file) {
-            throw new BadRequestException("Live Selfie file is required.");
-        }
 
         const data = await this._submitLiveSelfieUseCase.execute(userId, file.buffer);
 
@@ -80,31 +64,15 @@ export class KycController {
     }
 
     @Post(API_ENDPOINTS.KYC.LIVENESS)
-    @UseInterceptors(FileInterceptor('video', {
-        limits: { fileSize: 10 * 1024 * 1024 },
-        fileFilter(req, file, cb) {
-            const allowedMimeTypes = ['video/webm', 'video/mp4', 'video/quicktime', 'application/octet-stream'];
-            const isExtensionAllowed = /\.(mp4|webm)$/i.test(file.originalname);
-            const isMimeAllowed = allowedMimeTypes.includes(file.mimetype);
-
-            if (!isExtensionAllowed && !isMimeAllowed) {
-                return cb(new BadRequestException("Only webm and mp4 video formats are allowed!"), false);
-            }
-            cb(null, true);
-        },
-    }))
     @HttpCode(HttpStatus.OK)
+    @UploadVideo('video')
     async submitLiveness(
         @Req() req: AuthenticatedRequest,
-        @Body('promptType') promptType: string,
-        @UploadedFile() file: Express.Multer.File
+        @Body() dto: SubmitLivenessCheckDto,
+        @RequiredFile('Liveness video payload is required.') file: Express.Multer.File
     ): Promise<ApiResponse<SubmitLivenessCheckResult>> {
-        if (!file) {
-            throw new BadRequestException("Liveness video payload is required.");
-        }
-
         const userId = req.user.userId;
-        const data = await this._submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
+        const data = await this._submitLivenessCheckUseCase.execute(userId, dto.promptType, file.buffer);
 
         return {
             success: true,

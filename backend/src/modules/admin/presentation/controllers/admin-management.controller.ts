@@ -72,10 +72,7 @@ export class AdminManagementController {
         @Body() dto: InviteAdminDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const inviterId = req.user.userId;
-        const inviterName = req.user.email || 'Super Admin';
-
-        await this._inviteAdminUseCase.execute(dto, inviterName, inviterId);
+        await this._inviteAdminUseCase.execute(dto, req.user.userId, req.user.email);
 
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_INVITED };
     }
@@ -95,8 +92,7 @@ export class AdminManagementController {
         @Param('id') targetAdminId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const inviterName = req.user.email || 'Super Admin';
-        await this._reinviteAdminUseCase.execute(targetAdminId, inviterName);
+        await this._reinviteAdminUseCase.execute(targetAdminId, req.user.email);
 
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.REINVITE_SENT };
     }

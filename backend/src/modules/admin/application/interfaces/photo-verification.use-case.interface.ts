@@ -31,7 +31,7 @@ export interface IClaimPhotoTaskUseCase {
 }
 
 export interface IReleasePhotoTaskClaimUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void>;
+    execute(taskId: string, adminId: string, role: string): Promise<void>;
 }
 
 export interface ITakeoverPhotoTaskClaimUseCase {
@@ -39,11 +39,11 @@ export interface ITakeoverPhotoTaskClaimUseCase {
 }
 
 export interface IApprovePhotoVerificationUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void>;
+    execute(taskId: string, adminId: string, role: string): Promise<void>;
 }
 
 export interface IRejectPhotoVerificationUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean, dto: RejectPhotoTaskDto): Promise<void>;
+    execute(taskId: string, adminId: string, role: string, dto: RejectPhotoTaskDto): Promise<void>;
 }
 
 export interface ICreatePhotoVerificationTaskUseCase {

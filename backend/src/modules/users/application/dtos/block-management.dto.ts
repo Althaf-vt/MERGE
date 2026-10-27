@@ -1,5 +1,15 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { BlockReason } from "../../domain/enums/user.enums";
+import { BlockReason, SortOrder } from "../../domain/enums/user.enums";
+
+export class GetBlockedUsersQueryDto {
+    @IsOptional()
+    @IsString()
+    search?: string;
+
+    @IsOptional()
+    @IsEnum(SortOrder, { message: 'sortBy must be either RECENT or OLDEST.' })
+    sortBy: SortOrder = SortOrder.RECENT;
+}
 
 export class BlockUserDto {
     @IsString()

@@ -52,3 +52,12 @@ export class ConfirmEmailChangeDto {
     @MaxLength(6, { message: 'OTP must be exactly 6 digits.' })
     newEmailOtp!: string;
 }
+
+export interface ActiveSessionResponseDto {
+    sessionId: string;
+    deviceInfo: string;
+    ipAddress: string;
+    lastActive: Date;
+    createdAt: Date;
+    isCurrentSession: boolean;
+}

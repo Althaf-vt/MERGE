@@ -15,7 +15,7 @@ export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
         @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService,
     ) { }
 
-    async execute(targetAdminId: string, inviterName: string): Promise<void> {
+    async execute(targetAdminId: string, inviterEmail?: string): Promise<void> {
         const admin = await this._adminRepository.findById(targetAdminId);
         if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
 
@@ -27,7 +27,8 @@ export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
         const token = crypto.randomBytes(32).toString('hex');
         await this._inviteService.storeInviteToken(admin.email, token, ttlSeconds);
 
-        await this._emailService.sendAdminInviteEmail(admin.email.getValue(), token, inviterName);
+        const senderDisplayName = inviterEmail || 'Super Admin';
+        await this._emailService.sendAdminInviteEmail(admin.email.getValue(), token, senderDisplayName);
 
         await this._adminRepository.update(admin);
     }

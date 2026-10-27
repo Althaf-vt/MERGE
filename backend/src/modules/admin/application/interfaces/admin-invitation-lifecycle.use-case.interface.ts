@@ -6,5 +6,5 @@ export interface ICancelAdminInviteUseCase{
 }
 
 export interface IReinviteAdminUseCase {
-    execute(targetAdminId: string, inviterName: string): Promise<void>;
+    execute(targetAdminId: string, inviterEmail?: string): Promise<void>;
 }

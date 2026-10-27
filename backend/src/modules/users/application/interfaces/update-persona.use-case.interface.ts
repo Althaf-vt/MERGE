@@ -1,10 +1,10 @@
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
-import { UserProfileProps } from "../../domain/entities/user-profile.entity";
+import { UserProfileResponseDto } from "../dtos/user-profile-response.dto";
 
 export const UPDATE_PERSONA_USE_CASE = Symbol('UPDATE_PERSONA_USE_CASE');
 
 export interface UpdatePersonaResult {
-    profile: UserProfileProps;
+    profile: UserProfileResponseDto;
     verifiedDOB?: Date;
 }
 

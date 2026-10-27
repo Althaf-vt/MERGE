@@ -15,6 +15,8 @@ import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-p
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
 import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
 import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
+import { ADMIN_LOGOUT_USE_CASE } from "./application/interfaces/admin-logout.use-case.interface";
+import { AdminLogoutUseCase } from "./application/use-cases/admin-logout.use-case";
 import { UserModule } from "../users/users.module";
 import { ModerationLogSchema, ModerationLogSchemaClass } from "./infrastructure/persistence/moderation-log.schema";
 import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-repository.interface";
@@ -23,6 +25,8 @@ import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-use
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
 import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
+import { GET_ADMIN_USER_DETAILS_USE_CASE } from "./application/interfaces/get-admin-user-details.use-case.interface";
+import { GetAdminUserDetailsUseCase } from "./application/use-cases/get-admin-user-details.use-case";
 import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
 import { AdminManagementController } from "./presentation/controllers/admin-management.controller";
 import { ADMIN_INVITE_SERVICE } from "./domain/interfaces/admin-invite.interface";
@@ -103,6 +107,10 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
             useClass: AdminRefreshTokenUsecase,
         },
         {
+            provide: ADMIN_LOGOUT_USE_CASE,
+            useClass: AdminLogoutUseCase,
+        },
+        {
             provide: MODERATION_LOG_REPOSITORY,
             useClass: MongoModerationLogRepository,
         },
@@ -113,6 +121,10 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         {
             provide: GET_ADMIN_USERS_USE_CASE,
             useClass: GetAdminUsersUserCase,
+        },
+        {
+            provide: GET_ADMIN_USER_DETAILS_USE_CASE,
+            useClass: GetAdminUserDetailsUseCase,
         },
         {
             provide: ADMIN_INVITE_SERVICE,

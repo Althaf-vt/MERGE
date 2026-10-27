@@ -1,15 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, IConfirmEmailChangeUseCase, IDeactivateAccountUseCase, IDeleteAccountUseCase, IGetActiveSessionsUseCase, IInitiateEmailChangeUseCase, INITIATE_EMAIL_CHANGE_USE_CASE, IRequestSecurityOtpUseCase, IRevokeOtherSessionsUseCase, IRevokeSessionUseCase, IUpdateSecurityPasswordUseCase, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "../../application/interfaces/security-management.use-case.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
-import { ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
+import { ActiveSessionResponseDto, ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -97,10 +94,10 @@ export class SecurityController {
 
     @Get(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS)
     @HttpCode(HttpStatus.OK)
-    async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<UserSessionData[]>> {
+    async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<ActiveSessionResponseDto[]>> {
         const currentSessionId = req.user.sessionId;
         if (!currentSessionId) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session context is missing.");
+            throw new UnauthorizedException("Session context is missing.");
         }
 
         const sessions = await this._getSessionsUseCase.execute(req.user.userId, currentSessionId);
@@ -115,7 +112,7 @@ export class SecurityController {
     async revokeAllOtherSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         const currentSessionId = req.user.sessionId;
         if (!currentSessionId) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session ID is required to revoke other sessions.");
+            throw new UnauthorizedException("Session ID is required to revoke other sessions.");
         }
 
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);

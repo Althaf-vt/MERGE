@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Query
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { IManageUserStatusUseCase, MANAGE_USER_STATUS_USE_CASE } from "../../application/interfaces/manage-user-status.use-case.interface";
 import { GET_ADMIN_USERS_USE_CASE, IGetAdminUsersUseCase } from "../../application/interfaces/get-admin-users.use-case.interface";
+import { GET_ADMIN_USER_DETAILS_USE_CASE, IGetAdminUserDetailsUseCase } from "../../application/interfaces/get-admin-user-details.use-case.interface";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUserDto } from "../../application/dtos/user-management.dto";
@@ -11,7 +12,7 @@ import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-se
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { FacadeSuspensionUnit, FacadeUserDto, FacadeUserStatus } from "../../../users/application/interfaces/user-management-facade.interface";
+import { FacadeUserDto } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -19,19 +20,14 @@ export class AdminUsersController {
     constructor(
         @Inject(MANAGE_USER_STATUS_USE_CASE) private readonly _manageUserStatusUseCase: IManageUserStatusUseCase,
         @Inject(GET_ADMIN_USERS_USE_CASE) private readonly _getUsersUseCase: IGetAdminUsersUseCase,
+        @Inject(GET_ADMIN_USER_DETAILS_USE_CASE) private readonly _getUserDetailsUseCase: IGetAdminUserDetailsUseCase,
     ) { }
 
     @Get()
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
     async listUsers(@Query() query: GetUsersQueryDto): Promise<ApiResponse<FacadeUserDto[]>> {
-        const result = await this._getUsersUseCase.execute({
-            page: query.page ?? 1,
-            limit: query.limit ?? 20,
-            search: query.search,
-            status: query.status as FacadeUserStatus,
-            kycStatus: query.kycStatus,
-        });
+        const result = await this._getUsersUseCase.execute(query);
 
         return {
             success: true,
@@ -47,11 +43,8 @@ export class AdminUsersController {
     @Get(API_ENDPOINTS.ADMIN.USERS.BY_ID)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
-    async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto | null>> {
-        const user = await this._getUsersUseCase.getById(id);
-        if (!user) {
-            return { success: false, error: { code: 'NOT_FOUND', message: 'User not found' } };
-        }
+    async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto>> {
+        const user = await this._getUserDetailsUseCase.execute(id);
         return { success: true, data: user };
     }
 
@@ -64,7 +57,7 @@ export class AdminUsersController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
-        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit as FacadeSuspensionUnit, dto.reason);
+        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit, dto.reason);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED };
     }
 

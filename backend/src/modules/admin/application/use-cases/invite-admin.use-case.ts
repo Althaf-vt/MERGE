@@ -20,7 +20,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService,
     ) {}
 
-    async execute(dto: InviteAdminDto, inviterName: string, inviterId: string): Promise<void> {
+    async execute(dto: InviteAdminDto, inviterId: string, inviterEmail?: string): Promise<void> {
         const emailVo = new EmailVO(dto.email);
         const existingAdmin = await this._adminRepository.findByEmail(emailVo.getValue());
 
@@ -46,6 +46,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         
         const token = crypto.randomBytes(32).toString('hex');        
         await this._inviteService.storeInviteToken(emailVo, token, ttlSeconds);
-        await this._emailService.sendAdminInviteEmail(emailVo.getValue(), token, inviterName);
+        const senderDisplayName = inviterEmail || 'Super Admin';
+        await this._emailService.sendAdminInviteEmail(emailVo.getValue(), token, senderDisplayName);
     }
 }

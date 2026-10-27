@@ -6,10 +6,11 @@ import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
+import { ADMIN_LOGOUT_USE_CASE, IAdminLogoutUseCase } from "../../application/interfaces/admin-logout.use-case.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-
+import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
 
 @Controller(API_ENDPOINTS.ADMIN.AUTH.BASE)
 export class AdminAuthController {
@@ -19,6 +20,7 @@ export class AdminAuthController {
         @Inject(ADMIN_RESET_PASSWORD_USE_CASE) private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
         @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE) private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
         @Inject(ADMIN_REFRESH_TOKEN_USE_CASE) private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
+        @Inject(ADMIN_LOGOUT_USE_CASE) private readonly _adminLogoutUseCase: IAdminLogoutUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGIN)
@@ -29,12 +31,7 @@ export class AdminAuthController {
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const result = await this._adminLoginUseCase.execute(dto);
 
-        res.cookie('adminRefreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -52,7 +49,7 @@ export class AdminAuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
-        const refreshToken = req.cookies['adminRefreshToken'];
+        const refreshToken = req.cookies[COOKIE_NAMES.ADMIN_REFRESH_TOKEN];
 
         if (!refreshToken) {
             throw new UnauthorizedException("No refresh token found");
@@ -60,12 +57,7 @@ export class AdminAuthController {
 
         const result = await this._adminRefreshTokenUseCase.execute(refreshToken);
 
-        res.cookie('adminRefreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -109,12 +101,15 @@ export class AdminAuthController {
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
-    async logout(@Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
-        res.clearCookie('adminRefreshToken', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+    async logout(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
+    ): Promise<ApiResponse<undefined>> {
+        const refreshToken = req.cookies[COOKIE_NAMES.ADMIN_REFRESH_TOKEN];
+
+        await this._adminLogoutUseCase.execute(refreshToken);
+
+        CookieUtil.clearAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN);
         return {
             success: true,
             message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS

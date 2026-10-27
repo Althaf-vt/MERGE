@@ -47,8 +47,11 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
 
         await this._userRepository.update(user);
 
+        const profileProps = profile.toJSON();
+        const { bioGenerationAttempts: _, ...profileDto } = profileProps;
+
         return {
-            profile: profile.toJSON(),
+            profile: profileDto,
             verifiedDOB: user.kycVerification?.verifiedDOB
         };
     }
