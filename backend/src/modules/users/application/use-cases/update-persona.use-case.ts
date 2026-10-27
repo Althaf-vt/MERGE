@@ -5,7 +5,6 @@ import { IUpdatePersonaUseCase, UpdatePersonaResult } from "../interfaces/update
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
-import { INDIAN_LOCATION_DATA } from "../../domain/constants/location-data.constant";
 import { LocationVO } from "../../domain/value-objects/location.vo";
 
 @Injectable()
