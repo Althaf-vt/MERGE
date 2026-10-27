@@ -12,7 +12,7 @@ import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-se
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { FacadeSuspensionUnit, FacadeUserDto, FacadeUserStatus } from "../../../users/application/interfaces/user-management-facade.interface";
+import { FacadeSuspensionUnit, FacadeUserDto } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -27,13 +27,7 @@ export class AdminUsersController {
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.USERS_VIEW)
     async listUsers(@Query() query: GetUsersQueryDto): Promise<ApiResponse<FacadeUserDto[]>> {
-        const result = await this._getUsersUseCase.execute({
-            page: query.page ?? 1,
-            limit: query.limit ?? 20,
-            search: query.search,
-            status: query.status as FacadeUserStatus,
-            kycStatus: query.kycStatus,
-        });
+        const result = await this._getUsersUseCase.execute(query);
 
         return {
             success: true,
