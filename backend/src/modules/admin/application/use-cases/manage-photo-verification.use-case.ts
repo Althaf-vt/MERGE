@@ -12,6 +12,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 import { RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
+import { AdminRole } from "../../domain/enums/admin.enums";
 
 @Injectable()
 export class ClaimPhotoTaskUseCase implements IClaimPhotoTaskUseCase {
@@ -34,10 +35,11 @@ export class ReleasePhotoTaskClaimUseCase implements IReleasePhotoTaskClaimUseCa
         @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository
     ) {}
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.releaseClaim(adminId, isSuperAdmin);
         await this._repository.update(task);
     }
@@ -64,10 +66,11 @@ export class ApprovePhotoVerificationUseCase implements IApprovePhotoVerificatio
         @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository
     ) {}
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.approve(adminId, isSuperAdmin);
         await this._repository.update(task);
     }
@@ -79,10 +82,11 @@ export class RejectPhotoVerificationUseCase implements IRejectPhotoVerificationU
         @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository
     ) {}
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean, dto: RejectPhotoTaskDto): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string, dto: RejectPhotoTaskDto): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.reject(adminId, isSuperAdmin, dto.reason);
         await this._repository.update(task);
     }
