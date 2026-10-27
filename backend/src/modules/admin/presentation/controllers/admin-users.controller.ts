@@ -12,7 +12,7 @@ import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-se
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { FacadeSuspensionUnit, FacadeUserDto } from "../../../users/application/interfaces/user-management-facade.interface";
+import { FacadeUserDto } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -57,7 +57,7 @@ export class AdminUsersController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
-        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit as FacadeSuspensionUnit, dto.reason);
+        await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit, dto.reason);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED };
     }
 
