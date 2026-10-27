@@ -15,6 +15,8 @@ import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-p
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
 import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
 import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
+import { ADMIN_LOGOUT_USE_CASE } from "./application/interfaces/admin-logout.use-case.interface";
+import { AdminLogoutUseCase } from "./application/use-cases/admin-logout.use-case";
 import { UserModule } from "../users/users.module";
 import { ModerationLogSchema, ModerationLogSchemaClass } from "./infrastructure/persistence/moderation-log.schema";
 import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-repository.interface";
@@ -101,6 +103,10 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         {
             provide: ADMIN_REFRESH_TOKEN_USE_CASE,
             useClass: AdminRefreshTokenUsecase,
+        },
+        {
+            provide: ADMIN_LOGOUT_USE_CASE,
+            useClass: AdminLogoutUseCase,
         },
         {
             provide: MODERATION_LOG_REPOSITORY,
