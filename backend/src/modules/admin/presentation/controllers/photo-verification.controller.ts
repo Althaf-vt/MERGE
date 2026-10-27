@@ -75,8 +75,7 @@ export class PhotoVerificationController {
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._releaseClaimUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+        await this._releaseClaimUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
     }
 
@@ -99,8 +98,7 @@ export class PhotoVerificationController {
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._approvePhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+        await this._approvePhotoUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_APPROVED };
     }
 
@@ -112,8 +110,7 @@ export class PhotoVerificationController {
         @Body() dto: RejectPhotoTaskDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._rejectPhotoUseCase.execute(taskId, req.user.userId, isSuperAdmin, dto);
+        await this._rejectPhotoUseCase.execute(taskId, req.user.userId, req.user.role, dto);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_REJECTED };
     }
 }
