@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UseGuards } from "@nestjs/common";
-import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
+import { SubmitKycDto, SubmitLivenessCheckDto } from "../../application/dtos/submit-kyc.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import 'multer';
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE, SubmitLivenessCheckResult } from "../../application/interfaces/submit-liveness-check.use-case.interface";
@@ -67,11 +67,11 @@ export class KycController {
     @UploadVideo('video')
     async submitLiveness(
         @Req() req: AuthenticatedRequest,
-        @Body('promptType') promptType: string,
+        @Body() dto: SubmitLivenessCheckDto,
         @RequiredFile('Liveness video payload is required.') file: Express.Multer.File
     ): Promise<ApiResponse<SubmitLivenessCheckResult>> {
         const userId = req.user.userId;
-        const data = await this._submitLivenessCheckUseCase.execute(userId, promptType, file.buffer);
+        const data = await this._submitLivenessCheckUseCase.execute(userId, dto.promptType, file.buffer);
 
         return {
             success: true,
