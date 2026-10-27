@@ -5,9 +5,10 @@ import { IProcessCastingMessageUseCase, PROCESS_CASTING_MESSAGE_USE_CASE } from 
 import { FINALIZE_CASTING_SESSION_USE_CASE, IFinalizeCastingSessionUseCase } from "../../application/interfaces/finalize-casting-session.use-case.interface";
 import { ProcessMessageDto } from "../../application/dtos/process-message.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { CastingSessionDtoMapper } from "../mappers/casting-session-dto.mapper";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { CastingSessionResponseDto } from "../../application/dtos/casting-session-response.dto";
 
@@ -27,21 +28,21 @@ export class CastingDirectorController {
         return {
             success: true,
             message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED,
-            data: session.toJSON() as CastingSessionResponseDto
+            data: CastingSessionDtoMapper.toResponseDto(session)
         };
     }
 
     @Post(API_ENDPOINTS.CASTING_DIRECTOR.MESSAGE)
     @HttpCode(HttpStatus.OK)
     async processMessage(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: ProcessMessageDto
     ): Promise<ApiResponse<CastingSessionResponseDto>> {
         const session = await this._processCastingMessageUseCase.execute(req.user.userId, dto.content);
         return {
             success: true,
             message: RESPONSE_MESSAGES.CASTING_DIRECTOR.MESSAGE_PROCESSED,
-            data: session.toJSON(),
+            data: CastingSessionDtoMapper.toResponseDto(session)
         };
     }
 
