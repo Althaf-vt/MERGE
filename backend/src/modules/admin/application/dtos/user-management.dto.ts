@@ -1,5 +1,6 @@
 import { IsEnum, IsNumber, IsOptional, IsString, Min, MinLength } from "class-validator";
-import { Type } from 'class-transformer'
+import { Type } from 'class-transformer';
+import { GetUsersFilters } from "../../../users/application/interfaces/user-management-facade.interface";
 
 // Local enums for validation, mapped to Facade types in the UseCase
 export enum AdminSuspensionUnitDto{
@@ -14,18 +15,18 @@ export enum AdminUserStatusFilterDto{
     DELETED = 'DELETED'
 }
 
-export class GetUsersQueryDto {
+export class GetUsersQueryDto implements GetUsersFilters {
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
     @Min(1)
-    page?: number = 1;
+    page: number = 1;
 
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
     @Min(1)
-    limit?: number = 20;
+    limit: number = 20;
 
     @IsOptional()
     @IsString()
