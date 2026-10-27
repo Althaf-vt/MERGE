@@ -1,8 +1,8 @@
-import { CastingUserContextDto } from '../../../users/application/dtos/casting-user-context.dto';
+import { ICastingUserContext } from '../interfaces/casting-user-context.interface';
 import { TranscriptEntry } from '../entities/casting-session.entity';
 
 export const CastingPrompts = {
-    getSystemPrompt: (context: CastingUserContextDto): string => {
+    getSystemPrompt: (context: ICastingUserContext): string => {
         return `
 You are the MERGE Casting Director, an expert psychological matchmaker.
 Your goal is to uncover the user's attachment style, humor, and core values through a natural conversation.
@@ -35,7 +35,7 @@ Do not include any greetings or conversational filler.
         `.trim();
     },
 
-    getSummaryUserPrompt: (context: CastingUserContextDto, transcript: TranscriptEntry[]): string => {
+    getSummaryUserPrompt: (context: ICastingUserContext, transcript: TranscriptEntry[]): string => {
         return `Context: ${JSON.stringify(context)}\n\nTranscript: ${JSON.stringify(transcript)}`;
     }
 };

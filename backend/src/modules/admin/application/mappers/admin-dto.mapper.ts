@@ -1,4 +1,4 @@
-import { AdminDetailsDto } from "../../application/dtos/admin-output.dto";
+import { AdminDetailsDto } from "../dtos/admin-output.dto";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 
 export class AdminDtoMapper {

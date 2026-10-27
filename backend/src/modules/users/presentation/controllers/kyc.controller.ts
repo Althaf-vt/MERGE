@@ -8,9 +8,9 @@ import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE, Su
 import { ISubmitLiveSelfieUseCase, SUBMIT_LIVE_SELFIE_USE_CASE, SubmitLiveSelfieResult } from "../../application/interfaces/submit-live-selfie.use-case.interface";
 import { ISubmitKycDocumentUseCase, SUBMIT_KYC_DOCUMENT_USE_CASE, SubmitKycDocumentResult } from "../../application/interfaces/submit-kyc-document.use-case.interface";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 
 @Controller(API_ENDPOINTS.KYC.BASE)
 @UseGuards(JwtAuthGuard)
@@ -20,7 +20,7 @@ export class KycController {
         @Inject(SUBMIT_LIVE_SELFIE_USE_CASE) private readonly _submitLiveSelfieUseCase: ISubmitLiveSelfieUseCase,
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE) private readonly _submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
         @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE) private readonly _submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
-    ){}
+    ) { }
 
     @Post(API_ENDPOINTS.KYC.SUBMIT)
     @HttpCode(HttpStatus.OK)
@@ -32,7 +32,7 @@ export class KycController {
     ): Promise<ApiResponse<SubmitKycDocumentResult>> {
         const userId = req.user.userId;
 
-        if(!file){
+        if (!file) {
             throw new BadRequestException("Digital signature file is required");
         }
 
@@ -53,7 +53,7 @@ export class KycController {
         limits: { fileSize: 5 * 1024 * 1024 },
         fileFilter(_req, file, callback) {
             const allowedMineTypes = ['image/jpeg', 'image/png', 'image/webp'];
-            if(!allowedMineTypes.includes(file.mimetype)){
+            if (!allowedMineTypes.includes(file.mimetype)) {
                 return callback(new BadRequestException('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'), false);
             }
             callback(null, true);
@@ -66,12 +66,12 @@ export class KycController {
     ): Promise<ApiResponse<SubmitLiveSelfieResult>> {
         const userId = req.user.userId;
 
-        if(!file){
+        if (!file) {
             throw new BadRequestException("Live Selfie file is required.");
         }
 
         const data = await this._submitLiveSelfieUseCase.execute(userId, file.buffer);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.KYC.SELFIE_CAPTURED,
@@ -86,7 +86,7 @@ export class KycController {
             const allowedMimeTypes = ['video/webm', 'video/mp4', 'video/quicktime', 'application/octet-stream'];
             const isExtensionAllowed = /\.(mp4|webm)$/i.test(file.originalname);
             const isMimeAllowed = allowedMimeTypes.includes(file.mimetype);
-            
+
             if (!isExtensionAllowed && !isMimeAllowed) {
                 return cb(new BadRequestException("Only webm and mp4 video formats are allowed!"), false);
             }
@@ -99,7 +99,7 @@ export class KycController {
         @Body('promptType') promptType: string,
         @UploadedFile() file: Express.Multer.File
     ): Promise<ApiResponse<SubmitLivenessCheckResult>> {
-        if(!file){
+        if (!file) {
             throw new BadRequestException("Liveness video payload is required.");
         }
 
@@ -118,7 +118,7 @@ export class KycController {
     async submitFinalVerification(@Req() req: AuthenticatedRequest): Promise<ApiResponse<SubmitFinalVerificationResult>> {
         const userId = req.user.userId;
         const data = await this._submitFinalVerificationUseCase.execute(userId);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.KYC.VERIFICATION_SUBMITTED,

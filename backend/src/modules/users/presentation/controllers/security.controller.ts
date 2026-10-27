@@ -4,9 +4,9 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/
 import { ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
@@ -30,22 +30,22 @@ export class SecurityController {
     @HttpCode(HttpStatus.OK)
     async requestOtp(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._requestOtpUseCase.execute(req.user.userId);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.OTP_REQUESTED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.OTP_REQUESTED
         };
     }
 
     @Patch(API_ENDPOINTS.PROFILE.SECURITY_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async updatePassword(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: UpdateSecurityPasswordDto
     ): Promise<ApiResponse<undefined>> {
         await this._updatePasswordUseCase.execute(req.user.userId, dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.PASSWORD_UPDATED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.PASSWORD_UPDATED
         };
     }
 
@@ -53,9 +53,9 @@ export class SecurityController {
     @HttpCode(HttpStatus.OK)
     async deactivateAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deactivateUseCase.execute(req.user.userId);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DEACTIVATED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DEACTIVATED
         };
     }
 
@@ -63,35 +63,35 @@ export class SecurityController {
     @HttpCode(HttpStatus.OK)
     async deleteAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deleteUseCase.execute(req.user.userId);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DELETED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DELETED
         };
     }
 
     @Post(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_INITIATE)
     @HttpCode(HttpStatus.OK)
     async initiateEmailChange(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: InitiateEmailChangeDto
     ): Promise<ApiResponse<undefined>> {
         await this._initiateEmailChangeUseCase.execute(req.user.userId, dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGE_INITIATED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGE_INITIATED
         };
     }
 
     @Patch(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_CONFIRM)
     @HttpCode(HttpStatus.OK)
     async confirmEmailChange(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: ConfirmEmailChangeDto
     ): Promise<ApiResponse<undefined>> {
         await this._confirmEmailChangeUseCase.execute(req.user.userId, dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGED
         };
     }
 
@@ -104,37 +104,37 @@ export class SecurityController {
         }
 
         const sessions = await this._getSessionsUseCase.execute(req.user.userId, currentSessionId);
-        return { 
-            success: true, 
-            data: sessions 
+        return {
+            success: true,
+            data: sessions
         };
     }
 
     @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_OTHER)
     @HttpCode(HttpStatus.OK)
     async revokeAllOtherSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
-        const currentSessionId = req.user.sessionId; 
-        if(!currentSessionId) {
+        const currentSessionId = req.user.sessionId;
+        if (!currentSessionId) {
             throw new DomainException(ErrorCode.UNAUTHORIZED, "Session ID is required to revoke other sessions.");
         }
-        
+
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.ALL_SESSIONS_REVOKED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.ALL_SESSIONS_REVOKED
         };
     }
 
     @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_REVOKE)
     @HttpCode(HttpStatus.OK)
     async revokeSession(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Param('sessionId') sessionId: string
     ): Promise<ApiResponse<undefined>> {
         await this._revokeSessionUseCase.execute(req.user.userId, { sessionId });
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.SECURITY.SESSION_REVOKED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.SECURITY.SESSION_REVOKED
         };
     }
 }

@@ -8,12 +8,12 @@ import { GenerateBioDto } from "../../application/dtos/generate-bio.dto";
 import { GENERATE_BIO_USE_CASE, IGenerateBioUseCase } from "../../application/interfaces/generate-bio.use-case.interface";
 import { ISaveBioUseCase, SAVE_BIO_USE_CASE } from "../../application/interfaces/save-bio.use-case.interface";
 import { SaveBioDto } from "../../application/dtos/save-bio.dto";
-import { 
-            IRemoveProfilePhotoUseCase, ISetPrimaryPhotoUseCase, IUpdateMedicalRecordUseCase, 
-            IUpdatePrivacySettingsUseCase, IUploadProfilePhotoUseCase, REMOVE_PROFILE_PHOTO_USE_CASE, 
-            SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE, 
-            UPLOAD_PROFILE_PHOTO_USE_CASE 
-        } from "../../application/interfaces/profile-management.use-case.interface";
+import {
+    IRemoveProfilePhotoUseCase, ISetPrimaryPhotoUseCase, IUpdateMedicalRecordUseCase,
+    IUpdatePrivacySettingsUseCase, IUploadProfilePhotoUseCase, REMOVE_PROFILE_PHOTO_USE_CASE,
+    SET_PRIMARY_PHOTO_USE_CASE, UPDATE_MEDICAL_RECORD_USE_CASE, UPDATE_PRIVACY_SETTINGS_USE_CASE,
+    UPLOAD_PROFILE_PHOTO_USE_CASE
+} from "../../application/interfaces/profile-management.use-case.interface";
 import { SetPrimaryPhotoDto, UpdateMedicalRecordDto, UpdatePrivacySettingsDto } from "../../application/dtos/profile-management.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
@@ -22,9 +22,9 @@ import { GET_PROFILE_USE_CASE, IGetProfileUseCase, GetProfileDataResult } from "
 import { IUpdateFullPreferencesUseCase, UPDATE_FULL_PREFERENCES_USE_CASE } from "../../application/interfaces/update-full-preferences.use-case.interface";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserProfileProps } from "../../domain/entities/user-profile.entity";
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
@@ -47,7 +47,7 @@ export class ProfileController {
         @Inject(GET_PROFILE_USE_CASE) private readonly _getProfileUseCase: IGetProfileUseCase,
         @Inject(UPDATE_PREFERENCES_USE_CASE) private readonly _updatePreferences: IUpdatePreferencesUseCase,
         @Inject(UPDATE_FULL_PREFERENCES_USE_CASE) private readonly _updateFullPreferencesUseCase: IUpdateFullPreferencesUseCase,
-    ){}
+    ) { }
 
     @Patch(API_ENDPOINTS.PROFILE.PERSONA)
     @HttpCode(HttpStatus.OK)
@@ -57,7 +57,7 @@ export class ProfileController {
     ): Promise<ApiResponse<{ profile: UserProfileProps; verifiedDOB?: Date }>> {
         const userId = req.user.userId;
         const result = await this._updatePersonaUseCase.execute(userId, dto);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.PROFILE.PERSONA_UPDATED,
@@ -73,7 +73,7 @@ export class ProfileController {
     ): Promise<ApiResponse<{ profile: UserProfileProps }>> {
         const userId = req.user.userId;
         const result = await this._updateLifestyleUseCase.execute(userId, dto);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.PROFILE.LIFESTYLE_UPDATED,
@@ -115,7 +115,7 @@ export class ProfileController {
     ): Promise<ApiResponse<{ bios: string[]; remainingAttempts: number }>> {
         const userId = req.user.userId;
         const result = await this._generateBioUseCase.execute(userId, dto);
-        
+
         return {
             success: true,
             data: {
@@ -133,7 +133,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._saveBioUseCase.execute(userId, dto);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.PROFILE.BIO_SAVED
@@ -155,7 +155,7 @@ export class ProfileController {
     @Patch(API_ENDPOINTS.PROFILE.FULL)
     @HttpCode(HttpStatus.OK)
     async updateFullProfile(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: UpdateFullProfileDto
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
@@ -166,7 +166,7 @@ export class ProfileController {
     @Patch(API_ENDPOINTS.PROFILE.MEDICAL)
     @HttpCode(HttpStatus.OK)
     async updateMedicalRecord(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: UpdateMedicalRecordDto
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
@@ -177,7 +177,7 @@ export class ProfileController {
     @Patch(API_ENDPOINTS.PROFILE.PRIVACY)
     @HttpCode(HttpStatus.OK)
     async updatePrivacySettings(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: UpdatePrivacySettingsDto
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
@@ -201,11 +201,11 @@ export class ProfileController {
         },
     }))
     async uploadProfilePhoto(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @UploadedFile() file: Express.Multer.File
     ): Promise<ApiResponse<undefined>> {
         if (!file) throw new BadRequestException('Profile photo file is required.');
-        const userId = req.user.userId; 
+        const userId = req.user.userId;
 
         await this._uploadProfilePhotoUseCase.execute(userId, file.buffer, file.mimetype);
         return { success: true, message: RESPONSE_MESSAGES.PROFILE.PHOTO_UPLOADED };
@@ -214,7 +214,7 @@ export class ProfileController {
     @Patch(API_ENDPOINTS.PROFILE.PHOTOS_PRIMARY)
     @HttpCode(HttpStatus.OK)
     async setPrimaryPhoto(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: SetPrimaryPhotoDto
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
@@ -225,7 +225,7 @@ export class ProfileController {
     @Delete(API_ENDPOINTS.PROFILE.PHOTO_BY_ID)
     @HttpCode(HttpStatus.OK)
     async removeProfilePhoto(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Param('photoId') photoId: string
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;

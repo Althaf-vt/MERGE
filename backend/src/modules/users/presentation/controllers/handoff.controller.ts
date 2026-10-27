@@ -1,16 +1,14 @@
-import { BadGatewayException, Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { ITokenPayload, type ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
+import { Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../../application/interfaces/handoff-service.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { type Response } from "express";
-import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GENERATE_HANDOFF_SESSION_USE_CASE, GenerateHandoffResult, IGenerateHandoffSessionUseCase } from "../../application/interfaces/generate-handoff-session.use-case.interface";
 import { IValidateHandoffUseCase, VALIDATE_HANDOFF_USE_CASE } from "../../application/interfaces/validate-handoff.interface.use-case";
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 
 @Controller(API_ENDPOINTS.HANDOFF.BASE)
 export class HandoffController {
@@ -18,10 +16,8 @@ export class HandoffController {
         @Inject(GENERATE_HANDOFF_SESSION_USE_CASE) private readonly _generateSessionUseCase: IGenerateHandoffSessionUseCase,
         @Inject(VALIDATE_HANDOFF_USE_CASE) private readonly _validateHandoffUseCase: IValidateHandoffUseCase,
         @Inject(HANDOFF_NOTIFICATION_SERVICE) private readonly _handoffGateway: IHandoffNotificationService,
-        @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(HANDOFF_SERVICE) private readonly _handoffService: IHandoffSessionService,
-        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
-    ){}
+    ) { }
 
     @Post(API_ENDPOINTS.HANDOFF.SESSION)
     @UseGuards(JwtAuthGuard)
@@ -32,7 +28,7 @@ export class HandoffController {
     ): Promise<ApiResponse<GenerateHandoffResult>> {
         const userId = req.user.userId;
         const data = await this._generateSessionUseCase.execute(userId, origin);
-        
+
         return {
             success: true,
             message: RESPONSE_MESSAGES.KYC.HANDOFF_CREATED,
@@ -43,23 +39,10 @@ export class HandoffController {
     @Get(API_ENDPOINTS.HANDOFF.VALIDATE)
     async validateMobileSession(
         @Param('sessionId') sessionId: string,
-        @Res({passthrough: true}) res: Response
+        @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; status: string }>> {
-        const userId = await this._validateHandoffUseCase.execute(sessionId);
 
-        const user = await this._userRepository.findById(userId);
-        if(!user){
-            throw new BadGatewayException('User associated with this session no longer exists.');
-        }
-
-        const tokenPayload: ITokenPayload = {
-            userId: user.id as string,
-            email: user.email.getValue(),
-            role: 'USER'
-        };
-
-        const accessToken = await this._tokenService.generateAccessToken(tokenPayload);
-        const refreshToken = await this._tokenService.generateRefreshToken(tokenPayload);
+        const { accessToken, refreshToken } = await this._validateHandoffUseCase.execute(sessionId);
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -87,10 +70,10 @@ export class HandoffController {
     ): Promise<ApiResponse<undefined>> {
         this._handoffGateway.notifyDesktop(sessionId, 'COMPLETED');
         await this._handoffService.deleteSession(sessionId);
-        
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.HANDOFF.COMPLETED 
+
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.HANDOFF.COMPLETED
         };
     }
 
@@ -101,9 +84,9 @@ export class HandoffController {
         @Param('sessionId') sessionId: string
     ): Promise<ApiResponse<undefined>> {
         await this._handoffService.deleteSession(sessionId);
-        
-        return { 
-            success: true, 
+
+        return {
+            success: true,
             message: RESPONSE_MESSAGES.HANDOFF.CANCELLED
         };
     }

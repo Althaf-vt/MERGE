@@ -13,9 +13,9 @@ import { AdminStatusReasonDto, SuspendAdminDto } from "../../application/dtos/ad
 import { CANCEL_ADMIN_INVITE_USE_CASE, ICancelAdminInviteUseCase, IReinviteAdminUseCase, REINVITE_ADMIN_USE_CASE } from "../../application/interfaces/admin-invitation-lifecycle.use-case.interface";
 import { FORCE_LOGOUT_ADMIN_USE_CASE, GET_ADMIN_DETAILS_USE_CASE, IForceLogoutAdminUseCase, IGetAdminDetailsUseCase } from "../../application/interfaces/admin-personnel.use-case.interface";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AdminDetailsDto } from "../../application/dtos/admin-output.dto";
 
 @Controller(API_ENDPOINTS.ADMIN.MANAGEMENT.BASE)
@@ -39,7 +39,7 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_VIEW)
     @HttpCode(HttpStatus.OK)
     async getAdmins(
-        @Query() query: GetAdminsDto, 
+        @Query() query: GetAdminsDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<AdminDetailsDto[]>> {
         const result = await this._getAdminsUseCase.execute(query, req.user.userId);
@@ -69,7 +69,7 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_INVITE)
     @HttpCode(HttpStatus.CREATED)
     async inviteAdmin(
-        @Body() dto: InviteAdminDto, 
+        @Body() dto: InviteAdminDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const inviterId = req.user.userId;
@@ -92,7 +92,7 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_INVITE)
     @HttpCode(HttpStatus.OK)
     async reinviteAdmin(
-        @Param('id') targetAdminId: string, 
+        @Param('id') targetAdminId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         const inviterName = req.user.email || 'Super Admin';
@@ -115,7 +115,7 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_ASSIGN_PERMISSIONS)
     @HttpCode(HttpStatus.OK)
     async updateAdmin(
-        @Param('id') targetAdminId: string, 
+        @Param('id') targetAdminId: string,
         @Body() dto: UpdateAdminDto
     ): Promise<ApiResponse<undefined>> {
         await this._updateAdminUseCase.execute(targetAdminId, dto);
@@ -127,8 +127,8 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
     @HttpCode(HttpStatus.OK)
     async suspendAdmin(
-        @Param('id') targetAdminId: string, 
-        @Body() dto: SuspendAdminDto, 
+        @Param('id') targetAdminId: string,
+        @Body() dto: SuspendAdminDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._suspendAdminUseCase.execute(targetAdminId, dto, req.user.userId);
@@ -140,8 +140,8 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
     @HttpCode(HttpStatus.OK)
     async deactivateAdmin(
-        @Param('id') targetAdminId: string, 
-        @Body() dto: AdminStatusReasonDto, 
+        @Param('id') targetAdminId: string,
+        @Body() dto: AdminStatusReasonDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._deactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
@@ -153,8 +153,8 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_SUSPEND)
     @HttpCode(HttpStatus.OK)
     async reactivateAdmin(
-        @Param('id') targetAdminId: string, 
-        @Body() dto: AdminStatusReasonDto, 
+        @Param('id') targetAdminId: string,
+        @Body() dto: AdminStatusReasonDto,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._reactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
@@ -166,7 +166,7 @@ export class AdminManagementController {
     @RequirePermissions(AdminPermission.ADMINS_FORCE_LOGOUT)
     @HttpCode(HttpStatus.OK)
     async forceLogoutAdmin(
-        @Param('id') targetAdminId: string, 
+        @Param('id') targetAdminId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._forceLogoutUseCase.execute(targetAdminId, req.user.userId);

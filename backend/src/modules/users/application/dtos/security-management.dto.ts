@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength } from 'class-validator';
-import { Match } from '../../../../shared/infrastructure/validation/match.decorator';
+import { Match } from '../../../../shared/presentation/validation/match.decorator'; 
 
 export class UpdateSecurityPasswordDto {
     @IsString()
@@ -34,7 +34,7 @@ export class RevokeSessionDto {
     sessionId!: string;
 }
 
-export class InitiateEmailChangeDto{
+export class InitiateEmailChangeDto {
     @IsString()
     @IsNotEmpty({ message: 'Current email verification code is required.' })
     @MaxLength(6, { message: 'OTP must be exactly 6 digits.' })

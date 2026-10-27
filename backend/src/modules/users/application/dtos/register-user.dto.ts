@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength } from "class-validator";
-import { Match } from "../../../../shared/infrastructure/validation/match.decorator";
+import { Match } from "../../../../shared/presentation/validation/match.decorator"; 
 
 // DTO for user registration that validates the email and password before processing.
-export class RegisterUserDto{
-    @IsEmail({}, {message: "A valid email is required"})
+export class RegisterUserDto {
+    @IsEmail({}, { message: "A valid email is required" })
     @IsNotEmpty()
     email: string;
 
@@ -15,6 +15,6 @@ export class RegisterUserDto{
 
     @IsString()
     @IsNotEmpty()
-    @Match('password',{message: "Passwords do not match"})
+    @Match('password', { message: "Passwords do not match" })
     confirmPassword: string
 }

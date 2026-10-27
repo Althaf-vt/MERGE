@@ -6,13 +6,14 @@ import { ResetPasswordDto } from "../dtos/forgot-password.dto";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
-import * as bcrypt from 'bcrypt';
+import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 
 @Injectable()
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
-        @Inject(OTP_SERVICE) private readonly _otpService: IOtpService
+        @Inject(OTP_SERVICE) private readonly _otpService: IOtpService,
+        @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher
     ) {}
 
     async execute(dto: ResetPasswordDto): Promise<void> {
@@ -28,8 +29,7 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(dto.newPassword, salt);
+        const hashedPassword = await this._passwordHasher.hash(dto.newPassword);
 
         // Assuming UserAggregate has an updatePassword method
         user.updatePassword(hashedPassword);

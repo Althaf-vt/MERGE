@@ -3,14 +3,14 @@ import { IGetAdminsUseCase } from "../interfaces/get-admins.use-case.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
 import { GetAdminsDto } from "../dtos/get-admins.dto";
 import { PaginatedAdminsResponseDto } from "../dtos/admin-output.dto";
-import { AdminDtoMapper } from "../../presentation/mappers/admin-dto.mapper";
+import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
 import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
 
 @Injectable()
-export class GetAdminsUseCase implements IGetAdminsUseCase{
+export class GetAdminsUseCase implements IGetAdminsUseCase {
     constructor(
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
-    ){}
+    ) { }
 
     async execute(filters: GetAdminsDto, currentAdminId: string): Promise<PaginatedAdminsResponseDto> {
         const result = await this._adminRepository.findAllPaginated({
@@ -27,6 +27,6 @@ export class GetAdminsUseCase implements IGetAdminsUseCase{
             total: result.total,
             page: result.page,
             limit: result.limit
-        }; 
+        };
     }
 }
