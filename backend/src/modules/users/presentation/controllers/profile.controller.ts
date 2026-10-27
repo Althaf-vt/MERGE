@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE, UpdatePersonaResult } from "../../application/interfaces/update-persona.use-case.interface";
 import { UpdatePersonaDto } from "../../application/dtos/update-persona.dto";
@@ -15,7 +15,6 @@ import {
     UPLOAD_PROFILE_PHOTO_USE_CASE
 } from "../../application/interfaces/profile-management.use-case.interface";
 import { SetPrimaryPhotoDto, UpdateMedicalRecordDto, UpdatePrivacySettingsDto } from "../../application/dtos/profile-management.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { IUpdateFullProfileUseCase, UPDATE_FULL_PROFILE_USE_CASE } from "../../application/interfaces/update-full-profile.use-case.interface";
 import { UpdateFullProfileDto } from "../../application/dtos/update-full-profile.dto";
 import { GET_PROFILE_USE_CASE, IGetProfileUseCase, GetProfileDataResult } from "../../application/interfaces/get-profile.use-case.interface";
@@ -26,6 +25,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserProfileResponseDto } from "../../application/dtos/user-profile-response.dto";
+import { RequiredFile, UploadImage } from "../../../../shared/presentation/decorators/file-upload.decorator";
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
@@ -187,26 +187,12 @@ export class ProfileController {
 
     @Post(API_ENDPOINTS.PROFILE.PHOTOS)
     @HttpCode(HttpStatus.CREATED)
-    @UseInterceptors(FileInterceptor('photo', {
-        limits: { fileSize: 5 * 1024 * 1024 },
-        fileFilter(req, file, callback) {
-            const allowedMimeType = ['image/jpeg', 'image/png', 'image/webp'];
-            if (!allowedMimeType.includes(file.mimetype)) {
-                return callback(
-                    new BadRequestException('Invalid file type. Only JPEG, PNG, and WebP images are allowed.'),
-                    false
-                );
-            }
-            callback(null, true);
-        },
-    }))
+    @UploadImage('photo')
     async uploadProfilePhoto(
         @Req() req: AuthenticatedRequest,
-        @UploadedFile() file: Express.Multer.File
+        @RequiredFile('Profile photo file is required.') file: Express.Multer.File
     ): Promise<ApiResponse<undefined>> {
-        if (!file) throw new BadRequestException('Profile photo file is required.');
         const userId = req.user.userId;
-
         await this._uploadProfilePhotoUseCase.execute(userId, file.buffer, file.mimetype);
         return { success: true, message: RESPONSE_MESSAGES.PROFILE.PHOTO_UPLOADED };
     }
