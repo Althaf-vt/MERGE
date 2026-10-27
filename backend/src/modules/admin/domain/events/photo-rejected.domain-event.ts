@@ -1,8 +1,8 @@
-import { DomainEvent } from "../../../../shared/domain/events/domain-events.interface";
+import { IPhotoRejectedEventPayload, PHOTO_MODERATION_EVENTS } from "../../../../shared/domain/events/photo-moderation-events.contract";
 
-export class PhotoRejectedDomainEvent implements DomainEvent {
+export class PhotoRejectedDomainEvent implements IPhotoRejectedEventPayload {
     public readonly occuredOn: Date = new Date();
-    public readonly eventName: string = 'admin.photo.rejected';
+    public readonly eventName: string = PHOTO_MODERATION_EVENTS.ADMIN_PHOTO_REJECTED;
 
     constructor(
         public readonly targetUserId: string,

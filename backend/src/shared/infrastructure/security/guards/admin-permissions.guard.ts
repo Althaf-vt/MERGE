@@ -2,8 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import { PERMISSION_KEY } from "../decorators/require-permissions.decorator";
-import { AdminPermission } from "../../../../modules/admin/domain/enums/admin-permission.enums";
-import { AdminRole } from "../../../../modules/admin/domain/enums/admin.enums";
+import { AdminPermission, AdminRole } from "../../../domain/enums/admin-rbac.enums";
 
 
 @Injectable()

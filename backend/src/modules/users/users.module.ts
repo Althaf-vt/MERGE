@@ -387,13 +387,9 @@ import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-re
 
     // Makes these repository and token service providers available to other modules.
     exports: [
-        USER_REPOSITORY, 
-        OTP_SERVICE, 
+        USER_MANAGEMENT_FACADE,
+        CASTING_USER_FACADE,
         USER_SESSION_SERVICE,
-        JwtAuthGuard, 
-        HANDOFF_SERVICE, 
-        USER_MANAGEMENT_FACADE, 
-        CASTING_USER_FACADE
     ],
 })
 
