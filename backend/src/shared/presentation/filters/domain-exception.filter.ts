@@ -33,20 +33,24 @@ export class DomainExceptionFilter implements ExceptionFilter {
             case ErrorCode.INVALID_CREDENTIALS:
             case ErrorCode.TOKEN_EXPIRED:
             case ErrorCode.TOKEN_INVALID:
+            case ErrorCode.UNAUTHORIZED:
                 return HttpStatus.UNAUTHORIZED; // 401
             case ErrorCode.EMAIL_NOT_VERIFIED:
             case ErrorCode.OTP_EXPIRED:
             case ErrorCode.OTP_INVALID:
             case ErrorCode.FACE_MISMATCH:
+            case ErrorCode.FORBIDDEN:
                 return HttpStatus.FORBIDDEN; // 403
             case ErrorCode.USER_ALREADY_EXISTS:
                 return HttpStatus.CONFLICT; // 409
             case ErrorCode.KYC_DOCUMENT_INVALID:
             case ErrorCode.LIVENESS_CHECK_FAILED:
+            case ErrorCode.AADHAAR_VERIFICATION_FAILED:
             case ErrorCode.HANDOFF_SESSION_EXPIRED:
             case ErrorCode.HANDOFF_SESSION_INVALID:
             case ErrorCode.VALIDATION_FAILED:
                 return HttpStatus.BAD_REQUEST; // 400
+            case ErrorCode.INTERNAL_SERVER_ERROR:
             default:
                 return HttpStatus.INTERNAL_SERVER_ERROR; // 500
         }
