@@ -17,9 +17,9 @@ import { IRefreshTokenUseCase, REFRESH_TOKEN_USE_CASE } from "../../application/
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ClientInfo, ClientInfoData } from "../../../../shared/infrastructure/security/decorators/client-info.decorator";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserResponseDto } from "../../application/dtos/user-response.dto";
 
 
@@ -36,7 +36,7 @@ export class AuthController {
         @Inject(GOOGLE_LOGIN_USE_CASE) private readonly _googleLoginUseCase: IGoogleLoginUseCase,
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
-    ){}
+    ) { }
     private readonly _logger = new Logger(AuthController.name);
 
     @Post(API_ENDPOINTS.AUTH.REGISTER)
@@ -73,9 +73,9 @@ export class AuthController {
     @Post(API_ENDPOINTS.AUTH.LOGIN)
     @HttpCode(HttpStatus.OK)
     async login(
-        @Body() dto: LoginUserDto, 
-        @ClientInfo() client: ClientInfoData, 
-        @Res({passthrough: true}) res: Response
+        @Body() dto: LoginUserDto,
+        @ClientInfo() client: ClientInfoData,
+        @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._loginUserUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
@@ -100,9 +100,9 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return { 
+        return {
             success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT 
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT
         };
     }
 
@@ -110,9 +110,9 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() dto: ResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return { 
+        return {
             success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS 
+            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS
         };
     }
 
@@ -121,7 +121,7 @@ export class AuthController {
     async googleLogin(
         @Body() dto: GoogleLoginDto,
         @ClientInfo() client: ClientInfoData,
-        @Res({passthrough: true}) res: Response
+        @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._googleLoginUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
@@ -145,15 +145,15 @@ export class AuthController {
     @Post(API_ENDPOINTS.AUTH.REFRESH)
     @HttpCode(HttpStatus.OK)
     async refresh(
-        @Req() req: Request, 
-        @Res({passthrough: true}) res: Response
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const refreshToken = req.cookies['refreshToken'];
-        if(!refreshToken){
+        if (!refreshToken) {
             throw new UnauthorizedException("No refresh token found");
         }
 
-        const result = await this._refreshTokenUseCase.execute({refreshToken});
+        const result = await this._refreshTokenUseCase.execute({ refreshToken });
 
         res.cookie('refreshToken', result.refreshToken, {
             httpOnly: true,
@@ -174,13 +174,13 @@ export class AuthController {
 
     @Post(API_ENDPOINTS.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
-    async logout(@Req() req: Request, @Res({passthrough: true}) res: Response): Promise<ApiResponse<undefined>> {
+    async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
         const refreshToken = req.cookies['refreshToken'];
 
-        if(refreshToken){
+        if (refreshToken) {
             try {
                 const payload = this._tokenService.verifyRefreshToken(refreshToken);
-                if(payload && payload.userId && payload.sessionId){
+                if (payload && payload.userId && payload.sessionId) {
                     await this._sessionService.revokeSession(payload.userId, payload.sessionId);
                 }
             } catch (error) {
@@ -192,10 +192,10 @@ export class AuthController {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         });
-        
-        return { 
+
+        return {
             success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS 
+            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS
         };
     }
 }

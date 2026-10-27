@@ -5,9 +5,9 @@ import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, IBlockUserUseCase, IGe
 import { BlockedUserResponseDto, BlockUserDto } from "../../application/dtos/block-management.dto";
 import { SortOrder } from "../../domain/enums/user.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints.constant";
-import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
-import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -28,35 +28,35 @@ export class BlockedUsersController {
         const validSort = Object.values(SortOrder).includes(sortBy as SortOrder) ? sortBy : SortOrder.RECENT;
 
         const data = await this._getBlockedUsersUseCase.execute(req.user.userId, search, validSort as SortOrder);
-        return { 
-            success: true, 
-            data 
+        return {
+            success: true,
+            data
         };
     }
 
     @Post('blocked')
     @HttpCode(HttpStatus.OK)
     async blockUser(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Body() dto: BlockUserDto
     ): Promise<ApiResponse<undefined>> {
         await this._blockUserUseCase.execute(req.user.userId, dto);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.PROFILE.USER_BLOCKED || 'Profile blocked successfully.' 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.PROFILE.USER_BLOCKED || 'Profile blocked successfully.'
         };
     }
 
     @Delete('blocked/:blockedId')
     @HttpCode(HttpStatus.OK)
     async unblockUser(
-        @Req() req: AuthenticatedRequest, 
+        @Req() req: AuthenticatedRequest,
         @Param('blockedId') blockedId: string
     ): Promise<ApiResponse<undefined>> {
         await this._unblockUserUseCase.execute(req.user.userId, blockedId);
-        return { 
-            success: true, 
-            message: RESPONSE_MESSAGES.PROFILE.USER_UNBLOCKED 
+        return {
+            success: true,
+            message: RESPONSE_MESSAGES.PROFILE.USER_UNBLOCKED
         };
     }
 }
