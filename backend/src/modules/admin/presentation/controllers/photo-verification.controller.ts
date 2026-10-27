@@ -3,6 +3,7 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
+import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
@@ -81,14 +82,12 @@ export class PhotoVerificationController {
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.TAKEOVER)
     @HttpCode(HttpStatus.OK)
+    @RequireRoles(AdminRole.SUPER_ADMIN)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async takeoverClaim(
         @Param('id') taskId: string,
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
-        if (req.user.role !== AdminRole.SUPER_ADMIN) {
-            return { success: false, error: { code: 'FORBIDDEN', message: 'Only Super Admins can take over claims.' } };
-        }
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
     }
