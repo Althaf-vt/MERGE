@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { CONFIRM_EMAIL_CHANGE_USE_CASE, DEACTIVATE_ACCOUNT_USE_CASE, DELETE_ACCOUNT_USE_CASE, GET_ACTIVE_SESSIONS_USE_CASE, IConfirmEmailChangeUseCase, IDeactivateAccountUseCase, IDeleteAccountUseCase, IGetActiveSessionsUseCase, IInitiateEmailChangeUseCase, INITIATE_EMAIL_CHANGE_USE_CASE, IRequestSecurityOtpUseCase, IRevokeOtherSessionsUseCase, IRevokeSessionUseCase, IUpdateSecurityPasswordUseCase, REQUEST_SECURITY_OTP_USE_CASE, REVOKE_OTHER_SESSIONS_USE_CASE, REVOKE_SESSION_USE_CASE, UPDATE_SECURITY_PASSWORD_USE_CASE } from "../../application/interfaces/security-management.use-case.interface";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { ConfirmEmailChangeDto, InitiateEmailChangeDto, UpdateSecurityPasswordDto } from "../../application/dtos/security-management.dto";
@@ -8,8 +8,6 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -100,7 +98,7 @@ export class SecurityController {
     async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<UserSessionData[]>> {
         const currentSessionId = req.user.sessionId;
         if (!currentSessionId) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session context is missing.");
+            throw new UnauthorizedException("Session context is missing.");
         }
 
         const sessions = await this._getSessionsUseCase.execute(req.user.userId, currentSessionId);
@@ -115,7 +113,7 @@ export class SecurityController {
     async revokeAllOtherSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         const currentSessionId = req.user.sessionId;
         if (!currentSessionId) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session ID is required to revoke other sessions.");
+            throw new UnauthorizedException("Session ID is required to revoke other sessions.");
         }
 
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);
