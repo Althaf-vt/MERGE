@@ -6,6 +6,7 @@ import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
+import { ADMIN_LOGOUT_USE_CASE, IAdminLogoutUseCase } from "../../application/interfaces/admin-logout.use-case.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
@@ -19,6 +20,7 @@ export class AdminAuthController {
         @Inject(ADMIN_RESET_PASSWORD_USE_CASE) private readonly _resetPasswordUseCase: IAdminResetPasswordUseCase,
         @Inject(ADMIN_VERIFY_RESET_OTP_USE_CASE) private readonly _adminVerifyResetOtpUseCase: IAdminVerifyResetOtpUseCase,
         @Inject(ADMIN_REFRESH_TOKEN_USE_CASE) private readonly _adminRefreshTokenUseCase: IAdminRefreshTokenUseCase,
+        @Inject(ADMIN_LOGOUT_USE_CASE) private readonly _adminLogoutUseCase: IAdminLogoutUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGIN)
@@ -109,7 +111,14 @@ export class AdminAuthController {
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
-    async logout(@Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
+    async logout(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response
+    ): Promise<ApiResponse<undefined>> {
+        const refreshToken = req.cookies['adminRefreshToken'];
+
+        await this._adminLogoutUseCase.execute(refreshToken);
+
         res.clearCookie('adminRefreshToken', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
