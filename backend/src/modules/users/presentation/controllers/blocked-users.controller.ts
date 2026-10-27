@@ -39,7 +39,7 @@ export class BlockedUsersController {
         await this._blockUserUseCase.execute(req.user.userId, dto);
         return {
             success: true,
-            message: RESPONSE_MESSAGES.PROFILE.USER_BLOCKED || 'Profile blocked successfully.'
+            message: RESPONSE_MESSAGES.PROFILE.USER_BLOCKED
         };
     }
 
