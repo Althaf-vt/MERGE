@@ -1,4 +1,8 @@
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { GENDER_IDENTITY_OPTIONS, LANGUAGE_SUGGESTIONS, PRONOUN_SUGGESTIONS } from "../constants/profile-options.constant";
 import { AdoptionPreference, DietType, DisabilityOption, DrinkingHabit, ImmigrationReadiness, IntersexOption, MaritalStatus, RelationshipGoal, RelationshipStatus, SmokingHabit } from "../enums/user.enums";
+import { LocationVO } from "../value-objects/location.vo";
 
 export interface UserProfileProps{
     id?:string;
@@ -70,9 +74,7 @@ export interface UpdatePersonaPayload{
     pronouns?: string;
     genderIdentity?: string;
     customLabel?: string;
-    city?: string;
-    state?: string;
-    country?: string;
+    location?: LocationVO;
     heightCm?: number;
     languages?: string[];
     intersex?: IntersexOption;
@@ -190,14 +192,41 @@ export class UserProfile{
     updatePersona(payload: UpdatePersonaPayload): void {
         if(payload.displayName !== undefined) this._props.displayName = payload.displayName;
         if(payload.phoneNumber !== undefined) this._props.phoneNumber = payload.phoneNumber;
-        if(payload.pronouns !== undefined) this._props.pronouns = payload.pronouns;
-        if(payload.genderIdentity !== undefined) this._props.genderIdentity = payload.genderIdentity;
+        
+        if (payload.pronouns !== undefined) {
+            if (!PRONOUN_SUGGESTIONS.includes(payload.pronouns)) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid pronoun selection: ${payload.pronouns}`);
+            }
+            this._props.pronouns = payload.pronouns;
+        }
+
+        if (payload.genderIdentity !== undefined) {
+            if (!GENDER_IDENTITY_OPTIONS.includes(payload.genderIdentity)) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid gender identity: ${payload.genderIdentity}`);
+            }
+            this._props.genderIdentity = payload.genderIdentity;
+        }
+
+        if (payload.languages !== undefined) {
+            const invalidLanguages = payload.languages.filter(lang => !LANGUAGE_SUGGESTIONS.includes(lang));
+            if (invalidLanguages.length > 0) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED, 
+                    `The following languages are not supported: ${invalidLanguages.join(', ')}`
+                );
+            }
+            this._props.languages = payload.languages;
+        }
+
         if(payload.customLabel !== undefined) this._props.customLabel = payload.customLabel;
-        if(payload.city !== undefined) this._props.city = payload.city;
-        if(payload.state !== undefined) this._props.state = payload.state;
-        if(payload.country !== undefined) this._props.country = payload.country;
+        
+        if (payload.location !== undefined) {
+            this._props.city = payload.location.city;
+            this._props.state = payload.location.state;
+            this._props.country = payload.location.country;
+        }
+
         if(payload.heightCm !== undefined) this._props.heightCm = payload.heightCm;
-        if(payload.languages !== undefined) this._props.languages = payload.languages;
         if(payload.intersex !== undefined) this._props.intersex = payload.intersex;
         if(payload.outnessLevel !== undefined) this._props.outnessLevel = payload.outnessLevel;
         if(payload.relationshipStatus !== undefined) this._props.relationshipStatus = payload.relationshipStatus;

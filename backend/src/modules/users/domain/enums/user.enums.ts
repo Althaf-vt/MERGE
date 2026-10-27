@@ -124,26 +124,30 @@ export enum PromptVerificationStatus {
 }
 
 export enum AdoptionPreference {
-    YES = 'YES',
-    NO = 'NO',
-    MAYBE = 'MAYBE',
+  YES = 'YES',
+  NO = 'NO',
+  MAYBE = 'MAYBE',
 }
 
 export enum ImmigrationReadiness {
-    YES = 'YES',
-    NO = 'NO',
-    OPEN_TO_DISCUSSION = 'OPEN_TO_DISCUSSION',
+  YES = 'YES',
+  NO = 'NO',
+  OPEN_TO_DISCUSSION = 'OPEN_TO_DISCUSSION',
 }
 
 export enum BlockReason {
-    INAPPROPRIATE_MESSAGING = 'INAPPROPRIATE_MESSAGING',
-    HARASSMENT = 'HARASSMENT',
-    FAKE_PROFILE = 'FAKE_PROFILE',
-    PERSONAL_PREFERENCE = 'PERSONAL_PREFERENCE',
-    OTHER = 'OTHER'
+  INAPPROPRIATE_MESSAGING = 'INAPPROPRIATE_MESSAGING',
+  HARASSMENT = 'HARASSMENT',
+  FAKE_PROFILE = 'FAKE_PROFILE',
+  PERSONAL_PREFERENCE = 'PERSONAL_PREFERENCE',
+  OTHER = 'OTHER'
 }
 
 export enum SortOrder {
-    RECENT = 'RECENT',
-    OLDEST = 'OLDEST'
+  RECENT = 'RECENT',
+  OLDEST = 'OLDEST'
+}
+
+export enum SupportedCountry {
+  INDIA = 'India',
 }

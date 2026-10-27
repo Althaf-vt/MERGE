@@ -9,7 +9,7 @@ export interface LivenessEvaluationRecord {
     prompt: string;
     score: number;
     status: string;
-    videoS3: string;
+    videoS3?: string; 
 }
 
 export interface UserKycProps {

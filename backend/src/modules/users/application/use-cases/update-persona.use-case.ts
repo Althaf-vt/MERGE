@@ -5,7 +5,7 @@ import { IUpdatePersonaUseCase, UpdatePersonaResult } from "../interfaces/update
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
-import { INDIAN_LOCATION_DATA } from "../../domain/constants/location-data.constant";
+import { LocationVO } from "../../domain/value-objects/location.vo";
 
 @Injectable()
 export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
@@ -22,13 +22,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
 
         const profile = user.profile || new UserProfile({});
 
-        const validCities = INDIAN_LOCATION_DATA[payload.state];
-        if (!validCities) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid state: ${payload.state}`);
-        }
-        if (!validCities.includes(payload.city)) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `City '${payload.city}' does not belong to state '${payload.state}'`);
-        }
+        const locationVO = new LocationVO(payload.country, payload.state, payload.city);
 
         profile.updatePersona({
             displayName: payload.displayName,
@@ -36,9 +30,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
             pronouns: payload.pronouns,
             genderIdentity: payload.genderIdentity,
             customLabel: payload.customLabel,
-            city: payload.city,
-            state: payload.state,
-            country: payload.country,
+            location: locationVO,
             heightCm: payload.heightCm,
             languages: payload.languages,
             intersex: payload.intersex,
@@ -56,7 +48,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
         await this._userRepository.update(user);
 
         return {
-            profile: profile.toJSON(), // Application data only
+            profile: profile.toJSON(),
             verifiedDOB: user.kycVerification?.verifiedDOB
         };
     }
