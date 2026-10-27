@@ -51,6 +51,16 @@ export const API_ENDPOINTS = {
         BLOCKED: 'blocked',
         BLOCKED_BY_ID: 'blocked/:blockedId',
     },
+    BLOCKED_USERS: {
+        BASE: 'profile',
+        BLOCKED: 'blocked',
+        BLOCKED_BY_ID: 'blocked/:blockedId',
+    },
+    BLOCKED_USERS: {
+        BASE: 'profile',
+        BLOCKED: 'blocked',
+        BLOCKED_BY_ID: 'blocked/:blockedId',
+    },
     CASTING_DIRECTOR: {
         BASE: 'casting-director',
         INITIALIZE: 'initialize',
