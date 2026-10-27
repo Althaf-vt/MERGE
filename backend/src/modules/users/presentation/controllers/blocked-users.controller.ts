@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Pos
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, IBlockUserUseCase, IGetBlockedUsersUseCase, IUnblockUserUseCase, UNBLOCK_USER_USE_CASE } from "../../application/interfaces/block-management.use-case.interface";
-import { BlockedUserResponseDto, BlockUserDto } from "../../application/dtos/block-management.dto";
-import { SortOrder } from "../../domain/enums/user.enums";
+import { BlockedUserResponseDto, BlockUserDto, GetBlockedUsersQueryDto } from "../../application/dtos/block-management.dto";
+
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
@@ -22,12 +22,9 @@ export class BlockedUsersController {
     @HttpCode(HttpStatus.OK)
     async getBlockedUsers(
         @Req() req: AuthenticatedRequest,
-        @Query('search') search?: string,
-        @Query('sortBy') sortBy?: SortOrder
+        @Query() query: GetBlockedUsersQueryDto
     ): Promise<ApiResponse<BlockedUserResponseDto[]>> {
-        const validSort = Object.values(SortOrder).includes(sortBy as SortOrder) ? sortBy : SortOrder.RECENT;
-
-        const data = await this._getBlockedUsersUseCase.execute(req.user.userId, search, validSort as SortOrder);
+        const data = await this._getBlockedUsersUseCase.execute(req.user.userId, query.search, query.sortBy);
         return {
             success: true,
             data
