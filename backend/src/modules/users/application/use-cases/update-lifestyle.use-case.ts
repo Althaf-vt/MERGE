@@ -4,7 +4,8 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUpdateLifestyleUseCase } from "../interfaces/update-lifestyle.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { UpdateLifestyleDto } from "../dtos/update-lifestyle.dto";
-import { UserProfile, UserProfileProps } from "../../domain/entities/user-profile.entity";
+import { UserProfile } from "../../domain/entities/user-profile.entity";
+import { UserProfileResponseDto } from "../dtos/user-profile-response.dto";
 
 @Injectable()
 export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
@@ -12,7 +13,7 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
     ){}
 
-    async execute(userId: string, payload: UpdateLifestyleDto): Promise<UserProfileProps> {
+    async execute(userId: string, payload: UpdateLifestyleDto): Promise<UserProfileResponseDto> {
         const user = await this._userRepository.findById(userId);
 
         if(!user){
@@ -39,6 +40,9 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
 
         await this._userRepository.update(user);
 
-        return profile.toJSON();
+        const profileProps = profile.toJSON();
+        const { bioGenerationAttempts: _, ...profileDto } = profileProps;
+
+        return profileDto;
     }
 }
