@@ -105,6 +105,8 @@ import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
 import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
 import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-users.use-case";
 import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-review.listener";
+import { GOOGLE_AUTH_SERVICE } from "./domain/interfaces/google-auth-service.interface";
+import { GoogleAuthService } from "./infrastructure/services/google-auth.service";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -197,6 +199,10 @@ import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-re
         {
             provide: REGISTER_USER_USE_CASE,
             useClass: RegisterUserUseCase,
+        },
+        { 
+            provide: GOOGLE_AUTH_SERVICE, 
+            useClass: GoogleAuthService,
         },
         {
             provide: SUBMIT_KYC_DOCUMENT_USE_CASE,
