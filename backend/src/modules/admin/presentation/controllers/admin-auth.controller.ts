@@ -10,7 +10,7 @@ import { ADMIN_LOGOUT_USE_CASE, IAdminLogoutUseCase } from "../../application/in
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-
+import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
 
 @Controller(API_ENDPOINTS.ADMIN.AUTH.BASE)
 export class AdminAuthController {
@@ -31,12 +31,7 @@ export class AdminAuthController {
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
         const result = await this._adminLoginUseCase.execute(dto);
 
-        res.cookie('adminRefreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -54,7 +49,7 @@ export class AdminAuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
-        const refreshToken = req.cookies['adminRefreshToken'];
+        const refreshToken = req.cookies[COOKIE_NAMES.ADMIN_REFRESH_TOKEN];
 
         if (!refreshToken) {
             throw new UnauthorizedException("No refresh token found");
@@ -62,12 +57,7 @@ export class AdminAuthController {
 
         const result = await this._adminRefreshTokenUseCase.execute(refreshToken);
 
-        res.cookie('adminRefreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -115,15 +105,11 @@ export class AdminAuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<undefined>> {
-        const refreshToken = req.cookies['adminRefreshToken'];
+        const refreshToken = req.cookies[COOKIE_NAMES.ADMIN_REFRESH_TOKEN];
 
         await this._adminLogoutUseCase.execute(refreshToken);
 
-        res.clearCookie('adminRefreshToken', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+        CookieUtil.clearAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN);
         return {
             success: true,
             message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS
