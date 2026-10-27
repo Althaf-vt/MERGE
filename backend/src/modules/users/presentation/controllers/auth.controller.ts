@@ -20,7 +20,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserResponseDto } from "../../application/dtos/user-response.dto";
-
+import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
 
 @Controller(API_ENDPOINTS.AUTH.BASE)
 export class AuthController {
@@ -76,12 +76,7 @@ export class AuthController {
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._loginUserUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -122,12 +117,7 @@ export class AuthController {
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const result = await this._googleLoginUseCase.execute(dto, client.deviceInfo, client.ipAddress);
 
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken, { sameSite: 'lax' });
 
         return {
             success: true,
@@ -145,19 +135,14 @@ export class AuthController {
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
-        const refreshToken = req.cookies['refreshToken'];
+        const refreshToken = req.cookies[COOKIE_NAMES.USER_REFRESH_TOKEN];
         if (!refreshToken) {
             throw new UnauthorizedException("No refresh token found");
         }
 
         const result = await this._refreshTokenUseCase.execute({ refreshToken });
 
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000,
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken);
 
         return {
             success: true,
@@ -172,15 +157,11 @@ export class AuthController {
     @Post(API_ENDPOINTS.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
     async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
-        const refreshToken = req.cookies['refreshToken'];
+        const refreshToken = req.cookies[COOKIE_NAMES.USER_REFRESH_TOKEN];
 
         await this._logoutUseCase.execute(refreshToken);
 
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
+        CookieUtil.clearAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN);
 
         return {
             success: true,
