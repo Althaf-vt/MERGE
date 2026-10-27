@@ -48,13 +48,6 @@ export const API_ENDPOINTS = {
         SECURITY_SESSIONS: 'security/sessions',
         SECURITY_SESSIONS_REVOKE: 'security/sessions/:sessionId',
         SECURITY_SESSIONS_OTHER: 'security/sessions/other',
-        BLOCKED: 'blocked',
-        BLOCKED_BY_ID: 'blocked/:blockedId',
-    },
-    BLOCKED_USERS: {
-        BASE: 'profile',
-        BLOCKED: 'blocked',
-        BLOCKED_BY_ID: 'blocked/:blockedId',
     },
     BLOCKED_USERS: {
         BASE: 'profile',
