@@ -8,6 +8,8 @@ import { API_ENDPOINTS } from "../../../../shared/domain/constants/api-endpoints
 import { ApiResponse } from "../../../../shared/domain/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/domain/constants/response-messages.constant";
 import { UserSessionData } from "../../../../shared/domain/interfaces/user-session.interface";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -24,7 +26,7 @@ export class SecurityController {
         @Inject(CONFIRM_EMAIL_CHANGE_USE_CASE) private readonly _confirmEmailChangeUseCase: IConfirmEmailChangeUseCase,
     ) { }
 
-    @Post('security/otp/request')
+    @Post(API_ENDPOINTS.PROFILE.SECURITY_OTP_REQUEST)
     @HttpCode(HttpStatus.OK)
     async requestOtp(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._requestOtpUseCase.execute(req.user.userId);
@@ -34,7 +36,7 @@ export class SecurityController {
         };
     }
 
-    @Patch('security/password')
+    @Patch(API_ENDPOINTS.PROFILE.SECURITY_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async updatePassword(
         @Req() req: AuthenticatedRequest, 
@@ -47,7 +49,7 @@ export class SecurityController {
         };
     }
 
-    @Patch('security/account/deactivate')
+    @Patch(API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DEACTIVATE)
     @HttpCode(HttpStatus.OK)
     async deactivateAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deactivateUseCase.execute(req.user.userId);
@@ -57,7 +59,7 @@ export class SecurityController {
         };
     }
 
-    @Delete('security/account/delete')
+    @Delete(API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DELETE)
     @HttpCode(HttpStatus.OK)
     async deleteAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deleteUseCase.execute(req.user.userId);
@@ -67,7 +69,7 @@ export class SecurityController {
         };
     }
 
-    @Post('security/email/initiate')
+    @Post(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_INITIATE)
     @HttpCode(HttpStatus.OK)
     async initiateEmailChange(
         @Req() req: AuthenticatedRequest, 
@@ -80,7 +82,7 @@ export class SecurityController {
         };
     }
 
-    @Patch('security/email/confirm')
+    @Patch(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_CONFIRM)
     @HttpCode(HttpStatus.OK)
     async confirmEmailChange(
         @Req() req: AuthenticatedRequest, 
@@ -93,32 +95,28 @@ export class SecurityController {
         };
     }
 
-    @Get('security/sessions')
+    @Get(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS)
     @HttpCode(HttpStatus.OK)
     async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<UserSessionData[]>> {
-        const sessions = await this._getSessionsUseCase.execute(req.user.userId);
+        const currentSessionId = req.user.sessionId;
+        if (!currentSessionId) {
+            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session context is missing.");
+        }
+
+        const sessions = await this._getSessionsUseCase.execute(req.user.userId, currentSessionId);
         return { 
             success: true, 
             data: sessions 
         };
     }
 
-    // @Get('security/sessions')
-    // @HttpCode(HttpStatus.OK)
-    // async getActiveSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<Record<string, unknown>[]>> {
-    //     const sessions = await this._getSessionsUseCase.execute(req.user.userId);
-    //     return { 
-    //         success: true, 
-    //         data: sessions 
-    //     };
-    // }
-
-    @Delete('security/sessions/other')
+    @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_OTHER)
     @HttpCode(HttpStatus.OK)
     async revokeAllOtherSessions(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         const currentSessionId = req.user.sessionId; 
-        // Strict runtime check to prevent deleting everything accidentally
-        if(!currentSessionId) throw new Error("Session ID is required to revoke other sessions");
+        if(!currentSessionId) {
+            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session ID is required to revoke other sessions.");
+        }
         
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);
         return { 
@@ -127,7 +125,7 @@ export class SecurityController {
         };
     }
 
-    @Delete('security/sessions/:sessionId')
+    @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_REVOKE)
     @HttpCode(HttpStatus.OK)
     async revokeSession(
         @Req() req: AuthenticatedRequest, 

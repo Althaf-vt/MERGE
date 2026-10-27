@@ -197,6 +197,7 @@ export interface UserSessionData {
     ipAddress: string;
     lastActive: string;
     createdAt: string;
+    isCurrentSession: boolean;
 }
 
 export type GetActiveSessionsResponse = ApiResponse<UserSessionData[]>;

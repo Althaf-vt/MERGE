@@ -4,23 +4,23 @@ import type { ApiResponse } from '../../../shared/types/api-response.types';
 import type {
     BlockUserRequest,
     ConfirmEmailChangeRequest,
-    GetActiveSessionsResponse,
     GetBlockedUsersQueryParams,
-    GetBlockedUsersResponse,
-    GetProfileResponse,
     InitiateEmailChangeRequest,
-    ProfileStandardResponse,
     SetPrimaryPhotoRequest,
     UpdateFullPreferencesRequest,
     UpdateFullProfileRequest,
     UpdateMedicalRequest,
     UpdatePrivacyRequest,
     UpdateSecurityPasswordRequest,
+    UserSessionData,
+    BlockedUser,
+    GetProfileData
 } from '../types/profile.types';
 
 export const profileApi = rootApi.injectEndpoints({
     endpoints: (builder) => ({
-        getProfile: builder.query<GetProfileResponse, void>({
+        // --- Profile Data Retrieval ---
+        getProfile: builder.query<ApiResponse<GetProfileData>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.BASE,
                 method: 'GET',
@@ -28,48 +28,10 @@ export const profileApi = rootApi.injectEndpoints({
             providesTags: ['Profile'],
         }),
 
-        updateFullProfile: builder.mutation<ProfileStandardResponse, UpdateFullProfileRequest>({
+        // --- Core Profile Updates ---
+        updateFullProfile: builder.mutation<ApiResponse<undefined>, UpdateFullProfileRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.FULL,
-                method: 'PATCH',
-                body,
-            }),
-            invalidatesTags: ['Profile', 'User'],
-        }),
-
-        uploadProfilePhoto: builder.mutation<ProfileStandardResponse, File>({
-            query: (file) => {
-                const formData = new FormData();
-                formData.append('photo', file);
-                return {
-                    url: API_ENDPOINTS.PROFILE.PHOTOS,
-                    method: 'POST',
-                    body: formData,
-                };
-            },
-            invalidatesTags: ['Profile', 'User'],
-        }),
-
-        setPrimaryPhoto: builder.mutation<ProfileStandardResponse, SetPrimaryPhotoRequest>({
-            query: (body) => ({
-                url: API_ENDPOINTS.PROFILE.PHOTOS_PRIMARY,
-                method: 'PATCH',
-                body,
-            }),
-            invalidatesTags: ['Profile', 'User'],
-        }),
-
-        removeProfilePhoto: builder.mutation<ProfileStandardResponse, string>({
-            query: (photoId) => ({
-                url: API_ENDPOINTS.PROFILE.PHOTO_BY_ID(photoId),
-                method: 'DELETE',
-            }),
-            invalidatesTags: ['Profile', 'User'],
-        }),
-
-        updateMedicalRecord: builder.mutation<ProfileStandardResponse, UpdateMedicalRequest>({
-            query: (body) => ({
-                url: API_ENDPOINTS.PROFILE.MEDICAL,
                 method: 'PATCH',
                 body,
             }),
@@ -85,7 +47,16 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile'],
         }),
 
-        updatePrivacySettings: builder.mutation<ProfileStandardResponse, UpdatePrivacyRequest>({
+        updateMedicalRecord: builder.mutation<ApiResponse<undefined>, UpdateMedicalRequest>({
+            query: (body) => ({
+                url: API_ENDPOINTS.PROFILE.MEDICAL,
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        updatePrivacySettings: builder.mutation<ApiResponse<undefined>, UpdatePrivacyRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.PRIVACY,
                 method: 'PATCH',
@@ -94,14 +65,46 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile', 'User'],
         }),
 
-        requestSecurityOtp: builder.mutation<ProfileStandardResponse, void>({
+        // --- Photo Management ---
+        uploadProfilePhoto: builder.mutation<ApiResponse<undefined>, File>({
+            query: (file) => {
+                const formData = new FormData();
+                formData.append('photo', file);
+                return {
+                    url: API_ENDPOINTS.PROFILE.PHOTOS,
+                    method: 'POST',
+                    body: formData,
+                };
+            },
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        setPrimaryPhoto: builder.mutation<ApiResponse<undefined>, SetPrimaryPhotoRequest>({
+            query: (body) => ({
+                url: API_ENDPOINTS.PROFILE.PHOTOS_PRIMARY,
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        removeProfilePhoto: builder.mutation<ApiResponse<undefined>, string>({
+            query: (photoId) => ({
+                url: API_ENDPOINTS.PROFILE.PHOTO_BY_ID(photoId),
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Profile', 'User'],
+        }),
+
+        // --- Security & Account Management ---
+        requestSecurityOtp: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_OTP_REQUEST,
                 method: 'POST',
             }),
         }),
 
-        updateSecurityPassword: builder.mutation<ProfileStandardResponse, UpdateSecurityPasswordRequest>({
+        updateSecurityPassword: builder.mutation<ApiResponse<undefined>, UpdateSecurityPasswordRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_PASSWORD,
                 method: 'PATCH',
@@ -109,7 +112,7 @@ export const profileApi = rootApi.injectEndpoints({
             }),
         }),
 
-        initiateEmailChange: builder.mutation<ProfileStandardResponse, InitiateEmailChangeRequest>({
+        initiateEmailChange: builder.mutation<ApiResponse<undefined>, InitiateEmailChangeRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_EMAIL_INITIATE,
                 method: 'POST',
@@ -117,7 +120,7 @@ export const profileApi = rootApi.injectEndpoints({
             }),
         }),
 
-        confirmEmailChange: builder.mutation<ProfileStandardResponse, ConfirmEmailChangeRequest>({
+        confirmEmailChange: builder.mutation<ApiResponse<undefined>, ConfirmEmailChangeRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_EMAIL_CONFIRM,
                 method: 'PATCH',
@@ -126,7 +129,7 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile', 'User'],
         }),
 
-        deactivateAccount: builder.mutation<ProfileStandardResponse, void>({
+        deactivateAccount: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DEACTIVATE,
                 method: 'PATCH',
@@ -134,7 +137,7 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile', 'User', 'Sessions'],
         }),
 
-        deleteAccount: builder.mutation<ProfileStandardResponse, void>({
+        deleteAccount: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DELETE,
                 method: 'DELETE',
@@ -142,7 +145,8 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Profile', 'User', 'Sessions'],
         }),
 
-        getActiveSessions: builder.query<GetActiveSessionsResponse, void>({
+        // --- Session Management ---
+        getActiveSessions: builder.query<ApiResponse<UserSessionData[]>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS,
                 method: 'GET',
@@ -150,7 +154,7 @@ export const profileApi = rootApi.injectEndpoints({
             providesTags: ['Sessions'],
         }),
 
-        revokeSession: builder.mutation<ProfileStandardResponse, string>({
+        revokeSession: builder.mutation<ApiResponse<undefined>, string>({
             query: (sessionId) => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_REVOKE(sessionId),
                 method: 'DELETE',
@@ -158,7 +162,7 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Sessions'],
         }),
 
-        revokeOtherSessions: builder.mutation<ProfileStandardResponse, void>({
+        revokeOtherSessions: builder.mutation<ApiResponse<undefined>, void>({
             query: () => ({
                 url: API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_OTHER,
                 method: 'DELETE',
@@ -166,7 +170,8 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['Sessions'],
         }),
 
-        getBlockedUsers: builder.query<GetBlockedUsersResponse, GetBlockedUsersQueryParams | void>({
+        // --- Blocking Management ---
+        getBlockedUsers: builder.query<ApiResponse<BlockedUser[]>, GetBlockedUsersQueryParams | void>({
             query: (params) => ({
                 url: API_ENDPOINTS.PROFILE.BLOCKED,
                 method: 'GET',
@@ -175,7 +180,7 @@ export const profileApi = rootApi.injectEndpoints({
             providesTags: ['BlockedUsers'],
         }),
 
-        blockUser: builder.mutation<ProfileStandardResponse, BlockUserRequest>({
+        blockUser: builder.mutation<ApiResponse<undefined>, BlockUserRequest>({
             query: (body) => ({
                 url: API_ENDPOINTS.PROFILE.BLOCKED,
                 method: 'POST',
@@ -184,7 +189,7 @@ export const profileApi = rootApi.injectEndpoints({
             invalidatesTags: ['BlockedUsers'],
         }),
 
-        unblockUser: builder.mutation<ProfileStandardResponse, string>({
+        unblockUser: builder.mutation<ApiResponse<undefined>, string>({
             query: (blockedId) => ({
                 url: API_ENDPOINTS.PROFILE.BLOCKED_BY_ID(blockedId),
                 method: 'DELETE',
@@ -198,12 +203,12 @@ export const profileApi = rootApi.injectEndpoints({
 export const {
     useGetProfileQuery,
     useUpdateFullProfileMutation,
-    useSaveUserFullPreferencesMutation,
-    useUpdateMedicalRecordMutation,
-    useUpdatePrivacySettingsMutation,
     useUploadProfilePhotoMutation,
     useSetPrimaryPhotoMutation,
     useRemoveProfilePhotoMutation,
+    useUpdateMedicalRecordMutation,
+    useSaveUserFullPreferencesMutation,
+    useUpdatePrivacySettingsMutation,
     useRequestSecurityOtpMutation,
     useUpdateSecurityPasswordMutation,
     useInitiateEmailChangeMutation,

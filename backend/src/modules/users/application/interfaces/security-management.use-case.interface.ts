@@ -11,7 +11,6 @@ export const REVOKE_OTHER_SESSIONS_USE_CASE = 'REVOKE_OTHER_SESSIONS_USE_CASE';
 export const INITIATE_EMAIL_CHANGE_USE_CASE = 'INITIATE_EMAIL_CHANGE_USE_CASE';
 export const CONFIRM_EMAIL_CHANGE_USE_CASE = 'CONFIRM_EMAIL_CHANGE_USE_CASE';
 
-
 export interface IRequestSecurityOtpUseCase {
     execute(userId: string): Promise<void>;
 }
@@ -29,7 +28,7 @@ export interface IDeleteAccountUseCase {
 }
 
 export interface IGetActiveSessionsUseCase {
-    execute(userId: string): Promise<UserSessionData[]>;
+    execute(userId: string, currentSessionId: string): Promise<UserSessionData[]>;
 }
 
 export interface IRevokeSessionUseCase {

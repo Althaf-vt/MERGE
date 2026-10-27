@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { logout } from '../../auth/slices/auth.slice';
 import {
@@ -12,6 +13,7 @@ import {
 import { PasswordChangeModal } from '../components/password-change-modal.component';
 import { EmailChangeModal } from '../components/email-change-modal.component';
 import { SecurityConfirmationModal } from '../components/security-confirmation-modal.component';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './security.module.css';
 
 // --- UTILITY FUNCTIONS ---
@@ -70,6 +72,7 @@ export const SecurityPage: React.FC = () => {
         isOpen: boolean;
         type: 'DEACTIVATE' | 'DELETE' | 'REVOKE' | 'REVOKE_ALL';
         sessionId?: string;
+        error?: string;
     }>({ isOpen: false, type: 'DEACTIVATE' });
 
     // Handlers
@@ -79,6 +82,8 @@ export const SecurityPage: React.FC = () => {
     };
 
     const handleConfirmAction = async () => {
+        setConfirmModal((prev) => ({ ...prev, error: undefined }));
+        
         try {
             switch (confirmModal.type) {
                 case 'DEACTIVATE':
@@ -100,8 +105,11 @@ export const SecurityPage: React.FC = () => {
                     setConfirmModal({ isOpen: false, type: 'REVOKE_ALL' });
                     break;
             }
-        } catch (error) {
-            console.error('Action failed:', error);
+        } catch (error: unknown) {
+            setConfirmModal((prev) => ({ 
+                ...prev, 
+                error: getErrorMessage(error, 'Action failed. Please try again.') 
+            }));
         }
     };
 
@@ -129,14 +137,7 @@ export const SecurityPage: React.FC = () => {
                     </span>
                     {!isGoogleAuth && (
                         <span className={`${styles.statusBadge} ${styles.badgeSuccess}`}>
-                            <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
@@ -189,10 +190,7 @@ export const SecurityPage: React.FC = () => {
                     <div className={styles.infoRow}>
                         <label className={styles.infoLabel}>Password</label>
                         <div className={styles.infoValueBox}>
-                            <div
-                                className={styles.infoValue}
-                                style={{ letterSpacing: '0.25em', fontSize: '1.25rem', marginTop: '4px' }}
-                            >
+                            <div className={styles.infoValue} style={{ letterSpacing: '0.25em', fontSize: '1.25rem', marginTop: '4px' }}>
                                 ••••••••••••
                             </div>
                             <button className={styles.textAction} onClick={() => setPasswordModalOpen(true)}>
@@ -230,102 +228,81 @@ export const SecurityPage: React.FC = () => {
                     {isLoadingSessions ? (
                         <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Loading sessions...</div>
                     ) : (
-                        activeSessions.map((session, index) => {
-                            const isCurrent = index === 0;
-                            return (
-                                <div key={session.sessionId} className={styles.sessionItem}>
-                                    <div className={styles.sessionDetails}>
-                                        <div className={styles.deviceIcon}>
-                                            {session.deviceInfo.toLowerCase().includes('mobile') ||
-                                            session.deviceInfo.toLowerCase().includes('iphone') ? (
-                                                <svg
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                >
-                                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-                                                    <line x1="12" y1="18" x2="12.01" y2="18" />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                >
-                                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-                                                    <line x1="8" y1="21" x2="16" y2="21" />
-                                                    <line x1="12" y1="17" x2="12" y2="21" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <div className={styles.sessionMeta}>
-                                            <div className={styles.deviceName}>
-                                                {parseDeviceInfo(session.deviceInfo)}
-                                                {isCurrent && (
-                                                    <span className={styles.currentBadge}>CURRENT DEVICE</span>
+                        <AnimatePresence mode="popLayout">
+                            {activeSessions.map((session) => {
+                                const isCurrent = session.isCurrentSession;
+                                return (
+                                    <motion.div 
+                                        layout
+                                        initial={{ opacity: 0, y: 15 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                        key={session.sessionId} 
+                                        className={styles.sessionItem}
+                                    >
+                                        <div className={styles.sessionDetails}>
+                                            <div className={styles.deviceIcon}>
+                                                {session.deviceInfo.toLowerCase().includes('mobile') ||
+                                                session.deviceInfo.toLowerCase().includes('iphone') ? (
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                                        <line x1="12" y1="18" x2="12.01" y2="18" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                                        <line x1="8" y1="21" x2="16" y2="21" />
+                                                        <line x1="12" y1="17" x2="12" y2="21" />
+                                                    </svg>
                                                 )}
                                             </div>
-                                            <div className={styles.sessionLocation}>
-                                                <svg
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                >
-                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                                    <circle cx="12" cy="10" r="3" />
-                                                </svg>
-                                                {formatIp(session.ipAddress)} •{' '}
-                                                {isCurrent ? 'Active now' : formatTimeAgo(session.lastActive)}
+                                            <div className={styles.sessionMeta}>
+                                                <div className={styles.deviceName}>
+                                                    {parseDeviceInfo(session.deviceInfo)}
+                                                    {isCurrent && (
+                                                        <span className={styles.currentBadge}>CURRENT DEVICE</span>
+                                                    )}
+                                                </div>
+                                                <div className={styles.sessionLocation}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                        <circle cx="12" cy="10" r="3" />
+                                                    </svg>
+                                                    {formatIp(session.ipAddress)} •{' '}
+                                                    {isCurrent ? 'Active now' : formatTimeAgo(session.createdAt || session.lastActive || new Date().toISOString())}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {!isCurrent && (
-                                        <button
-                                            className={styles.revokeBtn}
-                                            title="Sign out device"
-                                            onClick={() =>
-                                                setConfirmModal({
-                                                    isOpen: true,
-                                                    type: 'REVOKE',
-                                                    sessionId: session.sessionId,
-                                                })
-                                            }
-                                        >
-                                            <svg
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                strokeWidth="2"
+                                        {!isCurrent && (
+                                            <button
+                                                className={styles.revokeBtn}
+                                                title="Sign out device"
+                                                onClick={() =>
+                                                    setConfirmModal({
+                                                        isOpen: true,
+                                                        type: 'REVOKE',
+                                                        sessionId: session.sessionId,
+                                                    })
+                                                }
                                             >
-                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                                <polyline points="16 17 21 12 16 7" />
-                                                <line x1="21" y1="12" x2="9" y2="12" />
-                                            </svg>
-                                        </button>
-                                    )}
-                                </div>
-                            );
-                        })
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                                    <polyline points="16 17 21 12 16 7" />
+                                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
                     )}
                 </div>
             </div>
 
             {/* Account Management Grid */}
-            <div
-                className={styles.card}
-                style={{ padding: '0', border: 'none', backgroundColor: 'transparent', boxShadow: 'none' }}
-            >
+            <div className={styles.card} style={{ padding: '0', border: 'none', backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <div className={styles.cardHeader} style={{ marginBottom: '1rem' }}>
                     <div className={styles.cardHeaderLeft}>
                         <div className={styles.iconWrapDestructive}>
@@ -394,6 +371,7 @@ export const SecurityPage: React.FC = () => {
 
             <SecurityConfirmationModal
                 isOpen={confirmModal.isOpen}
+                error={confirmModal.error}
                 title={
                     confirmModal.type === 'DELETE'
                         ? 'Delete Account'

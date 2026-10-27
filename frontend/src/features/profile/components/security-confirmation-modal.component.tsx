@@ -8,12 +8,13 @@ interface SecurityConfirmationModalProps {
     confirmText: string;
     isDestructive?: boolean;
     isLoading: boolean;
+    error?: string;
     onConfirm: () => void;
     onClose: () => void;
 }
 
 export const SecurityConfirmationModal: React.FC<SecurityConfirmationModalProps> = ({
-    isOpen, title, message, confirmText, isDestructive = false, isLoading, onConfirm, onClose
+    isOpen, title, message, confirmText, isDestructive = false, isLoading, error, onConfirm, onClose
 }) => {
     if (!isOpen) return null;
 
@@ -30,6 +31,8 @@ export const SecurityConfirmationModal: React.FC<SecurityConfirmationModalProps>
                     </div>
                     <h3 className={styles.title}>{title}</h3>
                 </div>
+                
+                {error && <div className={styles.errorBanner}>{error}</div>}
                 
                 <div className={styles.description}>{message}</div>
                 
