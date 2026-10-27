@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, UseGuards } from "@nestjs/common";
-import { SubmitKycDto, SubmitLivenessCheckDto } from "../../application/dtos/submit-kyc.dto";
+import { SubmitKycDto } from "../../application/dtos/submit-kyc.dto";
+import { SubmitLivenessCheckDto } from "../../application/dtos/submit-liveness-check.dto";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import 'multer';
 import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE, SubmitLivenessCheckResult } from "../../application/interfaces/submit-liveness-check.use-case.interface";
