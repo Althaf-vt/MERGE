@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength } from 'class-validator';
-import { Match } from '../../../../shared/presentation/validation/match.decorator';
+import { Match } from '../../../../shared/presentation/validation/match.decorator'; 
 
 export class UpdateSecurityPasswordDto {
     @IsString()
