@@ -9,6 +9,7 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
 
 @Controller(API_ENDPOINTS.HANDOFF.BASE)
 export class HandoffController {
@@ -44,13 +45,7 @@ export class HandoffController {
 
         const { accessToken, refreshToken } = await this._validateHandoffUseCase.execute(sessionId);
 
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
+        CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, refreshToken, { sameSite: 'lax' });
 
         return {
             success: true,
