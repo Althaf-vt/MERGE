@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
-import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE } from "../../application/interfaces/update-persona.use-case.interface";
+import { IUpdatePersonaUseCase, UPDATE_PERSONA_USE_CASE, UpdatePersonaResult } from "../../application/interfaces/update-persona.use-case.interface";
 import { UpdatePersonaDto } from "../../application/dtos/update-persona.dto";
 import { IUpdateLifestyleUseCase, UPDATE_LIFESTYLE_USE_CASE } from "../../application/interfaces/update-lifestyle.use-case.interface";
 import { UpdateLifestyleDto } from "../../application/dtos/update-lifestyle.dto";
@@ -25,7 +25,7 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { UserProfileProps } from "../../domain/entities/user-profile.entity";
+import { UserProfileResponseDto } from "../../application/dtos/user-profile-response.dto";
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
@@ -54,7 +54,7 @@ export class ProfileController {
     async updatePersona(
         @Req() req: AuthenticatedRequest,
         @Body() dto: UpdatePersonaDto
-    ): Promise<ApiResponse<{ profile: UserProfileProps; verifiedDOB?: Date }>> {
+    ): Promise<ApiResponse<UpdatePersonaResult>> {
         const userId = req.user.userId;
         const result = await this._updatePersonaUseCase.execute(userId, dto);
 
@@ -70,7 +70,7 @@ export class ProfileController {
     async updateLifestyle(
         @Req() req: AuthenticatedRequest,
         @Body() dto: UpdateLifestyleDto
-    ): Promise<ApiResponse<{ profile: UserProfileProps }>> {
+    ): Promise<ApiResponse<{ profile: UserProfileResponseDto }>> {
         const userId = req.user.userId;
         const result = await this._updateLifestyleUseCase.execute(userId, dto);
 
