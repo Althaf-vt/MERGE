@@ -5,8 +5,15 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ICastingUserContext } from "../../domain/interfaces/casting-user-context.interface";
 import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
+import { TranscriptRole } from "../../domain/enums/casting.enums";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+
+const AI_MESSAGE_ROLE = {
+    SYSTEM: 'system',
+    USER: 'user',
+    ASSISTANT: 'assistant',
+} as const;
 
 @Injectable()
 export class OpenRouterCastingAiService implements ICastingAiService {
@@ -41,13 +48,24 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         });
     }
 
+    private _mapTranscriptRoleToAiRole(role: TranscriptRole): 'assistant' | 'user' {
+        switch (role) {
+            case TranscriptRole.AI:
+                return AI_MESSAGE_ROLE.ASSISTANT;
+            case TranscriptRole.USER:
+                return AI_MESSAGE_ROLE.USER;
+            default:
+                return AI_MESSAGE_ROLE.USER;
+        }
+    }
+
     async generateOpeningQuestion(context: ICastingUserContext): Promise<string> {
         try {
             const completion = await this._client.chat.completions.create({
                 model: this._chatModel,
                 messages: [
-                    { role: 'system', content: CastingPrompts.getSystemPrompt(context) },
-                    { role: 'user', content: CastingPrompts.getOpeningUserPrompt() }
+                    { role: AI_MESSAGE_ROLE.SYSTEM, content: CastingPrompts.getSystemPrompt(context) },
+                    { role: AI_MESSAGE_ROLE.USER, content: CastingPrompts.getOpeningUserPrompt() }
                 ],
                 temperature: this._chatTemperature,
             });
@@ -63,13 +81,13 @@ export class OpenRouterCastingAiService implements ICastingAiService {
     async generateFollowUpQuestion(context: ICastingUserContext, transcript: TranscriptEntry[]): Promise<string> {
         try {
             const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-                { role: 'system', content: CastingPrompts.getSystemPrompt(context) }
+                { role: AI_MESSAGE_ROLE.SYSTEM, content: CastingPrompts.getSystemPrompt(context) }
             ];
 
             // Rehydrate the conversation history
             for (const entry of transcript) {
                 messages.push({
-                    role: entry.role === 'ai' ? 'assistant' : 'user',
+                    role: this._mapTranscriptRoleToAiRole(entry.role),
                     content: entry.content
                 });
             }
@@ -91,8 +109,8 @@ export class OpenRouterCastingAiService implements ICastingAiService {
     async extractSummaryAndVector(context: ICastingUserContext, transcript: TranscriptEntry[]): Promise<{ aiSummary: string; personalityVector: number[]; }> {
         try {
             const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-                { role: 'system', content: CastingPrompts.getSummarySystemPrompt() },
-                { role: 'user', content: CastingPrompts.getSummaryUserPrompt(context, transcript) }
+                { role: AI_MESSAGE_ROLE.SYSTEM, content: CastingPrompts.getSummarySystemPrompt() },
+                { role: AI_MESSAGE_ROLE.USER, content: CastingPrompts.getSummaryUserPrompt(context, transcript) }
             ];
 
             const summaryCompletion = await this._client.chat.completions.create({
