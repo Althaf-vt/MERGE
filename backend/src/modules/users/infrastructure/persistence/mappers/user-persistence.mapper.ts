@@ -130,6 +130,7 @@ export class UserPersistenceMapper {
             isPrimary: p.isPrimary,
             status: p.status as PhotoVerificationStatus,
             faceMatchScore: p.faceMatchScore,
+            rejectionReason: p.rejectionReason,
             uploadedAt: p.uploadedAt
         })) || [];
 

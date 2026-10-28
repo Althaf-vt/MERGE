@@ -283,6 +283,9 @@ export class UserPhotoSchema {
     @Prop({ default: null }) 
     faceMatchScore?: number;
 
+    @Prop({ default: null }) 
+    rejectionReason?: string;
+
     @Prop({ required: true, type: Date, default: Date.now }) 
     uploadedAt: Date;
 }

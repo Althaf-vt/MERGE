@@ -4,7 +4,6 @@ import { BLOCKED_RELATIONSHIP_REPOSITORY, IBlockedRelationshipRepository } from 
 import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
 import { SortOrder } from "../../domain/enums/user.enums";
 import { BlockedUserResponseDto } from "../dtos/block-management.dto";
-import { model } from "mongoose";
 
 @Injectable()
 export class GetBlockedUsersUseCase implements IGetBlockedUsersUseCase {

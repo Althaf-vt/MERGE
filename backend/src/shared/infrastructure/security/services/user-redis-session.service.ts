@@ -67,8 +67,8 @@ export class UserRedisSessionService implements IUserSessionService {
     }
 
     async validateSession(userId: string, sessionId: string): Promise<boolean> {
-        const exists = await this._redis.exists(this._getSessionKey(sessionId));
-        return exists === 1
+        const isMember = await this._redis.sismember(this._getUserSetKey(userId), sessionId);
+        return isMember === 1;
     }
 
     async revokeSession(userId: string, sessionId: string): Promise<void> {

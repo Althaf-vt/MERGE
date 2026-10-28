@@ -1,4 +1,4 @@
-import { ActiveSessionResponseDto, ConfirmEmailChangeDto, InitiateEmailChangeDto, RevokeSessionDto, UpdateSecurityEmailDto, UpdateSecurityPasswordDto } from "../dtos/security-management.dto";
+import { ActiveSessionResponseDto, ConfirmEmailChangeDto, InitiateEmailChangeDto, RevokeSessionDto, UpdateSecurityPasswordDto } from "../dtos/security-management.dto";
 
 export const REQUEST_SECURITY_OTP_USE_CASE = 'REQUEST_SECURITY_OTP_USE_CASE';
 export const UPDATE_SECURITY_PASSWORD_USE_CASE = 'UPDATE_SECURITY_PASSWORD_USE_CASE';

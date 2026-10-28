@@ -332,7 +332,7 @@ export class UserAggregate extends AggregateRoot {
         const photo = this._props.photos.find(p => p.id === photoId);
         if(!photo) return;
 
-        photo.updateVerificationStatus(PhotoVerificationStatus.REJECTED);
+        photo.updateVerificationStatus(PhotoVerificationStatus.REJECTED, undefined, reason);
         this.markUpdatedAt();
     }
 

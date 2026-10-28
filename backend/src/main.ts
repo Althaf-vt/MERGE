@@ -20,7 +20,7 @@ async function bootstrap() {
   );
 
   // strick no-chache middleware for all API routes
-  app.use((req: Request, res: Response, next: NextFunction) => {
+  app.use((_req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');

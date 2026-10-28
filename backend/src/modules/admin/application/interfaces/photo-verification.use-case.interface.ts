@@ -1,5 +1,5 @@
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
-import { GetPhotoTasksQueryDto, PaginatedPhotoTasksResponseDto, RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
+import { GetPhotoTasksQueryDto, RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
 
 export const GET_PHOTO_TASKS_USE_CASE = 'GET_PHOTO_TASKS_USE_CASE';
 export const CLAIM_PHOTO_TASK_USE_CASE = 'CLAIM_PHOTO_TASK_USE_CASE';
