@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { HydratedPhotoTaskResult, IGetPhotoTasksUseCase, PaginatedHydratedPhotoTasks } from "../interfaces/photo-verification.use-case.interface";
 import { IPhotoVerificationTaskRepository, PHOTO_VERIFICATION_TASK_REPOSITORY } from "../../domain/interfaces/photo-verification-task-repository.interface";
-import { GetPhotoTasksQueryDto, PaginatedPhotoTasksResponseDto } from "../dtos/photo-verification.dto";
-import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
+import { GetPhotoTasksQueryDto } from "../dtos/photo-verification.dto";
+import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 
 @Injectable()
 export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
     constructor(
         @Inject(PHOTO_VERIFICATION_TASK_REPOSITORY) private readonly _repository: IPhotoVerificationTaskRepository,
-        @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade
+        @Inject(MEDIA_FACADE) private readonly _mediaFacade: IMediaFacade
     ) {}
 
     async execute(query: GetPhotoTasksQueryDto): Promise<PaginatedHydratedPhotoTasks> {
@@ -23,8 +23,8 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
         // Hydrate the raw S3 keys into secure presingned URLs concurrently
         const hydratedData: HydratedPhotoTaskResult[] = await Promise.all(
             result.data.map(async (task) => {
-                const signedKycUrl = await this._userFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
-                const signedUploadedUrl = await this._userFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
+                const signedKycUrl = await this._mediaFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
+                const signedUploadedUrl = await this._mediaFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
 
                 return { task, signedKycUrl, signedUploadedUrl };
             })
