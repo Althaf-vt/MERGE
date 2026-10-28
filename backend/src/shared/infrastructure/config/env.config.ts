@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 // Centralized infrastructure and environment configuration.
 // Encapsulates environment variable retrieval with validated fallbacks and type-coercion.
 export const EnvConfig = {
@@ -165,6 +167,10 @@ export const EnvConfig = {
         },
         get kycPepper(): string | undefined {
             return process.env.KYC_HASH_PEPPER;
+        },
+        get aadhaarRootCertPath(): string {
+            const configuredPath = process.env.AADHAAR_ROOT_CERT_PATH || 'assets/kyc-docs-public-keys/uidai_offline_publickey.cer';
+            return path.isAbsolute(configuredPath) ? configuredPath : path.resolve(process.cwd(), configuredPath);
         },
     },
 } as const;
