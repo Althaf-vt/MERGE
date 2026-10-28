@@ -157,9 +157,9 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
         {
             provide: S3_CLIENT,
             useFactory: () => {
-                const region = process.env.AWS_REGION;
-                const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-                const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+                const region = EnvConfig.aws.region;
+                const accessKeyId = EnvConfig.aws.accessKeyId;
+                const secretAccessKey = EnvConfig.aws.secretAccessKey;
 
                 if (!region || !accessKeyId || !secretAccessKey) {
                     throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
