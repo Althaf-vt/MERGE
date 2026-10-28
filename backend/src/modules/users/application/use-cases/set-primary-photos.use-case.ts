@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IRemoveProfilePhotoUseCase, ISetPrimaryPhotoUseCase } from '../interfaces/profile-management.use-case.interface';
+import { ISetPrimaryPhotoUseCase } from '../interfaces/profile-management.use-case.interface';
 import { IUserRepository, USER_REPOSITORY } from '../../domain/interfaces/user-repository.interface';
 import { SetPrimaryPhotoDto } from '../dtos/profile-management.dto';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
