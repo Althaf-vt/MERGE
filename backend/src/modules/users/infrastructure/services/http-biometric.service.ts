@@ -117,5 +117,3 @@ export class HttpBiometricService implements IBiometricService {
         }
     }
 }
-
-}
