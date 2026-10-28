@@ -5,6 +5,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AI_MESSAGE_ROLE, OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
+import { BioPrompts } from "../../domain/prompts/bio.prompts";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService {
@@ -40,21 +41,12 @@ export class OpenRouterAiService implements IAiService {
     // Sends demographic and personality context to the LLM to generate bio options.
     async generateDatingBios(promptContext: BioGenerationContext): Promise<string[]> {
         try {
-            // Define persona instructions and strict JSON formatting constraints.
-            const systemInstruction = `
-                You are an expert dating profile writer. 
-                Based on the user's demographic, lifestyle, and selected traits, generate exactly 3 distinct, highly engaging dating bios.
-                Keep each bio under 250 characters. Make them natural, witty, and genuine.
-                Return ONLY a valid JSON array containing exactly 3 strings (e.g. ["bio 1", "bio 2", "bio 3"]). 
-                Do not include markdown formatting, backticks, or any explanation.
-            `;
-
             // openrouter/free automatically selects an active free model with available quota
             const completion = await this._client.chat.completions.create({
                 model: this._chatModel,
                 messages: [
-                    { role: AI_MESSAGE_ROLE.SYSTEM, content: systemInstruction },
-                    { role: AI_MESSAGE_ROLE.USER, content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
+                    { role: AI_MESSAGE_ROLE.SYSTEM, content: BioPrompts.getSystemPrompt() },
+                    { role: AI_MESSAGE_ROLE.USER, content: BioPrompts.getUserPrompt(promptContext) }
                 ],
                 temperature: this._temperature,
             });
