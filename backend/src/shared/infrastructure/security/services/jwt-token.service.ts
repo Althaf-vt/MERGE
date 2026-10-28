@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-service.interface";
 import { DomainException } from "../../../domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../domain/enums/error-code.enum";
+import { EnvConfig } from "../../config/env.config";
 
 @Injectable()
 export class JwtTokenService implements ITokenservice {
@@ -13,8 +14,8 @@ export class JwtTokenService implements ITokenservice {
     private readonly _refreshExpiration: jwt.SignOptions['expiresIn'];
 
     constructor(private readonly _jwtService: JwtService) {
-        const accessSecret = process.env.JWT_ACCESS_SECRET;
-        const refreshSecret = process.env.JWT_REFRESH_SECRET;
+        const accessSecret = EnvConfig.jwt.accessSecret;
+        const refreshSecret = EnvConfig.jwt.refreshSecret;
 
         if (!accessSecret || !refreshSecret) {
             throw new Error('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be defined in environment configuration.');
@@ -22,8 +23,8 @@ export class JwtTokenService implements ITokenservice {
 
         this._accessSecret = accessSecret;
         this._refreshSecret = refreshSecret;
-        this._accessExpiration = (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn'];
-        this._refreshExpiration = (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn'];
+        this._accessExpiration = EnvConfig.jwt.accessExpiration as jwt.SignOptions['expiresIn'];
+        this._refreshExpiration = EnvConfig.jwt.refreshExpiration as jwt.SignOptions['expiresIn'];
     }
 
     generateAccessToken(payload: ITokenPayload): string {

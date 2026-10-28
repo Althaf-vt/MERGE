@@ -156,7 +156,7 @@ export class NodeMailerEmailService implements IEmailService {
     }
 
     async sendAdminInviteEmail(to: string, token: string, inviterName: string): Promise<void> {
-        const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/accept-invite?token=${token}`;
+        const inviteUrl = `${EnvConfig.app.frontendUrl}/admin/accept-invite?token=${token}`;
         
         const htmlTemplate = `
             <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
