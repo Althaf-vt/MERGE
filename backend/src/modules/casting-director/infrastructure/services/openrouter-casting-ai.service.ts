@@ -11,18 +11,21 @@ import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 export class OpenRouterCastingAiService implements ICastingAiService {
     private readonly _client: OpenAI;
     private readonly _logger = new Logger(OpenRouterCastingAiService.name);
-
-    // We use the free router for chat to bypass traffic/billing limits during dev
-    private readonly _chatModel = 'openrouter/free';
-
-    // We use an OpenRouter supported embedding model for the RAG vector
-    private readonly _embeddingModel = 'openai/text-embedding-3-small';
+    private readonly _chatModel: string;
+    private readonly _embeddingModel: string;
+    private readonly _chatTemperature: number;
+    private readonly _summaryTemperature: number;
 
     constructor() {
         const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey || apiKey.trim().length === 0) {
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENROUTER_API_KEY is missing.");
         }
+
+        this._chatModel = process.env.OPENROUTER_CHAT_MODEL || 'openrouter/free';
+        this._embeddingModel = process.env.OPENROUTER_EMBEDDING_MODEL || 'openai/text-embedding-3-small';
+        this._chatTemperature = Number(process.env.OPENROUTER_CHAT_TEMPERATURE) || 0.7;
+        this._summaryTemperature = Number(process.env.OPENROUTER_SUMMARY_TEMPERATURE) || 0.5;
 
         const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const appTitle = process.env.APP_NAME || 'MERGE';
@@ -45,7 +48,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
                     { role: 'system', content: CastingPrompts.getSystemPrompt(context) },
                     { role: 'user', content: CastingPrompts.getOpeningUserPrompt() }
                 ],
-                temperature: 0.7,
+                temperature: this._chatTemperature,
             });
 
             return completion.choices[0]?.message?.content || 'Hello! What does a perfect Sunday look like for you?';
@@ -73,7 +76,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
             const completion = await this._client.chat.completions.create({
                 model: this._chatModel,
                 messages,
-                temperature: 0.7,
+                temperature: this._chatTemperature,
             });
 
             return completion.choices[0]?.message?.content || 'That is fascinating. Tell me more about how that impacts your relationships?';
@@ -94,7 +97,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
             const summaryCompletion = await this._client.chat.completions.create({
                 model: this._chatModel,
                 messages,
-                temperature: 0.5,
+                temperature: this._summaryTemperature,
             });
 
             const aiSummary = summaryCompletion.choices[0]?.message?.content || 'An introspective individual valuing deep connections.';
