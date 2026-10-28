@@ -5,6 +5,7 @@ import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminSeederService implements OnApplicationBootstrap {
@@ -26,9 +27,9 @@ export class AdminSeederService implements OnApplicationBootstrap {
             }
 
             // Retrieve required bootstrap credentials from environment configuration
-            const rootEmail = process.env.INIT_SUPER_ADMIN_EMAIL;
-            const rootPassword = process.env.INIT_SUPER_ADMIN_PASSWORD;
-            const rootName = process.env.INIT_SUPER_ADMIN_NAME || 'MERGE System Admin';
+            const rootEmail = EnvConfig.admin.seederEmail;
+            const rootPassword = EnvConfig.admin.seederPassword;
+            const rootName = EnvConfig.admin.seederName;
 
             if (!rootEmail || !rootPassword) {
                 this._logger.warn(
