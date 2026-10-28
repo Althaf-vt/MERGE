@@ -113,6 +113,8 @@ import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-user
 import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-review.listener";
 import { GOOGLE_AUTH_SERVICE } from "./domain/interfaces/google-auth-service.interface";
 import { GoogleAuthService } from "./infrastructure/services/google-auth.service";
+import { MEDIA_FACADE } from "./application/interfaces/media-facade.interface";
+import { MediaFacade } from "./application/services/media.facade";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -349,6 +351,10 @@ import { GoogleAuthService } from "./infrastructure/services/google-auth.service
             useClass: CastingUserFacade,
         },
         {
+            provide: MEDIA_FACADE,
+            useClass: MediaFacade,
+        },
+        {
             provide: GET_PROFILE_USE_CASE,
             useClass: GetProfileUseCase,
         },
@@ -413,6 +419,7 @@ import { GoogleAuthService } from "./infrastructure/services/google-auth.service
     exports: [
         USER_MANAGEMENT_FACADE,
         CASTING_USER_FACADE,
+        MEDIA_FACADE,
         USER_SESSION_SERVICE,
     ],
 })
