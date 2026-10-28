@@ -10,6 +10,7 @@ export interface UserPhoto {
     isPrimary: boolean;
     status: PhotoVerificationStatus;
     faceMatchScore?: number;
+    rejectionReason?: string;
     uploadedAt: string;
 }
 
