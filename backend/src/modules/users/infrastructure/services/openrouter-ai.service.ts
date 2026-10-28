@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-import { AI_MESSAGE_ROLE } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
+import { AI_MESSAGE_ROLE, OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService {
@@ -28,11 +28,11 @@ export class OpenRouterAiService implements IAiService {
 
         // Configure standard OpenAi client to route through OpenRouter
         this._client = new OpenAI({
-            baseURL: 'https://openrouter.ai/api/v1',
+            baseURL: EnvConfig.ai.baseUrl,
             apiKey: apiKey || '',
             defaultHeaders: {
-                'HTTP-Referer': appUrl,
-                'X-Title': appTitle,
+                [OPENROUTER_HEADERS.REFERER]: appUrl,
+                [OPENROUTER_HEADERS.TITLE]: appTitle,
             },
         });
     }
