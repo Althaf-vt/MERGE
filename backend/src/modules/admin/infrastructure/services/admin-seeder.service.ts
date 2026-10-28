@@ -25,10 +25,17 @@ export class AdminSeederService implements OnApplicationBootstrap {
                 return;
             }
 
-            // Fallback credentials if missing from env (only safe during local dev)
-            const rootEmail = process.env.INIT_SUPER_ADMIN_EMAIL || 'admin@merge.com';
-            const rootPassword = process.env.INIT_SUPER_ADMIN_PASSWORD || 'SuperSecret@123';
+            // Retrieve required bootstrap credentials from environment configuration
+            const rootEmail = process.env.INIT_SUPER_ADMIN_EMAIL;
+            const rootPassword = process.env.INIT_SUPER_ADMIN_PASSWORD;
             const rootName = process.env.INIT_SUPER_ADMIN_NAME || 'MERGE System Admin';
+
+            if (!rootEmail || !rootPassword) {
+                this._logger.warn(
+                    "INIT_SUPER_ADMIN_EMAIL or INIT_SUPER_ADMIN_PASSWORD not set in environment. Skipping Super Admin seeding."
+                );
+                return;
+            }
 
             const passwordHash = await this._passwordHasher.hash(rootPassword);
             const emailVo = new EmailVO(rootEmail);
