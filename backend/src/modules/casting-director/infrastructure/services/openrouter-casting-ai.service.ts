@@ -8,7 +8,7 @@ import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
 import { TranscriptRole } from "../../domain/enums/casting.enums";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-import { AI_MESSAGE_ROLE } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
+import { AI_MESSAGE_ROLE, OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()
 export class OpenRouterCastingAiService implements ICastingAiService {
@@ -34,11 +34,11 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         const appTitle = EnvConfig.app.name;
 
         this._client = new OpenAI({
-            baseURL: 'https://openrouter.ai/api/v1',
+            baseURL: EnvConfig.ai.baseUrl,
             apiKey: apiKey,
             defaultHeaders: {
-                'HTTP-Referer': appUrl,
-                'X-Title': appTitle,
+                [OPENROUTER_HEADERS.REFERER]: appUrl,
+                [OPENROUTER_HEADERS.TITLE]: appTitle,
             },
         });
     }
