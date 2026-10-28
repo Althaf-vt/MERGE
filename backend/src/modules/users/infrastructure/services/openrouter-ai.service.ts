@@ -3,6 +3,7 @@ import { BioGenerationContext, IAiService } from "../../domain/interfaces/ai-ser
 import OpenAI from "openai";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService {
@@ -12,17 +13,17 @@ export class OpenRouterAiService implements IAiService {
     private readonly _temperature: number;
 
     constructor() {
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
             this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'OPENROUTER_API_KEY is required to boot the AI service.');
         }
 
-        this._chatModel = process.env.OPENROUTER_BIO_MODEL || process.env.OPENROUTER_CHAT_MODEL || 'openrouter/free';
-        this._temperature = Number(process.env.OPENROUTER_BIO_TEMPERATURE) || 0.7;
+        this._chatModel = EnvConfig.ai.bioModel;
+        this._temperature = EnvConfig.ai.bioTemperature;
 
-        const appUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
-        const appTitle = process.env.APP_NAME || 'MERGE Platform';
+        const appUrl = EnvConfig.app.frontendUrl;
+        const appTitle = EnvConfig.app.name;
 
         // Configure standard OpenAi client to route through OpenRouter
         this._client = new OpenAI({

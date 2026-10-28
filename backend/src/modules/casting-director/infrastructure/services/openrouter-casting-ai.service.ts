@@ -6,6 +6,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { CastingUserContextDto } from "../../../users/application/dtos/casting-user-context.dto";
 import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class OpenRouterCastingAiService implements ICastingAiService {
@@ -17,18 +18,18 @@ export class OpenRouterCastingAiService implements ICastingAiService {
     private readonly _summaryTemperature: number;
 
     constructor() {
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENROUTER_API_KEY is missing.");
         }
 
-        this._chatModel = process.env.OPENROUTER_CHAT_MODEL || 'openrouter/free';
-        this._embeddingModel = process.env.OPENROUTER_EMBEDDING_MODEL || 'openai/text-embedding-3-small';
-        this._chatTemperature = Number(process.env.OPENROUTER_CHAT_TEMPERATURE) || 0.7;
-        this._summaryTemperature = Number(process.env.OPENROUTER_SUMMARY_TEMPERATURE) || 0.5;
+        this._chatModel = EnvConfig.ai.chatModel;
+        this._embeddingModel = EnvConfig.ai.embeddingModel;
+        this._chatTemperature = EnvConfig.ai.chatTemperature;
+        this._summaryTemperature = EnvConfig.ai.summaryTemperature;
 
-        const appUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-        const appTitle = process.env.APP_NAME || 'MERGE';
+        const appUrl = EnvConfig.app.frontendUrl;
+        const appTitle = EnvConfig.app.name;
 
         this._client = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
