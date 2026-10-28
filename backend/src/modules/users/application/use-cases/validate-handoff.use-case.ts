@@ -7,6 +7,7 @@ import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../in
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { ITokenPayload, ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { UserRole } from "../../domain/entities/user.entity";
+import { HandoffStatus } from "../../domain/enums/user.enums";
 
 @Injectable()
 export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
@@ -39,7 +40,7 @@ export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
         const accessToken = this._tokenService.generateAccessToken(tokenPayload);
         const refreshToken = this._tokenService.generateRefreshToken(tokenPayload);
 
-        this._handoffGateway.notifyDesktop(sessionId, 'PHONE_CONNECTED');
+        this._handoffGateway.notifyDesktop(sessionId, HandoffStatus.PHONE_CONNECTED);
 
         return { accessToken, refreshToken, userId };
     }
