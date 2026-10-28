@@ -5,31 +5,45 @@ import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-s
 import { DomainException } from "../../../domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../domain/enums/error-code.enum";
 
-// Implements token generation and verification using JWT.
 @Injectable()
-export class JwtTokenService implements ITokenservice{
+export class JwtTokenService implements ITokenservice {
+    private readonly _accessSecret: string;
+    private readonly _refreshSecret: string;
+    private readonly _accessExpiration: jwt.SignOptions['expiresIn'];
+    private readonly _refreshExpiration: jwt.SignOptions['expiresIn'];
 
-    // Injects NestJS's JwtService for JWT operations.
-    constructor(private readonly _jwtService: JwtService){}
+    constructor(private readonly _jwtService: JwtService) {
+        const accessSecret = process.env.JWT_ACCESS_SECRET;
+        const refreshSecret = process.env.JWT_REFRESH_SECRET;
+
+        if (!accessSecret || !refreshSecret) {
+            throw new Error('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be defined in environment configuration.');
+        }
+
+        this._accessSecret = accessSecret;
+        this._refreshSecret = refreshSecret;
+        this._accessExpiration = (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn'];
+        this._refreshExpiration = (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn'];
+    }
 
     generateAccessToken(payload: ITokenPayload): string {
         return this._jwtService.sign(payload, {
-            secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
-            expiresIn: (process.env.JWT_ACCESS_EXPIRATION || '15m') as jwt.SignOptions['expiresIn']
-        })
+            secret: this._accessSecret,
+            expiresIn: this._accessExpiration,
+        });
     }
 
     generateRefreshToken(payload: ITokenPayload): string {
         return this._jwtService.sign(payload, {
-            secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret',
-            expiresIn: (process.env.JWT_REFRESH_EXPIRATION || '7d') as jwt.SignOptions['expiresIn']
+            secret: this._refreshSecret,
+            expiresIn: this._refreshExpiration,
         });
     }
 
     verifyAccessToken(token: string): ITokenPayload {
         try {
             return this._jwtService.verify<ITokenPayload>(token, {
-                secret: process.env.JWT_ACCESS_SECRET || 'fallback-access-secret',
+                secret: this._accessSecret,
             });
         } catch (error) {
             throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
@@ -39,10 +53,10 @@ export class JwtTokenService implements ITokenservice{
     verifyRefreshToken(token: string): ITokenPayload {
         try {
             return this._jwtService.verify<ITokenPayload>(token, {
-                secret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret'
+                secret: this._refreshSecret,
             });
         } catch (error) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token");
+            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired refresh token');
         }
     }
 }
