@@ -3,7 +3,7 @@ import { ICastingAiService } from "../../domain/interfaces/casting-ai-service.in
 import OpenAI from 'openai';
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { CastingUserContextDto } from "../../../users/application/dtos/casting-user-context.dto";
+import { ICastingUserContext } from "../../domain/interfaces/casting-user-context.interface";
 import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
@@ -41,7 +41,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         });
     }
 
-    async generateOpeningQuestion(context: CastingUserContextDto): Promise<string> {
+    async generateOpeningQuestion(context: ICastingUserContext): Promise<string> {
         try {
             const completion = await this._client.chat.completions.create({
                 model: this._chatModel,
@@ -60,7 +60,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         }
     }
 
-    async generateFollowUpQuestion(context: CastingUserContextDto, transcript: TranscriptEntry[]): Promise<string> {
+    async generateFollowUpQuestion(context: ICastingUserContext, transcript: TranscriptEntry[]): Promise<string> {
         try {
             const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
                 { role: 'system', content: CastingPrompts.getSystemPrompt(context) }
@@ -88,7 +88,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         }
     }
 
-    async extractSummaryAndVector(context: CastingUserContextDto, transcript: TranscriptEntry[]): Promise<{ aiSummary: string; personalityVector: number[]; }> {
+    async extractSummaryAndVector(context: ICastingUserContext, transcript: TranscriptEntry[]): Promise<{ aiSummary: string; personalityVector: number[]; }> {
         try {
             const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
                 { role: 'system', content: CastingPrompts.getSummarySystemPrompt() },
