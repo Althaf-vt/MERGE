@@ -36,6 +36,4 @@ export interface IUserManagementFacade {
     unbanUser(userId: string): Promise<void>;
     getUsers(filters: GetUsersFilters): Promise<PaginatedUsersResult>;
     getUserById(userId: string): Promise<FacadeUserDto | null>;
-
-    getPresignedMediaUrl(rawUrl: string, expiresInSeconds?: number): Promise<string | null>;
 }
