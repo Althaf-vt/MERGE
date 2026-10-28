@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IAdminSessionService } from '../../domain/interfaces/admin-session.interface';
 import Redis from 'ioredis';
+import { EnvConfig } from '../../../../shared/infrastructure/config/env.config';
 
 @Injectable()
 export class AdminRedisSessionService implements IAdminSessionService {
@@ -8,7 +9,7 @@ export class AdminRedisSessionService implements IAdminSessionService {
     private readonly _prefix = 'admin:session';
 
     constructor() {
-        this._redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379');
+        this._redis = new Redis(EnvConfig.redis.uri);
     }
 
     private _getKey(adminId: string): string {

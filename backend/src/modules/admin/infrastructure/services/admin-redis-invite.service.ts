@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { IAdminInviteService } from "../../domain/interfaces/admin-invite.interface";
 import Redis from "ioredis";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminRedisInviteService implements IAdminInviteService {
@@ -9,7 +10,7 @@ export class AdminRedisInviteService implements IAdminInviteService {
     private readonly _prefix = 'admin:invite';
 
     constructor() {
-        this._redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379');
+        this._redis = new Redis(EnvConfig.redis.uri);
     }
 
     private _getKey(token: string): string {

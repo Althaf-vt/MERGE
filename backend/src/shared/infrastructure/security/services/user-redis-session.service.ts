@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from 'uuid';
 import Redis from "ioredis";
 import { IUserSessionService, UserSessionData } from "../../../domain/interfaces/user-session.interface";
+import { EnvConfig } from "../../config/env.config";
 
 @Injectable()
 export class UserRedisSessionService implements IUserSessionService {
@@ -9,7 +10,7 @@ export class UserRedisSessionService implements IUserSessionService {
     private readonly _prefix = 'user:session';
 
     constructor(){
-        this._redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379');
+        this._redis = new Redis(EnvConfig.redis.uri);
     }
 
     private _getUserSetKey(userId: string): string {

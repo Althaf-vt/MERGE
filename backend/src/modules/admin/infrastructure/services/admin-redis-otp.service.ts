@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IAdminOtpService } from "../../domain/interfaces/admin-otp.interface";
 import Redis from "ioredis";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminRedisOtpService implements IAdminOtpService{
@@ -8,7 +9,7 @@ export class AdminRedisOtpService implements IAdminOtpService{
     private readonly _prefix = 'admin:reset:otp';
 
     constructor(){
-        this._redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379');
+        this._redis = new Redis(EnvConfig.redis.uri);
     }
 
     private _getResetKey(email: string): string {
