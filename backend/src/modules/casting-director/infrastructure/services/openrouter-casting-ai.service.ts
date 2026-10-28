@@ -8,12 +8,7 @@ import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
 import { TranscriptRole } from "../../domain/enums/casting.enums";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-
-const AI_MESSAGE_ROLE = {
-    SYSTEM: 'system',
-    USER: 'user',
-    ASSISTANT: 'assistant',
-} as const;
+import { AI_MESSAGE_ROLE } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()
 export class OpenRouterCastingAiService implements ICastingAiService {
