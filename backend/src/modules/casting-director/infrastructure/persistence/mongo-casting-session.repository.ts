@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
+import { CastingSessionStatus } from "../../domain/enums/casting.enums";
 import { CastingSessionDocument, CastingSessionSchemaClass } from "./casting-session.schema";
 import { ICastingSessionRepository } from "../../domain/interfaces/casting-session-repository.interface";
 import { Model } from "mongoose";
@@ -29,7 +30,7 @@ export class MongoCastingSessionRepository extends BaseMongoRepository<CastingSe
     async findActiveSessionByUserId(userId: string): Promise<CastingSession | null> {
         const document = await this._model.findOne({
             userId,
-            status: { $in: ['IN_PROGRESS', 'ANALYZING'] }
+            status: { $in: [CastingSessionStatus.IN_PROGRESS, CastingSessionStatus.ANALYZING] }
         }).exec();
 
         if(!document) return null;

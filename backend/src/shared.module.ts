@@ -10,14 +10,21 @@ import { UserSessionGuard } from "./shared/infrastructure/security/guards/user-s
 import { JwtAuthGuard } from "./shared/infrastructure/security/guards/jwt-auth.guard";
 import { USER_SESSION_SERVICE } from "./shared/domain/interfaces/user-session.interface";
 import { UserRedisSessionService } from "./shared/infrastructure/security/services/user-redis-session.service";
+import { EnvConfig } from "./shared/infrastructure/config/env.config";
 
-@Global() // Make these providers available app-wide without re-importing the module
+@Global()
 @Module({
   imports: [
 
     // Configures JWT support for token generation and verification.
-    JwtModule.register({
-        secret: process.env.JWT_ACCESS_SECRET || 'super-secret-fallback',
+    JwtModule.registerAsync({
+        useFactory: () => {
+            const secret = EnvConfig.jwt.accessSecret;
+            if (!secret) {
+                throw new Error('JWT_ACCESS_SECRET must be defined in environment configuration.');
+            }
+            return { secret };
+        },
     }),
   ],
   providers: [

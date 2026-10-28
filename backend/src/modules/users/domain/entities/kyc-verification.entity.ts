@@ -2,14 +2,13 @@ import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDev
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationStatus } from "../enums/profile.enums";
+import { KYC_POLICY } from "../constants/kyc-policy.constant";
 
-// Encapsulates individual liveness challenge evaluations within 
-// the KYC aggregate to prevent primitive obsession.
 export interface LivenessEvaluationRecord {
     prompt: string;
     score: number;
     status: string;
-    videoS3?: string; 
+    videoS3?: string;
 }
 
 export interface UserKycProps {
@@ -79,12 +78,6 @@ export interface RejectManualReviewPayload {
 export class UserKyc {
     private _props: UserKycProps;
 
-    private readonly _REQUIRED_PROMPTS_COUNT = 4;
-    private readonly _SELFIE_MIN_PASS_THRESHOLD = 80;
-    private readonly _SELFIE_AUTO_APPROVE_THRESHOLD = 90;
-    private readonly _LIVENESS_MIN_PASS_THRESHOLD = 0.80;
-    private readonly _LIVENESS_AUTO_APPROVE_THRESHOLD = 0.88;
-
     constructor(props: UserKycProps) {
         this._props = {
             ...props,
@@ -153,7 +146,7 @@ export class UserKyc {
         this._props.selfieConfidence = payload.selfieConfidence;
         this._props.updatedAt = new Date();
 
-        if (payload.selfieConfidence >= this._SELFIE_MIN_PASS_THRESHOLD) {
+        if (payload.selfieConfidence >= KYC_POLICY.SELFIE_MIN_PASS_THRESHOLD) {
             this._props.selfieFaceEmbedding = payload.selfieFaceEmbedding;
             this._props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
         } else {
@@ -166,7 +159,7 @@ export class UserKyc {
     recordLivenessPrompt(payload: RecordLivenessPayload): void {
         if (!this._props.livenessResults) this._props.livenessResults = [];
 
-        const passed = payload.score >= this._LIVENESS_MIN_PASS_THRESHOLD;
+        const passed = payload.score >= KYC_POLICY.LIVENESS_MIN_PASS_THRESHOLD;
 
         this._props.livenessResults.push({
             prompt: payload.prompt,
@@ -205,8 +198,8 @@ export class UserKyc {
         const passedCount = latestResults.filter(r => r.status === 'PASSED').length;
 
         // Ensure all required steps were actually performed
-        if (passedCount < this._REQUIRED_PROMPTS_COUNT) {
-            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Cannot submit verification: Incomplete liveness prompts. Expected ${this._REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
+        if (passedCount < KYC_POLICY.REQUIRED_PROMPTS_COUNT) {
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Cannot submit verification: Incomplete liveness prompts. Expected ${KYC_POLICY.REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
         }
 
         if (hasFailedPrompts) {
@@ -219,7 +212,7 @@ export class UserKyc {
             const selfieConfidence = this._props.selfieConfidence ?? 0;
 
             // Auto approve if both metrics exceed our strict trust threshold
-            if (averageLivenessScore >= this._LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= this._SELFIE_AUTO_APPROVE_THRESHOLD) {
+            if (averageLivenessScore >= KYC_POLICY.LIVENESS_AUTO_APPROVE_THRESHOLD && selfieConfidence >= KYC_POLICY.SELFIE_AUTO_APPROVE_THRESHOLD) {
                 this._props.verificationStatus = VerificationStatus.APPROVED;
                 this._props.reviewDecision = ReviewDecision.AUTO_APPROVED;
                 this._props.manualReviewRequired = false;
@@ -247,8 +240,8 @@ export class UserKyc {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Embedding dimension mismatch.');
         }
 
-        if (!newEmbedding || newEmbedding.length === 0 || confidence < 80 || baseline.length !== newEmbedding.length) {
-            return { score: 999, status: PhotoVerificationStatus.PENDING };
+        if (!newEmbedding || newEmbedding.length === 0 || confidence < KYC_POLICY.MIN_FACE_MATCH_CONFIDENCE || baseline.length !== newEmbedding.length) {
+            return { score: KYC_POLICY.FAILED_FACE_MATCH_SENTINEL_SCORE, status: PhotoVerificationStatus.PENDING };
         }
 
         // 1. calculate L2 norm (Euclidean distance)
@@ -263,7 +256,7 @@ export class UserKyc {
         let status: PhotoVerificationStatus = PhotoVerificationStatus.PENDING;
 
         // Auto-approve ONLY if it's a tight biometric match AND high visual quality
-        if (distance <= 20.0) {
+        if (distance <= KYC_POLICY.MAX_FACE_MATCH_AUTO_APPROVE_DISTANCE) {
             status = PhotoVerificationStatus.APPROVED;
         }
 

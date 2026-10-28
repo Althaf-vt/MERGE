@@ -3,193 +3,77 @@ import * as nodemailer from 'nodemailer';
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
 import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { DomainException } from "../../domain/exceptions/domain.exception";
+import { EnvConfig } from "../config/env.config";
+import { EmailRenderOutput, EmailTemplates } from "./templates/email.templates";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService {
-    private _transporter: nodemailer.Transporter;
+    private readonly _transporter: nodemailer.Transporter;
     private readonly _logger = new Logger(NodeMailerEmailService.name);
 
     constructor() {
         this._transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT || '587', 10),
-            secure: process.env.SMTP_SECURE === 'true', 
+            host: EnvConfig.smtp.host,
+            port: EnvConfig.smtp.port,
+            secure: EnvConfig.smtp.secure,
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            }
+                user: EnvConfig.smtp.user,
+                pass: EnvConfig.smtp.pass,
+            },
         });
     }
 
-    // Standard User OTP Template
-    async sendOtpEmail(to: string, otp: string): Promise<void> {
-        const htmlTemplate = `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a;">
-                <h2 style="font-weight: 600; font-size: 24px; margin-bottom: 24px;">Verify your email</h2>
-                <p style="font-size: 16px; line-height: 1.5; margin-bottom: 32px;">
-                Enter the following 6-digit code to verify your MERGE account. This code will expire in 10 minutes.
-                </p>
-                <div style="background-color: #f4f4f5; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 32px;">
-                <span style="font-size: 32px; font-weight: 700; letter-spacing: 4px; color: #000;">${otp}</span>
-                </div>
-                <p style="font-size: 14px; color: #71717a;">
-                If you didn't request this code, you can safely ignore this email.
-                </p>
-            </div>
-        `;
-
-        const mailOptions = {
-            from: `"MERGE" <${process.env.SMTP_FROM || 'noreply@merge.com'}>`,
-            to,
-            subject: 'Your MERGE Verification Code',
-            html: htmlTemplate,
-        };
-
+    private async _sendEmail(
+        to: string,
+        output: EmailRenderOutput,
+        errorMessageOnFailure?: string
+    ): Promise<void> {
         try {
-            await this._transporter.sendMail(mailOptions);
-            this._logger.log(`User OTP email sent successfully to ${to}`);
+            await this._transporter.sendMail({
+                from: `"${output.fromName}" <${EnvConfig.smtp.from}>`,
+                to,
+                subject: output.subject,
+                html: output.html,
+            });
+            this._logger.log(`Email dispatched successfully to ${to} [${output.subject}]`);
         } catch (error: unknown) {
             const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Failed to send User OTP email to ${to}`, errorStack);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch verification email. Please try again later.');
+            this._logger.error(`Failed to dispatch email to ${to} [${output.subject}]`, errorStack);
+            if (errorMessageOnFailure) {
+                throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, errorMessageOnFailure);
+            }
         }
     }
 
-    // Admin Password Reset Template
-    async sendAdminResetOtpEmail(to: string, otp: string): Promise<void> {
-        const htmlTemplate = `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
-                <div style="background-color: #0a0a0a; padding: 20px; text-align: center;">
-                    <h1 style="color: #ffffff; margin: 0; font-size: 18px; letter-spacing: 1px;">MERGE <span style="color: #d8b4fe;">ADMIN PORTAL</span></h1>
-                </div>
-                <div style="padding: 32px;">
-                    <h2 style="font-weight: 600; font-size: 20px; margin-top: 0; margin-bottom: 24px;">Administrative Access Request</h2>
-                    <p style="font-size: 15px; line-height: 1.6; margin-bottom: 24px; color: #3f3f46;">
-                        A password reset was requested for your administrative account. Use the secure authorization code below to proceed. This code expires in 10 minutes.
-                    </p>
-                    <div style="background-color: #f4f4f5; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 24px;">
-                        <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #000;">${otp}</span>
-                    </div>
-                    <p style="font-size: 13px; color: #71717a; line-height: 1.5; margin: 0;">
-                        <strong>Security Alert:</strong> If you did not initiate this request, your credentials may be compromised. Please contact the Super Admin immediately.
-                    </p>
-                </div>
-            </div>
-        `;
-
-        const mailOptions = {
-            from: `"MERGE Security" <${process.env.SMTP_FROM || 'security@merge.com'}>`,
+    async sendOtpEmail(to: string, otp: string): Promise<void> {
+        await this._sendEmail(
             to,
-            subject: 'MERGE Admin Portal - Password Reset Code',
-            html: htmlTemplate,
-        };
+            EmailTemplates.userOtp(otp),
+            'Failed to dispatch verification email. Please try again later.'
+        );
+    }
 
-        try {
-            await this._transporter.sendMail(mailOptions);
-            this._logger.log(`Admin Password Reset email sent successfully to ${to}`);
-        } catch (error: unknown) {
-            const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Failed to send Admin Password Reset email to ${to}`, errorStack);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative security email.');
-        }
+    async sendAdminResetOtpEmail(to: string, otp: string): Promise<void> {
+        await this._sendEmail(
+            to,
+            EmailTemplates.adminResetOtp(otp),
+            'Failed to dispatch administrative security email.'
+        );
     }
 
     async sendBanNotificationEmail(to: string, reason: string): Promise<void> {
-        const htmlTemplate = `
-            <div style="font-family: sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a;">
-                <h2 style="color: #dc2626; font-size: 24px; margin-bottom: 24px;">Account Banned</h2>
-                <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
-                    Your MERGE account has been permanently banned due to a violation of our community guidelines.
-                </p>
-                <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin-bottom: 24px;">
-                    <strong>Reason:</strong> ${reason}
-                </div>
-                <p style="font-size: 14px; color: #71717a;">
-                    If you believe this is an error, please contact support.
-                </p>
-            </div>
-        `;
-
-        try {
-            await this._transporter.sendMail({
-                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
-                to,
-                subject: 'Important Notice Regarding Your MERGE Account',
-                html: htmlTemplate,
-            });
-            this._logger.log(`Ban notification sent to ${to}`);
-        } catch (error: unknown) {
-            const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Failed to send ban notification to ${to}`, errorStack);
-        }
+        await this._sendEmail(to, EmailTemplates.banNotification(reason));
     }
 
     async sendSuspensionNotificationEmail(to: string, reason: string, until: Date): Promise<void> {
-        const htmlTemplate = `
-            <div style="font-family: sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a;">
-                <h2 style="color: #ea580c; font-size: 24px; margin-bottom: 24px;">Account Temporarily Suspended</h2>
-                <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">
-                    Your MERGE account has been temporarily suspended. You will regain access on <strong>${until.toUTCString()}</strong>.
-                </p>
-                <div style="background-color: #ffedd5; border-left: 4px solid #ea580c; padding: 16px; margin-bottom: 24px;">
-                    <strong>Reason:</strong> ${reason}
-                </div>
-                <p style="font-size: 14px; color: #71717a;">
-                    Please ensure you adhere to our guidelines going forward to avoid permanent account restrictions.
-                </p>
-            </div>
-        `;
-
-        try {
-            await this._transporter.sendMail({
-                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
-                to,
-                subject: 'Notice of Temporary Account Suspension',
-                html: htmlTemplate,
-            });
-            this._logger.log(`Suspension notification sent to ${to}`);
-        } catch (error: unknown) {
-            const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Failed to send suspension notification to ${to}`, errorStack);
-        }
+        await this._sendEmail(to, EmailTemplates.suspensionNotification(reason, until));
     }
 
     async sendAdminInviteEmail(to: string, token: string, inviterName: string): Promise<void> {
-        const inviteUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/accept-invite?token=${token}`;
-        
-        const htmlTemplate = `
-            <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 40px auto; color: #1a1a1a; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
-                <div style="background-color: #0a0a0a; padding: 20px; text-align: center;">
-                    <h1 style="color: #ffffff; margin: 0; font-size: 18px; letter-spacing: 1px;">MERGE <span style="color: #d8b4fe;">ADMIN PORTAL</span></h1>
-                </div>
-                <div style="padding: 32px;">
-                    <h2 style="font-weight: 600; font-size: 20px; margin-top: 0; margin-bottom: 24px;">Administrative Invitation</h2>
-                    <p style="font-size: 15px; line-height: 1.6; margin-bottom: 24px; color: #3f3f46;">
-                        You have been invited by <strong>${inviterName}</strong> to join the MERGE administrative team. 
-                        Please click the secure link below to set up your password and access the system.
-                    </p>
-                    <div style="text-align: center; margin-bottom: 32px;">
-                        <a href="${inviteUrl}" style="display: inline-block; background-color: #6D28D9; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Accept Invitation</a>
-                    </div>
-                    <p style="font-size: 13px; color: #71717a; line-height: 1.5; margin: 0;">
-                        <strong>Security Note:</strong> This link is strictly confidential and will automatically expire in 24 hours.
-                    </p>
-                </div>
-            </div>
-        `;
-
-        try {
-            await this._transporter.sendMail({
-                from: `"MERGE Security" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-                to,
-                subject: 'MERGE Admin Portal - Secure Invitation',
-                html: htmlTemplate,
-            });
-            this._logger.log(`Admin Invite email sent successfully to ${to}`);
-        } catch (error: unknown) {
-            const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Failed to send Admin Invite email to ${to}`, errorStack);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Failed to dispatch administrative invite email.');
-        }
+        await this._sendEmail(
+            to,
+            EmailTemplates.adminInvite(token, inviterName),
+            'Failed to dispatch administrative invite email.'
+        );
     }
 }

@@ -6,6 +6,7 @@ import { UserModule } from "./modules/users/users.module";
 import { AdminModule } from "./modules/admin/admin.module";
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CastingDirectorModule } from "./modules/casting-director/casting-director.module";
+import { EnvConfig } from "./shared/infrastructure/config/env.config";
 
 @Module({
     imports: [
@@ -13,9 +14,7 @@ import { CastingDirectorModule } from "./modules/casting-director/casting-direct
         ConfigModule.forRoot({ isGlobal: true }),
 
         // Global MongoDB connection
-        MongooseModule.forRoot(
-            process.env.MONGO_URI || 'mongodb://localhost:27017/merge_db',
-        ),
+        MongooseModule.forRoot(EnvConfig.database.mongoUri),
 
         EventEmitterModule.forRoot(),
 

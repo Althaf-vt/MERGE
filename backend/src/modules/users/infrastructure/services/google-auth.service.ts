@@ -3,6 +3,7 @@ import { OAuth2Client } from "google-auth-library";
 import { IGoogleAuthService } from "../../domain/interfaces/google-auth-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class GoogleAuthService implements IGoogleAuthService {
@@ -10,14 +11,14 @@ export class GoogleAuthService implements IGoogleAuthService {
     private readonly _logger = new Logger(GoogleAuthService.name);
 
     constructor() {
-        this._googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        this._googleClient = new OAuth2Client(EnvConfig.google.clientId);
     }
 
     async verifyToken(idToken: string): Promise<{ email: string } | null> {
         try {
             const ticket = await this._googleClient.verifyIdToken({
                 idToken,
-                audience: process.env.GOOGLE_CLIENT_ID
+                audience: EnvConfig.google.clientId
             });
             
             const payload = ticket.getPayload();

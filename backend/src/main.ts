@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import { DomainExceptionFilter } from './shared/presentation/filters/domain-exception.filter';
+import { EnvConfig } from './shared/infrastructure/config/env.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,7 +39,7 @@ async function bootstrap() {
       if(!origin) return callback(null, true);
 
       const isAllowed = 
-        origin === process.env.FRONTEND_URL ||
+        origin === EnvConfig.app.frontendUrl ||
         origin.includes('localhost') ||
         origin.endsWith('.ngrok-free.app') ||
         origin.endsWith('.ngrok-free.dev') ||
@@ -78,7 +79,7 @@ async function bootstrap() {
   // API prefix
   app.setGlobalPrefix('api/v1');
 
-  const port = process.env.PORT ?? 3110;
+  const port = EnvConfig.app.port;
   await app.listen(port,() => console.log('server running on port: ', port));
 }
 bootstrap();

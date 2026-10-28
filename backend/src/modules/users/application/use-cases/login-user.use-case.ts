@@ -11,6 +11,7 @@ import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-servic
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -34,7 +35,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         user.recordLogin();
         await this._userRepository.update(user);
 
-        const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
+        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
         const sessionId = await this._sessionService.createSession(user.id!, deviceInfo, ipAddress, ttlSeconds);
         
         const payload = {

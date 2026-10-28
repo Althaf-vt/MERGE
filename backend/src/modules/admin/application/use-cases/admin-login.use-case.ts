@@ -9,6 +9,7 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
@@ -50,7 +51,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         };
 
         // Create the session in Redis for 7 days (matches the refresh token lifespan)
-        const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
+        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
         await this._sessionService.createSession(admin.id!, ttlSeconds);
 
         return {

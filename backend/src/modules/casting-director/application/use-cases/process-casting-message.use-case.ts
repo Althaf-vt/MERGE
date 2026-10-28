@@ -4,6 +4,7 @@ import { CASTING_SESSION_REPOSITORY, ICastingSessionRepository } from "../../dom
 import { CASTING_USER_FACADE, IcastingUserFacade } from "../../../users/application/interfaces/casting-user-facade.interface";
 import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
+import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
@@ -23,11 +24,11 @@ export class ProcessCastingMessageUseCase implements IProcessCastingMessageUseCa
         }
 
         // Update the domain aggregate
-        session.addTurn('user', content);
+        session.addTurn(TranscriptRole.USER, content);
 
-        if (session.status === 'ANALYZING') {
+        if (session.status === CastingSessionStatus.ANALYZING) {
             // The limit has been reached. Add a final closing remark before the client triggers finalization.
-            session.addTurn('ai', 'Thank you for sharing all of that. I have everything I need to analyze your profile!');
+            session.addTurn(TranscriptRole.AI, 'Thank you for sharing all of that. I have everything I need to analyze your profile!');
             await this._sessionRepository.update(session);
             return session;
         }
@@ -40,7 +41,7 @@ export class ProcessCastingMessageUseCase implements IProcessCastingMessageUseCa
         // Call OpenRouter for the next question
         const followUp = await this._aiService.generateFollowUpQuestion(userContext, session.transcript);
 
-        session.addTurn('ai', followUp);
+        session.addTurn(TranscriptRole.AI, followUp);
 
         return await this._sessionRepository.update(session);
     }

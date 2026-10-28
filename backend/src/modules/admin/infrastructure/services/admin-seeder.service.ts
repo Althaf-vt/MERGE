@@ -5,6 +5,7 @@ import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminSeederService implements OnApplicationBootstrap {
@@ -25,10 +26,17 @@ export class AdminSeederService implements OnApplicationBootstrap {
                 return;
             }
 
-            // Fallback credentials if missing from env (only safe during local dev)
-            const rootEmail = process.env.INIT_SUPER_ADMIN_EMAIL || 'admin@merge.com';
-            const rootPassword = process.env.INIT_SUPER_ADMIN_PASSWORD || 'SuperSecret@123';
-            const rootName = process.env.INIT_SUPER_ADMIN_NAME || 'MERGE System Admin';
+            // Retrieve required bootstrap credentials from environment configuration
+            const rootEmail = EnvConfig.admin.seederEmail;
+            const rootPassword = EnvConfig.admin.seederPassword;
+            const rootName = EnvConfig.admin.seederName;
+
+            if (!rootEmail || !rootPassword) {
+                this._logger.warn(
+                    "INIT_SUPER_ADMIN_EMAIL or INIT_SUPER_ADMIN_PASSWORD not set in environment. Skipping Super Admin seeding."
+                );
+                return;
+            }
 
             const passwordHash = await this._passwordHasher.hash(rootPassword);
             const emailVo = new EmailVO(rootEmail);
@@ -44,8 +52,10 @@ export class AdminSeederService implements OnApplicationBootstrap {
 
             await this._adminRepository.create(superAdmin);
             this._logger.log(`Initialized primary Super Admin account: ${rootEmail}`);
-        } catch (error: any) {
-            this._logger.error('Failed to seed Super Admin account on bootstrap.', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to seed Super Admin account on bootstrap: ${errorMessage}`, errorStack);
         }
     }
 }

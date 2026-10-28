@@ -115,6 +115,7 @@ import { GOOGLE_AUTH_SERVICE } from "./domain/interfaces/google-auth-service.int
 import { GoogleAuthService } from "./infrastructure/services/google-auth.service";
 import { MEDIA_FACADE } from "./application/interfaces/media-facade.interface";
 import { MediaFacade } from "./application/services/media.facade";
+import { EnvConfig } from "../../shared/infrastructure/config/env.config";
 
 // Defines the User module and wires together its controllers, use cases,
 // Services, repository implementations, and external dependencies.
@@ -150,18 +151,15 @@ import { MediaFacade } from "./application/services/media.facade";
         {
             provide: REDIS_CLIENT,
             useFactory: () => {
-                return new Redis({
-                    host: process.env.REDIS_HOST || 'localhost',
-                    port: Number(process.env.REDIS_PORT) || 6379,
-                });
+                return new Redis(EnvConfig.redis.uri);
             },
         },
         {
             provide: S3_CLIENT,
             useFactory: () => {
-                const region = process.env.AWS_REGION;
-                const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-                const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+                const region = EnvConfig.aws.region;
+                const accessKeyId = EnvConfig.aws.accessKeyId;
+                const secretAccessKey = EnvConfig.aws.secretAccessKey;
 
                 if (!region || !accessKeyId || !secretAccessKey) {
                     throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
