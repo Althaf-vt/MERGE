@@ -51,43 +51,64 @@ export class OpenRouterAiService implements IAiService {
                 temperature: this._temperature,
             });
 
-            const rawContent = completion.choices[0]?.message?.content || "[]";
+            const rawContent = completion.choices[0]?.message?.content || '';
+            return this._parseBiosFromResponse(rawContent);
 
-            // Extract only the JSON array or object substring from the raw output.
-            const jsonMatch = rawContent.match(/\[[\s\S]*\]/) || rawContent.match(/\{[\s\S]*\}/);
-
-            if (!jsonMatch) {
-                // Fallback: parse lines if the model returned plain text lines without brackets
-                const lines = rawContent
-                    .split('\n')
-                    .map((line) => line.replace(/^[-*0-9.)\s]+/, '').trim())
-                    .filter((line) => line.length > 20 && !line.toLowerCase().startsWith('user safety:'));
-
-                if (lines.length >= 3) {
-                    return lines.slice(0, 3);
-                }
-                throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'LLM response did not contain a valid JSON array or extractable bios.');
-            }
-
-            const parsed = JSON.parse(jsonMatch[0]);
-
-            // Normalize response into a string array regardless of structure
-            if (Array.isArray(parsed)) {
-                return parsed.map((item: unknown) => String(item).trim()).filter(Boolean);
-            }
-            if (typeof parsed === 'object' && parsed !== null && 'bios' in parsed && Array.isArray((parsed as Record<string, unknown>).bios)) {
-                const parsedRecord = parsed as { bios: unknown[] };
-                return parsedRecord.bios.map((item: unknown) => String(item).trim()).filter(Boolean);
-            }
-
-            return Object.values(parsed).filter((val): val is string => typeof val === 'string');
         } catch (error: unknown) {
+            if (error instanceof DomainException) {
+                throw error;
+            }
+
             const errorMessage = error instanceof Error ? error.message : 'Unknown AI service failure';
-            this._logger.error(`OpenRouter Service Error Details: ${errorMessage}`);
+            this._logger.error(`OpenRouter Service Error Details: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
+
             throw new DomainException(
                 ErrorCode.INTERNAL_SERVER_ERROR,
-                errorMessage || 'Failed to generate bios from AI service.'
+                'Failed to generate bios from AI service. Please try again later.'
             );
         }
+    }
+    
+    private _parseBiosFromResponse(rawContent: string): string[] {
+        // 1. Clean markdown code fences if present (e.g. ```json ... ```)
+        const cleaned = rawContent
+            .replace(/```(?:json)?/gi, '')
+            .replace(/```/g, '')
+            .trim();
+
+        // 2. Attempt JSON parsing directly or via bracket extraction
+        const jsonMatch = cleaned.match(/\[[\s\S]*\]/) || cleaned.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            try {
+                const parsed = JSON.parse(jsonMatch[0]);
+
+                if (Array.isArray(parsed)) {
+                    return parsed.map((item: unknown) => String(item).trim()).filter(Boolean);
+                }
+                if (typeof parsed === 'object' && parsed !== null && 'bios' in parsed && Array.isArray((parsed as Record<string, unknown>).bios)) {
+                    return (parsed as { bios: unknown[] }).bios.map((item: unknown) => String(item).trim()).filter(Boolean);
+                }
+                if (typeof parsed === 'object' && parsed !== null) {
+                    return Object.values(parsed).filter((val): val is string => typeof val === 'string');
+                }
+            } catch {
+                // JSON parsing failed; continue to line-based fallback below
+            }
+        }
+
+        // 3. Fallback: line-by-line extraction for plain-text model responses
+        const lines = cleaned
+            .split('\n')
+            .map((line) => line.replace(/^[-*0-9.)\s]+/, '').trim())
+            .filter((line) => line.length > 20 && !line.toLowerCase().startsWith('user safety:'));
+
+        if (lines.length >= 3) {
+            return lines.slice(0, 3);
+        }
+
+        throw new DomainException(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            'LLM response did not contain a valid JSON array or extractable bios.'
+        );
     }
 }
