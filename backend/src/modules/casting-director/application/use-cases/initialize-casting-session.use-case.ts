@@ -4,6 +4,7 @@ import { CASTING_SESSION_REPOSITORY, ICastingSessionRepository } from "../../dom
 import { CASTING_USER_FACADE, IcastingUserFacade } from "../../../users/application/interfaces/casting-user-facade.interface";
 import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
+import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
@@ -34,13 +35,13 @@ export class InitializeCastingSessionUseCase implements IInitializeCastingSessio
         // 4. Initialize the domain entity
         const session = new CastingSession({
             userId,
-            status: 'IN_PROGRESS',
+            status: CastingSessionStatus.IN_PROGRESS,
             transcript: [],
             turnCount: 0
         });
 
         // 5. Add the AI's first turn to the transcript
-        session.addTurn('ai', openingQuestion);
+        session.addTurn(TranscriptRole.AI, openingQuestion);
 
         // 6. Persist and return the new aggregate root
         return await this._sessionRepository.create(session);
