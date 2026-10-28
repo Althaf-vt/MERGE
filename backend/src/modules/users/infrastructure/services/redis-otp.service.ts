@@ -3,6 +3,7 @@ import { IOtpService } from "../../domain/interfaces/otp-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import Redis from "ioredis";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 // Injecting OTP storage and verification using Redis.
 @Injectable()
@@ -13,7 +14,7 @@ export class RedisOtpService implements IOtpService{
 
     // Create a connection to the Redis server
     constructor(){
-        this._redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+        this._redis = new Redis(EnvConfig.redis.uri);
     }
 
     // Generate a consistent Redis key for each user's registration OTP
