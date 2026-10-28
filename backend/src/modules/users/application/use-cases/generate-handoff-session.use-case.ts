@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { HANDOFF_SERVICE, type IHandoffSessionService } from "../interfaces/handoff-service.interface";
 import { GenerateHandoffResult, IGenerateHandoffSessionUseCase } from "../interfaces/generate-handoff-session.use-case.interface";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class GenerateHandoffSessionUseCase implements IGenerateHandoffSessionUseCase {
@@ -18,7 +19,7 @@ export class GenerateHandoffSessionUseCase implements IGenerateHandoffSessionUse
         const expiresAt = new Date(Date.now() + TTL_SECONDS * 1000);
 
         // 3. construct the exact URL the mobile device needs to hit
-        const baseUrl = clientOrigin || process.env.FRONTEND_URL || 'http://localhost:5173';
+        const baseUrl = clientOrigin || EnvConfig.app.frontendUrl;
         const qrCodeUrl = `${baseUrl}/handoff?token=${sessionId}`;
 
         return {

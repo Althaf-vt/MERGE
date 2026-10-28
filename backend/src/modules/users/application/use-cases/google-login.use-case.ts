@@ -10,6 +10,7 @@ import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
@@ -60,7 +61,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "User identification failed.");
         }
 
-        const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
+        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
         const sessionId = await this._sessionService.createSession(user.id, deviceInfo, ipAddress, ttlSeconds);
 
         const tokenPayload = {
