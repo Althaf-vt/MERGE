@@ -1,3 +1,10 @@
-export type CastingSessionStatus = 'IN_PROGRESS' | 'ANALYZING' | 'COMPLETED';
+export enum CastingSessionStatus {
+    IN_PROGRESS = 'IN_PROGRESS',
+    ANALYZING = 'ANALYZING',
+    COMPLETED = 'COMPLETED',
+}
 
-export type TranscriptRole = 'ai' | 'user';
+export enum TranscriptRole {
+    AI = 'ai',
+    USER = 'user',
+}
