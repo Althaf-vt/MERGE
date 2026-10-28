@@ -5,6 +5,7 @@ import { HttpService } from "@nestjs/axios";
 import { lastValueFrom } from "rxjs";
 import FormData from "form-data";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 interface AxiosErrorPayload {
     response?: {
@@ -31,7 +32,7 @@ export class HttpBiometricService implements IBiometricService {
             formData.append('file', imageBuffer, { filename: 'selfie.jpg' });
 
             // connects to the FastAPI ML Worker inside the Docker network
-            const mlServiceUrl = process.env.ML_SERVICE_URL || 'http://biometric-worker:8000/extract-embedding';
+            const mlServiceUrl = EnvConfig.services.mlServiceUrl;
 
             // lastValueFrom converts the Axios Observable into a standard Promise
             const response = await lastValueFrom(
@@ -72,7 +73,7 @@ export class HttpBiometricService implements IBiometricService {
             const formData = new FormData();
             formData.append('file', imageBuffer, { filename: 'profile.jpg' });
 
-            const baseUrl = process.env.ML_SERVICE_URL?.replace('/extract-embedding', '') || 'http://biometric-worker:8000';
+            const baseUrl = EnvConfig.services.mlServiceBaseUrl;
             const mlProfileUrl = `${baseUrl}/extract-profile-embedding`;
 
             const response = await lastValueFrom(
@@ -99,7 +100,7 @@ export class HttpBiometricService implements IBiometricService {
             formData.append('file', videoBuffer, { filename: 'liveness.webm' });
             formData.append('promptType', promptType);
 
-            const baseUrl = process.env.ML_SERVICE_URL?.replace('/extract-embedding', '') || 'http://biometric-worker:8000';
+            const baseUrl = EnvConfig.services.mlServiceBaseUrl;
             const mlLivenessUrl = `${baseUrl}/analyze-liveness`;
 
             const response = await lastValueFrom(
