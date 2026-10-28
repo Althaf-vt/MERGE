@@ -7,6 +7,7 @@ import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminStatus } from "../../domain/enums/admin.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
@@ -39,7 +40,7 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
         };
         
         // 2. Keep the session alive for another 7 days
-        const ttlSeconds = parseInt(process.env.JWT_REFRESH_EXPIRATION_SECONDS || '604800', 10);
+        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
         await this._sessionService.createSession(admin.id!, ttlSeconds);
 
         return {

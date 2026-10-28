@@ -6,6 +6,7 @@ import { ADMIN_INVITE_SERVICE, IAdminInviteService } from "../../domain/interfac
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
@@ -19,7 +20,7 @@ export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
         const admin = await this._adminRepository.findById(targetAdminId);
         if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
 
-        const ttlSeconds = parseInt(process.env.ADMIN_INVITE_TTL_SECONDS || '86400');
+        const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
         const newExpiryDate = new Date(Date.now() + (ttlSeconds * 1000));
 
         admin.renewInvitation(newExpiryDate);

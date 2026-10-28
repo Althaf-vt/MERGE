@@ -11,6 +11,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class InviteAdminUseCase implements IInviteAdminUseCase {
@@ -28,7 +29,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
             throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, 'An admin account with this email already exists.');
         }
 
-        const ttlSeconds = parseInt(process.env.ADMIN_INVITE_TTL_SECONDS || '86400', 10);
+        const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
         const expiresAt = new Date(Date.now() + (ttlSeconds * 1000));
 
         const newAdmin = new AdminAggregate({
