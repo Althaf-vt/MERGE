@@ -52,8 +52,10 @@ export class AdminSeederService implements OnApplicationBootstrap {
 
             await this._adminRepository.create(superAdmin);
             this._logger.log(`Initialized primary Super Admin account: ${rootEmail}`);
-        } catch (error: any) {
-            this._logger.error('Failed to seed Super Admin account on bootstrap.', error);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this._logger.error(`Failed to seed Super Admin account on bootstrap: ${errorMessage}`, errorStack);
         }
     }
 }
