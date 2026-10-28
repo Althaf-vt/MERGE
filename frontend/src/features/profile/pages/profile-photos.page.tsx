@@ -196,9 +196,22 @@ export const ProfilePhotosPage: React.FC = () => {
                                             </span>
                                         )}
                                         {photo.status === 'REJECTED' && (
-                                            <span className={`${styles.badge} ${styles.badgeRejected}`}>
-                                                {XIcon} Rejected
-                                            </span>
+                                            <div className={styles.rejectedGroup}>
+                                                <span
+                                                    className={`${styles.badge} ${styles.badgeRejected}`}
+                                                    title={photo.rejectionReason || 'Photo rejected during moderation'}
+                                                >
+                                                    {XIcon} Rejected
+                                                </span>
+                                                {photo.rejectionReason && (
+                                                    <span
+                                                        className={styles.rejectionReasonPill}
+                                                        title={photo.rejectionReason}
+                                                    >
+                                                        {photo.rejectionReason}
+                                                    </span>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
 

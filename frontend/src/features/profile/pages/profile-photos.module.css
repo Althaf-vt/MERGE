@@ -1,5 +1,3 @@
-/* frontend/src/features/profile/pages/profile-photos.module.css */
-
 .pageContainer {
     display: flex;
     flex-direction: column;
@@ -145,6 +143,7 @@
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     backdrop-filter: blur(4px);
+    pointer-events: auto;
 }
 
 .badgePrimary {
@@ -166,6 +165,35 @@
 .badgeRejected {
     background-color: rgba(254, 226, 226, 0.95);
     color: #dc2626;
+    cursor: help;
+}
+
+.rejectedGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    max-width: 100%;
+}
+
+.rejectionReasonPill {
+    display: inline-block;
+    background-color: rgba(254, 242, 242, 0.95);
+    color: #991b1b;
+    border: 1px solid rgba(252, 165, 165, 0.8);
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.2;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(4px);
+    pointer-events: auto;
+    cursor: help;
 }
 
 /* Hover Actions */
