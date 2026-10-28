@@ -2,8 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { IHandoffNotificationService } from "../../application/interfaces/handoff-notification.service.interface";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
-@WebSocketGateway({cors: {origin: process.env.FRONTED_URL || 'http://localhost:5173', credentials: true}})
+@WebSocketGateway({cors: {origin: EnvConfig.app.frontendUrl, credentials: true}})
 @Injectable()
 export class HandoffGateway implements IHandoffNotificationService{
     @WebSocketServer()
