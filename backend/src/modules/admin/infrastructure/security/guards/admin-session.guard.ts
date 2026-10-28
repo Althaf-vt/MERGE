@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
-import { Request } from 'express';
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from '../../../domain/interfaces/admin-session.interface';
 import { ErrorCode } from '../../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../../shared/domain/exceptions/domain.exception';
