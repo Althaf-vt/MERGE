@@ -1,64 +1,155 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IPkiResult, IPkiVerificationService } from "../../domain/interfaces/kyc-service.interface";
-import path from "path";
-import AdmZip from "adm-zip";
-import { DOMParser } from "@xmldom/xmldom";
-import * as fs from 'fs';
-import { SignedXml } from "xml-crypto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-
-interface ICustomSignedXml {
-    publicCert: string;
-    key: string;
-    validationErrors?: string[];
-    loadSignature(signatureNode: unknown): void;
-    checkSignature(xmlStr: string): boolean;
-}
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import AdmZip from "adm-zip";
+import { DOMParser, Document as XmlDocument } from "@xmldom/xmldom";
+import { SignedXml } from "xml-crypto";
+import * as fs from 'fs';
+import * as crypto from 'crypto';
 
 @Injectable()
-export class AadhaarPkiService implements IPkiVerificationService {
+export class AadhaarPkiService implements IPkiVerificationService, OnModuleInit {
     private readonly _logger = new Logger(AadhaarPkiService.name);
-    private readonly _rootCertPath = path.join(process.cwd(), 'assets', 'kyc-docs-public-keys', 'uidai_offline_publickey.cer');
+    private _trustedRootCert: crypto.X509Certificate | null = null;
+    private _trustedRootCertPem: string = '';
+
+    onModuleInit(): void {
+        this._loadRootCertificate();
+    }
+
+    private _loadRootCertificate(): void {
+        const certPath = EnvConfig.services.aadhaarRootCertPath;
+        if (!fs.existsSync(certPath)) {
+            this._logger.error(`UIDAI root certificate not found at path: ${certPath}`);
+            return;
+        }
+
+        try {
+            const rawCert = fs.readFileSync(certPath, 'utf-8');
+            this._trustedRootCert = new crypto.X509Certificate(rawCert);
+            this._trustedRootCertPem = this._trustedRootCert.toString();
+            this._logger.log('UIDAI root certificate loaded and validated successfully.');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            this._logger.error(`Failed to parse UIDAI root certificate: ${message}`);
+        }
+    }
 
     private _parseAadhaarDate(dobStr: string): Date {
         if (!dobStr) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "Date of Birth attribute is missing in e-KYC XML.");
         }
 
-        // Handles DD-MM-YYYY format
-        if (/^\d{2}-\d{2}-\d{4}$/.test(dobStr)) {
-            const [day, month, year] = dobStr.split('-').map(Number);
-            return new Date(Date.UTC(year, month - 1, day));
+        const trimmed = dobStr.trim();
+
+        // Handles DD-MM-YYYY or DD/MM/YYYY
+        const dmyMatch = trimmed.match(/^(\d{2})[-/](\d{2})[-/](\d{4})$/);
+        if (dmyMatch) {
+            const [, day, month, year] = dmyMatch.map(Number);
+            return this._createValidatedDate(year, month, day, dobStr);
         }
 
-        // Handles YYYY-MM-DD format
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dobStr)) {
-            const [year, month, day] = dobStr.split('-').map(Number);
-            return new Date(Date.UTC(year, month - 1, day));
+        // Handles YYYY-MM-DD or YYYY/MM/DD
+        const ymdMatch = trimmed.match(/^(\d{4})[-/](\d{2})[-/](\d{2})$/);
+        if (ymdMatch) {
+            const [, year, month, day] = ymdMatch.map(Number);
+            return this._createValidatedDate(year, month, day, dobStr);
         }
 
         // Handles YYYY only format
-        if (/^\d{4}$/.test(dobStr)) {
-            return new Date(Date.UTC(Number(dobStr), 0, 1));
+        if (/^\d{4}$/.test(trimmed)) {
+            const year = Number(trimmed);
+            return this._createValidatedDate(year, 1, 1, dobStr);
         }
 
-        const parsedDate = new Date(dobStr);
-        if (isNaN(parsedDate.getTime())) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Unrecognized Date of Birth format: ${dobStr}`);
-        }
-
-        return parsedDate;
+        throw new DomainException(ErrorCode.VALIDATION_FAILED, `Unrecognized Date of Birth format: ${dobStr}`);
     }
 
-    private _normalizePem(certContent: string): { pem: string, base64: string } {
-        const base64 = certContent
-            .replace(/-----BEGIN CERTIFICATE-----/g, '')
-            .replace(/-----END CERTIFICATE-----/g, '')
-            .replace(/\s+/g, '');
+    private _createValidatedDate(year: number, month: number, day: number, rawInput: string): Date {
+        if (month < 1 || month > 12 || day < 1 || day > 31) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid calendar date components in DOB: ${rawInput}`);
+        }
 
-        const pem = `-----BEGIN CERTIFICATE-----\n${base64.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
-        return { pem, base64 };
+        const date = new Date(Date.UTC(year, month - 1, day));
+        if (
+            date.getUTCFullYear() !== year ||
+            date.getUTCMonth() !== month - 1 ||
+            date.getUTCDate() !== day
+        ) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid calendar date rollover in DOB: ${rawInput}`);
+        }
+
+        if (date.getTime() > Date.now()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Date of Birth cannot be in the future.");
+        }
+
+        return date;
+    }
+
+    private _resolveSigningKey(doc: XmlDocument): string {
+        if (!this._trustedRootCert) {
+            this._loadRootCertificate();
+            if (!this._trustedRootCert) {
+                throw new DomainException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    'Root verification certificate is unavailable on the server.'
+                );
+            }
+        }
+
+        const x509Node = doc.getElementsByTagName("X509Certificate")[0] ||
+                         doc.getElementsByTagNameNS("*", "X509Certificate")[0];
+
+        if (!x509Node?.textContent) {
+            return this._trustedRootCertPem;
+        }
+
+        const rawBase64 = x509Node.textContent.replace(/\s+/g, '');
+        const embeddedPem = `-----BEGIN CERTIFICATE-----\n${rawBase64.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
+
+        let embeddedCert: crypto.X509Certificate;
+        try {
+            embeddedCert = new crypto.X509Certificate(embeddedPem);
+        } catch {
+            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Embedded X.509 certificate in XML is malformed.');
+        }
+
+        // Cryptographic Chain of Trust / Trust Anchor Verification
+        const isIdenticalCert = embeddedCert.raw.equals(this._trustedRootCert.raw);
+        const matchesTrustedPublicKey =
+            embeddedCert.publicKey.export({ type: 'spki', format: 'pem' }) ===
+            this._trustedRootCert.publicKey.export({ type: 'spki', format: 'pem' });
+
+        let isIssuedByRoot = false;
+        try {
+            isIssuedByRoot = embeddedCert.verify(this._trustedRootCert.publicKey);
+        } catch {
+            isIssuedByRoot = false;
+        }
+
+        if (!isIdenticalCert && !matchesTrustedPublicKey && !isIssuedByRoot) {
+            this._logger.warn('Aadhaar XML embedded certificate is not signed by or matching the UIDAI root certificate.');
+            throw new DomainException(
+                ErrorCode.AADHAAR_VERIFICATION_FAILED,
+                'XML certificate is untrusted or was not issued by the UIDAI certifying authority.'
+            );
+        }
+
+        // Validate certificate validity window
+        const now = Date.now();
+        const validFrom = new Date(embeddedCert.validFrom).getTime();
+        const validTo = new Date(embeddedCert.validTo).getTime();
+
+        if (now < validFrom || now > validTo) {
+            throw new DomainException(
+                ErrorCode.AADHAAR_VERIFICATION_FAILED,
+                'The digital certificate used to sign this Aadhaar XML has expired or is not yet valid.'
+            );
+        }
+
+        return embeddedPem;
     }
 
     async verifyAadhaarXml(zipBuffer: Buffer, shareCode: string): Promise<IPkiResult> {
@@ -67,118 +158,103 @@ export class AadhaarPkiService implements IPkiVerificationService {
                 throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Zip buffer is empty or invalid.');
             }
 
-            if (!shareCode || shareCode.trim().length !== 4) {
-                throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A valid 4-digit share code is required.');
+            const cleanShareCode = shareCode?.trim();
+            if (!cleanShareCode || !/^\d{4}$/.test(cleanShareCode)) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A valid 4-digit numeric share code is required.');
             }
 
-            // 1. Unzip the password-protected file using the 4-digit share code
-            const zip = new AdmZip(zipBuffer);
+            // 1. Unzip the password-protected file
+            let zip: AdmZip;
+            try {
+                zip = new AdmZip(zipBuffer);
+            } catch {
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Uploaded file is not a valid ZIP archive.');
+            }
+
             const zipEntries = zip.getEntries();
+            const xmlEntry = zipEntries.find(entry => !entry.isDirectory && entry.entryName.toLowerCase().endsWith('.xml'));
 
-            if (!zipEntries || zipEntries.length === 0) {
-                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Invalid or empty ZIP archive.');
+            if (!xmlEntry) {
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'No valid XML document found inside the ZIP archive.');
             }
 
-            const xmlEntry = zipEntries.find(entry => entry.entryName.endsWith('.xml')) || zipEntries[0];
-
-            // Extract the raw XML using the user's shareCode as the password
+            // 2. Extract raw XML using 4-digit share code
             let xmlBuffer: Buffer;
             try {
-                xmlBuffer = xmlEntry.getData(shareCode.trim());
-            } catch (error) {
-                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Invalid Share code or failed to decrypt ZIP file.");
+                xmlBuffer = xmlEntry.getData(cleanShareCode);
+            } catch {
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Invalid share code or failed to decrypt ZIP file.");
             }
 
             if (!xmlBuffer || xmlBuffer.length === 0) {
-                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Failed to extract XML content from ZIP.');
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Invalid share code or failed to decrypt XML content.");
             }
 
             const xmlString = xmlBuffer.toString('utf-8');
 
-            // 2. Parse the XML structure
+            // 3. Parse XML DOM
             const doc = new DOMParser({
                 errorHandler: (level: 'warning' | 'error' | 'fatalError', msg: string) => {
-                    if (level === 'error') {
+                    if (level === 'error' || level === 'fatalError') {
                         throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `XML Parsing Error: ${msg}`);
                     }
-                    if (level === 'fatalError') {
-                        throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, `Fatal XML Parsing Error: ${msg}`);
-                    }
-                    // warning is ignored
                 }
             }).parseFromString(xmlString, 'text/xml');
 
-            // 3. Load the official UIDAI public root certificate
-            if (!fs.existsSync(this._rootCertPath)) {
-                this._logger.error(`Root certificate not found at path: ${this._rootCertPath}`);
-                throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Root verification certificate is missing on the server.');
-            }
-
-            const rawCert = fs.readFileSync(this._rootCertPath, 'utf-8');
-
-            const { pem: publicKeyPem } = this._normalizePem(rawCert);
-
-            // 4. Locate the Signature Node (Namespace-tolerant)
-            const signature = doc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature")[0]
-                || doc.getElementsByTagName("ds:Signature")[0]
-                || doc.getElementsByTagName("Signature")[0];
+            // 4. Resolve signing key and verify digital signature
+            const signature = doc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature")[0] ||
+                              doc.getElementsByTagName("ds:Signature")[0] ||
+                              doc.getElementsByTagName("Signature")[0];
 
             if (!signature) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Digital signature missing from XML.');
             }
 
-            // Extract the embedded public key from the XML itself to prevent key-rotation mismatches
-            const x509Node = doc.getElementsByTagName("X509Certificate")[0] || doc.getElementsByTagNameNS("*", "X509Certificate")[0];
+            const signingKeyPem = this._resolveSigningKey(doc);
+            const sig = new SignedXml({ publicCert: signingKeyPem });
+            sig.loadSignature(signature.toString());
 
-            let signingKeyPem = publicKeyPem;
-
-            if (x509Node && x509Node.textContent) {
-                const embeddedBase64 = x509Node.textContent.replace(/\s+/g, '');
-                signingKeyPem = `-----BEGIN CERTIFICATE-----\n${embeddedBase64.match(/.{1,64}/g)?.join('\n')}\n-----END CERTIFICATE-----`;
-            }
-
-            const sig = new SignedXml() as unknown as ICustomSignedXml;
-            sig.publicCert = signingKeyPem;
-            sig.key = signingKeyPem;
-
-            sig.loadSignature(signature);
             const isValid = sig.checkSignature(xmlString);
-
             if (!isValid) {
-                const validationErrors = sig.validationErrors?.join(', ') || 'Unknown signature mismatch';
-                this._logger.warn(`Signature validation failed: ${validationErrors}`);
-                throw new DomainException(ErrorCode.AADHAAR_VERIFICATION_FAILED, 'Cryptographic signature verification failed. File may be tampered with.');
+                this._logger.warn('Digital signature cryptographic verification failed on Aadhaar XML.');
+                throw new DomainException(
+                    ErrorCode.AADHAAR_VERIFICATION_FAILED,
+                    'Cryptographic signature verification failed. Document may have been modified or tampered with.'
+                );
             }
 
-            // 5.Extract the verified demographic data from the PoI (Proof of Identity) node
+            // 5. Extract verified demographic data from the PoI node
             const poiNode = doc.getElementsByTagName("Poi")[0] || doc.getElementsByTagNameNS("*", "Poi")[0];
-            const referenceId = doc.documentElement?.getAttribute("referenceId") || doc.getElementsByTagName("OfflinePaperlessKyc")[0]?.getAttribute("referenceId");
+            const referenceId = doc.documentElement?.getAttribute("referenceId") ||
+                                doc.getElementsByTagName("OfflinePaperlessKyc")[0]?.getAttribute("referenceId");
 
             if (!poiNode) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Proof of Identity (Poi) node missing in verified XML.');
             }
 
+            if (!referenceId?.trim()) {
+                throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Mandatory referenceId attribute missing from verified XML.');
+            }
+
             const legalName = poiNode.getAttribute("name");
             const rawDob = poiNode.getAttribute("dob");
 
-            if (!legalName || !rawDob) {
+            if (!legalName?.trim() || !rawDob?.trim()) {
                 throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Name or DOB attribute is missing in identity node.");
             }
 
-            const verifiedDOB = this._parseAadhaarDate(rawDob);
-
             return {
-                legalName: legalName as string,
-                dateOfBirth: verifiedDOB,
-                documentNumber: referenceId || 'VERIFIED_OFFLINE_DOC' // Masked identifier for hashing
+                legalName: legalName.trim(),
+                dateOfBirth: this._parseAadhaarDate(rawDob),
+                documentNumber: referenceId.trim(),
             };
 
         } catch (error: unknown) {
+            if (error instanceof DomainException) throw error;
+
             const errorMessage = error instanceof Error ? error.message : String(error);
             const errorStack = error instanceof Error ? error.stack : undefined;
-            this._logger.error(`Aadhaar XML verification error: ${errorMessage}`, errorStack);
-            
-            if (error instanceof DomainException) throw error;
+            this._logger.error(`Aadhaar XML processing failure: ${errorMessage}`, errorStack);
             throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, "Failed to process Offline e-KYC document.");
         }
     }
