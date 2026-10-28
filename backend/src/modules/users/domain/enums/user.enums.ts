@@ -151,3 +151,10 @@ export enum SortOrder {
 export enum SupportedCountry {
   INDIA = 'India',
 }
+
+export enum HandoffStatus {
+  PHONE_CONNECTED = 'PHONE_CONNECTED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
+}
