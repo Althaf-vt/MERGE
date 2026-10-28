@@ -2,6 +2,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { CastingSessionStatus, TranscriptRole } from "../enums/casting.enums";
+import { CASTING_SESSION_POLICY } from "../constants/casting-session.constant";
 
 export interface TranscriptEntry {
     role: TranscriptRole;
@@ -24,7 +25,6 @@ export interface CastingSessionProps {
 
 export class CastingSession extends AggregateRoot {
     private _props: CastingSessionProps;
-    private readonly _DEFAULT_MAX_TURNS = 7;
 
     constructor(props: CastingSessionProps) {
         super();
@@ -33,7 +33,7 @@ export class CastingSession extends AggregateRoot {
             status: props.status ?? 'IN_PROGRESS',
             transcript: props.transcript ?? [],
             turnCount: props.turnCount ?? 0,
-            maxTurns: props.maxTurns ?? this._DEFAULT_MAX_TURNS,
+            maxTurns: props.maxTurns ?? CASTING_SESSION_POLICY.DEFAULT_MAX_TURNS,
             personalityVector: props.personalityVector ?? [],
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date(),
@@ -45,7 +45,7 @@ export class CastingSession extends AggregateRoot {
     get status(): CastingSessionStatus { return this._props.status; }
     get transcript(): TranscriptEntry[] { return [...this._props.transcript]; }
     get turnCount(): number { return this._props.turnCount; }
-    get maxTurns(): number { return this._props.maxTurns ?? this._DEFAULT_MAX_TURNS; }
+    get maxTurns(): number { return this._props.maxTurns ?? CASTING_SESSION_POLICY.DEFAULT_MAX_TURNS; }
     get personalityVector(): number[] { return [...(this._props.personalityVector ?? [])]; }
     get aiSummary(): string | undefined { return this._props.aiSummary; }
     get createdAt(): Date | undefined { return this._props.createdAt; }
