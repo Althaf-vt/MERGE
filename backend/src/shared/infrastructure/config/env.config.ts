@@ -129,6 +129,9 @@ export const EnvConfig = {
 
     // AI & OpenRouter
     ai: {
+        get baseUrl(): string {
+            return process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+        },
         get apiKey(): string | undefined {
             return process.env.OPENROUTER_API_KEY;
         },

@@ -5,3 +5,8 @@ export const AI_MESSAGE_ROLE = {
 } as const;
 
 export type AiMessageRole = typeof AI_MESSAGE_ROLE[keyof typeof AI_MESSAGE_ROLE];
+
+export const OPENROUTER_HEADERS = {
+    REFERER: 'HTTP-Referer',
+    TITLE: 'X-Title',
+} as const;
