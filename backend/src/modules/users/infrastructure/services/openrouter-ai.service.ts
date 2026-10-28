@@ -8,6 +8,8 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 export class OpenRouterAiService implements IAiService {
     private readonly _client: OpenAI;
     private readonly _logger = new Logger(OpenRouterAiService.name);
+    private readonly _chatModel: string;
+    private readonly _temperature: number;
 
     constructor() {
         const apiKey = process.env.OPENROUTER_API_KEY;
@@ -15,6 +17,9 @@ export class OpenRouterAiService implements IAiService {
             this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
             throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'OPENROUTER_API_KEY is required to boot the AI service.');
         }
+
+        this._chatModel = process.env.OPENROUTER_BIO_MODEL || process.env.OPENROUTER_CHAT_MODEL || 'openrouter/free';
+        this._temperature = Number(process.env.OPENROUTER_BIO_TEMPERATURE) || 0.7;
 
         const appUrl = process.env.FRONTEND_URL || process.env.APP_URL || 'http://localhost:5173';
         const appTitle = process.env.APP_NAME || 'MERGE Platform';
@@ -44,12 +49,12 @@ export class OpenRouterAiService implements IAiService {
 
             // openrouter/free automatically selects an active free model with available quota
             const completion = await this._client.chat.completions.create({
-                model: "openrouter/free",
+                model: this._chatModel,
                 messages: [
                     { role: "system", content: systemInstruction },
                     { role: "user", content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
                 ],
-                temperature: 0.7,
+                temperature: this._temperature,
             });
 
             const rawContent = completion.choices[0]?.message?.content || "[]";
