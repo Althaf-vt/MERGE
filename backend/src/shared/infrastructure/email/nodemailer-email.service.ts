@@ -3,6 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { IEmailService } from "../../domain/interfaces/email-service.interface";
 import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { DomainException } from "../../domain/exceptions/domain.exception";
+import { EnvConfig } from "../config/env.config";
 
 @Injectable()
 export class NodeMailerEmailService implements IEmailService {
@@ -11,12 +12,12 @@ export class NodeMailerEmailService implements IEmailService {
 
     constructor() {
         this._transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT || '587', 10),
-            secure: process.env.SMTP_SECURE === 'true', 
+            host: EnvConfig.smtp.host,
+            port: EnvConfig.smtp.port,
+            secure: EnvConfig.smtp.secure, 
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
+                user: EnvConfig.smtp.user,
+                pass: EnvConfig.smtp.pass,
             }
         });
     }
@@ -39,7 +40,7 @@ export class NodeMailerEmailService implements IEmailService {
         `;
 
         const mailOptions = {
-            from: `"MERGE" <${process.env.SMTP_FROM || 'noreply@merge.com'}>`,
+            from: `"MERGE" <${EnvConfig.smtp.from}>`,
             to,
             subject: 'Your MERGE Verification Code',
             html: htmlTemplate,
@@ -78,7 +79,7 @@ export class NodeMailerEmailService implements IEmailService {
         `;
 
         const mailOptions = {
-            from: `"MERGE Security" <${process.env.SMTP_FROM || 'security@merge.com'}>`,
+            from: `"MERGE Security" <${EnvConfig.smtp.from}>`,
             to,
             subject: 'MERGE Admin Portal - Password Reset Code',
             html: htmlTemplate,
@@ -112,7 +113,7 @@ export class NodeMailerEmailService implements IEmailService {
 
         try {
             await this._transporter.sendMail({
-                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
+                from: `"MERGE Trust & Safety" <${EnvConfig.smtp.from}>`,
                 to,
                 subject: 'Important Notice Regarding Your MERGE Account',
                 html: htmlTemplate,
@@ -142,7 +143,7 @@ export class NodeMailerEmailService implements IEmailService {
 
         try {
             await this._transporter.sendMail({
-                from: `"MERGE Trust & Safety" <${process.env.SMTP_FROM || 'safety@merge.com'}>`,
+                from: `"MERGE Trust & Safety" <${EnvConfig.smtp.from}>`,
                 to,
                 subject: 'Notice of Temporary Account Suspension',
                 html: htmlTemplate,
@@ -180,7 +181,7 @@ export class NodeMailerEmailService implements IEmailService {
 
         try {
             await this._transporter.sendMail({
-                from: `"MERGE Security" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+                from: `"MERGE Security" <${EnvConfig.smtp.from}>`,
                 to,
                 subject: 'MERGE Admin Portal - Secure Invitation',
                 html: htmlTemplate,
