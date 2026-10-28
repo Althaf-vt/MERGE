@@ -5,6 +5,7 @@ import { CASTING_USER_FACADE, IcastingUserFacade } from "../../../users/applicat
 import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { CastingSessionStatus } from "../../domain/enums/casting.enums";
 
 @Injectable()
 export class FinalizeCastingSessionUseCase implements IFinalizeCastingSessionUseCase{
@@ -21,7 +22,7 @@ export class FinalizeCastingSessionUseCase implements IFinalizeCastingSessionUse
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'No active casting session found to finalize.');
         }
 
-        if(session.status !== 'ANALYZING'){
+        if(session.status !== CastingSessionStatus.ANALYZING){
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Session has not reached the required turns to finalize.');
         }
 
