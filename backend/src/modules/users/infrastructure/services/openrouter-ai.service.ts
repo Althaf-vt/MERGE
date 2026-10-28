@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { AI_MESSAGE_ROLE } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService {
@@ -52,8 +53,8 @@ export class OpenRouterAiService implements IAiService {
             const completion = await this._client.chat.completions.create({
                 model: this._chatModel,
                 messages: [
-                    { role: "system", content: systemInstruction },
-                    { role: "user", content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
+                    { role: AI_MESSAGE_ROLE.SYSTEM, content: systemInstruction },
+                    { role: AI_MESSAGE_ROLE.USER, content: `User Context:\n${JSON.stringify(promptContext, null, 2)}` }
                 ],
                 temperature: this._temperature,
             });
