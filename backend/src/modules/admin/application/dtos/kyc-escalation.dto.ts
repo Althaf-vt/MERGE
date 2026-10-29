@@ -1,6 +1,7 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from "class-validator";
 import { Type } from "class-transformer";
 import { ClaimStatus } from "../../domain/enums/claim-status.enum";
+import { KycResubmissionReason } from "../../domain/enums/kyc-resubmission-reason.enum";
 import { KycTaskStatus } from "../../domain/enums/kyc-task-status.enum";
 
 export class GetKycTasksQueryDto {
@@ -35,6 +36,18 @@ export class RejectKycTaskDto {
     reason!: string;
 }
 
+export class RequestKycResubmissionDto {
+    @IsArray({ message: 'Reasons must be an array of resubmission issues.' })
+    @ArrayNotEmpty({ message: 'At least one resubmission issue must be selected.' })
+    @IsEnum(KycResubmissionReason, { each: true, message: 'Invalid resubmission reason provided.' })
+    reasons!: KycResubmissionReason[];
+
+    @IsOptional()
+    @IsString({ message: 'Message must be a string.' })
+    @MaxLength(500, { message: 'Message cannot exceed 500 characters.' })
+    message?: string;
+}
+
 export interface KycEscalationTaskResponseDto {
     id: string;
     targetUserId: string;
@@ -48,6 +61,8 @@ export interface KycEscalationTaskResponseDto {
     claimStatus: ClaimStatus;
     claimedBy: string | null;
     rejectionReason?: string;
+    resubmissionReasons?: KycResubmissionReason[];
+    resubmissionMessage?: string | null;
     resolvedAt: Date | null;
     createdAt: Date;
 }
