@@ -51,6 +51,9 @@ export const RESPONSE_MESSAGES = {
         MESSAGE_PROCESSED: 'Casting message processed.',
         SESSION_FINALIZED: 'Casting session finalized and personality vector generated.',
     },
+    DISCOVERY: {
+        RECOMMENDATIONS_FETCHED: 'Discovery recommendations fetched successfully.',
+    },
     ADMIN: {
         TASK_CLAIMED: 'Task claimed successfully.',
         CLAIM_RELEASED: 'Claim released successfully.',
