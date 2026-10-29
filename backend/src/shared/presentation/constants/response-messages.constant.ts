@@ -74,5 +74,6 @@ export const RESPONSE_MESSAGES = {
         SUPER_ADMIN_ONLY: 'Only Super Admins can take over claims.',
         KYC_APPROVED: 'KYC approved successfully',
         KYC_REJECTED: 'KYC rejected successfully',
+        KYC_RESUBMISSION_REQUESTED: 'KYC resubmission requested successfully',
     }
 } as const;

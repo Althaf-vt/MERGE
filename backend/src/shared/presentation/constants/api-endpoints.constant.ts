@@ -105,6 +105,7 @@ export const API_ENDPOINTS = {
             TAKEOVER: ':id/takeover',
             APPROVE: ':id/approve',
             REJECT: ':id/reject',
+            REQUEST_RESUBMISSION: ':id/resubmit',
         }
     }
 } as const;
