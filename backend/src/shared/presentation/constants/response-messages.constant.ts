@@ -72,5 +72,7 @@ export const RESPONSE_MESSAGES = {
         INVITE_ACCEPTED: 'Account activated successfully. You may now log in.',
         REINVITE_SENT: 'New invitation link sent successfully.',
         SUPER_ADMIN_ONLY: 'Only Super Admins can take over claims.',
+        KYC_APPROVED: 'KYC approved successfully',
+        KYC_REJECTED: 'KYC rejected successfully',
     }
 } as const;
