@@ -169,6 +169,15 @@ class KycVerificationSchema{
     @Prop()
     rejectionReason?: string;
 
+    @Prop({ type: [String], default: [] })
+    resubmissionReasons?: string[];
+
+    @Prop()
+    resubmissionMessage?: string;
+
+    @Prop()
+    resubmissionRequestedAt?: Date;
+
     @Prop()
     submittedAt?: Date;
 
