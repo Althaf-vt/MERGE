@@ -20,7 +20,7 @@ export interface DiscoveryCandidateRaw {
 export interface VectorSearchParams {
     userContext: DiscoveryUserContext;
     isGlobal: boolean;
-    excludedIds: unknown[];
+    excludedIds: string[];
     limit: number;
     skip: number;
 }
