@@ -6,7 +6,7 @@ import { DiscoveryRecommendationDto, GetRecommendationsQueryDto, PaginatedRecomm
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { Types } from "mongoose";
-import { GeoUtil } from "../../../../shared/presentation/utils/geo.util";
+import { GeoUtil } from "../../../../shared/domain/utils/geo.util";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 
 @Injectable()
@@ -55,7 +55,7 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase{
                 const dob = candidate.kycVerification.verifiedDOB as string | Date;
                 if(dob){
                     const diff = Date.now() - new Date(dob).getTime();
-                    calculatedAge = Math.floor(diff / (1000 * 60 * 60 * 24 * 36.25));
+                    calculatedAge = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
                 }
 
                 // 3. Hydrate S3 keys to presigned URLs via Facade
