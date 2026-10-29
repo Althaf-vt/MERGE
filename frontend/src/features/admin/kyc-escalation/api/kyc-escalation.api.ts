@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { adminBaseQueryWithReauth } from "../../auth/api/admin-base-api";
 import type { ApiResponse } from "../../../../shared/types/api-response.types";
-import type { GetKycTasksQuery, KycEscalationTask, RejectKycTaskPayload } from "../types/kyc-escalation.types";
+import type { GetKycTasksQuery, KycEscalationTask, RejectKycTaskPayload, RequestKycResubmissionPayload } from "../types/kyc-escalation.types";
 import { API_ENDPOINTS } from "../../../../shared/constants/api-endpoints.constant";
 
 export const KycEscalationApi = createApi({
@@ -60,6 +60,14 @@ export const KycEscalationApi = createApi({
             }),
             invalidatesTags: (_result, _error, arg) => [{type: 'KycEscalationTask', id: arg.id}],
         }),
+        requestResubmissionKycTask: builder.mutation<ApiResponse, RequestKycResubmissionPayload>({
+            query: ({id, reasons, message}) => ({
+                url: API_ENDPOINTS.ADMIN.KYC_ESCALATION.REQUEST_RESUBMISSION(id),
+                method: 'POST',
+                body: {reasons, message},
+            }),
+            invalidatesTags: (_result, _error, arg) => [{type: 'KycEscalationTask', id: arg.id}],
+        }),
     }),
 });
 
@@ -70,4 +78,5 @@ export const {
     useTakeoverKycTaskMutation,
     useApproveKycTaskMutation,
     useRejectKycTaskMutation,
-} = KycEscalationApi
+    useRequestResubmissionKycTaskMutation,
+} = KycEscalationApi;
