@@ -10,7 +10,7 @@ export class GeoUtil {
         const dLat = this._toRadians(lat2 - lat1);
         const dLon = this._toRadians(lng2 - lng1);
 
-        const a = Math.sin(dLat / 2) * Math.sin(dLat) +
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(this._toRadians(lat1)) * Math.cos(this._toRadians(lat2)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
