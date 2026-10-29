@@ -1,19 +1,47 @@
 export const DISCOVERY_REPOSITORY = 'DISCOVERY_REPOSITORY';
 
+export interface DiscoveryGeoLocation {
+    type: string;
+    coordinates: [number, number]; // [longitude, latitude]
+}
+
+export interface DiscoveryCandidateProfile {
+    displayName?: string;
+    customLabel?: string;
+    bio?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+}
+
+export interface DiscoveryCandidatePreference {
+    immigrationReady?: boolean;
+}
+
+export interface DiscoveryCandidateKyc {
+    verifiedDOB?: Date | string;
+}
+
+export interface DiscoveryCandidatePhoto {
+    url?: string;
+    isPrimary?: boolean;
+    status?: string;
+}
+
 export interface DiscoveryUserContext {
-    _id: unknown;
+    _id: string | { toString(): string };
     personalityVector: number[];
-    location: { type: string; coordinates: [number, number] }; // [longitude, latitude]
-    preference: Record<string, unknown>;
+    location: DiscoveryGeoLocation;
+    preference?: DiscoveryCandidatePreference;
 }
 
 export interface DiscoveryCandidateRaw {
-    _id: unknown;
-    profile: Record<string, unknown>;
-    preference: Record<string, unknown>;
-    kycVerification: Record<string, unknown>;
-    photos: Array<Record<string, unknown>>;
-    location: { type: string; coordinates: [number, number] };
+    _id: string | { toString(): string };
+    profile?: DiscoveryCandidateProfile;
+    preference?: DiscoveryCandidatePreference;
+    kycVerification?: DiscoveryCandidateKyc;
+    photos?: DiscoveryCandidatePhoto[];
+    location: DiscoveryGeoLocation;
     matchScore: number; // Derived from Atlas $meta: 'vectorSearchScore'
 }
 
