@@ -1,0 +1,87 @@
+import { Inject, Injectable } from "@nestjs/common";
+import {
+    IApproveKycTaskUseCase,
+    IClaimKycTaskUseCase,
+    IRejectKycTaskUseCase,
+    IReleaseKycTaskClaimUseCase,
+    ITakeoverKycTaskClaimUseCase
+} from "../interfaces/kyc-escalation.use-case.interface";
+import { IKycEscalationTaskRepository, KYC_ESCALATION_TASK_REPOSITORY } from "../../domain/interfaces/kyc-escalation-task-repository.interface";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { RejectKycTaskDto } from "../dtos/kyc-escalation.dto";
+
+@Injectable()
+export class ClaimKycTaskUseCase implements IClaimKycTaskUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
+    ) { }
+
+    async execute(taskId: string, adminId: string): Promise<void> {
+        const task = await this._repository.findById(taskId);
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+
+        task.claim(adminId);
+        await this._repository.update(task);
+    }
+}
+
+@Injectable()
+export class ReleaseKycTaskClaimUseCase implements IReleaseKycTaskClaimUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
+    ) { }
+
+    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+        const task = await this._repository.findById(taskId);
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+
+        task.releaseClaim(adminId, isSuperAdmin);
+        await this._repository.update(task);
+    }
+}
+
+@Injectable()
+export class TakeoverKycTaskClaimUseCase implements ITakeoverKycTaskClaimUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
+    ) { }
+
+    async execute(taskId: string, superAdminId: string): Promise<void> {
+        const task = await this._repository.findById(taskId);
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+
+        task.takeoverClaim(superAdminId);
+        await this._repository.update(task);
+    }
+}
+
+@Injectable()
+export class ApproveKycTaskUseCase implements IApproveKycTaskUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
+    ) { }
+
+    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+        const task = await this._repository.findById(taskId);
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+
+        task.approve(adminId, isSuperAdmin);
+        await this._repository.update(task);
+    }
+}
+
+@Injectable()
+export class RejectKycTaskUseCase implements IRejectKycTaskUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
+    ) { }
+
+    async execute(taskId: string, adminId: string, isSuperAdmin: boolean, dto: RejectKycTaskDto): Promise<void> {
+        const task = await this._repository.findById(taskId);
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+
+        task.reject(adminId, isSuperAdmin, dto.reason);
+        await this._repository.update(task);
+    }
+}
