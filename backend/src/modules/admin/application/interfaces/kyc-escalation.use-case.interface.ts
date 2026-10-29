@@ -30,7 +30,7 @@ export interface IClaimKycTaskUseCase {
 }
 
 export interface IReleaseKycTaskClaimUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void>;
+    execute(taskId: string, adminId: string, role: string): Promise<void>;
 }
 
 export interface ITakeoverKycTaskClaimUseCase {
@@ -38,9 +38,9 @@ export interface ITakeoverKycTaskClaimUseCase {
 }
 
 export interface IApproveKycTaskUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void>;
+    execute(taskId: string, adminId: string, role: string): Promise<void>;
 }
 
 export interface IRejectKycTaskUseCase {
-    execute(taskId: string, adminId: string, isSuperAdmin: boolean, dto: RejectKycTaskDto): Promise<void>;
+    execute(taskId: string, adminId: string, role: string, dto: RejectKycTaskDto): Promise<void>;
 }

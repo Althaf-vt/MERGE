@@ -10,6 +10,7 @@ import { IKycEscalationTaskRepository, KYC_ESCALATION_TASK_REPOSITORY } from "..
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { RejectKycTaskDto } from "../dtos/kyc-escalation.dto";
+import { AdminRole } from "../../domain/enums/admin.enums";
 
 @Injectable()
 export class ClaimKycTaskUseCase implements IClaimKycTaskUseCase {
@@ -32,10 +33,11 @@ export class ReleaseKycTaskClaimUseCase implements IReleaseKycTaskClaimUseCase {
         @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
     ) { }
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.releaseClaim(adminId, isSuperAdmin);
         await this._repository.update(task);
     }
@@ -62,10 +64,11 @@ export class ApproveKycTaskUseCase implements IApproveKycTaskUseCase {
         @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
     ) { }
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.approve(adminId, isSuperAdmin);
         await this._repository.update(task);
     }
@@ -77,10 +80,11 @@ export class RejectKycTaskUseCase implements IRejectKycTaskUseCase {
         @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository
     ) { }
 
-    async execute(taskId: string, adminId: string, isSuperAdmin: boolean, dto: RejectKycTaskDto): Promise<void> {
+    async execute(taskId: string, adminId: string, role: string, dto: RejectKycTaskDto): Promise<void> {
         const task = await this._repository.findById(taskId);
         if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
 
+        const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.reject(adminId, isSuperAdmin, dto.reason);
         await this._repository.update(task);
     }
