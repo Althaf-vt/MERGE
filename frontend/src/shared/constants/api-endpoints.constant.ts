@@ -94,6 +94,15 @@ export const API_ENDPOINTS = {
             TAKEOVER: (id: string) => `/admin/photo-verification/${id}/takeover`,
             APPROVE: (id: string) => `/admin/photo-verification/${id}/approve`,
             REJECT: (id: string) => `/admin/photo-verification/${id}/reject`,
+        },
+        KYC_ESCALATION: {
+            BASE: '/admin/kyc-escalation',
+            CLAIM: (id: string) => `/admin/kyc-escalation/${id}/claim`,
+            RELEASE: (id: string) => `/admin/kyc-escalation/${id}/release`,
+            TAKEOVER: (id: string) => `/admin/kyc-escalation/${id}/takeover`,
+            APPROVE: (id: string) => `/admin/kyc-escalation/${id}/approve`,
+            REJECT: (id: string) => `/admin/kyc-escalation/${id}/reject`,
+            REQUEST_RESUBMISSION: (id: string) => `/admin/kyc-escalation/${id}/resubmit`,
         }
     }
 } as const;

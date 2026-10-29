@@ -43,6 +43,7 @@ import { V2PlaceholderPage } from './features/profile/pages/v2-placeholder.page'
 import { ActivityPage } from './features/profile/pages/activity.page';
 import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
 import { PhotoVerificationPage } from './features/admin/photo-verification/pages/photo-verification.page';
+import { KycEscalationPage } from './features/admin/kyc-escalation/pages/kyc-escalation.page';
 
 
 export const App = () => {
@@ -68,6 +69,8 @@ export const App = () => {
                             <Route path='/admin/management' element={<AdminManagementPage />} />
                             <Route path='/admin/management/:id' element={<AdminDetailsPage />} />
                             <Route path='/admin/photo-verification' element={<PhotoVerificationPage />} />
+                            <Route path='/admin/kyc-escalations' element={<KycEscalationPage />} />
+                            <Route path='/admin/kyc-escalation' element={<KycEscalationPage />} />
                         </Route>
                     </Route>
                 </Route>

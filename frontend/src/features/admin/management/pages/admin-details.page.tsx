@@ -7,6 +7,7 @@ import { AdminInviteActionModal, type InviteActionType } from '../components/adm
 import { AdminForceLogoutModal } from '../components/admin-force-logout-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import styles from './admin-details.module.css';
 
 export const AdminDetailsPage = () => {
@@ -92,7 +93,7 @@ export const AdminDetailsPage = () => {
                         <>
                             <button className={styles.actionBtn} onClick={() => setUpdateModalOpen(true)}>EDIT ROLE/PERMS</button>
                             
-                            {admin.role !== 'SUPER_ADMIN' && (
+                            {admin.role !== ADMIN_ROLES.SUPER_ADMIN && (
                                 <>
                                     {admin.status === 'ACTIVE' && (
                                         <button className={styles.actionBtn} onClick={() => setForceLogoutModalOpen(true)}>
@@ -144,7 +145,7 @@ export const AdminDetailsPage = () => {
                     </div>
 
                     <h3 className={styles.cardTitle} style={{ marginTop: '24px' }}>ASSIGNED PERMISSIONS</h3>
-                    {admin.role === 'SUPER_ADMIN' ? (
+                    {admin.role === ADMIN_ROLES.SUPER_ADMIN ? (
                         <div className={styles.value}>Full System Access (Bypasses granular permissions)</div>
                     ) : (
                         <div className={styles.permissionsGrid}>

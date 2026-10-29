@@ -72,3 +72,20 @@
     --badge-del-bg: rgba(82, 82, 91, 0.15);
     --badge-del-text: #52525b;
 }
+
+/* ==========================================================================
+   Stealth Scrollbars (Scrollable without visible scrollbars)
+   ========================================================================== */
+.admin-portal-root,
+.admin-portal-root * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.admin-portal-root::-webkit-scrollbar,
+.admin-portal-root *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+    width: 0;
+    height: 0;
+    background: transparent;
+}

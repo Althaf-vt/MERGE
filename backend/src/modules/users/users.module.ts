@@ -111,26 +111,23 @@ import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
 import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
 import { GetBlockedUsersUseCase } from "./application/use-cases/get-blocked-users.use-case";
 import { AdminPhotoReviewListener } from "./application/listeners/admin-photo-review.listener";
+import { AdminKycReviewListener } from "./application/listeners/admin-kyc-review.listener";
 import { GOOGLE_AUTH_SERVICE } from "./domain/interfaces/google-auth-service.interface";
 import { GoogleAuthService } from "./infrastructure/services/google-auth.service";
 import { MEDIA_FACADE } from "./application/interfaces/media-facade.interface";
 import { MediaFacade } from "./application/services/media.facade";
 import { EnvConfig } from "../../shared/infrastructure/config/env.config";
 
-// Defines the User module and wires together its controllers, use cases,
-// Services, repository implementations, and external dependencies.
 @Module({
     imports: [
-        // Registers the User schema with Mongoose for database operations.
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
             { name: BlockedRelationshipSchemaClass.name, schema: BlockedRelationshipSchema }
         ]),
 
-        HttpModule, // Required for axios request to the ML worker
+        HttpModule,
     ],
 
-    // Registers the controllers that handle HTTP requests for this module.
     controllers: [
         AuthController,
         KycController,
@@ -139,8 +136,7 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
         SecurityController,
         BlockedUsersController,
     ],
-    // 2. Standard Providers (Gateways & Use Cases)
-    // Handled via interface bindings in section 3
+
     providers: [
         // Shared Services & Guards
         JwtAuthGuard,
@@ -173,15 +169,10 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             },
         },
 
-        // 3. Interface Bindings (Contracts -> Concrete Implementations)
-        // Maps interface tokens to their concrete implementations.
-
-        // Maps the repository interface token to its MongoDB implementation.
         {
             provide: USER_REPOSITORY,
             useClass: MongoUserRepository,
         },
-        // Maps the token service interface token its JWT implementation.
         {
             provide: OTP_SERVICE,
             useClass: RedisOtpService,
@@ -254,7 +245,6 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             provide: GOOGLE_LOGIN_USE_CASE,
             useClass: GoogleLoginUseCase,
         },
-        // KYC Service bindings
         {
             provide: KYC_HASH_SERVICE,
             useClass: KycHashService,
@@ -263,7 +253,6 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             provide: PKI_VERIFICATION_SERVICE,
             useClass: AadhaarPkiService,
         },
-        // 
         {
             provide: HANDOFF_SERVICE,
             useClass: RedisHandoffService,
@@ -356,8 +345,6 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             provide: GET_PROFILE_USE_CASE,
             useClass: GetProfileUseCase,
         },
-
-        // Security Use Cases
         { 
             provide: REQUEST_SECURITY_OTP_USE_CASE, 
             useClass: RequestSecurityOtpUseCase 
@@ -411,6 +398,7 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             useClass: GetBlockedUsersUseCase,
         },
         AdminPhotoReviewListener,
+        AdminKycReviewListener,
     ],
 
     // Makes these repository and token service providers available to other modules.

@@ -1,7 +1,7 @@
 .container {
     padding: 24px;
     background-color: var(--admin-bg);
-    min-height: 100vh;
+    width: 100%;
     color: var(--admin-text-primary);
     font-family: 'JetBrains Mono', monospace;
     transition: background-color 0.2s, color 0.2s;

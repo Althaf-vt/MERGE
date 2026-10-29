@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { useInviteAdminMutation } from '../api/admin-management.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
 import styles from './admin-modal.module.css';
-import { ADMIN_PERMISSIONS, type AdminPermission, type AdminRole } from '../types/admin-management.types';
+import { ADMIN_PERMISSIONS, ADMIN_ROLES, type AdminPermission, type AdminRole } from '../types/admin-management.types';
 
 interface InviteAdminModalProps {
     isOpen: boolean;
@@ -15,7 +15,7 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
 
     const [email, setEmail] = useState('');
     const [fullName, setFullName] = useState('');
-    const [role, setRole] = useState<AdminRole>('ADMIN');
+    const [role, setRole] = useState<AdminRole>(ADMIN_ROLES.ADMIN);
     const [selectedPermissions, setSelectedPermissions] = useState<AdminPermission[]>([]);
     const [, setErrorMsg] = useState('');
 
@@ -36,13 +36,13 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                 email,
                 fullName,
                 role,
-                permissions: role === 'SUPER_ADMIN' ? [] : selectedPermissions,
+                permissions: role === ADMIN_ROLES.SUPER_ADMIN ? [] : selectedPermissions,
             }).unwrap();
 
             // Reset and close on success
             setEmail('');
             setFullName('');
-            setRole('ADMIN');
+            setRole(ADMIN_ROLES.ADMIN);
             setSelectedPermissions([]);
             onClose();
         } catch (err: unknown) {
@@ -88,12 +88,12 @@ export const InviteAdminModal: React.FC<InviteAdminModalProps> = ({ isOpen, onCl
                     <div className={styles.inputGroup}>
                         <label>Role</label>
                         <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)}>
-                            <option value="ADMIN">Administrator</option>
-                            <option value="SUPER_ADMIN">Super Admin</option>
+                            <option value={ADMIN_ROLES.ADMIN}>Administrator</option>
+                            <option value={ADMIN_ROLES.SUPER_ADMIN}>Super Admin</option>
                         </select>
                     </div>
 
-                    {role === 'ADMIN' && (
+                    {role === ADMIN_ROLES.ADMIN && (
                         <div className={styles.permissionsSection}>
                             <label>Permissions</label>
                             <div className={styles.permissionsGrid}>

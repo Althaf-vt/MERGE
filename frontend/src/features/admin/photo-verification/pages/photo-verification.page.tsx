@@ -6,12 +6,13 @@ import { useGetPhotoTasksQuery } from '../api/photo-verification.api';
 import type { PhotoTaskStatus, ClaimStatus, PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoReviewModal } from '../components/photo-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import styles from './photo-verification.module.css';
 
 export const PhotoVerificationPage: React.FC = () => {
     const currentAdmin = useSelector((state: RootState) => state.adminAuth.admin);
     const currentAdminId = currentAdmin?.id || '';
-    const isSuperAdmin = currentAdmin?.role === 'SUPER_ADMIN';
+    const isSuperAdmin = currentAdmin?.role === ADMIN_ROLES.SUPER_ADMIN;
 
     const [page, setPage] = useState(1);
     const limit = 15;
