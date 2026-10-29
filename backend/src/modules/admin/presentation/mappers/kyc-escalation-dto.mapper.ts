@@ -16,6 +16,8 @@ export class KycEscalationDtoMapper {
             claimStatus: item.task.claimDetails.status,
             claimedBy: item.task.claimDetails.claimedBy,
             rejectionReason: item.task.rejectionReason,
+            resubmissionReasons: item.task.resubmissionReasons,
+            resubmissionMessage: item.task.resubmissionMessage,
             resolvedAt: item.task.resolvedAt,
             createdAt: item.task.createdAt,
         };
