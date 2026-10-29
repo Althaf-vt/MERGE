@@ -22,6 +22,7 @@ export class GetRecommendationsQueryDto {
 
 export interface DiscoveryRecommendationDto {
     id: string;
+    displayName: string;
     customLabel?: string;
     age: number | null;
     city: string;
