@@ -102,6 +102,7 @@ export const API_ENDPOINTS = {
             TAKEOVER: (id: string) => `/admin/kyc-escalation/${id}/takeover`,
             APPROVE: (id: string) => `/admin/kyc-escalation/${id}/approve`,
             REJECT: (id: string) => `/admin/kyc-escalation/${id}/reject`,
+            REQUEST_RESUBMISSION: (id: string) => `/admin/kyc-escalation/${id}/resubmit`,
         }
     }
 } as const;
