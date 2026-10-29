@@ -60,6 +60,10 @@ export const API_ENDPOINTS = {
         MESSAGE: 'message',
         FINALIZE: 'finalize',
     },
+    DISCOVERY: {
+        BASE: '/discovery',
+        RECOMMENDATIONS: '/discovery/recommendations',
+    },
     ADMIN: {
         AUTH: {
             BASE: 'admin/auth',
@@ -106,6 +110,6 @@ export const API_ENDPOINTS = {
             APPROVE: ':id/approve',
             REJECT: ':id/reject',
             REQUEST_RESUBMISSION: ':id/resubmit',
-        }
+        },
     }
 } as const;
