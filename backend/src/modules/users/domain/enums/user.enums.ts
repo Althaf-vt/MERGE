@@ -23,6 +23,7 @@ export enum VerificationStatus {
   UNDER_REVIEW = 'UNDER_REVIEW',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+  RESUBMISSION_REQUESTED = 'RESUBMISSION_REQUESTED',
 }
 
 export enum VerificationDevice {
@@ -43,6 +44,7 @@ export enum ReviewDecision {
   MANUAL_REVIEW = 'MANUAL_REVIEW',
   MANUAL_APPROVED = 'MANUAL_APPROVED',
   MANUAL_REJECTED = 'MANUAL_REJECTED',
+  RESUBMISSION_REQUESTED = 'RESUBMISSION_REQUESTED',
 }
 
 export enum IntersexOption {

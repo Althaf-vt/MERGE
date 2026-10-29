@@ -38,6 +38,9 @@ export interface UserKycProps {
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
     rejectionReason?: string;
+    resubmissionReasons?: string[];
+    resubmissionMessage?: string;
+    resubmissionRequestedAt?: Date;
     submittedAt?: Date;
     approvedAt?: Date;
     rejectedAt?: Date;
@@ -73,6 +76,12 @@ export interface ApproveManualReviewPayload {
 export interface RejectManualReviewPayload {
     adminId: string;
     rejectionReason: string;
+}
+
+export interface RequestResubmissionPayload {
+    adminId: string;
+    reasons: string[];
+    message?: string;
 }
 
 export class UserKyc {
@@ -118,6 +127,9 @@ export class UserKyc {
     get manualReviewRequired(): boolean | undefined { return this._props.manualReviewRequired; }
     get adminReviewedBy(): string | undefined { return this._props.adminReviewedBy; }
     get rejectionReason(): string | undefined { return this._props.rejectionReason; }
+    get resubmissionReasons(): string[] | undefined { return this._props.resubmissionReasons; }
+    get resubmissionMessage(): string | undefined { return this._props.resubmissionMessage; }
+    get resubmissionRequestedAt(): Date | undefined { return this._props.resubmissionRequestedAt; }
     get submittedAt(): Date | undefined { return this._props.submittedAt; }
     get approvedAt(): Date | undefined { return this._props.approvedAt; }
     get rejectedAt(): Date | undefined { return this._props.rejectedAt; }
@@ -263,7 +275,7 @@ export class UserKyc {
         return { score: distance, status };
     }
 
-    approveManualReview(payload: ApproveManualReviewPayload) {
+    approveManualReview(payload: ApproveManualReviewPayload): void {
         if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
@@ -277,7 +289,7 @@ export class UserKyc {
         this._props.updatedAt = new Date();
     }
 
-    rejectManualReview(payload: RejectManualReviewPayload) {
+    rejectManualReview(payload: RejectManualReviewPayload): void {
         if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
         }
@@ -295,7 +307,26 @@ export class UserKyc {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    requestResubmission(payload: RequestResubmissionPayload): void {
+        if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
+        }
+
+        if (!payload.reasons || payload.reasons.length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'At least one resubmission reason is required when requesting KYC resubmission');
+        }
+
+        this._props.verificationStatus = VerificationStatus.RESUBMISSION_REQUESTED;
+        this._props.reviewDecision = ReviewDecision.RESUBMISSION_REQUESTED;
+        this._props.adminReviewedBy = payload.adminId;
+        this._props.manualReviewRequired = false;
+        this._props.resubmissionReasons = [...payload.reasons];
+        this._props.resubmissionMessage = payload.message?.trim() || undefined;
+        this._props.resubmissionRequestedAt = new Date();
+        this._props.updatedAt = new Date();
+    }
+
+    toJSON(): Record<string, unknown> {
         return { ...this._props };
     }
 }
