@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import styles from './kyc-review-modal.module.css';
 import type { KycEscalationTask } from '../types/kyc-escalation.types';
+import { KYC_CLAIM_STATUS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
 import { KycComparison } from './kyc-comparison.component';
 import { KycResubmissionModal } from './kyc-resubmission-modal.component';
-import {
-    useApproveKycTaskMutation,
-    useClaimKycTaskMutation,
-    useRejectKycTaskMutation,
-    useReleaseKycTaskMutation,
-    useTakeoverKycTaskMutation,
-} from '../api/kyc-escalation.api';
+import { useApproveKycTaskMutation, useClaimKycTaskMutation, useRejectKycTaskMutation, useReleaseKycTaskMutation, useTakeoverKycTaskMutation } from '../api/kyc-escalation.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
 
 interface KycReviewModalProps {
@@ -41,10 +36,10 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
 
     if (!isOpen) return null;
 
-    const isOwner = task.claimStatus === 'CLAIMED' && task.claimedBy === currentAdminId;
-    const isClaimedByOther = task.claimStatus === 'CLAIMED' && task.claimedBy !== currentAdminId;
-    const canResolve = isOwner || (isSuperAdmin && task.claimStatus === 'CLAIMED');
-    const isResolved = task.taskStatus !== 'PENDING';
+    const isOwner = task.claimStatus === KYC_CLAIM_STATUS.CLAIMED && task.claimedBy === currentAdminId;
+    const isClaimedByOther = task.claimStatus === KYC_CLAIM_STATUS.CLAIMED && task.claimedBy !== currentAdminId;
+    const canResolve = isOwner || (isSuperAdmin && task.claimStatus === KYC_CLAIM_STATUS.CLAIMED);
+    const isResolved = task.taskStatus !== KYC_TASK_STATUS.PENDING;
 
     const handleAction = async (actionFn: () => Promise<unknown>, successCallback?: () => void) => {
         setErrorMsg('');
@@ -89,7 +84,7 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
                     </header>
 
                     <div className={styles.body}>
-                        {task.claimStatus === 'UNCLAIMED' && !isResolved && (
+                        {task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED && !isResolved && (
                             <div className={styles.lockBanner}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <circle cx="12" cy="12" r="10"></circle>
@@ -206,7 +201,7 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
                             CLOSE
                         </button>
 
-                        {task.claimStatus === 'UNCLAIMED' && !isResolved && (
+                        {task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED && !isResolved && (
                             <button
                                 className={styles.btnSubmit}
                                 onClick={() => handleAction(() => claimTask(task.id).unwrap())}

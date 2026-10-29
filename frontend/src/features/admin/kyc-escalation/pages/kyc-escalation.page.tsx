@@ -6,16 +6,18 @@ import { useGetKycTasksQuery } from '../api/kyc-escalation.api';
 import type { KycTaskStatus, ClaimStatus, KycEscalationTask } from '../types/kyc-escalation.types';
 import { KycReviewModal } from '../components/kyc-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { ADMIN_ROLES } from '../../management/types/admin-management.types';
+import { DEFAULT_KYC_STATUS_FILTER, KYC_CLAIM_OPTIONS, KYC_CLAIM_STATUS, KYC_STATUS_OPTIONS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
 import styles from './kyc-escalation.module.css';
 
 export const KycEscalationPage: React.FC = () => {
     const currentAdmin = useSelector((state: RootState) => state.adminAuth.admin);
     const currentAdminId = currentAdmin?.id || '';
-    const isSuperAdmin = currentAdmin?.role === 'SUPER_ADMIN';
+    const isSuperAdmin = currentAdmin?.role === ADMIN_ROLES.SUPER_ADMIN;
 
     const [page, setPage] = useState(1);
     const limit = 15;
-    const [statusFilter, setStatusFilter] = useState<KycTaskStatus | ''>('PENDING');
+    const [statusFilter, setStatusFilter] = useState<KycTaskStatus | ''>(DEFAULT_KYC_STATUS_FILTER);
     const [claimStatusFilter, setClaimStatusFilter] = useState<ClaimStatus | ''>('');
     const [claimedByFilter, setClaimedByFilter] = useState('');
 
@@ -60,11 +62,11 @@ export const KycEscalationPage: React.FC = () => {
                             setPage(1);
                         }}
                     >
-                        <option value="">ALL STATUSES</option>
-                        <option value="PENDING">PENDING REVIEW</option>
-                        <option value="RESUBMISSION_REQUESTED">RESUBMISSION REQUESTED</option>
-                        <option value="APPROVED">APPROVED</option>
-                        <option value="REJECTED">REJECTED</option>
+                        {KYC_STATUS_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
                     </select>
 
                     <select
@@ -75,10 +77,11 @@ export const KycEscalationPage: React.FC = () => {
                             setPage(1);
                         }}
                     >
-                        <option value="">ALL CLAIMS</option>
-                        <option value="UNCLAIMED">UNCLAIMED</option>
-                        <option value="CLAIMED">CLAIMED</option>
-                        <option value="RESOLVED">RESOLVED</option>
+                        {KYC_CLAIM_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
                     </select>
 
                     <button
@@ -169,7 +172,7 @@ export const KycEscalationPage: React.FC = () => {
                                             <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
                                                 {task.claimStatus}
                                             </span>
-                                            {task.claimStatus === 'CLAIMED' && task.claimedBy && (
+                                            {task.claimStatus === KYC_CLAIM_STATUS.CLAIMED && task.claimedBy && (
                                                 <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
                                                     BY: {task.claimedBy === currentAdminId ? 'YOU' : task.claimedBy.slice(0, 10)}
                                                 </span>
@@ -181,11 +184,11 @@ export const KycEscalationPage: React.FC = () => {
                                     </td>
                                     <td>
                                         <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus !== 'PENDING'
+                                            {task.taskStatus !== KYC_TASK_STATUS.PENDING
                                                 ? 'VIEW'
-                                                : task.claimStatus === 'UNCLAIMED'
-                                                  ? 'CLAIM'
-                                                  : 'REVIEW'}
+                                                : task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED
+                                                    ? 'CLAIM'
+                                                    : 'REVIEW'}
                                         </button>
                                     </td>
                                 </tr>
@@ -229,4 +232,3 @@ export const KycEscalationPage: React.FC = () => {
         </AdminPageTransition>
     );
 };
-

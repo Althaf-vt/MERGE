@@ -1,6 +1,11 @@
 import type { ApiResponse } from '../../../../shared/types/api-response.types';
 
-export type AdminRole = 'SUPER_ADMIN' | 'ADMIN';
+export const ADMIN_ROLES = {
+    SUPER_ADMIN: 'SUPER_ADMIN',
+    ADMIN: 'ADMIN',
+} as const;
+
+export type AdminRole = (typeof ADMIN_ROLES)[keyof typeof ADMIN_ROLES];
 
 export const ADMIN_PERMISSIONS = {
     KYC_VIEW: 'kyc:view',
