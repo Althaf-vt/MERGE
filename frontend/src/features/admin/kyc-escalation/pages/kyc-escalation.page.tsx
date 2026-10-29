@@ -6,7 +6,7 @@ import { useGetKycTasksQuery } from '../api/kyc-escalation.api';
 import type { KycTaskStatus, ClaimStatus, KycEscalationTask } from '../types/kyc-escalation.types';
 import { KycReviewModal } from '../components/kyc-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
-import { ADMIN_ROLES } from '../../management/types/admin-management.types';
+import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import { DEFAULT_KYC_STATUS_FILTER, KYC_CLAIM_OPTIONS, KYC_CLAIM_STATUS, KYC_STATUS_OPTIONS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
 import styles from './kyc-escalation.module.css';
 
