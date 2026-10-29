@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 import { useAppSelector } from '../../../../app/hooks';
 import { useGetAdminsQuery } from '../api/admin-management.api';
-import { type AdminRole, type AdminStatus, type AdminDetails } from '../types/admin-management.types';
+import { ADMIN_ROLES, type AdminRole, type AdminStatus, type AdminDetails } from '../types/admin-management.types';
 import { InviteAdminModal } from '../components/invite-admin-modal.component';
 import { UpdateAdminModal } from '../components/update-admin-modal.component';
 import { AdminStatusModal, type AdminActionType } from '../components/admin-status-modal.component';
@@ -103,8 +103,8 @@ export const AdminManagementPage = () => {
                         className={styles.select}
                     >
                         <option value="">ALL ROLES</option>
-                        <option value="SUPER_ADMIN">SUPER ADMIN</option>
-                        <option value="ADMIN">ADMIN</option>
+                        <option value={ADMIN_ROLES.SUPER_ADMIN}>SUPER ADMIN</option>
+                        <option value={ADMIN_ROLES.ADMIN}>ADMIN</option>
                     </select>
                     <select 
                         value={statusFilter} 
@@ -212,7 +212,7 @@ export const AdminManagementPage = () => {
                                                         EDIT
                                                     </button>
 
-                                                    {admin.role !== 'SUPER_ADMIN' && (
+                                                    {admin.role !== ADMIN_ROLES.SUPER_ADMIN && (
                                                         <>
                                                             {admin.status === 'ACTIVE' && (
                                                                 <button 
