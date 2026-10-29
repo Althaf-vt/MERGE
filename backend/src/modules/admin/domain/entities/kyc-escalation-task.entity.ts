@@ -4,11 +4,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ClaimStatus } from "../enums/claim-status.enum";
 import { KycResubmissionReason } from "../enums/kyc-resubmission-reason.enum";
 import { KycTaskStatus } from "../enums/kyc-task-status.enum";
-import { 
-    KycEscalationApprovedDomainEvent, 
-    KycEscalationRejectedDomainEvent, 
-    KycEscalationResubmissionRequestedDomainEvent 
-} from "../events/kyc-escalation.domain-events";
+import { KycEscalationApprovedDomainEvent, KycEscalationRejectedDomainEvent, KycEscalationResubmissionRequestedDomainEvent } from "../events/kyc-escalation.domain-events";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
 
 export interface KycEscalationTaskProps {
@@ -89,7 +85,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.resolvedAt = new Date();
         this._markUpdatedAt();
 
-        this.addDomainEvent(new KycEscalationApprovedDomainEvent(this.targetUserId, this.id));
+        this.addDomainEvent(new KycEscalationApprovedDomainEvent(this.targetUserId, this.id, adminId));
     }
 
     public reject(adminId: string, isSuperAdmin: boolean, reason: string): void {
@@ -105,15 +101,10 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.resolvedAt = new Date();
         this._markUpdatedAt();
 
-        this.addDomainEvent(new KycEscalationRejectedDomainEvent(this.targetUserId, this.id, this._props.rejectionReason));
+        this.addDomainEvent(new KycEscalationRejectedDomainEvent(this.targetUserId, this.id, this._props.rejectionReason, adminId));
     }
 
-    public requestResubmission(
-        adminId: string, 
-        isSuperAdmin: boolean, 
-        reasons: KycResubmissionReason[], 
-        message?: string
-    ): void {
+    public requestResubmission(adminId: string, isSuperAdmin: boolean, reasons: KycResubmissionReason[], message?: string): void {
         this._props.claimDetails.validateCanAct(adminId, isSuperAdmin);
 
         if (!reasons || reasons.length === 0) {
@@ -129,10 +120,11 @@ export class KycEscalationTask extends AggregateRoot {
 
         this.addDomainEvent(
             new KycEscalationResubmissionRequestedDomainEvent(
-                this.targetUserId, 
-                this.id, 
-                this._props.resubmissionReasons, 
-                this._props.resubmissionMessage ?? undefined
+                this.targetUserId,
+                this.id,
+                this._props.resubmissionReasons,
+                this._props.resubmissionMessage ?? undefined,
+                adminId
             )
         );
     }
