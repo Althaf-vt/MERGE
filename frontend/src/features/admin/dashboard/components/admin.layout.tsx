@@ -6,7 +6,7 @@ import { adminLogout } from '../../auth/slices/admin-auth.slice';
 import styles from './admin.layout.module.css';
 import LogoIcon from '../../../../assets/logos/merge-logo-icon.svg';
 import '../../../../shared/admin/styles/admin-global.css';
-import { ADMIN_PERMISSIONS } from '../../management/types/admin-management.types';
+import { ADMIN_PERMISSIONS, ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 
 type Theme = 'dark' | 'light';
 
@@ -44,7 +44,7 @@ export const AdminLayout: React.FC = () => {
     };
 
     const hasPermission = (permission: string) => {
-        if (admin?.role === 'SUPER_ADMIN') return true;
+        if (admin?.role === ADMIN_ROLES.SUPER_ADMIN) return true;
         return admin?.permissions?.includes(permission);
     };
 
@@ -71,7 +71,7 @@ export const AdminLayout: React.FC = () => {
                         </NavLink>
                     )}
 
-                    {admin?.role === 'SUPER_ADMIN' && (
+                    {admin?.role === ADMIN_ROLES.SUPER_ADMIN && (
                         <NavLink to="/admin/management" className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : ''}`}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a7 7 0 0 0 7-7V4l-7-2-7 2v4a7 7 0 0 0 7 7z"></path><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"></path></svg>
                             Admin Personnel
