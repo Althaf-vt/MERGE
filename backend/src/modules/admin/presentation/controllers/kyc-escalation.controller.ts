@@ -12,6 +12,8 @@ import { KycEscalationDtoMapper } from "../mappers/kyc-escalation-dto.mapper";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRolesGuard } from "../../../../shared/infrastructure/security/guards/admin-roles.guard";
+import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
 
 @Controller(API_ENDPOINTS.ADMIN.KYC_ESCALATION.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -43,7 +45,7 @@ export class KycEscalationController {
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.CLAIM)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async claimTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
+    async claimTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._claimTaskUseCase.execute(taskId, req.user.userId);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED };
     }
@@ -51,19 +53,17 @@ export class KycEscalationController {
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.RELEASE)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async releaseClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._releaseClaimUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+    async releaseClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
+        await this._releaseClaimUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.TAKEOVER)
     @HttpCode(HttpStatus.OK)
+    @UseGuards(AdminRolesGuard)
+    @RequireRoles(AdminRole.SUPER_ADMIN)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async takeoverClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
-        if (req.user.role !== AdminRole.SUPER_ADMIN) {
-            return { success: false, error: { code: 'FORBIDDEN', message: 'Only Super Admins can take over claims.' } } as any;
-        }
+    async takeoverClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
     }
@@ -71,18 +71,16 @@ export class KycEscalationController {
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.APPROVE)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_APPROVE)
-    async approveTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._approveTaskUseCase.execute(taskId, req.user.userId, isSuperAdmin);
+    async approveTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
+        await this._approveTaskUseCase.execute(taskId, req.user.userId, req.user.role);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.KYC_APPROVED };
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.REJECT)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.KYC_REJECT)
-    async rejectTask(@Param('id') taskId: string, @Body() dto: RejectKycTaskDto, @Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
-        const isSuperAdmin = req.user.role === AdminRole.SUPER_ADMIN;
-        await this._rejectTaskUseCase.execute(taskId, req.user.userId, isSuperAdmin, dto);
+    async rejectTask(@Param('id') taskId: string, @Body() dto: RejectKycTaskDto, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
+        await this._rejectTaskUseCase.execute(taskId, req.user.userId, req.user.role, dto);
         return { success: true, message: RESPONSE_MESSAGES.ADMIN.KYC_REJECTED };
     }
 }
