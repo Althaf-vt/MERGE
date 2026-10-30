@@ -1,12 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetRecommendationsQuery } from "../api/discovery.api";
 import type { GetRecommendationsQuery } from "../types/discovery.types";
 
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
-    const { data: response, isLoading, isFetching, refetch } = useGetRecommendationsQuery(queryParams);
+    const { data: response, isLoading, isFetching, isError, error, refetch } = useGetRecommendationsQuery(queryParams);
 
     // Core Mandate: Track an index pointer, never copy the array into local state
     const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+    // Reset index pointer whenever query parameters change
+    useEffect(() => {
+        setCurrentIndex(0);
+    }, [queryParams.isGlobal, queryParams.page, queryParams.limit]);
 
     const recommendations = response?.data || [];
     const totalAvailable = response?.meta?.total || 0;
@@ -65,9 +70,11 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         hasMore,
         totalAvailable,
 
-        // Load indicators
+        // Load & Error indicators
         isLoading,
         isFetching,
+        isError,
+        error,
 
         // Actions
         refetch,
