@@ -57,6 +57,10 @@ export const API_ENDPOINTS = {
         MESSAGE: '/casting-director/message',
         FINALIZE: '/casting-director/finalize',
     },
+    DISCOVERY: {
+        BASE: '/discovery',
+        RECOMMENDATIONS: '/discovery/recommendations',
+    },
     ADMIN: {
         AUTH: {
             BASE: '/admin/auth',

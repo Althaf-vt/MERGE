@@ -7,6 +7,7 @@ import authReducer from "../features/auth/slices/auth.slice";
 import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice";
 import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { KycEscalationApi } from "../features/admin/kyc-escalation/api/kyc-escalation.api";
+import { discoveryApi } from "../features/discovery/api/discovery.api";
 
 export const store = configureStore({
     reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
         // 2. Server State (Unified RTK Query Caches)
         [rootApi.reducerPath]: rootApi.reducer,
         [adminRootApi.reducerPath]: adminRootApi.reducer,
-        [KycEscalationApi.reducerPath]: KycEscalationApi.reducer
+        [KycEscalationApi.reducerPath]: KycEscalationApi.reducer,
+        [discoveryApi.reducerPath]: discoveryApi.reducer,
     },
 
     // 3. Middleware
@@ -26,7 +28,8 @@ export const store = configureStore({
         getDefaultMiddleware().concat(
             rootApi.middleware,
             adminRootApi.middleware,
-            KycEscalationApi.middleware
+            KycEscalationApi.middleware,
+            discoveryApi.middleware,
         ),
 });
 

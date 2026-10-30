@@ -23,40 +23,48 @@ export class DiscoveryRepository implements IDiscoveryRepository {
         // Convert string IDs to ObjectIds within the persistence layer
         const objectIdExcludedIds = (excludedIds || []).map(id => new Types.ObjectId(id));
 
-        // 1. Construct strict base business rules
+        // 1. Construct strict base business rules (scalar filter fields only for Atlas)
         const filter: Record<string, unknown> = {
             accountStatus: 'ACTIVE',
             kycCompleted: true,
             _id: { $nin: objectIdExcludedIds },
         };
 
-        // 2. CONDITIONAL GEOSPATIAL BOUNDING
-        // If the user is globally minded (immigrationReady) or explicitly requests global, omit the location filter.
-        // Otherwise, trap the search within a ~100km local radius (approx 100/6378.1 radians).
-        if (!isGlobal) {
-            const defaultRadiusRadians = DISCOVERY_CONSTANTS.LOCAL_SEARCH_RADIUS_KM / DISCOVERY_CONSTANTS.EARTH_RADIUS_KM;
-            filter['location.coordinates'] = {
-                $geoWithin: {
-                    $centerSphere: [userContext.location.coordinates, defaultRadiusRadians]
-                }
-            };
-        }
+        // 2. Buffer candidate limit for vector stage if local geospatial filtering will post-filter candidates
+        const vectorLimit = isGlobal ? (limit + skip) : Math.max((limit + skip) * 5, 50);
 
-        // 3. Optional: Map other hard preferences here (Age, Gender, Outness) based on userContext.preference
-
-        // 4. Atlas Vector Search Pipeline
+        // 3. Atlas Vector Search Pipeline
         // Note: Target index 'personality_vector_index' with 1536 dims & cosine similarity as configured
-        const pipeline = [
+        const pipeline: any[] = [
             {
                 $vectorSearch: {
                     index: 'personality_vector_index',
                     path: 'personalityVector',
                     queryVector: userContext.personalityVector,
                     numCandidates: Math.max(limit * 10, 100), // Oversample for accurate recall
-                    limit: limit + skip,
+                    limit: vectorLimit,
                     filter: filter
                 }
-            },
+            }
+        ];
+
+        // 4. CONDITIONAL GEOSPATIAL BOUNDING
+        // In Atlas Vector Search, geospatial queries ($geoWithin / $centerSphere) must be executed
+        // in a post-vector $match stage because $vectorSearch.filter only supports scalar filter fields.
+        if (!isGlobal && userContext.location?.coordinates) {
+            const defaultRadiusRadians = DISCOVERY_CONSTANTS.LOCAL_SEARCH_RADIUS_KM / DISCOVERY_CONSTANTS.EARTH_RADIUS_KM;
+            pipeline.push({
+                $match: {
+                    'location.coordinates': {
+                        $geoWithin: {
+                            $centerSphere: [userContext.location.coordinates, defaultRadiusRadians]
+                        }
+                    }
+                }
+            });
+        }
+
+        pipeline.push(
             { $skip: skip },
             { $limit: limit },
             {
@@ -69,7 +77,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
                     location: 1,
                 }
             }
-        ];
+        );
 
         const cursor = collection.aggregate(pipeline);
         const results = await cursor.toArray();
