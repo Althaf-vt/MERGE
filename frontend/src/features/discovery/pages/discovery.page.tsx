@@ -4,6 +4,8 @@ import { DEFAULT_DISCOVERY_QUERY } from '../constants/discovery.constants';
 import type { GetRecommendationsQuery } from '../types/discovery.types';
 import { DiscoveryCard } from '../components/discovery-card.component';
 import { DiscoveryEmpty } from '../components/discovery-empty.component';
+import { DiscoveryActions } from '../components/discovery-actions.component';
+import { PriorityIntroModal } from '../components/priority-intro-modal.component';
 import styles from './discovery.module.css';
 
 export const DiscoveryPage: React.FC = () => {
@@ -11,13 +13,21 @@ export const DiscoveryPage: React.FC = () => {
         ...DEFAULT_DISCOVERY_QUERY,
     });
 
+    const [isPriorityIntroOpen, setIsPriorityIntroOpen] = useState(false);
+
     const {
         activeProfile,
         hasMore,
         isLoading,
         isFetching,
         refetch,
+        actions,
     } = useDiscoveryFeed(queryParams);
+
+    const handleConfirmPriorityIntro = (message: string) => {
+        actions.handlePriorityIntro(message);
+        setIsPriorityIntroOpen(false);
+    };
 
     return (
         <div className={styles.pageContainer}>
@@ -59,7 +69,17 @@ export const DiscoveryPage: React.FC = () => {
                             <p className={styles.loadingText}>Finding compatible souls...</p>
                         </div>
                     ) : activeProfile && hasMore ? (
-                        <DiscoveryCard profile={activeProfile} />
+                        <>
+                            <DiscoveryCard profile={activeProfile} />
+                            <DiscoveryActions
+                                onPass={actions.handlePass}
+                                onReviewLater={actions.handleReviewLater}
+                                onShortlist={actions.handleShortlist}
+                                onConnect={actions.handleConnect}
+                                onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
+                                disabled={isFetching}
+                            />
+                        </>
                     ) : (
                         <DiscoveryEmpty
                             onRefresh={() => refetch()}
@@ -69,6 +89,17 @@ export const DiscoveryPage: React.FC = () => {
                     )}
                 </main>
             </div>
+
+            {/* Priority Introduction Modal with Credit Confirmation */}
+            {activeProfile && (
+                <PriorityIntroModal
+                    isOpen={isPriorityIntroOpen}
+                    recipientName={activeProfile.displayName}
+                    recipientPhotoUrl={activeProfile.primaryPhotoUrl}
+                    onClose={() => setIsPriorityIntroOpen(false)}
+                    onConfirm={handleConfirmPriorityIntro}
+                />
+            )}
         </div>
     );
 };
