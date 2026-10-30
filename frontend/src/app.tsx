@@ -44,6 +44,7 @@ import { ActivityPage } from './features/profile/pages/activity.page';
 import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
 import { PhotoVerificationPage } from './features/admin/photo-verification/pages/photo-verification.page';
 import { KycEscalationPage } from './features/admin/kyc-escalation/pages/kyc-escalation.page';
+import { DiscoveryPage } from './features/discovery/pages/discovery.page';
 
 
 export const App = () => {
@@ -99,6 +100,7 @@ export const App = () => {
                             {/* Post-onboarding success page */}
                             <Route path="/profile-live" element={<ProfileLivePage />} />
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
+                            <Route path='/discovery' element={<DiscoveryPage />} />
 
                             {/* USER PROFILE MANAGEMENT ROUTES */}
                             <Route path="/profile" element={<ProfileLayout />}>

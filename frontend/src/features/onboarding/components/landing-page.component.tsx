@@ -52,7 +52,7 @@ export const LandingComponent: React.FC = () => {
                 return { progress: 95, nextRoute: '/casting-director', stepName: 'Casting Director Interview' };
             }
             // Fully ready for the discovery feed
-            return { progress: 100, nextRoute: '/dashboard', stepName: 'Platform Ready' };
+            return { progress: 100, nextRoute: '/discovery', stepName: 'Platform Ready' };
         }
 
         // 2. Check KYC (Phases 3-8)
