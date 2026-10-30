@@ -3,9 +3,9 @@ import { useGetRecommendationsQuery } from "../api/discovery.api";
 import type { GetRecommendationsQuery } from "../types/discovery.types";
 
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
-    const {data: response, isLoading, isFetching, refetch} = useGetRecommendationsQuery(queryParams);
+    const { data: response, isLoading, isFetching, refetch } = useGetRecommendationsQuery(queryParams);
 
-    // Core Mandate: Trake an index pointer, never copy the array into local state
+    // Core Mandate: Track an index pointer, never copy the array into local state
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
     const recommendations = response?.data || [];
@@ -13,17 +13,17 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
 
     // Dynamically derive the active profile from the backend data array
     const activeProfile = useMemo(() => {
-        if(recommendations.length === 0 || currentIndex >= recommendations.length) {
+        if (recommendations.length === 0 || currentIndex >= recommendations.length) {
             return null;
         }
         return recommendations[currentIndex];
-    },[recommendations, currentIndex]);
+    }, [recommendations, currentIndex]);
 
     const hasMore = currentIndex < recommendations.length;
 
     const _advanceFeed = useCallback(() => {
         setCurrentIndex((prev) => prev + 1);
-    },[]);
+    }, []);
 
     // --- Action Stubs (To be wired to Connection mutations later) ---
 
@@ -45,11 +45,17 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         _advanceFeed();
     }, [activeProfile, _advanceFeed]);
 
-    const handlePriorityIntro = useCallback(() => {
+    const handleConnect = useCallback(() => {
         if (!activeProfile) return;
-        // NOTE: The UI consuming this hook must render a confirmation modal first 
+        console.log(`[STUB] Connect / Express Interest action dispatched for user: ${activeProfile.id}`);
+        _advanceFeed();
+    }, [activeProfile, _advanceFeed]);
+
+    const handlePriorityIntro = useCallback((message?: string) => {
+        if (!activeProfile) return;
+        // NOTE: The UI consuming this hook renders a confirmation modal first 
         // to warn the user about credit consumption before calling this.
-        console.log(`[STUB] Priority Intro action dispatched for user: ${activeProfile.id}`);
+        console.log(`[STUB] Priority Intro action dispatched for user: ${activeProfile.id}`, { message });
         _advanceFeed();
     }, [activeProfile, _advanceFeed]);
 
@@ -69,7 +75,8 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             handlePass,
             handleShortlist,
             handleReviewLater,
-            handlePriorityIntro
-        }
+            handleConnect,
+            handlePriorityIntro,
+        },
     };
-}
+};
