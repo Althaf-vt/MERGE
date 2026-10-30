@@ -6,14 +6,16 @@ import { DiscoveryCard } from '../components/discovery-card.component';
 import { DiscoveryEmpty } from '../components/discovery-empty.component';
 import { DiscoveryActions } from '../components/discovery-actions.component';
 import { PriorityIntroModal } from '../components/priority-intro-modal.component';
+import { DiscoveryFilterDrawer } from '../components/discovery-filter-drawer.component';
 import styles from './discovery.module.css';
 
 export const DiscoveryPage: React.FC = () => {
-    const [queryParams] = useState<GetRecommendationsQuery>({
+    const [queryParams, setQueryParams] = useState<GetRecommendationsQuery>({
         ...DEFAULT_DISCOVERY_QUERY,
     });
 
     const [isPriorityIntroOpen, setIsPriorityIntroOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const {
         activeProfile,
@@ -29,6 +31,16 @@ export const DiscoveryPage: React.FC = () => {
         setIsPriorityIntroOpen(false);
     };
 
+    const handleApplyFilters = (filters: { isGlobal?: boolean }) => {
+        setQueryParams((prev) => ({
+            ...prev,
+            page: 1,
+            isGlobal: filters.isGlobal,
+        }));
+    };
+
+    const isFilterActive = Boolean(queryParams.isGlobal);
+
     return (
         <div className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
@@ -37,7 +49,8 @@ export const DiscoveryPage: React.FC = () => {
                     <button
                         type="button"
                         aria-label="Filter recommendations"
-                        className={styles.filterButton}
+                        className={`${styles.filterButton} ${isFilterActive ? styles.filterButtonActive : ''}`}
+                        onClick={() => setIsFilterOpen(true)}
                     >
                         <svg
                             width="20"
@@ -59,6 +72,7 @@ export const DiscoveryPage: React.FC = () => {
                             <line x1="9" y1="8" x2="15" y2="8" />
                             <line x1="17" y1="16" x2="23" y2="16" />
                         </svg>
+                        {isFilterActive && <span className={styles.activeDot} />}
                     </button>
                 </header>
 
@@ -83,7 +97,7 @@ export const DiscoveryPage: React.FC = () => {
                     ) : (
                         <DiscoveryEmpty
                             onRefresh={() => refetch()}
-                            onOpenFilters={() => {}}
+                            onOpenFilters={() => setIsFilterOpen(true)}
                             isRefreshing={isFetching}
                         />
                     )}
@@ -100,6 +114,14 @@ export const DiscoveryPage: React.FC = () => {
                     onConfirm={handleConfirmPriorityIntro}
                 />
             )}
+
+            {/* Filter Slide-over Drawer */}
+            <DiscoveryFilterDrawer
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                currentFilters={{ isGlobal: queryParams.isGlobal }}
+                onApplyFilters={handleApplyFilters}
+            />
         </div>
     );
 };
