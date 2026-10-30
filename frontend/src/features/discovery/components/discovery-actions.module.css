@@ -1,0 +1,133 @@
+.actionsContainer {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.buttonRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.actionItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.circleButton {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 1.5px solid #e5e7eb;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.circleButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.buttonLabel {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+/* Specific button styles */
+.passButton:hover:not(:disabled) {
+    border-color: #fca5a5;
+    color: #ef4444;
+    background-color: #fef2f2;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.2);
+}
+
+.reviewLaterButton:hover:not(:disabled) {
+    border-color: #93c5fd;
+    color: #2563eb;
+    background-color: #eff6ff;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.2);
+}
+
+.shortlistButton:hover:not(:disabled) {
+    border-color: #fde047;
+    color: #eab308;
+    background-color: #fefce8;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(234, 179, 8, 0.2);
+}
+
+.connectButton {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.35);
+}
+
+.connectButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 8px 22px rgba(109, 40, 217, 0.45);
+}
+
+/* Priority Intro Banner Button */
+.priorityIntroButton {
+    width: 100%;
+    max-width: 380px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    padding: 0.8125rem 1.5rem;
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(109, 40, 217, 0.28);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.priorityIntroButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(109, 40, 217, 0.38);
+}
+
+.priorityIntroButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.creditTag {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
