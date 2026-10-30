@@ -4,13 +4,17 @@ import styles from './discovery-empty.module.css';
 export interface DiscoveryEmptyProps {
     onRefresh?: () => void;
     onOpenFilters?: () => void;
+    onResetFilters?: () => void;
     isRefreshing?: boolean;
+    isFilterActive?: boolean;
 }
 
 export const DiscoveryEmpty: React.FC<DiscoveryEmptyProps> = ({
     onRefresh,
     onOpenFilters,
+    onResetFilters,
     isRefreshing = false,
+    isFilterActive = false,
 }) => {
     return (
         <section className={styles.emptyContainer} aria-label="End of discovery feed">
@@ -34,10 +38,13 @@ export const DiscoveryEmpty: React.FC<DiscoveryEmptyProps> = ({
             </div>
 
             <div className={styles.textSection}>
-                <h2 className={styles.title}>You&apos;ve caught up.</h2>
+                <h2 className={styles.title}>
+                    {isFilterActive ? 'No Matches Found' : 'You\u2019ve caught up.'}
+                </h2>
                 <p className={styles.description}>
-                    You&apos;ve reviewed all available profiles that match your exact vector.
-                    We&apos;ll notify you when new souls join.
+                    {isFilterActive
+                        ? 'No profiles match your active filter settings. Try expanding your search scope or clearing filters.'
+                        : 'You\u2019ve reviewed all available profiles that match your exact vector. We\u2019ll notify you when new souls join.'}
                 </p>
             </div>
 
@@ -68,11 +75,21 @@ export const DiscoveryEmpty: React.FC<DiscoveryEmptyProps> = ({
                             <line x1="9" y1="8" x2="15" y2="8" />
                             <line x1="17" y1="16" x2="23" y2="16" />
                         </svg>
-                        <span>Broaden Search Filters</span>
+                        <span>{isFilterActive ? 'Adjust Filters' : 'Broaden Search Filters'}</span>
                     </button>
                 )}
 
-                {onRefresh && (
+                {isFilterActive && onResetFilters && (
+                    <button
+                        type="button"
+                        onClick={onResetFilters}
+                        className={styles.secondaryButton}
+                    >
+                        Reset All Filters
+                    </button>
+                )}
+
+                {onRefresh && !isFilterActive && (
                     <button
                         type="button"
                         onClick={onRefresh}
@@ -99,4 +116,3 @@ export const DiscoveryEmpty: React.FC<DiscoveryEmptyProps> = ({
         </section>
     );
 };
-
