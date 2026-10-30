@@ -25,6 +25,19 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     }, [recommendations, currentIndex]);
 
     const hasMore = currentIndex < recommendations.length;
+    const hasPrevious = currentIndex > 0;
+
+    const goToNext = useCallback(() => {
+        if (currentIndex < recommendations.length) {
+            setCurrentIndex((prev) => prev + 1);
+        }
+    }, [currentIndex, recommendations.length]);
+
+    const goToPrevious = useCallback(() => {
+        if (currentIndex > 0) {
+            setCurrentIndex((prev) => prev - 1);
+        }
+    }, [currentIndex]);
 
     const _advanceFeed = useCallback(() => {
         setCurrentIndex((prev) => prev + 1);
@@ -67,8 +80,14 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     return {
         // State
         activeProfile,
+        currentIndex,
         hasMore,
+        hasPrevious,
         totalAvailable,
+
+        // Navigation
+        goToNext,
+        goToPrevious,
 
         // Load & Error indicators
         isLoading,
