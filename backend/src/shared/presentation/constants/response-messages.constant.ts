@@ -54,6 +54,20 @@ export const RESPONSE_MESSAGES = {
     DISCOVERY: {
         RECOMMENDATIONS_FETCHED: 'Discovery recommendations fetched successfully.',
     },
+    CONNECTIONS: {
+        REQUEST_SENT: 'Connection request sent successfully.',
+        PRIORITY_INTRO_SENT: 'Priority introduction sent! Your message is in their inbox.',
+        ACCEPTED: 'Connection request accepted. You are now matched!',
+        DECLINED: 'Connection request declined.',
+        CANCELLED: 'Connection request cancelled.',
+        REVOKED: 'Match revoked successfully.',
+        LIST_FETCHED: 'Connections fetched successfully.',
+    },
+    PRIVATE_LISTS: {
+        ADDED: 'Profile added to your list.',
+        REMOVED: 'Profile removed from your list.',
+        FETCHED: 'List fetched successfully.',
+    },
     ADMIN: {
         TASK_CLAIMED: 'Task claimed successfully.',
         CLAIM_RELEASED: 'Claim released successfully.',

@@ -64,6 +64,24 @@ export const API_ENDPOINTS = {
         BASE: 'discovery',
         RECOMMENDATIONS: 'recommendations',
     },
+    CONNECTIONS: {
+        BASE: 'connections',
+        REQUEST: 'request',
+        PRIORITY_INTRO: 'priority-intro',
+        ACCEPT: ':id/accept',
+        DECLINE: ':id/decline',
+        CANCEL: ':id/cancel',
+        REVOKE: ':id/revoke',
+        PENDING: 'pending',
+        MATCHES: 'matches',
+    },
+    PRIVATE_LISTS: {
+        BASE: 'private-lists',
+        ADD: 'add',
+        REMOVE: ':id',
+        GET_SHORTLIST: 'shortlist',
+        GET_REVIEW_LATER: 'review-later',
+    },
     ADMIN: {
         AUTH: {
             BASE: 'admin/auth',
