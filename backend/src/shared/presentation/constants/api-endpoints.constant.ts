@@ -61,8 +61,8 @@ export const API_ENDPOINTS = {
         FINALIZE: 'finalize',
     },
     DISCOVERY: {
-        BASE: '/discovery',
-        RECOMMENDATIONS: '/discovery/recommendations',
+        BASE: 'discovery',
+        RECOMMENDATIONS: 'recommendations',
     },
     ADMIN: {
         AUTH: {
