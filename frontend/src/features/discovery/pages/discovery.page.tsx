@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useDiscoveryFeed } from '../hooks/use-discovery-feed.hook';
 import { DEFAULT_DISCOVERY_QUERY } from '../constants/discovery.constants';
 import type { GetRecommendationsQuery } from '../types/discovery.types';
+import { DiscoveryCard } from '../components/discovery-card.component';
+import { DiscoveryEmpty } from '../components/discovery-empty.component';
 import styles from './discovery.module.css';
 
 export const DiscoveryPage: React.FC = () => {
@@ -12,7 +14,6 @@ export const DiscoveryPage: React.FC = () => {
     const {
         activeProfile,
         hasMore,
-        totalAvailable,
         isLoading,
         isFetching,
         refetch,
@@ -51,40 +52,23 @@ export const DiscoveryPage: React.FC = () => {
                     </button>
                 </header>
 
-                <main className={styles.statusCard}>
+                <main className={styles.cardStage}>
                     {isLoading ? (
-                        <div>
+                        <div className={styles.skeletonCard} aria-busy="true">
                             <div className={styles.loadingSpinner} />
-                            <p>Loading discovery feed...</p>
+                            <p className={styles.loadingText}>Finding compatible souls...</p>
                         </div>
+                    ) : activeProfile && hasMore ? (
+                        <DiscoveryCard profile={activeProfile} />
                     ) : (
-                        <div>
-                            <p>Discovery Feed Initialized</p>
-                            <small style={{ color: '#6b7280' }}>
-                                Total available: {totalAvailable} | Has more: {hasMore ? 'Yes' : 'No'}
-                                {activeProfile ? ` | Active: ${activeProfile.displayName}` : ''}
-                            </small>
-                            <div style={{ marginTop: '1rem' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => refetch()}
-                                    style={{
-                                        padding: '0.5rem 1rem',
-                                        backgroundColor: '#6d28d9',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    {isFetching ? 'Refreshing...' : 'Refresh'}
-                                </button>
-                            </div>
-                        </div>
+                        <DiscoveryEmpty
+                            onRefresh={() => refetch()}
+                            onOpenFilters={() => {}}
+                            isRefreshing={isFetching}
+                        />
                     )}
                 </main>
             </div>
         </div>
     );
 };
-
