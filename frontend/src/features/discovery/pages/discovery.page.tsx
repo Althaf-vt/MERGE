@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useDiscoveryFeed } from '../hooks/use-discovery-feed.hook';
 import { DEFAULT_DISCOVERY_QUERY } from '../constants/discovery.constants';
 import type { GetRecommendationsQuery } from '../types/discovery.types';
@@ -22,6 +23,7 @@ export const DiscoveryPage: React.FC = () => {
         hasMore,
         isLoading,
         isFetching,
+        isError,
         refetch,
         actions,
     } = useDiscoveryFeed(queryParams);
@@ -82,24 +84,81 @@ export const DiscoveryPage: React.FC = () => {
                             <div className={styles.loadingSpinner} />
                             <p className={styles.loadingText}>Finding compatible souls...</p>
                         </div>
-                    ) : activeProfile && hasMore ? (
-                        <>
-                            <DiscoveryCard profile={activeProfile} />
-                            <DiscoveryActions
-                                onPass={actions.handlePass}
-                                onReviewLater={actions.handleReviewLater}
-                                onShortlist={actions.handleShortlist}
-                                onConnect={actions.handleConnect}
-                                onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
-                                disabled={isFetching}
-                            />
-                        </>
+                    ) : isError ? (
+                        <div className={styles.errorCard} role="alert">
+                            <div className={styles.errorIconWrapper}>
+                                <svg
+                                    width="28"
+                                    height="28"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                            </div>
+                            <h2 className={styles.errorTitle}>Unable to load recommendations</h2>
+                            <p className={styles.errorText}>
+                                We encountered a problem retrieving matching profiles. Please check your connection and try again.
+                            </p>
+                            <button
+                                type="button"
+                                className={styles.retryButton}
+                                onClick={() => refetch()}
+                            >
+                                Try Again
+                            </button>
+                        </div>
                     ) : (
-                        <DiscoveryEmpty
-                            onRefresh={() => refetch()}
-                            onOpenFilters={() => setIsFilterOpen(true)}
-                            isRefreshing={isFetching}
-                        />
+                        <AnimatePresence mode="wait">
+                            {activeProfile && hasMore ? (
+                                <motion.div
+                                    key={activeProfile.id}
+                                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -16, scale: 0.98 }}
+                                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: '1.25rem',
+                                    }}
+                                >
+                                    <DiscoveryCard profile={activeProfile} />
+                                    <DiscoveryActions
+                                        onPass={actions.handlePass}
+                                        onReviewLater={actions.handleReviewLater}
+                                        onShortlist={actions.handleShortlist}
+                                        onConnect={actions.handleConnect}
+                                        onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
+                                        disabled={isFetching}
+                                    />
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="feed-empty"
+                                    initial={{ opacity: 0, scale: 0.96 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                                    style={{ width: '100%' }}
+                                >
+                                    <DiscoveryEmpty
+                                        onRefresh={() => refetch()}
+                                        onOpenFilters={() => setIsFilterOpen(true)}
+                                        onResetFilters={() => handleApplyFilters({ isGlobal: false })}
+                                        isRefreshing={isFetching}
+                                        isFilterActive={isFilterActive}
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     )}
                 </main>
             </div>
