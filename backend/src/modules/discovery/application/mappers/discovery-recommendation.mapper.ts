@@ -12,10 +12,12 @@ export class DiscoveryRecommendationMapper {
         mediaFacade: IMediaFacade
     ): Promise<DiscoveryRecommendationDto> {
         // 1. Great-circle distance calculation
-        const distanceKm = GeoUtil.calculateHaversineDistanceKm(
-            userContext.location.coordinates[0], userContext.location.coordinates[1],
-            candidate.location.coordinates[0], candidate.location.coordinates[1]
-        );
+        const distanceKm = (userContext.location?.coordinates && candidate.location?.coordinates)
+            ? GeoUtil.calculateHaversineDistanceKm(
+                userContext.location.coordinates[0], userContext.location.coordinates[1],
+                candidate.location.coordinates[0], candidate.location.coordinates[1]
+            )
+            : 0;
 
         // 2. Safe and precise age calculation from verified date of birth
         const rawDob = candidate.kycVerification?.verifiedDOB;
