@@ -1,35 +1,44 @@
 .pageContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    background-color: #fafafa;
-    padding: 6.5rem 1rem 4rem 1rem;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 25%, #ffffff 0%, #fbfbfe 50%, #f3f4f8 100%);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #111827;
 }
 
-.contentWrapper {
-    width: 100%;
-    max-width: 480px;
+.reelsWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.25rem;
+    justify-content: center;
+    width: 100%;
+    margin-top: 4.5rem; /* Clearance for fixed topNav */
+    height: calc(100vh - 5.5rem);
+    max-height: 720px;
 }
 
-.header {
-    width: 100%;
+/* Header bar above card */
+.headerBar {
+    width: min(370px, 88vw);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #111827;
     margin: 0;
     letter-spacing: -0.02em;
@@ -40,21 +49,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: 1.5px solid #e5e7eb;
     color: #4b5563;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filterButton:hover {
     background-color: #f3f4f6;
     color: #111827;
     border-color: #d1d5db;
+    transform: scale(1.05);
 }
 
 .filterButtonActive {
@@ -66,30 +76,78 @@
 
 .activeDot {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 8px;
-    height: 8px;
+    top: 5px;
+    right: 5px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background-color: #6d28d9;
     border: 1.5px solid #ffffff;
 }
 
-.cardStage {
-    width: 100%;
+/* Main Reels Stage */
+.stage {
+    position: relative;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.25rem;
-    position: relative;
+    width: 100%;
 }
 
-/* Skeleton Loading Card */
+.cardFrame {
+    width: min(370px, 88vw);
+    height: min(72vh, 620px);
+    min-height: 480px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Side navigation controls (Desktop Reels style) */
+.sideControls {
+    position: absolute;
+    left: calc(50% + min(185px, 44vw) + 1rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 20;
+}
+
+.navArrowButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1.5px solid #e5e7eb;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.navArrowButton:hover:not(:disabled) {
+    background: #faf5ff;
+    color: #6d28d9;
+    border-color: #c4b5fd;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(109, 40, 217, 0.2);
+}
+
+.navArrowButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Skeleton loader */
 .skeletonCard {
     width: 100%;
-    max-width: 480px;
-    height: 580px;
+    height: 100%;
     background: #ffffff;
     border-radius: 24px;
     border: 1px solid #f3f4f6;
@@ -103,8 +161,8 @@
 }
 
 .loadingSpinner {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border: 3.5px solid rgba(109, 40, 217, 0.15);
     border-top-color: #6d28d9;
     border-radius: 50%;
@@ -112,7 +170,7 @@
 }
 
 .loadingText {
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: #6b7280;
     font-weight: 500;
     margin: 0;
@@ -124,25 +182,27 @@
     }
 }
 
-/* Error State */
+/* Error card */
 .errorCard {
     width: 100%;
-    max-width: 480px;
+    height: 100%;
     background: #ffffff;
     border-radius: 24px;
     border: 1px solid #fee2e2;
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-    padding: 3.5rem 2rem;
+    padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
     gap: 1.25rem;
+    box-sizing: border-box;
 }
 
 .errorIconWrapper {
-    width: 60px;
-    height: 60px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background-color: #fef2f2;
     color: #ef4444;
@@ -152,18 +212,18 @@
 }
 
 .errorTitle {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: #111827;
     margin: 0;
 }
 
 .errorText {
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
     color: #6b7280;
     margin: 0;
-    line-height: 1.5;
-    max-width: 320px;
+    line-height: 1.45;
+    max-width: 260px;
 }
 
 .retryButton {
@@ -171,10 +231,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
+    padding: 0.65rem 1.25rem;
     background-color: #6d28d9;
     color: #ffffff;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     border: none;
     border-radius: 9999px;
@@ -187,4 +247,10 @@
     background-color: #5b21b6;
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
+}
+
+@media (max-width: 640px) {
+    .sideControls {
+        display: none;
+    }
 }

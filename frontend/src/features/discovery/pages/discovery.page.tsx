@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence, type Variants } from 'motion/react';
 import { useDiscoveryFeed } from '../hooks/use-discovery-feed.hook';
 import { DEFAULT_DISCOVERY_QUERY } from '../constants/discovery.constants';
 import type { GetRecommendationsQuery } from '../types/discovery.types';
@@ -10,6 +10,32 @@ import { PriorityIntroModal } from '../components/priority-intro-modal.component
 import { DiscoveryFilterDrawer } from '../components/discovery-filter-drawer.component';
 import styles from './discovery.module.css';
 
+const cardVariants: Variants = {
+    enter: (direction: number) => ({
+        y: direction > 0 ? '50%' : '-50%',
+        opacity: 0,
+        scale: 0.94,
+    }),
+    center: {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.3,
+            ease: 'easeOut',
+        },
+    },
+    exit: (direction: number) => ({
+        y: direction > 0 ? '-50%' : '50%',
+        opacity: 0,
+        scale: 0.94,
+        transition: {
+            duration: 0.24,
+            ease: 'easeIn',
+        },
+    }),
+};
+
 export const DiscoveryPage: React.FC = () => {
     const [queryParams, setQueryParams] = useState<GetRecommendationsQuery>({
         ...DEFAULT_DISCOVERY_QUERY,
@@ -17,10 +43,15 @@ export const DiscoveryPage: React.FC = () => {
 
     const [isPriorityIntroOpen, setIsPriorityIntroOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [scrollDirection, setScrollDirection] = useState<number>(1);
+    const isScrollingRef = useRef(false);
 
     const {
         activeProfile,
         hasMore,
+        hasPrevious,
+        goToNext,
+        goToPrevious,
         isLoading,
         isFetching,
         isError,
@@ -28,9 +59,95 @@ export const DiscoveryPage: React.FC = () => {
         actions,
     } = useDiscoveryFeed(queryParams);
 
+    // --- Reels Scrolling Logic (Wheel gesture with smooth snapping debounce) ---
+    const handleWheel = useCallback((e: React.WheelEvent) => {
+        // Suppress gesture when overlay modals are open
+        if (isPriorityIntroOpen || isFilterOpen) return;
+
+        // Ignore micro-scrolls
+        if (Math.abs(e.deltaY) < 22) return;
+
+        if (isScrollingRef.current) return;
+
+        if (e.deltaY > 0) {
+            // Scroll down -> advance to next card
+            if (hasMore) {
+                isScrollingRef.current = true;
+                setScrollDirection(1);
+                goToNext();
+                setTimeout(() => {
+                    isScrollingRef.current = false;
+                }, 380);
+            }
+        } else if (e.deltaY < 0) {
+            // Scroll up -> return to previous card
+            if (hasPrevious) {
+                isScrollingRef.current = true;
+                setScrollDirection(-1);
+                goToPrevious();
+                setTimeout(() => {
+                    isScrollingRef.current = false;
+                }, 380);
+            }
+        }
+    }, [isPriorityIntroOpen, isFilterOpen, hasMore, hasPrevious, goToNext, goToPrevious]);
+
+    // --- Keyboard Arrows Navigation ---
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (isPriorityIntroOpen || isFilterOpen) return;
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                if (hasMore) {
+                    setScrollDirection(1);
+                    goToNext();
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (hasPrevious) {
+                    setScrollDirection(-1);
+                    goToPrevious();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isPriorityIntroOpen, isFilterOpen, hasMore, hasPrevious, goToNext, goToPrevious]);
+
+    // --- Action Handlers with Forward Slide Direction ---
+    const handlePass = () => {
+        setScrollDirection(1);
+        actions.handlePass();
+    };
+
+    const handleConnect = () => {
+        setScrollDirection(1);
+        actions.handleConnect();
+    };
+
+    const handleReviewLater = () => {
+        setScrollDirection(1);
+        actions.handleReviewLater();
+    };
+
+    const handleShortlist = () => {
+        setScrollDirection(1);
+        actions.handleShortlist();
+    };
+
     const handleConfirmPriorityIntro = (message: string) => {
+        setScrollDirection(1);
         actions.handlePriorityIntro(message);
         setIsPriorityIntroOpen(false);
+    };
+
+    const handleNavigate = (direction: number) => {
+        if (direction > 0 && hasMore) {
+            setScrollDirection(1);
+            goToNext();
+        } else if (direction < 0 && hasPrevious) {
+            setScrollDirection(-1);
+            goToPrevious();
+        }
     };
 
     const handleApplyFilters = (filters: { isGlobal?: boolean }) => {
@@ -45,8 +162,9 @@ export const DiscoveryPage: React.FC = () => {
 
     return (
         <div className={styles.pageContainer}>
-            <div className={styles.contentWrapper}>
-                <header className={styles.header}>
+            <div className={styles.reelsWrapper} onWheel={handleWheel}>
+                {/* Header Bar */}
+                <header className={styles.headerBar}>
                     <h1 className={styles.title}>Discover</h1>
                     <button
                         type="button"
@@ -55,12 +173,12 @@ export const DiscoveryPage: React.FC = () => {
                         onClick={() => setIsFilterOpen(true)}
                     >
                         <svg
-                            width="20"
-                            height="20"
+                            width="18"
+                            height="18"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="2.2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                         >
@@ -78,92 +196,147 @@ export const DiscoveryPage: React.FC = () => {
                     </button>
                 </header>
 
-                <main className={styles.cardStage}>
-                    {isLoading ? (
-                        <div className={styles.skeletonCard} aria-busy="true">
-                            <div className={styles.loadingSpinner} />
-                            <p className={styles.loadingText}>Finding compatible souls...</p>
-                        </div>
-                    ) : isError ? (
-                        <div className={styles.errorCard} role="alert">
-                            <div className={styles.errorIconWrapper}>
-                                <svg
-                                    width="28"
-                                    height="28"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
+                {/* Reels Stage */}
+                <main className={styles.stage}>
+                    <div className={styles.cardFrame}>
+                        {isLoading ? (
+                            <div className={styles.skeletonCard} aria-busy="true">
+                                <div className={styles.loadingSpinner} />
+                                <p className={styles.loadingText}>Finding compatible souls...</p>
                             </div>
-                            <h2 className={styles.errorTitle}>Unable to load recommendations</h2>
-                            <p className={styles.errorText}>
-                                We encountered a problem retrieving matching profiles. Please check your connection and try again.
-                            </p>
-                            <button
-                                type="button"
-                                className={styles.retryButton}
-                                onClick={() => refetch()}
+                        ) : isError ? (
+                            <div className={styles.errorCard} role="alert">
+                                <div className={styles.errorIconWrapper}>
+                                    <svg
+                                        width="26"
+                                        height="26"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                </div>
+                                <h2 className={styles.errorTitle}>Connection Error</h2>
+                                <p className={styles.errorText}>
+                                    Unable to load new profiles right now. Please try again.
+                                </p>
+                                <button
+                                    type="button"
+                                    className={styles.retryButton}
+                                    onClick={() => refetch()}
+                                >
+                                    Try Again
+                                </button>
+                            </div>
+                        ) : (
+                            <AnimatePresence mode="wait" custom={scrollDirection}>
+                                {activeProfile && hasMore ? (
+                                    <motion.div
+                                        key={activeProfile.id}
+                                        custom={scrollDirection}
+                                        variants={cardVariants}
+                                        initial="enter"
+                                        animate="center"
+                                        exit="exit"
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            position: 'absolute',
+                                            inset: 0,
+                                        }}
+                                    >
+                                        <DiscoveryCard profile={activeProfile}>
+                                            <DiscoveryActions
+                                                onPass={handlePass}
+                                                onReviewLater={handleReviewLater}
+                                                onShortlist={handleShortlist}
+                                                onConnect={handleConnect}
+                                                onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
+                                                disabled={isFetching}
+                                            />
+                                        </DiscoveryCard>
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        key="feed-empty"
+                                        custom={scrollDirection}
+                                        variants={cardVariants}
+                                        initial="enter"
+                                        animate="center"
+                                        exit="exit"
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            position: 'absolute',
+                                            inset: 0,
+                                        }}
+                                    >
+                                        <DiscoveryEmpty
+                                            onRefresh={() => refetch()}
+                                            onOpenFilters={() => setIsFilterOpen(true)}
+                                            onResetFilters={() => handleApplyFilters({ isGlobal: false })}
+                                            isRefreshing={isFetching}
+                                            isFilterActive={isFilterActive}
+                                        />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        )}
+                    </div>
+
+                    {/* Desktop Floating Up/Down Navigation Controls */}
+                    <aside className={styles.sideControls} aria-label="Reels navigation">
+                        <button
+                            type="button"
+                            className={styles.navArrowButton}
+                            onClick={() => handleNavigate(-1)}
+                            disabled={!hasPrevious || isLoading}
+                            aria-label="Previous profile"
+                        >
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             >
-                                Try Again
-                            </button>
-                        </div>
-                    ) : (
-                        <AnimatePresence mode="wait">
-                            {activeProfile && hasMore ? (
-                                <motion.div
-                                    key={activeProfile.id}
-                                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: -16, scale: 0.98 }}
-                                    transition={{ duration: 0.22, ease: 'easeOut' }}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        gap: '1.25rem',
-                                    }}
-                                >
-                                    <DiscoveryCard profile={activeProfile} />
-                                    <DiscoveryActions
-                                        onPass={actions.handlePass}
-                                        onReviewLater={actions.handleReviewLater}
-                                        onShortlist={actions.handleShortlist}
-                                        onConnect={actions.handleConnect}
-                                        onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
-                                        disabled={isFetching}
-                                    />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="feed-empty"
-                                    initial={{ opacity: 0, scale: 0.96 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                                    style={{ width: '100%' }}
-                                >
-                                    <DiscoveryEmpty
-                                        onRefresh={() => refetch()}
-                                        onOpenFilters={() => setIsFilterOpen(true)}
-                                        onResetFilters={() => handleApplyFilters({ isGlobal: false })}
-                                        isRefreshing={isFetching}
-                                        isFilterActive={isFilterActive}
-                                    />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    )}
+                                <polyline points="18 15 12 9 6 15" />
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.navArrowButton}
+                            onClick={() => handleNavigate(1)}
+                            disabled={!hasMore || isLoading}
+                            aria-label="Next profile"
+                        >
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </button>
+                    </aside>
                 </main>
             </div>
 
-            {/* Priority Introduction Modal with Credit Confirmation */}
+            {/* Priority Introduction Modal */}
             {activeProfile && (
                 <PriorityIntroModal
                     isOpen={isPriorityIntroOpen}
