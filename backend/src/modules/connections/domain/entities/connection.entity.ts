@@ -3,6 +3,7 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { CONNECTION_CONSTANTS, CONNECTION_ERROR_MESSAGES } from "../constants/connection.constants";
 import { ConnectionStatus } from "../enums/connection.enums";
+import { ConnectionAcceptedDomainEvent } from "../events/connection-accepted.domain-event";
 
 export interface ConnectionProps {
     id?: string;
@@ -99,6 +100,10 @@ export class ConnectionAggregate extends AggregateRoot {
         }
 
         this._transitionStatus(ConnectionStatus.ACCEPTED);
+
+        this.addDomainEvent(
+            new ConnectionAcceptedDomainEvent(this.id, this._props.requesterId, this._props.recipientId)
+        );
     }
 
     public decline(actionUserId: string): void {
