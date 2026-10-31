@@ -6,7 +6,6 @@ import { TargetUserDto } from "../dtos/connection.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ConnectionAggregate } from "../../domain/entities/connection.entity";
-import { ConnectionStatus } from "../../domain/enums/connection.enums";
 
 @Injectable()
 export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCase {
@@ -28,7 +27,8 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
         const existingInteraction = await this._connectionRepo.findExistingInteraction(requesterId, dto.targetUserId);
 
         if (existingInteraction) {
-            if (existingInteraction.requesterId === dto.targetUserId && existingInteraction.status === ConnectionStatus.PENDING) {
+            // Auto-accept if the other user already sent a pending request to the current user
+            if (existingInteraction.requesterId === dto.targetUserId && existingInteraction.isPending()) {
                 existingInteraction.accept(requesterId);
                 await this._connectionRepo.update(existingInteraction);
                 return;
