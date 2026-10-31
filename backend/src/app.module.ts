@@ -8,6 +8,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CastingDirectorModule } from "./modules/casting-director/casting-director.module";
 import { EnvConfig } from "./shared/infrastructure/config/env.config";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
+import { ConnectionsModule } from "./modules/connections/connections.module";
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { DiscoveryModule } from "./modules/discovery/discovery.module";
         AdminModule,
         CastingDirectorModule,
         DiscoveryModule,
+        ConnectionsModule,
     ]
 })
 
