@@ -8,4 +8,6 @@ export * from './hooks/use-private-list.hook';
 export * from './components/connections-tabs-header.component';
 export * from './components/connections-empty-state.component';
 export * from './components/connections-pagination.component';
+export * from './components/connection-card.component';
+export * from './components/revoke-match-modal.component';
 export * from './pages/connections.page';

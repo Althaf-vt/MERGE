@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTabNavigation } from '../hooks/use-tab-navigation.hook';
 import { useActiveConnections } from '../hooks/use-active-connections.hook';
 import { usePendingConnections } from '../hooks/use-pending-connections.hook';
@@ -6,6 +6,8 @@ import { usePrivateList } from '../hooks/use-private-list.hook';
 import { ConnectionsTabsHeader } from '../components/connections-tabs-header.component';
 import { ConnectionsEmptyState } from '../components/connections-empty-state.component';
 import { ConnectionsPagination } from '../components/connections-pagination.component';
+import { ConnectionCard } from '../components/connection-card.component';
+import { RevokeMatchModal } from '../components/revoke-match-modal.component';
 import styles from './connections.module.css';
 
 export const ConnectionsPage: React.FC = () => {
@@ -65,11 +67,32 @@ export const ConnectionsPage: React.FC = () => {
     );
 };
 
-// 1. Active Tab Layout Shell (Ready for ConnectionCard in Batch 2)
+// 1. Active Matches Tab Section (Wired with ConnectionCard & RevokeMatchModal)
 interface ActiveTabSectionProps {
     hook: ReturnType<typeof useActiveConnections>;
 }
 const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
+    const [selectedRevoke, setSelectedRevoke] = useState<{ id: string; name: string } | null>(null);
+
+    const handleMessage = (partnerId: string, partnerName: string) => {
+        // Reserved for Chat routing when Messaging module is active
+        console.log(`Initiating chat conversation with partner: ${partnerName} (${partnerId})`);
+    };
+
+    const handleOpenRevoke = (connectionId: string, partnerName: string) => {
+        setSelectedRevoke({ id: connectionId, name: partnerName });
+    };
+
+    const handleConfirmRevoke = async () => {
+        if (!selectedRevoke) return;
+        try {
+            await hook.revokeMatch(selectedRevoke.id);
+            setSelectedRevoke(null);
+        } catch (error) {
+            console.error('Failed to revoke match:', error);
+        }
+    };
+
     if (hook.isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -86,14 +109,30 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
     return (
         <div>
             <div className={styles.cardsGrid}>
-                {/* Connection Cards will be mounted here in Batch 2 */}
+                {hook.connections.map((conn) => (
+                    <ConnectionCard
+                        key={conn.id}
+                        connection={conn}
+                        onMessage={handleMessage}
+                        onRevoke={handleOpenRevoke}
+                    />
+                ))}
             </div>
+
             <ConnectionsPagination
                 page={hook.page}
                 totalPages={hook.totalPages}
                 onPageChange={hook.setPage}
                 hasNextPage={hook.hasNextPage}
                 hasPreviousPage={hook.hasPreviousPage}
+            />
+
+            <RevokeMatchModal
+                isOpen={Boolean(selectedRevoke)}
+                partnerName={selectedRevoke?.name || ''}
+                isRevoking={hook.isRevoking}
+                onConfirm={handleConfirmRevoke}
+                onClose={() => setSelectedRevoke(null)}
             />
         </div>
     );
