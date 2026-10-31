@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { Transform, Type } from "class-transformer";
-import { ConnectionStatus } from "../../domain/enums/connection.enums";
+import { ConnectionRole, ConnectionStatus } from "../../domain/enums/connection.enums";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
 
 export class PaginationQueryDto {
@@ -16,6 +16,17 @@ export class PaginationQueryDto {
     @Min(1)
     @Max(CONNECTION_CONSTANTS.PAGINATION.MAX_LIMIT)
     limit?: number = CONNECTION_CONSTANTS.PAGINATION.DEFAULT_LIMIT;
+}
+
+export class GetConnectionsQueryDto extends PaginationQueryDto {
+    @IsEnum(ConnectionRole, { message: 'Role must be REQUESTER, RECIPIENT, or BOTH.' })
+    @IsNotEmpty()
+    role!: ConnectionRole;
+
+    @IsArray()
+    @IsEnum(ConnectionStatus, { each: true, message: 'Invalid connection status.' })
+    @Transform(({ value }) => (typeof value === 'string' ? value.split(',') : value))
+    status!: ConnectionStatus[];
 }
 
 export class TargetUserDto {
@@ -43,4 +54,11 @@ export interface ConnectionResponseDto {
     icebreakerMessage?: string;
     createdAt: Date;
     isRequester: boolean;
+}
+
+export interface PaginatedConnectionsResponseDto {
+    data: ConnectionResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
 }
