@@ -13,7 +13,6 @@ export const CONNECTION_ERROR_MESSAGES = {
     CONNECTION_NOT_FOUND: 'Connection request not found.',
     PARTICIPANTS_REQUIRED: 'Requester ID and Recipient ID are required.',
     SELF_CONNECTION_FORBIDDEN: 'A user cannot connect with themselves.',
-    CANNOT_LIST_YOURSELF: 'You cannot list yourself.',
     CANNOT_REQUEST_YOURSELF: 'You cannot request yourself.',
     CANNOT_INTERACT_WITH_YOURSELF: 'You cannot interact with yourself.',
     TARGET_PROFILE_UNAVAILABLE: 'Target profile is unavailable.',
