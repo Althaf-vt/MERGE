@@ -61,6 +61,20 @@ export const API_ENDPOINTS = {
         BASE: '/discovery',
         RECOMMENDATIONS: '/discovery/recommendations',
     },
+    CONNECTIONS: {
+        BASE: '/connections',
+        REQUEST: '/connections/request',
+        PRIORITY_INTRO: '/connections/priority-intro',
+        ACCEPT: (id: string) => `/connections/${id}/accept`,
+        DECLINE: (id: string) => `/connections/${id}/decline`,
+        CANCEL: (id: string) => `/connections/${id}/cancel`,
+        REVOKE: (id: string) => `/connections/${id}/revoke`,
+    },
+    PRIVATE_LISTS: {
+        BASE: '/private-lists',
+        ADD: '/private-lists/add',
+        REMOVE: (targetUserId: string) => `/private-lists/${targetUserId}`,
+    },
     ADMIN: {
         AUTH: {
             BASE: '/admin/auth',
