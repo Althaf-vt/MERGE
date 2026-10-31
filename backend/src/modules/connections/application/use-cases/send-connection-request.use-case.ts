@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ISendConnectionRequestUseCase } from "../interfaces/connection.use-cases.interface";
 import { CONNECTION_REPOSITORY, IConnectionRepository } from "../../domain/interfaces/connection-repository.interface";
-import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
+import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { TargetUserDto } from "../dtos/connection.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
@@ -12,7 +12,7 @@ import { CONNECTION_ERROR_MESSAGES } from "../../domain/constants/connection.con
 export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCase {
     constructor(
         @Inject(CONNECTION_REPOSITORY) private readonly _connectionRepo: IConnectionRepository,
-        @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade,
+        @Inject(PUBLIC_PROFILE_FACADE) private readonly _publicProfileFacade: IPublicProfileFacade,
     ) { }
 
     async execute(requesterId: string, dto: TargetUserDto): Promise<void> {
@@ -20,8 +20,8 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.CANNOT_REQUEST_YOURSELF);
         }
 
-        const targetUser = await this._userFacade.getUserById(dto.targetUserId);
-        if (!targetUser || targetUser.accountStatus !== 'ACTIVE') {
+        const isInteractable = await this._publicProfileFacade.isProfileInteractable(dto.targetUserId);
+        if (!isInteractable) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, CONNECTION_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
