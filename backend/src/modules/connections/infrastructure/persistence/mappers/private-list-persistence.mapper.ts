@@ -2,7 +2,6 @@ import { PrivateListAggregate } from "../../../domain/entities/private-list.enti
 import { PrivateListType } from "../../../domain/enums/connection.enums";
 import { PrivateListDocument } from "../persistence/private-list.schema";
 
-
 export class PrivateListPersistenceMapper {
     public static toDomain(raw: PrivateListDocument): PrivateListAggregate {
         return new PrivateListAggregate({
@@ -15,11 +14,11 @@ export class PrivateListPersistenceMapper {
     }
 
     public static toPersistence(entity: PrivateListAggregate): Record<string, unknown> {
-        const data = entity.toJSON();
         return {
-            userId: data.userId,
-            targetUserId: data.targetUserId,
-            listType: data.listType,
+            userId: entity.userId,
+            targetUserId: entity.targetUserId,
+            listType: entity.listType,
+            createdAt: entity.createdAt,
         };
     }
 }
