@@ -1,6 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { CONNECTION_CONSTANTS, CONNECTION_ERROR_MESSAGES } from "../constants/connection.constants";
 import { ConnectionStatus } from "../enums/connection.enums";
 
 export interface ConnectionProps {
@@ -41,19 +42,19 @@ export class ConnectionAggregate extends AggregateRoot {
 
     private _validateInvariants(props: ConnectionProps): void {
         if (!props.requesterId?.trim() || !props.recipientId?.trim()) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Requester ID and Recipient ID are required.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.PARTICIPANTS_REQUIRED);
         }
 
         if (props.requesterId.trim() === props.recipientId.trim()) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A user cannot connect with themselves.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.SELF_CONNECTION_FORBIDDEN);
         }
 
-        if (props.icebreakerMessage && props.icebreakerMessage.length > 500) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Icebreaker message cannot exceed 500 characters.');
+        if (props.icebreakerMessage && props.icebreakerMessage.length > CONNECTION_CONSTANTS.ICEBREAKER.MAX_LENGTH) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.ICEBREAKER_TOO_LONG);
         }
 
-        if (props.isPriority && props.icebreakerMessage !== undefined && !props.icebreakerMessage.trim()) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Priority introductions require an icebreaker message.');
+        if (props.isPriority && (!props.icebreakerMessage || !props.icebreakerMessage.trim())) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.PRIORITY_INTRO_REQUIRES_ICEBREAKER);
         }
     }
 
@@ -75,7 +76,7 @@ export class ConnectionAggregate extends AggregateRoot {
 
     public getPartnerId(userId: string): string {
         if (!this.isParticipant(userId)) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'User is not a participant in this connection.');
+            throw new DomainException(ErrorCode.FORBIDDEN, CONNECTION_ERROR_MESSAGES.NOT_A_PARTICIPANT);
         }
         return this._props.requesterId === userId ? this._props.recipientId : this._props.requesterId;
     }
@@ -91,10 +92,10 @@ export class ConnectionAggregate extends AggregateRoot {
     // State Transitions
     public accept(actionUserId: string): void {
         if (this._props.recipientId !== actionUserId) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Only the recipient can accept a connection request.');
+            throw new DomainException(ErrorCode.FORBIDDEN, CONNECTION_ERROR_MESSAGES.ONLY_RECIPIENT_CAN_ACCEPT);
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot accept a connection with status ${this._props.status}.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INVALID_STATUS_FOR_ACCEPT(this._props.status));
         }
 
         this._transitionStatus(ConnectionStatus.ACCEPTED);
@@ -102,10 +103,10 @@ export class ConnectionAggregate extends AggregateRoot {
 
     public decline(actionUserId: string): void {
         if (this._props.recipientId !== actionUserId) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Only the recipient can decline a connection request.');
+            throw new DomainException(ErrorCode.FORBIDDEN, CONNECTION_ERROR_MESSAGES.ONLY_RECIPIENT_CAN_DECLINE);
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot decline a connection with status ${this._props.status}.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INVALID_STATUS_FOR_DECLINE(this._props.status));
         }
 
         this._transitionStatus(ConnectionStatus.DECLINED);
@@ -113,10 +114,10 @@ export class ConnectionAggregate extends AggregateRoot {
 
     public cancel(actionUserId: string): void {
         if (this._props.requesterId !== actionUserId) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Only the requester can cancel a pending connection request.');
+            throw new DomainException(ErrorCode.FORBIDDEN, CONNECTION_ERROR_MESSAGES.ONLY_REQUESTER_CAN_CANCEL);
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot cancel a connection with status ${this._props.status}.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INVALID_STATUS_FOR_CANCEL(this._props.status));
         }
 
         this._transitionStatus(ConnectionStatus.CANCELLED);
@@ -124,10 +125,10 @@ export class ConnectionAggregate extends AggregateRoot {
 
     public revoke(actionUserId: string): void {
         if (!this.isParticipant(actionUserId)) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'You are not a participant in this connection.');
+            throw new DomainException(ErrorCode.FORBIDDEN, CONNECTION_ERROR_MESSAGES.NOT_A_PARTICIPANT);
         }
         if (this._props.status !== ConnectionStatus.ACCEPTED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only active connections can be revoked.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.ONLY_ACTIVE_CAN_BE_REVOKED);
         }
 
         this._transitionStatus(ConnectionStatus.REVOKED);
