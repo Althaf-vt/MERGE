@@ -8,7 +8,7 @@ import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice";
 import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { KycEscalationApi } from "../features/admin/kyc-escalation/api/kyc-escalation.api";
 import { discoveryApi } from "../features/discovery/api/discovery.api";
-import { connectionsApi } from "../features/connections/api/connections.api";
+import { connectionsApi } from '../shared/api/connections.api';
 
 export const store = configureStore({
     reducer: {

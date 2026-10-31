@@ -5,7 +5,7 @@ import {
     useAddToPrivateListMutation,
     useSendConnectionRequestMutation,
     useSendPriorityIntroMutation,
-} from '../api/connections.api';
+} from '../../../shared/api/connections.api';
 import type { PrivateListType } from '../../../shared/types/connections.types';
 import { CONNECTIONS_PAGINATION_DEFAULTS } from '../constants/connections.constants';
 

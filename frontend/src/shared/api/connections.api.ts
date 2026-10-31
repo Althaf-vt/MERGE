@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../../../shared/api/base-api";
-import type { ApiResponse } from "../../../shared/types/api-response.types";
-import { API_ENDPOINTS } from "../../../shared/constants/api-endpoints.constant";
+import { baseQueryWithReauth } from "./base-api";
+import type { ApiResponse } from "../types/api-response.types";
+import { API_ENDPOINTS } from "../constants/api-endpoints.constant";
 import type {
     ConnectionResponseDto,
     GetConnectionsQuery,
@@ -10,7 +10,7 @@ import type {
     SendConnectionRequestPayload,
     SendPriorityIntroPayload,
     AddToPrivateListPayload,
-} from "../../../shared/types/connections.types";
+} from "../types/connections.types";
 
 export const connectionsApi = createApi({
     reducerPath: 'connectionsApi',

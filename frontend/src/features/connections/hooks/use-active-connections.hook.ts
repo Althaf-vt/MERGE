@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useGetConnectionsQuery, useRevokeMatchMutation } from '../api/connections.api';
+import { useGetConnectionsQuery, useRevokeMatchMutation } from '../../../shared/api/connections.api';
 import { CONNECTIONS_PAGINATION_DEFAULTS, CONNECTIONS_QUERY_CONFIG } from '../constants/connections.constants';
 
 export const useActiveConnections = (initialLimit = CONNECTIONS_PAGINATION_DEFAULTS.DEFAULT_LIMIT) => {
