@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ISendPriorityIntroUseCase } from "../interfaces/priority-intro.use-cases.interface";
 import { IPriorityIntroRepository, PRIORITY_INTRO_REPOSITORY } from "../../domain/interfaces/priority-intro-repository.interface";
-import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
+import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { BILLING_FACADE, IBillingFacade } from "../interfaces/billing-facade.interface";
 import { SendPriorityIntroDto } from "../dtos/priority-intro.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
@@ -13,7 +13,7 @@ import { PRIORITY_INTRO_ERROR_MESSAGES } from "../../domain/constants/priority-i
 export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
     constructor(
         @Inject(PRIORITY_INTRO_REPOSITORY) private readonly _priorityIntroRepo: IPriorityIntroRepository,
-        @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade,
+        @Inject(PUBLIC_PROFILE_FACADE) private readonly _publicProfileFacade: IPublicProfileFacade,
         @Inject(BILLING_FACADE) private readonly _billingFacade: IBillingFacade,
     ) { }
 
@@ -25,9 +25,9 @@ export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
             icebreakerMessage: dto.icebreakerMessage,
         });
 
-        // 2. Validate target user active status
-        const targetUser = await this._userFacade.getUserById(dto.targetUserId);
-        if (!targetUser || targetUser.accountStatus !== 'ACTIVE') {
+        // 2. Validate target user active status and peer interactability
+        const isInteractable = await this._publicProfileFacade.isProfileInteractable(dto.targetUserId);
+        if (!isInteractable) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, PRIORITY_INTRO_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
