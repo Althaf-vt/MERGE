@@ -15,10 +15,14 @@ import { RevokeMatchUseCase } from "./application/use-cases/revoke-match.use-cas
 import { AddToPrivateListUseCase } from "./application/use-cases/add-to-private-list.use-case";
 import { RemoveFromPrivateListUseCase } from "./application/use-cases/remove-from-private-list.use-case";
 import {
-    ACCEPT_CONNECTION_USE_CASE, CANCEL_CONNECTION_USE_CASE, DECLINE_CONNECTION_USE_CASE,
+    ACCEPT_CONNECTION_USE_CASE,
+    CANCEL_CONNECTION_USE_CASE,
+    DECLINE_CONNECTION_USE_CASE,
     GET_CONNECTIONS_USE_CASE,
-    REVOKE_MATCH_USE_CASE, SEND_CONNECTION_REQUEST_USE_CASE, SEND_PRIORITY_INTRO_USE_CASE
+    REVOKE_MATCH_USE_CASE,
+    SEND_CONNECTION_REQUEST_USE_CASE,
 } from "./application/interfaces/connection.use-cases.interface";
+import { SEND_PRIORITY_INTRO_USE_CASE } from "./application/interfaces/priority-intro.use-cases.interface";
 import { ADD_TO_PRIVATE_LIST_USE_CASE, GET_PRIVATE_LIST_USE_CASE, REMOVE_FROM_PRIVATE_LIST_USE_CASE } from "./application/interfaces/private-list.use-cases.interface";
 import { ConnectionSchema, ConnectionSchemaClass } from "./infrastructure/persistence/connection.schema";
 import { ConnectionRepository } from "./infrastructure/persistence/mongo-connection.repository";

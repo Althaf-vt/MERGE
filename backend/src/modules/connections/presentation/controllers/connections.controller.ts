@@ -5,8 +5,26 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { ConnectionResponseDto, GetConnectionsQueryDto, SendPriorityIntroDto, TargetUserDto } from "../../application/dtos/connection.dto";
-import { ACCEPT_CONNECTION_USE_CASE, CANCEL_CONNECTION_USE_CASE, DECLINE_CONNECTION_USE_CASE, GET_CONNECTIONS_USE_CASE, IAcceptConnectionUseCase, ICancelConnectionUseCase, IDeclineConnectionUseCase, IGetConnectionsUseCase, IRevokeMatchUseCase, ISendConnectionRequestUseCase, ISendPriorityIntroUseCase, REVOKE_MATCH_USE_CASE, SEND_CONNECTION_REQUEST_USE_CASE, SEND_PRIORITY_INTRO_USE_CASE } from "../../application/interfaces/connection.use-cases.interface";
+import { ConnectionResponseDto, GetConnectionsQueryDto, TargetUserDto } from "../../application/dtos/connection.dto";
+import { SendPriorityIntroDto } from "../../application/dtos/priority-intro.dto";
+import {
+    ACCEPT_CONNECTION_USE_CASE,
+    CANCEL_CONNECTION_USE_CASE,
+    DECLINE_CONNECTION_USE_CASE,
+    GET_CONNECTIONS_USE_CASE,
+    IAcceptConnectionUseCase,
+    ICancelConnectionUseCase,
+    IDeclineConnectionUseCase,
+    IGetConnectionsUseCase,
+    IRevokeMatchUseCase,
+    ISendConnectionRequestUseCase,
+    REVOKE_MATCH_USE_CASE,
+    SEND_CONNECTION_REQUEST_USE_CASE,
+} from "../../application/interfaces/connection.use-cases.interface";
+import {
+    ISendPriorityIntroUseCase,
+    SEND_PRIORITY_INTRO_USE_CASE,
+} from "../../application/interfaces/priority-intro.use-cases.interface";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
