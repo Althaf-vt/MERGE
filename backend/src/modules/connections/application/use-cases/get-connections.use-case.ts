@@ -5,6 +5,7 @@ import { GetConnectionsQueryDto, PaginatedConnectionsResponseDto } from "../dtos
 import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
+import { ConnectionDtoMapper } from "../mappers/connection-dto.mapper";
 
 @Injectable()
 export class GetConnectionsUseCase implements IGetConnectionsUseCase {
@@ -29,7 +30,6 @@ export class GetConnectionsUseCase implements IGetConnectionsUseCase {
         const hydratedData = await Promise.all(
             paginatedResult.data.map(async (connection) => {
                 const partnerId = connection.getPartnerId(userId);
-                
                 const partnerProfile = await this._publicProfileFacade.getPublicProfile(partnerId);
                 
                 let partnerPhotoUrl = partnerProfile?.profilePhotoUrl ?? null;
@@ -37,17 +37,7 @@ export class GetConnectionsUseCase implements IGetConnectionsUseCase {
                     partnerPhotoUrl = await this._mediaFacade.getPresignedMediaUrl(partnerPhotoUrl) || partnerPhotoUrl;
                 }
 
-                return {
-                    id: connection.id,
-                    partnerId: partnerId,
-                    partnerName: partnerProfile?.displayName ?? 'Unknown',
-                    partnerPhotoUrl: partnerPhotoUrl,
-                    status: connection.status,
-                    isPriority: connection.isPriority,
-                    icebreakerMessage: connection.icebreakerMessage,
-                    createdAt: connection.createdAt,
-                    isRequester: connection.requesterId === userId,
-                };
+                return ConnectionDtoMapper.toResponseDto(connection, userId, partnerProfile, partnerPhotoUrl);
             })
         );
 
