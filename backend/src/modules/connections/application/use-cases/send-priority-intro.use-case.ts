@@ -7,6 +7,7 @@ import { SendPriorityIntroDto } from "../dtos/connection.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ConnectionAggregate } from "../../domain/entities/connection.entity";
+import { CONNECTION_ERROR_MESSAGES } from "../../domain/constants/connection.constants";
 
 @Injectable()
 export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
@@ -18,17 +19,17 @@ export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
 
     async execute(requesterId: string, dto: SendPriorityIntroDto): Promise<void> {
         if (requesterId === dto.targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot interact with yourself.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.CANNOT_INTERACT_WITH_YOURSELF);
         }
 
         const targetUser = await this._userFacade.getUserById(dto.targetUserId);
         if (!targetUser || targetUser.accountStatus !== 'ACTIVE') {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target profile is unavailable.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CONNECTION_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
         const existingInteraction = await this._connectionRepo.findExistingInteraction(requesterId, dto.targetUserId);
         if (existingInteraction) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `An interaction already exists. Save your credit.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.PRIORITY_INTERACTION_ALREADY_EXISTS);
         }
 
         // 1. Cross-Module Synchronous Call 

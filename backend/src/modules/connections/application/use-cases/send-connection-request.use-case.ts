@@ -6,6 +6,7 @@ import { TargetUserDto } from "../dtos/connection.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ConnectionAggregate } from "../../domain/entities/connection.entity";
+import { CONNECTION_ERROR_MESSAGES } from "../../domain/constants/connection.constants";
 
 @Injectable()
 export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCase {
@@ -16,12 +17,12 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
 
     async execute(requesterId: string, dto: TargetUserDto): Promise<void> {
         if (requesterId === dto.targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot request yourself.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.CANNOT_REQUEST_YOURSELF);
         }
 
         const targetUser = await this._userFacade.getUserById(dto.targetUserId);
         if (!targetUser || targetUser.accountStatus !== 'ACTIVE') {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target profile is unavailable.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CONNECTION_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
         const existingInteraction = await this._connectionRepo.findExistingInteraction(requesterId, dto.targetUserId);
@@ -33,7 +34,7 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
                 await this._connectionRepo.update(existingInteraction);
                 return;
             }
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `An active or pending interaction already exists with this user.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INTERACTION_ALREADY_EXISTS);
         }
 
         const newConnection = new ConnectionAggregate({

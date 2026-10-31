@@ -7,6 +7,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PrivateListAggregate } from "../../domain/entities/private-list.entity";
 import { PrivateListType } from "../../domain/enums/connection.enums";
 import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
+import { CONNECTION_ERROR_MESSAGES } from "../../domain/constants/connection.constants";
 
 @Injectable()
 export class AddToPrivateListUseCase implements IAddToPrivateListUseCase {
@@ -16,11 +17,13 @@ export class AddToPrivateListUseCase implements IAddToPrivateListUseCase {
     ) {}
 
     async execute(userId: string, listType: PrivateListType, dto: TargetUserDto): Promise<void> {
-        if (userId === dto.targetUserId) throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot list yourself.");
+        if (userId === dto.targetUserId) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.CANNOT_LIST_YOURSELF);
+        }
 
         const targetUser = await this._userFacade.getUserById(dto.targetUserId);
         if (!targetUser || targetUser.accountStatus !== 'ACTIVE') {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target profile is unavailable.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CONNECTION_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
         const existing = await this._listRepo.findExact(userId, dto.targetUserId);
