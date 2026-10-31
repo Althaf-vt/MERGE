@@ -3,6 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "../users/users.module";
 import { CONNECTION_REPOSITORY } from "./domain/interfaces/connection-repository.interface";
 import { PRIVATE_LIST_REPOSITORY } from "./domain/interfaces/private-list-repository.interface";
+import { PRIORITY_INTRO_REPOSITORY } from "./domain/interfaces/priority-intro-repository.interface";
 import { ConnectionsController } from "./presentation/controllers/connections.controller";
 import { PrivateListsController } from "./presentation/controllers/private-lists.controller";
 import { BILLING_FACADE } from "./application/interfaces/billing-facade.interface";
@@ -28,6 +29,8 @@ import { ConnectionSchema, ConnectionSchemaClass } from "./infrastructure/persis
 import { ConnectionRepository } from "./infrastructure/persistence/mongo-connection.repository";
 import { PrivateListSchema, PrivateListSchemaClass } from "./infrastructure/persistence/private-list.schema";
 import { PrivateListRepository } from "./infrastructure/persistence/mongo-private-list.repository";
+import { PriorityIntroSchema, PriorityIntroSchemaClass } from "./infrastructure/persistence/priority-intro.schema";
+import { MongoPriorityIntroRepository } from "./infrastructure/persistence/mongo-priority-intro.repository";
 import { GetPrivateListUseCase } from "./application/use-cases/get-private-list.use-case";
 import { GetConnectionsUseCase } from "./application/use-cases/get-connections.use-case";
 import { ConnectionAcceptedListener } from "./application/listeners/connection-accepted.listener";
@@ -43,6 +46,7 @@ class MockBillingFacade {
         MongooseModule.forFeature([
             { name: ConnectionSchemaClass.name, schema: ConnectionSchema },
             { name: PrivateListSchemaClass.name, schema: PrivateListSchema },
+            { name: PriorityIntroSchemaClass.name, schema: PriorityIntroSchema },
         ]),
         UserModule
     ],
@@ -50,6 +54,7 @@ class MockBillingFacade {
     providers: [
         { provide: CONNECTION_REPOSITORY, useClass: ConnectionRepository },
         { provide: PRIVATE_LIST_REPOSITORY, useClass: PrivateListRepository },
+        { provide: PRIORITY_INTRO_REPOSITORY, useClass: MongoPriorityIntroRepository },
         { provide: BILLING_FACADE, useClass: MockBillingFacade },
 
         { provide: GET_CONNECTIONS_USE_CASE, useClass: GetConnectionsUseCase },
