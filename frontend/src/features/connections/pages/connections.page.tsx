@@ -8,6 +8,8 @@ import { ConnectionsEmptyState } from '../components/connections-empty-state.com
 import { ConnectionsPagination } from '../components/connections-pagination.component';
 import { ConnectionCard } from '../components/connection-card.component';
 import { RevokeMatchModal } from '../components/revoke-match-modal.component';
+import { PendingSubfilter } from '../components/pending-subfilter.component';
+import { PendingCard } from '../components/pending-card.component';
 import styles from './connections.module.css';
 
 export const ConnectionsPage: React.FC = () => {
@@ -75,7 +77,6 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
     const [selectedRevoke, setSelectedRevoke] = useState<{ id: string; name: string } | null>(null);
 
     const handleMessage = (partnerId: string, partnerName: string) => {
-        // Reserved for Chat routing when Messaging module is active
         console.log(`Initiating chat conversation with partner: ${partnerName} (${partnerId})`);
     };
 
@@ -138,36 +139,109 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
     );
 };
 
-// 2. Pending Tab Layout Shell (Ready for PendingCard & Subfilter in Batch 3)
+// 2. Pending Tab Section (Wired with PendingSubfilter & PendingCard)
 interface PendingTabSectionProps {
     hook: ReturnType<typeof usePendingConnections>;
 }
 const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
-    if (hook.isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner} />
-                <p>Loading pending requests...</p>
-            </div>
-        );
-    }
+    const [activeActionId, setActiveActionId] = useState<string | null>(null);
 
-    if (hook.requests.length === 0) {
-        return <ConnectionsEmptyState tab="PENDING" />;
-    }
+    const handleAccept = async (connectionId: string) => {
+        setActiveActionId(connectionId);
+        try {
+            await hook.actions.accept(connectionId);
+        } catch (err) {
+            console.error('Failed to accept request:', err);
+        } finally {
+            setActiveActionId(null);
+        }
+    };
+
+    const handleDecline = async (connectionId: string) => {
+        setActiveActionId(connectionId);
+        try {
+            await hook.actions.decline(connectionId);
+        } catch (err) {
+            console.error('Failed to decline request:', err);
+        } finally {
+            setActiveActionId(null);
+        }
+    };
+
+    const handleCancel = async (connectionId: string) => {
+        setActiveActionId(connectionId);
+        try {
+            await hook.actions.cancel(connectionId);
+        } catch (err) {
+            console.error('Failed to cancel request:', err);
+        } finally {
+            setActiveActionId(null);
+        }
+    };
+
+    const getEmptyStateContent = () => {
+        if (hook.filter === 'RECEIVED') {
+            return {
+                title: 'No Received Requests',
+                description: 'You have responded to all incoming requests. When another member expresses interest, they will appear here.',
+            };
+        }
+        if (hook.filter === 'SENT') {
+            return {
+                title: 'No Outbound Requests',
+                description: 'You haven\'t sent any requests that are pending. Browse Discovery to find someone interesting and reach out.',
+            };
+        }
+        return undefined;
+    };
+
+    const customEmpty = getEmptyStateContent();
 
     return (
         <div>
-            <div className={styles.cardsGrid}>
-                {/* Pending Cards & Subfilters will be mounted here in Batch 3 */}
-            </div>
-            <ConnectionsPagination
-                page={hook.page}
-                totalPages={hook.totalPages}
-                onPageChange={hook.setPage}
-                hasNextPage={hook.hasNextPage}
-                hasPreviousPage={hook.hasPreviousPage}
+            {/* Direction Subfilter (All / Received / Sent) */}
+            <PendingSubfilter
+                currentFilter={hook.filter}
+                onFilterChange={hook.setFilter}
             />
+
+            {hook.isLoading ? (
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner} />
+                    <p>Loading pending requests...</p>
+                </div>
+            ) : hook.requests.length === 0 ? (
+                <ConnectionsEmptyState
+                    tab="PENDING"
+                    customTitle={customEmpty?.title}
+                    customDescription={customEmpty?.description}
+                />
+            ) : (
+                <>
+                    <div className={styles.cardsGrid}>
+                        {hook.requests.map((request) => (
+                            <PendingCard
+                                key={request.id}
+                                request={request}
+                                onAccept={handleAccept}
+                                onDecline={handleDecline}
+                                onCancel={handleCancel}
+                                isAccepting={activeActionId === request.id && hook.actionLoading.isAccepting}
+                                isDeclining={activeActionId === request.id && hook.actionLoading.isDeclining}
+                                isCancelling={activeActionId === request.id && hook.actionLoading.isCancelling}
+                            />
+                        ))}
+                    </div>
+
+                    <ConnectionsPagination
+                        page={hook.page}
+                        totalPages={hook.totalPages}
+                        onPageChange={hook.setPage}
+                        hasNextPage={hook.hasNextPage}
+                        hasPreviousPage={hook.hasPreviousPage}
+                    />
+                </>
+            )}
         </div>
     );
 };
