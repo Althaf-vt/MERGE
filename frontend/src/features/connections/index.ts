@@ -12,4 +12,5 @@ export * from './components/connection-card.component';
 export * from './components/revoke-match-modal.component';
 export * from './components/pending-subfilter.component';
 export * from './components/pending-card.component';
+export * from './components/private-list-card.component';
 export * from './pages/connections.page';

@@ -10,6 +10,7 @@ import { ConnectionCard } from '../components/connection-card.component';
 import { RevokeMatchModal } from '../components/revoke-match-modal.component';
 import { PendingSubfilter } from '../components/pending-subfilter.component';
 import { PendingCard } from '../components/pending-card.component';
+import { PrivateListCard } from '../components/private-list-card.component';
 import styles from './connections.module.css';
 
 export const ConnectionsPage: React.FC = () => {
@@ -69,7 +70,7 @@ export const ConnectionsPage: React.FC = () => {
     );
 };
 
-// 1. Active Matches Tab Section (Wired with ConnectionCard & RevokeMatchModal)
+// 1. Active Matches Tab Section
 interface ActiveTabSectionProps {
     hook: ReturnType<typeof useActiveConnections>;
 }
@@ -139,7 +140,7 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
     );
 };
 
-// 2. Pending Tab Section (Wired with PendingSubfilter & PendingCard)
+// 2. Pending Requests Tab Section
 interface PendingTabSectionProps {
     hook: ReturnType<typeof usePendingConnections>;
 }
@@ -199,7 +200,6 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
 
     return (
         <div>
-            {/* Direction Subfilter (All / Received / Sent) */}
             <PendingSubfilter
                 currentFilter={hook.filter}
                 onFilterChange={hook.setFilter}
@@ -246,11 +246,50 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
     );
 };
 
-// 3. Shortlist Tab Layout Shell (Ready for PrivateListCard in Batch 4)
+// 3. Shortlisted Profiles Tab Section
 interface ShortlistTabSectionProps {
     hook: ReturnType<typeof usePrivateList>;
 }
 const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
+    const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
+
+    const handleConnect = async (targetUserId: string) => {
+        setActionState({ id: targetUserId, type: 'CONNECT' });
+        try {
+            await hook.actions.sendRequest(targetUserId);
+        } catch (err) {
+            console.error('Failed to send connection request:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handleMove = async (targetUserId: string, targetType: 'SHORTLIST' | 'REVIEW_LATER') => {
+        setActionState({ id: targetUserId, type: 'MOVE' });
+        try {
+            await hook.actions.move(targetUserId, targetType);
+        } catch (err) {
+            console.error('Failed to move profile:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handleRemove = async (targetUserId: string) => {
+        setActionState({ id: targetUserId, type: 'REMOVE' });
+        try {
+            await hook.actions.remove(targetUserId);
+        } catch (err) {
+            console.error('Failed to remove profile from shortlist:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handlePriorityIntro = (targetUserId: string, targetName: string) => {
+        console.log(`Opening priority intro modal for: ${targetName} (${targetUserId})`);
+    };
+
     if (hook.isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -267,8 +306,21 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
     return (
         <div>
             <div className={styles.cardsGrid}>
-                {/* Shortlist Cards will be mounted here in Batch 4 */}
+                {hook.items.map((item) => (
+                    <PrivateListCard
+                        key={item.id}
+                        item={item}
+                        onConnect={handleConnect}
+                        onPriorityIntro={handlePriorityIntro}
+                        onMove={handleMove}
+                        onRemove={handleRemove}
+                        isConnecting={actionState?.id === item.targetUserId && actionState?.type === 'CONNECT' && hook.actionLoading.isSendingRequest}
+                        isMoving={actionState?.id === item.targetUserId && actionState?.type === 'MOVE' && hook.actionLoading.isAdding}
+                        isRemoving={actionState?.id === item.targetUserId && actionState?.type === 'REMOVE' && hook.actionLoading.isRemoving}
+                    />
+                ))}
             </div>
+
             <ConnectionsPagination
                 page={hook.page}
                 totalPages={hook.totalPages}
@@ -280,11 +332,50 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
     );
 };
 
-// 4. Review Later Tab Layout Shell (Ready for PrivateListCard in Batch 4)
+// 4. Review Later Tab Section
 interface ReviewLaterTabSectionProps {
     hook: ReturnType<typeof usePrivateList>;
 }
 const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) => {
+    const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
+
+    const handleConnect = async (targetUserId: string) => {
+        setActionState({ id: targetUserId, type: 'CONNECT' });
+        try {
+            await hook.actions.sendRequest(targetUserId);
+        } catch (err) {
+            console.error('Failed to send connection request:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handleMove = async (targetUserId: string, targetType: 'SHORTLIST' | 'REVIEW_LATER') => {
+        setActionState({ id: targetUserId, type: 'MOVE' });
+        try {
+            await hook.actions.move(targetUserId, targetType);
+        } catch (err) {
+            console.error('Failed to move profile:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handleRemove = async (targetUserId: string) => {
+        setActionState({ id: targetUserId, type: 'REMOVE' });
+        try {
+            await hook.actions.remove(targetUserId);
+        } catch (err) {
+            console.error('Failed to remove profile from review later:', err);
+        } finally {
+            setActionState(null);
+        }
+    };
+
+    const handlePriorityIntro = (targetUserId: string, targetName: string) => {
+        console.log(`Opening priority intro modal for: ${targetName} (${targetUserId})`);
+    };
+
     if (hook.isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -301,8 +392,21 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
     return (
         <div>
             <div className={styles.cardsGrid}>
-                {/* Review Later Cards will be mounted here in Batch 4 */}
+                {hook.items.map((item) => (
+                    <PrivateListCard
+                        key={item.id}
+                        item={item}
+                        onConnect={handleConnect}
+                        onPriorityIntro={handlePriorityIntro}
+                        onMove={handleMove}
+                        onRemove={handleRemove}
+                        isConnecting={actionState?.id === item.targetUserId && actionState?.type === 'CONNECT' && hook.actionLoading.isSendingRequest}
+                        isMoving={actionState?.id === item.targetUserId && actionState?.type === 'MOVE' && hook.actionLoading.isAdding}
+                        isRemoving={actionState?.id === item.targetUserId && actionState?.type === 'REMOVE' && hook.actionLoading.isRemoving}
+                    />
+                ))}
             </div>
+
             <ConnectionsPagination
                 page={hook.page}
                 totalPages={hook.totalPages}
