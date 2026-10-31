@@ -6,7 +6,6 @@ import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { ConnectionResponseDto, GetConnectionsQueryDto, TargetUserDto } from "../../application/dtos/connection.dto";
-import { SendPriorityIntroDto } from "../../application/dtos/priority-intro.dto";
 import {
     ACCEPT_CONNECTION_USE_CASE,
     CANCEL_CONNECTION_USE_CASE,
@@ -21,10 +20,6 @@ import {
     REVOKE_MATCH_USE_CASE,
     SEND_CONNECTION_REQUEST_USE_CASE,
 } from "../../application/interfaces/connection.use-cases.interface";
-import {
-    ISendPriorityIntroUseCase,
-    SEND_PRIORITY_INTRO_USE_CASE,
-} from "../../application/interfaces/priority-intro.use-cases.interface";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -32,7 +27,6 @@ export class ConnectionsController {
     constructor(
         @Inject(GET_CONNECTIONS_USE_CASE) private readonly _getConnectionsUseCase: IGetConnectionsUseCase,
         @Inject(SEND_CONNECTION_REQUEST_USE_CASE) private readonly _sendRequestUseCase: ISendConnectionRequestUseCase,
-        @Inject(SEND_PRIORITY_INTRO_USE_CASE) private readonly _sendPriorityIntroUseCase: ISendPriorityIntroUseCase,
         @Inject(ACCEPT_CONNECTION_USE_CASE) private readonly _acceptRequestUseCase: IAcceptConnectionUseCase,
         @Inject(DECLINE_CONNECTION_USE_CASE) private readonly _declineRequestUseCase: IDeclineConnectionUseCase,
         @Inject(CANCEL_CONNECTION_USE_CASE) private readonly _cancelRequestUseCase: ICancelConnectionUseCase,
@@ -59,13 +53,6 @@ export class ConnectionsController {
     async sendRequest(@Req() req: AuthenticatedRequest, @Body() dto: TargetUserDto): Promise<ApiResponse> {
         await this._sendRequestUseCase.execute(req.user.userId, dto);
         return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT };
-    }
-
-    @Post(API_ENDPOINTS.CONNECTIONS.PRIORITY_INTRO)
-    @HttpCode(HttpStatus.OK)
-    async sendPriorityIntro(@Req() req: AuthenticatedRequest, @Body() dto: SendPriorityIntroDto): Promise<ApiResponse> {
-        await this._sendPriorityIntroUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.PRIORITY_INTRO_SENT };
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.ACCEPT)
