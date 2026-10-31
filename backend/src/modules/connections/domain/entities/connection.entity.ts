@@ -1,7 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-import { CONNECTION_CONSTANTS, CONNECTION_ERROR_MESSAGES } from "../constants/connection.constants";
+import { CONNECTION_ERROR_MESSAGES } from "../constants/connection.constants";
 import { ConnectionStatus } from "../enums/connection.enums";
 import { ConnectionAcceptedDomainEvent } from "../events/connection-accepted.domain-event";
 
@@ -10,16 +10,13 @@ export interface ConnectionProps {
     requesterId: string;
     recipientId: string;
     status?: ConnectionStatus;
-    isPriority?: boolean;
-    icebreakerMessage?: string;
     respondedAt?: Date | null;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-export type ConnectionData = Required<Omit<ConnectionProps, 'icebreakerMessage'>> & {
-    icebreakerMessage?: string;
-};
+export type CreateConnectionProps = Pick<ConnectionProps, 'requesterId' | 'recipientId'>;
+export type ConnectionData = Required<ConnectionProps>;
 
 export class ConnectionAggregate extends AggregateRoot {
     private readonly _props: ConnectionData;
@@ -33,12 +30,18 @@ export class ConnectionAggregate extends AggregateRoot {
             requesterId: props.requesterId.trim(),
             recipientId: props.recipientId.trim(),
             status: props.status ?? ConnectionStatus.PENDING,
-            isPriority: props.isPriority ?? false,
-            icebreakerMessage: props.icebreakerMessage?.trim() || undefined,
             respondedAt: props.respondedAt ?? null,
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date(),
         };
+    }
+
+    public static create(props: CreateConnectionProps): ConnectionAggregate {
+        return new ConnectionAggregate({
+            requesterId: props.requesterId,
+            recipientId: props.recipientId,
+            status: ConnectionStatus.PENDING,
+        });
     }
 
     private _validateInvariants(props: ConnectionProps): void {
@@ -49,14 +52,6 @@ export class ConnectionAggregate extends AggregateRoot {
         if (props.requesterId.trim() === props.recipientId.trim()) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.SELF_CONNECTION_FORBIDDEN);
         }
-
-        if (props.icebreakerMessage && props.icebreakerMessage.length > CONNECTION_CONSTANTS.ICEBREAKER.MAX_LENGTH) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.ICEBREAKER_TOO_LONG);
-        }
-
-        if (props.isPriority && (!props.icebreakerMessage || !props.icebreakerMessage.trim())) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.PRIORITY_INTRO_REQUIRES_ICEBREAKER);
-        }
     }
 
     // Getters
@@ -64,8 +59,6 @@ export class ConnectionAggregate extends AggregateRoot {
     get requesterId(): string { return this._props.requesterId; }
     get recipientId(): string { return this._props.recipientId; }
     get status(): ConnectionStatus { return this._props.status; }
-    get isPriority(): boolean { return this._props.isPriority; }
-    get icebreakerMessage(): string | undefined { return this._props.icebreakerMessage; }
     get respondedAt(): Date | null { return this._props.respondedAt; }
     get createdAt(): Date { return this._props.createdAt; }
     get updatedAt(): Date { return this._props.updatedAt; }
