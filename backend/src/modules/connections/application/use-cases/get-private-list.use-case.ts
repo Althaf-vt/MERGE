@@ -5,6 +5,7 @@ import { GetPrivateListQueryDto, PaginatedPrivateListResponseDto } from "../dtos
 import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
+import { PrivateListDtoMapper } from "../mappers/private-list-dto.mapper";
 
 @Injectable()
 export class GetPrivateListUseCase implements IGetPrivateListUseCase {
@@ -29,14 +30,7 @@ export class GetPrivateListUseCase implements IGetPrivateListUseCase {
                     targetPhotoUrl = await this._mediaFacade.getPresignedMediaUrl(targetPhotoUrl) || targetPhotoUrl;
                 }
 
-                return {
-                    id: entry.id,
-                    targetUserId: entry.targetUserId,
-                    targetName: targetProfile?.displayName ?? 'Unknown',
-                    targetPhotoUrl: targetPhotoUrl,
-                    listType: entry.listType,
-                    createdAt: entry.createdAt,
-                };
+                return PrivateListDtoMapper.toResponseDto(entry, targetProfile, targetPhotoUrl);
             })
         );
 
