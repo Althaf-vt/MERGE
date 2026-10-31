@@ -32,10 +32,7 @@ export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.PRIORITY_INTERACTION_ALREADY_EXISTS);
         }
 
-        // 1. Cross-Module Synchronous Call 
-        await this._billingFacade.deductPriorityCredit(requesterId);
-
-        // 2. Create the Priority Request
+        // 1. Create and validate the Priority Request Aggregate first
         const newConnection = new ConnectionAggregate({
             requesterId,
             recipientId: dto.targetUserId,
@@ -43,6 +40,10 @@ export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
             icebreakerMessage: dto.icebreakerMessage.trim(),
         });
 
+        // 2. Cross-Module Synchronous Call (deduct credit only after invariants pass)
+        await this._billingFacade.deductPriorityCredit(requesterId);
+
+        // 3. Persist the valid priority request
         await this._connectionRepo.create(newConnection);
     }
 }
