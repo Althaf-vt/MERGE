@@ -10,3 +10,9 @@ export enum PrivateListType {
     SHORTLIST = 'SHORTLIST',
     REVIEW_LATER = 'REVIEW_LATER',
 }
+
+export enum ConnectionRole {
+    REQUESTER = 'REQUESTER',
+    RECIPIENT = 'RECIPIENT',
+    BOTH = 'BOTH',
+}

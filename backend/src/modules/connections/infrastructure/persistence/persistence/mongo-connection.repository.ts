@@ -5,10 +5,13 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { BaseMongoRepository } from "../../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { ConnectionAggregate } from "../../../domain/entities/connection.entity";
 import { ConnectionDocument, ConnectionSchemaClass } from "./connection.schema";
-import { IConnectionRepository } from "../../../domain/interfaces/connection-repository.interface";
+import { 
+    GetConnectionsFilters, 
+    IConnectionRepository, 
+    PaginatedConnectionsResult 
+} from "../../../domain/interfaces/connection-repository.interface";
 import { ConnectionPersistenceMapper } from "../mappers/connection-persistence.mapper";
-import { ConnectionStatus } from "../../../domain/enums/connection.enums";
-
+import { ConnectionRole, ConnectionStatus } from "../../../domain/enums/connection.enums";
 
 @Injectable()
 export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregate, ConnectionDocument> implements IConnectionRepository {
@@ -51,19 +54,14 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
         return this.toDomain(doc as unknown as ConnectionDocument);
     }
 
-    async getPaginatedByStatus(
-        userId: string, 
-        statuses: ConnectionStatus[], 
-        page: number, 
-        limit: number, 
-        role: 'REQUESTER' | 'RECIPIENT' | 'BOTH'
-    ): Promise<{ data: ConnectionAggregate[]; total: number }> {
+    async getPaginatedByStatus(filters: GetConnectionsFilters): Promise<PaginatedConnectionsResult> {
+        const { userId, statuses, page, limit, role } = filters;
         const skip = (page - 1) * limit;
         const query: Record<string, unknown> = { status: { $in: statuses } };
 
-        if (role === 'REQUESTER') {
+        if (role === ConnectionRole.REQUESTER) {
             query.requesterId = userId;
-        } else if (role === 'RECIPIENT') {
+        } else if (role === ConnectionRole.RECIPIENT) {
             query.recipientId = userId;
         } else {
             query.$or = [{ requesterId: userId }, { recipientId: userId }];
