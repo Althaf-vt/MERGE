@@ -5,4 +5,7 @@ export * from './hooks/use-tab-navigation.hook';
 export * from './hooks/use-active-connections.hook';
 export * from './hooks/use-pending-connections.hook';
 export * from './hooks/use-private-list.hook';
+export * from './components/connections-tabs-header.component';
+export * from './components/connections-empty-state.component';
+export * from './components/connections-pagination.component';
 export * from './pages/connections.page';
