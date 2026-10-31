@@ -1,32 +1,35 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
-import { Type } from "class-transformer";
-import { IsNumber, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { Transform, Type } from "class-transformer";
 import { ConnectionStatus } from "../../domain/enums/connection.enums";
+import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
 
 export class PaginationQueryDto {
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    @Min(1)
-    page?: number = 1;
+    @Min(CONNECTION_CONSTANTS.PAGINATION.DEFAULT_PAGE)
+    page?: number = CONNECTION_CONSTANTS.PAGINATION.DEFAULT_PAGE;
 
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
     @Min(1)
-    limit?: number = 20;
+    @Max(CONNECTION_CONSTANTS.PAGINATION.MAX_LIMIT)
+    limit?: number = CONNECTION_CONSTANTS.PAGINATION.DEFAULT_LIMIT;
 }
 
 export class TargetUserDto {
     @IsString()
     @IsNotEmpty()
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
     targetUserId!: string;
 }
 
 export class SendPriorityIntroDto extends TargetUserDto {
     @IsString()
     @IsNotEmpty()
-    @MaxLength(500)
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    @MaxLength(CONNECTION_CONSTANTS.ICEBREAKER.MAX_LENGTH)
     icebreakerMessage!: string;
 }
 
