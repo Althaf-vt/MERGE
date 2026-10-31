@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IGetPrivateListUseCase } from "../interfaces/private-list.use-cases.interface";
 import { IPrivateListRepository, PRIVATE_LIST_REPOSITORY } from "../../domain/interfaces/private-list-repository.interface";
+import { CONNECTION_REPOSITORY, IConnectionRepository } from "../../domain/interfaces/connection-repository.interface";
 import { GetPrivateListQueryDto, PaginatedPrivateListResponseDto } from "../dtos/private-list.dto";
 import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
@@ -11,6 +12,7 @@ import { PrivateListDtoMapper } from "../mappers/private-list-dto.mapper";
 export class GetPrivateListUseCase implements IGetPrivateListUseCase {
     constructor(
         @Inject(PRIVATE_LIST_REPOSITORY) private readonly _listRepo: IPrivateListRepository,
+        @Inject(CONNECTION_REPOSITORY) private readonly _connectionRepo: IConnectionRepository,
         @Inject(PUBLIC_PROFILE_FACADE) private readonly _publicProfileFacade: IPublicProfileFacade,
         @Inject(MEDIA_FACADE) private readonly _mediaFacade: IMediaFacade,
     ) {}
@@ -23,14 +25,24 @@ export class GetPrivateListUseCase implements IGetPrivateListUseCase {
 
         const hydratedData = await Promise.all(
             paginatedResult.data.map(async (entry) => {
-                const targetProfile = await this._publicProfileFacade.getPublicProfile(entry.targetUserId);
+                const [targetProfile, pendingRequest] = await Promise.all([
+                    this._publicProfileFacade.getPublicProfile(entry.targetUserId),
+                    this._connectionRepo.findPendingRequest(userId, entry.targetUserId),
+                ]);
                 
                 let targetPhotoUrl = targetProfile?.profilePhotoUrl ?? null;
                 if (targetPhotoUrl) {
                     targetPhotoUrl = await this._mediaFacade.getPresignedMediaUrl(targetPhotoUrl) || targetPhotoUrl;
                 }
 
-                return PrivateListDtoMapper.toResponseDto(entry, targetProfile, targetPhotoUrl);
+                const hasPendingConnectionRequest = Boolean(pendingRequest);
+
+                return PrivateListDtoMapper.toResponseDto(
+                    entry,
+                    targetProfile,
+                    targetPhotoUrl,
+                    hasPendingConnectionRequest
+                );
             })
         );
 

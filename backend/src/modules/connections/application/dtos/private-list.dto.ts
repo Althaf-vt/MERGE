@@ -40,6 +40,7 @@ export interface PrivateListResponseDto {
     targetPhotoUrl: string | null;
     listType: PrivateListType;
     createdAt: Date;
+    hasPendingConnectionRequest: boolean;
 }
 
 export interface PaginatedPrivateListResponseDto {
