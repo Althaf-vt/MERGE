@@ -6,6 +6,7 @@ import { PRIVATE_LIST_REPOSITORY } from "./domain/interfaces/private-list-reposi
 import { PRIORITY_INTRO_REPOSITORY } from "./domain/interfaces/priority-intro-repository.interface";
 import { ConnectionsController } from "./presentation/controllers/connections.controller";
 import { PrivateListsController } from "./presentation/controllers/private-lists.controller";
+import { PriorityIntrosController } from "./presentation/controllers/priority-intros.controller";
 import { BILLING_FACADE } from "./application/interfaces/billing-facade.interface";
 import { SendConnectionRequestUseCase } from "./application/use-cases/send-connection-request.use-case";
 import { SendPriorityIntroUseCase } from "./application/use-cases/send-priority-intro.use-case";
@@ -50,7 +51,7 @@ class MockBillingFacade {
         ]),
         UserModule
     ],
-    controllers: [ConnectionsController, PrivateListsController],
+    controllers: [ConnectionsController, PrivateListsController, PriorityIntrosController],
     providers: [
         { provide: CONNECTION_REPOSITORY, useClass: ConnectionRepository },
         { provide: PRIVATE_LIST_REPOSITORY, useClass: PrivateListRepository },
