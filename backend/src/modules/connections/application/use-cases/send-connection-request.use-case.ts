@@ -26,21 +26,13 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
         }
 
         const existingInteraction = await this._connectionRepo.findExistingInteraction(requesterId, dto.targetUserId);
-
         if (existingInteraction) {
-            // Auto-accept if the other user already sent a pending request to the current user
-            if (existingInteraction.requesterId === dto.targetUserId && existingInteraction.isPending()) {
-                existingInteraction.accept(requesterId);
-                await this._connectionRepo.update(existingInteraction);
-                return;
-            }
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INTERACTION_ALREADY_EXISTS);
         }
 
-        const newConnection = new ConnectionAggregate({
+        const newConnection = ConnectionAggregate.create({
             requesterId,
             recipientId: dto.targetUserId,
-            isPriority: false,
         });
 
         await this._connectionRepo.create(newConnection);
