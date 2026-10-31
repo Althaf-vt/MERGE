@@ -15,42 +15,89 @@ export interface ConnectionProps {
     updatedAt?: Date;
 }
 
+export type ConnectionData = Required<Omit<ConnectionProps, 'icebreakerMessage'>> & {
+    icebreakerMessage?: string;
+};
+
 export class ConnectionAggregate extends AggregateRoot {
-    private _props: Required<ConnectionProps>;
+    private readonly _props: ConnectionData;
 
     constructor(props: ConnectionProps) {
         super();
+        this._validateInvariants(props);
+
         this._props = {
-            ...props,
             id: props.id ?? '',
+            requesterId: props.requesterId.trim(),
+            recipientId: props.recipientId.trim(),
             status: props.status ?? ConnectionStatus.PENDING,
             isPriority: props.isPriority ?? false,
-            icebreakerMessage: props.icebreakerMessage ?? undefined,
+            icebreakerMessage: props.icebreakerMessage?.trim() || undefined,
             respondedAt: props.respondedAt ?? null,
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date(),
-        } as Required<ConnectionProps>;
+        };
     }
 
+    private _validateInvariants(props: ConnectionProps): void {
+        if (!props.requesterId?.trim() || !props.recipientId?.trim()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Requester ID and Recipient ID are required.');
+        }
+
+        if (props.requesterId.trim() === props.recipientId.trim()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A user cannot connect with themselves.');
+        }
+
+        if (props.icebreakerMessage && props.icebreakerMessage.length > 500) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Icebreaker message cannot exceed 500 characters.');
+        }
+
+        if (props.isPriority && props.icebreakerMessage !== undefined && !props.icebreakerMessage.trim()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Priority introductions require an icebreaker message.');
+        }
+    }
+
+    // Getters
     get id(): string { return this._props.id; }
     get requesterId(): string { return this._props.requesterId; }
     get recipientId(): string { return this._props.recipientId; }
     get status(): ConnectionStatus { return this._props.status; }
     get isPriority(): boolean { return this._props.isPriority; }
     get icebreakerMessage(): string | undefined { return this._props.icebreakerMessage; }
+    get respondedAt(): Date | null { return this._props.respondedAt; }
     get createdAt(): Date { return this._props.createdAt; }
     get updatedAt(): Date { return this._props.updatedAt; }
 
+    // Domain Queries
+    public isParticipant(userId: string): boolean {
+        return this._props.requesterId === userId || this._props.recipientId === userId;
+    }
+
+    public getPartnerId(userId: string): string {
+        if (!this.isParticipant(userId)) {
+            throw new DomainException(ErrorCode.FORBIDDEN, 'User is not a participant in this connection.');
+        }
+        return this._props.requesterId === userId ? this._props.recipientId : this._props.requesterId;
+    }
+
+    public isPending(): boolean {
+        return this._props.status === ConnectionStatus.PENDING;
+    }
+
+    public isAccepted(): boolean {
+        return this._props.status === ConnectionStatus.ACCEPTED;
+    }
+
+    // State Transitions
     public accept(actionUserId: string): void {
         if (this._props.recipientId !== actionUserId) {
             throw new DomainException(ErrorCode.FORBIDDEN, 'Only the recipient can accept a connection request.');
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot accept a request that is currently ${this._props.status}.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot accept a connection with status ${this._props.status}.`);
         }
-        this._props.status = ConnectionStatus.ACCEPTED;
-        this._props.respondedAt = new Date();
-        this._markUpdatedAt();
+
+        this._transitionStatus(ConnectionStatus.ACCEPTED);
     }
 
     public decline(actionUserId: string): void {
@@ -58,11 +105,10 @@ export class ConnectionAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.FORBIDDEN, 'Only the recipient can decline a connection request.');
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending requests can be declined.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot decline a connection with status ${this._props.status}.`);
         }
-        this._props.status = ConnectionStatus.DECLINED;
-        this._props.respondedAt = new Date();
-        this._markUpdatedAt();
+
+        this._transitionStatus(ConnectionStatus.DECLINED);
     }
 
     public cancel(actionUserId: string): void {
@@ -70,30 +116,31 @@ export class ConnectionAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.FORBIDDEN, 'Only the requester can cancel a pending connection request.');
         }
         if (this._props.status !== ConnectionStatus.PENDING) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending requests can be cancelled.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot cancel a connection with status ${this._props.status}.`);
         }
-        this._props.status = ConnectionStatus.CANCELLED;
-        this._props.respondedAt = new Date();
-        this._markUpdatedAt();
+
+        this._transitionStatus(ConnectionStatus.CANCELLED);
     }
 
     public revoke(actionUserId: string): void {
-        if (this._props.requesterId !== actionUserId && this._props.recipientId !== actionUserId) {
+        if (!this.isParticipant(actionUserId)) {
             throw new DomainException(ErrorCode.FORBIDDEN, 'You are not a participant in this connection.');
         }
         if (this._props.status !== ConnectionStatus.ACCEPTED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only active matches can be revoked.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only active connections can be revoked.');
         }
-        this._props.status = ConnectionStatus.REVOKED;
-        this._props.respondedAt = new Date();
-        this._markUpdatedAt();
+
+        this._transitionStatus(ConnectionStatus.REVOKED);
     }
 
-    private _markUpdatedAt(): void {
-        this._props.updatedAt = new Date();
+    private _transitionStatus(newStatus: ConnectionStatus): void {
+        const now = new Date();
+        this._props.status = newStatus;
+        this._props.respondedAt = now;
+        this._props.updatedAt = now;
     }
 
-    public toJSON(): Record<string, unknown> {
+    public toJSON(): ConnectionData {
         return { ...this._props };
     }
 }
