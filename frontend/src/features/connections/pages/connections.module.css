@@ -1,0 +1,125 @@
+.pageContainer {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fafafa;
+    padding-top: 6.5rem; /* Clearance for floating TopNav */
+    padding-bottom: 4rem;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #111827;
+}
+
+.contentWrapper {
+    max-width: 1140px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.headerSection {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+.pageSubtitle {
+    font-size: 0.975rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.tabContentStage {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+}
+
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Skeleton Loading State */
+.skeletonCard {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f3f4f6;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.skeletonMedia {
+    width: 100%;
+    aspect-ratio: 4 / 3.8;
+    background: linear-gradient(90deg, #f3f4f6 0%, #ede9fe 50%, #f3f4f6 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeletonBody {
+    padding: 1.125rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.skeletonLineTitle {
+    width: 60%;
+    height: 18px;
+    border-radius: 4px;
+    background: #f3f4f6;
+}
+
+.skeletonLineSub {
+    width: 40%;
+    height: 12px;
+    border-radius: 4px;
+    background: #f3f4f6;
+}
+
+.skeletonButton {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    margin-top: 0.25rem;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pageContainer {
+        padding-top: 5.5rem;
+    }
+
+    .contentWrapper {
+        width: 94%;
+    }
+
+    .pageTitle {
+        font-size: 1.625rem;
+    }
+
+    .cardsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+}

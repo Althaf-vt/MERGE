@@ -45,6 +45,7 @@ import { BlockedUsersPage } from './features/profile/pages/blocked-users.page';
 import { PhotoVerificationPage } from './features/admin/photo-verification/pages/photo-verification.page';
 import { KycEscalationPage } from './features/admin/kyc-escalation/pages/kyc-escalation.page';
 import { DiscoveryPage } from './features/discovery/pages/discovery.page';
+import { ConnectionsPage } from './features/connections/pages/connections.page';
 
 
 export const App = () => {
@@ -101,6 +102,7 @@ export const App = () => {
                             <Route path="/profile-live" element={<ProfileLivePage />} />
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
                             <Route path='/discovery' element={<DiscoveryPage />} />
+                            <Route path='/connections' element={<ConnectionsPage />} />
 
                             {/* USER PROFILE MANAGEMENT ROUTES */}
                             <Route path="/profile" element={<ProfileLayout />}>

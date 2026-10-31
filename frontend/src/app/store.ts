@@ -8,6 +8,7 @@ import adminAuthReducer from "../features/admin/auth/slices/admin-auth.slice";
 import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { KycEscalationApi } from "../features/admin/kyc-escalation/api/kyc-escalation.api";
 import { discoveryApi } from "../features/discovery/api/discovery.api";
+import { connectionsApi } from '../shared/api/connections.api';
 
 export const store = configureStore({
     reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
         [adminRootApi.reducerPath]: adminRootApi.reducer,
         [KycEscalationApi.reducerPath]: KycEscalationApi.reducer,
         [discoveryApi.reducerPath]: discoveryApi.reducer,
+        [connectionsApi.reducerPath]: connectionsApi.reducer,
     },
 
     // 3. Middleware
@@ -30,6 +32,7 @@ export const store = configureStore({
             adminRootApi.middleware,
             KycEscalationApi.middleware,
             discoveryApi.middleware,
+            connectionsApi.middleware,
         ),
 });
 

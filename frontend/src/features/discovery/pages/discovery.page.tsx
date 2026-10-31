@@ -55,6 +55,7 @@ export const DiscoveryPage: React.FC = () => {
         isLoading,
         isFetching,
         isError,
+        isActionLoading,
         refetch,
         actions,
     } = useDiscoveryFeed(queryParams);
@@ -258,7 +259,7 @@ export const DiscoveryPage: React.FC = () => {
                                                 onShortlist={handleShortlist}
                                                 onConnect={handleConnect}
                                                 onOpenPriorityIntro={() => setIsPriorityIntroOpen(true)}
-                                                disabled={isFetching}
+                                                disabled={isFetching || isActionLoading}
                                             />
                                         </DiscoveryCard>
                                     </motion.div>
@@ -344,6 +345,7 @@ export const DiscoveryPage: React.FC = () => {
                     recipientPhotoUrl={activeProfile.primaryPhotoUrl}
                     onClose={() => setIsPriorityIntroOpen(false)}
                     onConfirm={handleConfirmPriorityIntro}
+                    isSubmitting={isActionLoading}
                 />
             )}
 
