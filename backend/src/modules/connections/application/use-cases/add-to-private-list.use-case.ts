@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IAddToPrivateListUseCase } from "../interfaces/private-list.use-cases.interface";
 import { IPrivateListRepository, PRIVATE_LIST_REPOSITORY } from "../../domain/interfaces/private-list-repository.interface";
-import { AddToPrivateListDto } from "../dtos/connection.dto";
+import { AddToPrivateListDto } from "../dtos/private-list.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PrivateListAggregate } from "../../domain/entities/private-list.entity";

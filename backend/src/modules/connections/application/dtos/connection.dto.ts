@@ -1,7 +1,6 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { Transform, Type } from "class-transformer";
 import { ConnectionStatus } from "../../domain/enums/connection.enums";
-import { PrivateListType } from "../../domain/enums/private-list.enums";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
 
 export class PaginationQueryDto {
@@ -32,12 +31,6 @@ export class SendPriorityIntroDto extends TargetUserDto {
     @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
     @MaxLength(CONNECTION_CONSTANTS.ICEBREAKER.MAX_LENGTH)
     icebreakerMessage!: string;
-}
-
-export class AddToPrivateListDto extends TargetUserDto {
-    @IsEnum(PrivateListType)
-    @IsNotEmpty()
-    listType!: PrivateListType;
 }
 
 export interface ConnectionResponseDto {

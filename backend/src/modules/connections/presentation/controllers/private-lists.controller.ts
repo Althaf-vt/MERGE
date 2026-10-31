@@ -5,13 +5,8 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { AddToPrivateListDto } from "../../application/dtos/connection.dto";
-import { 
-    ADD_TO_PRIVATE_LIST_USE_CASE, 
-    IAddToPrivateListUseCase, 
-    IRemoveFromPrivateListUseCase, 
-    REMOVE_FROM_PRIVATE_LIST_USE_CASE 
-} from "../../application/interfaces/private-list.use-cases.interface";
+import { AddToPrivateListDto } from "../../application/dtos/private-list.dto";
+import { ADD_TO_PRIVATE_LIST_USE_CASE, IAddToPrivateListUseCase, IRemoveFromPrivateListUseCase, REMOVE_FROM_PRIVATE_LIST_USE_CASE } from "../../application/interfaces/private-list.use-cases.interface";
 
 @Controller(API_ENDPOINTS.PRIVATE_LISTS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
