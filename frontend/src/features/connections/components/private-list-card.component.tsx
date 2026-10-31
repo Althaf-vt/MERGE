@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { PrivateListResponseDto, PrivateListType } from '../types/connections.types';
+import type { PrivateListResponseDto, PrivateListType } from '../../../shared/types/connections.types';
 import styles from './private-list-card.module.css';
 
 export interface PrivateListCardProps {

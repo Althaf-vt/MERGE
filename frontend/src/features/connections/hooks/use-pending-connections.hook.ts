@@ -5,7 +5,7 @@ import {
     useDeclineConnectionMutation,
     useCancelConnectionMutation,
 } from '../api/connections.api';
-import type { ConnectionRole, PendingDirectionFilter } from '../types/connections.types';
+import type { ConnectionRole, PendingDirectionFilter } from '../../../shared/types/connections.types';
 import { CONNECTIONS_PAGINATION_DEFAULTS } from '../constants/connections.constants';
 
 export const usePendingConnections = (initialLimit = CONNECTIONS_PAGINATION_DEFAULTS.DEFAULT_LIMIT) => {

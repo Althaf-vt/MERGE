@@ -3,7 +3,7 @@ import type {
     ConnectionStatus,
     ConnectionsTab,
     PrivateListType,
-} from "../types/connections.types";
+} from "../../../shared/types/connections.types";
 
 export const CONNECTIONS_PAGINATION_DEFAULTS = {
     DEFAULT_PAGE: 1,
@@ -12,25 +12,25 @@ export const CONNECTIONS_PAGINATION_DEFAULTS = {
 } as const;
 
 export const CONNECTIONS_TABS_CONFIG: readonly { key: ConnectionsTab; label: string; description: string }[] = [
-    { 
-        key: 'ACTIVE', 
+    {
+        key: 'ACTIVE',
         label: 'Active',
-        description: 'Mutual matches and ongoing conversations' 
+        description: 'Mutual matches and ongoing conversations'
     },
-    { 
-        key: 'PENDING', 
+    {
+        key: 'PENDING',
         label: 'Pending',
-        description: 'Connection requests awaiting response' 
+        description: 'Connection requests awaiting response'
     },
-    { 
-        key: 'SHORTLISTED', 
+    {
+        key: 'SHORTLISTED',
         label: 'Shortlisted',
-        description: 'Profiles saved to connect with soon' 
+        description: 'Profiles saved to connect with soon'
     },
-    { 
-        key: 'REVIEW_LATER', 
+    {
+        key: 'REVIEW_LATER',
         label: 'Review Later',
-        description: 'Profiles put on hold from discovery' 
+        description: 'Profiles put on hold from discovery'
     },
 ] as const;
 

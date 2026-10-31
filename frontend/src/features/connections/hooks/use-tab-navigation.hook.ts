@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { ConnectionsTab } from '../types/connections.types';
+import type { ConnectionsTab } from '../../../shared/types/connections.types';
 
 export const useTabNavigation = (initialTab: ConnectionsTab = 'ACTIVE') => {
     const [activeTab, setActiveTabState] = useState<ConnectionsTab>(initialTab);

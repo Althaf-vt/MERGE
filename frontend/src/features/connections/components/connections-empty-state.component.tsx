@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { ConnectionsTab } from '../types/connections.types';
+import type { ConnectionsTab } from '../../../shared/types/connections.types';
 import styles from './connections-empty-state.module.css';
 
 export interface ConnectionsEmptyStateProps {

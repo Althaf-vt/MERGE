@@ -1,4 +1,4 @@
-export * from './types/connections.types';
+export * from '../../shared/types/connections.types';
 export * from './constants/connections.constants';
 export * from './api/connections.api';
 export * from './hooks/use-tab-navigation.hook';

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PendingDirectionFilter } from '../types/connections.types';
+import type { PendingDirectionFilter } from '../../../shared/types/connections.types';
 import styles from './pending-subfilter.module.css';
 
 export interface PendingSubfilterProps {

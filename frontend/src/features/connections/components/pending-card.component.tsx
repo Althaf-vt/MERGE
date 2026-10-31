@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { ConnectionResponseDto } from '../types/connections.types';
+import type { ConnectionResponseDto } from '../../../shared/types/connections.types';
 import styles from './pending-card.module.css';
 
 export interface PendingCardProps {

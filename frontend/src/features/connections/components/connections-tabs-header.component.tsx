@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ConnectionsTab } from '../types/connections.types';
+import type { ConnectionsTab } from '../../../shared/types/connections.types';
 import { CONNECTIONS_TABS_CONFIG } from '../constants/connections.constants';
 import styles from './connections-tabs-header.module.css';
 

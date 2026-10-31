@@ -10,7 +10,7 @@ import type {
     SendConnectionRequestPayload,
     SendPriorityIntroPayload,
     AddToPrivateListPayload,
-} from "../types/connections.types";
+} from "../../../shared/types/connections.types";
 
 export const connectionsApi = createApi({
     reducerPath: 'connectionsApi',
