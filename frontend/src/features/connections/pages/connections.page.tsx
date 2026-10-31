@@ -11,7 +11,24 @@ import { RevokeMatchModal } from '../components/revoke-match-modal.component';
 import { PendingSubfilter } from '../components/pending-subfilter.component';
 import { PendingCard } from '../components/pending-card.component';
 import { PrivateListCard } from '../components/private-list-card.component';
+import { PriorityIntroModal } from '../components/priority-intro-modal.component';
 import styles from './connections.module.css';
+
+// Shimmering Skeleton Loader Grid
+const SkeletonGrid: React.FC = () => (
+    <div className={styles.cardsGrid} aria-label="Loading profiles">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={`skeleton-${i}`} className={styles.skeletonCard}>
+                <div className={styles.skeletonMedia} />
+                <div className={styles.skeletonBody}>
+                    <div className={styles.skeletonLineTitle} />
+                    <div className={styles.skeletonLineSub} />
+                    <div className={styles.skeletonButton} />
+                </div>
+            </div>
+        ))}
+    </div>
+);
 
 export const ConnectionsPage: React.FC = () => {
     const { activeTab, setActiveTab, isActive, isPending, isShortlisted, isReviewLater } = useTabNavigation();
@@ -96,12 +113,7 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
     };
 
     if (hook.isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner} />
-                <p>Loading active matches...</p>
-            </div>
-        );
+        return <SkeletonGrid />;
     }
 
     if (hook.connections.length === 0) {
@@ -206,10 +218,7 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
             />
 
             {hook.isLoading ? (
-                <div className={styles.loadingContainer}>
-                    <div className={styles.spinner} />
-                    <p>Loading pending requests...</p>
-                </div>
+                <SkeletonGrid />
             ) : hook.requests.length === 0 ? (
                 <ConnectionsEmptyState
                     tab="PENDING"
@@ -252,6 +261,7 @@ interface ShortlistTabSectionProps {
 }
 const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
     const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
+    const [priorityTarget, setPriorityTarget] = useState<{ id: string; name: string } | null>(null);
 
     const handleConnect = async (targetUserId: string) => {
         setActionState({ id: targetUserId, type: 'CONNECT' });
@@ -286,17 +296,22 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
         }
     };
 
-    const handlePriorityIntro = (targetUserId: string, targetName: string) => {
-        console.log(`Opening priority intro modal for: ${targetName} (${targetUserId})`);
+    const handleOpenPriorityIntro = (targetUserId: string, targetName: string) => {
+        setPriorityTarget({ id: targetUserId, name: targetName });
+    };
+
+    const handleConfirmPriorityIntro = async (message: string) => {
+        if (!priorityTarget) return;
+        try {
+            await hook.actions.sendPriorityIntro(priorityTarget.id, message);
+            setPriorityTarget(null);
+        } catch (err) {
+            console.error('Failed to send priority intro:', err);
+        }
     };
 
     if (hook.isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner} />
-                <p>Loading shortlisted profiles...</p>
-            </div>
-        );
+        return <SkeletonGrid />;
     }
 
     if (hook.items.length === 0) {
@@ -311,7 +326,7 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
                         key={item.id}
                         item={item}
                         onConnect={handleConnect}
-                        onPriorityIntro={handlePriorityIntro}
+                        onPriorityIntro={handleOpenPriorityIntro}
                         onMove={handleMove}
                         onRemove={handleRemove}
                         isConnecting={actionState?.id === item.targetUserId && actionState?.type === 'CONNECT' && hook.actionLoading.isSendingRequest}
@@ -328,6 +343,14 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
                 hasNextPage={hook.hasNextPage}
                 hasPreviousPage={hook.hasPreviousPage}
             />
+
+            <PriorityIntroModal
+                isOpen={Boolean(priorityTarget)}
+                recipientName={priorityTarget?.name || ''}
+                isSubmitting={hook.actionLoading.isSendingIntro}
+                onConfirm={handleConfirmPriorityIntro}
+                onClose={() => setPriorityTarget(null)}
+            />
         </div>
     );
 };
@@ -338,6 +361,7 @@ interface ReviewLaterTabSectionProps {
 }
 const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) => {
     const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
+    const [priorityTarget, setPriorityTarget] = useState<{ id: string; name: string } | null>(null);
 
     const handleConnect = async (targetUserId: string) => {
         setActionState({ id: targetUserId, type: 'CONNECT' });
@@ -372,17 +396,22 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
         }
     };
 
-    const handlePriorityIntro = (targetUserId: string, targetName: string) => {
-        console.log(`Opening priority intro modal for: ${targetName} (${targetUserId})`);
+    const handleOpenPriorityIntro = (targetUserId: string, targetName: string) => {
+        setPriorityTarget({ id: targetUserId, name: targetName });
+    };
+
+    const handleConfirmPriorityIntro = async (message: string) => {
+        if (!priorityTarget) return;
+        try {
+            await hook.actions.sendPriorityIntro(priorityTarget.id, message);
+            setPriorityTarget(null);
+        } catch (err) {
+            console.error('Failed to send priority intro:', err);
+        }
     };
 
     if (hook.isLoading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.spinner} />
-                <p>Loading profiles to review later...</p>
-            </div>
-        );
+        return <SkeletonGrid />;
     }
 
     if (hook.items.length === 0) {
@@ -397,7 +426,7 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
                         key={item.id}
                         item={item}
                         onConnect={handleConnect}
-                        onPriorityIntro={handlePriorityIntro}
+                        onPriorityIntro={handleOpenPriorityIntro}
                         onMove={handleMove}
                         onRemove={handleRemove}
                         isConnecting={actionState?.id === item.targetUserId && actionState?.type === 'CONNECT' && hook.actionLoading.isSendingRequest}
@@ -413,6 +442,14 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
                 onPageChange={hook.setPage}
                 hasNextPage={hook.hasNextPage}
                 hasPreviousPage={hook.hasPreviousPage}
+            />
+
+            <PriorityIntroModal
+                isOpen={Boolean(priorityTarget)}
+                recipientName={priorityTarget?.name || ''}
+                isSubmitting={hook.actionLoading.isSendingIntro}
+                onConfirm={handleConfirmPriorityIntro}
+                onClose={() => setPriorityTarget(null)}
             />
         </div>
     );
