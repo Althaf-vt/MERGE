@@ -30,6 +30,7 @@ import { PrivateListSchema, PrivateListSchemaClass } from "./infrastructure/pers
 import { PrivateListRepository } from "./infrastructure/persistence/mongo-private-list.repository";
 import { GetPrivateListUseCase } from "./application/use-cases/get-private-list.use-case";
 import { GetConnectionsUseCase } from "./application/use-cases/get-connections.use-case";
+import { ConnectionAcceptedListener } from "./application/listeners/connection-accepted.listener";
 
 class MockBillingFacade {
     async deductPriorityCredit(_userId: string): Promise<void> {
@@ -62,6 +63,8 @@ class MockBillingFacade {
         { provide: GET_PRIVATE_LIST_USE_CASE, useClass: GetPrivateListUseCase },
         { provide: ADD_TO_PRIVATE_LIST_USE_CASE, useClass: AddToPrivateListUseCase },
         { provide: REMOVE_FROM_PRIVATE_LIST_USE_CASE, useClass: RemoveFromPrivateListUseCase },
+
+        ConnectionAcceptedListener,
     ]
 })
 export class ConnectionsModule { }
