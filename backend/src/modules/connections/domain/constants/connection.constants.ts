@@ -9,6 +9,10 @@ export const CONNECTION_CONSTANTS = {
     },
 } as const;
 
+export const CONNECTION_DOMAIN_EVENTS = {
+    ACCEPTED: 'connection.accepted',
+} as const;
+
 export const CONNECTION_ERROR_MESSAGES = {
     CONNECTION_NOT_FOUND: 'Connection request not found.',
     PARTICIPANTS_REQUIRED: 'Requester ID and Recipient ID are required.',
