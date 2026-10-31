@@ -1,6 +1,6 @@
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { PrivateListAggregate } from "../entities/private-list.entity";
-import { PrivateListType } from "../enums/connection.enums";
+import { PrivateListType } from "../enums/private-list.enums";
 
 export const PRIVATE_LIST_REPOSITORY = 'PRIVATE_LIST_REPOSITORY';
 

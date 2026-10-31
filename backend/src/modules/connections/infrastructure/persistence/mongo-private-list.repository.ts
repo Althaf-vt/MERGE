@@ -2,12 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BaseMongoRepository } from "../../../../../shared/infrastructure/persistence/base-mongo.repository";
-import { PrivateListAggregate } from "../../../domain/entities/private-list.entity";
+import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { PrivateListAggregate } from "../../domain/entities/private-list.entity";
 import { PrivateListDocument, PrivateListSchemaClass } from "./private-list.schema";
-import { IPrivateListRepository } from "../../../domain/interfaces/private-list-repository.interface";
-import { PrivateListPersistenceMapper } from "../mappers/private-list-persistence.mapper";
-import { PrivateListType } from "../../../domain/enums/connection.enums";
+import { IPrivateListRepository } from "../../domain/interfaces/private-list-repository.interface";
+import { PrivateListPersistenceMapper } from "./mappers/private-list-persistence.mapper";
+import { PrivateListType } from "../../domain/enums/private-list.enums";
 
 
 @Injectable()
@@ -29,7 +29,7 @@ export class PrivateListRepository extends BaseMongoRepository<PrivateListAggreg
 
     async findExact(userId: string, targetUserId: string): Promise<PrivateListAggregate | null> {
         const doc = await this._model.findOne({ userId, targetUserId }).exec();
-        
+
         if (!doc) return null;
         return this.toDomain(doc as unknown as PrivateListDocument);
     }

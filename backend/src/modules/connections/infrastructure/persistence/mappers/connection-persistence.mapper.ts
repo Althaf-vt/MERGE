@@ -1,6 +1,6 @@
 import { ConnectionAggregate } from "../../../domain/entities/connection.entity";
 import { ConnectionStatus } from "../../../domain/enums/connection.enums";
-import { ConnectionDocument } from "../persistence/connection.schema";
+import { ConnectionDocument } from "../connection.schema";
 
 export class ConnectionPersistenceMapper {
     public static toDomain(raw: ConnectionDocument): ConnectionAggregate {

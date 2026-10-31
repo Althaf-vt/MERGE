@@ -1,4 +1,4 @@
-import { PrivateListType } from "../../domain/enums/connection.enums";
+import { PrivateListType } from "../../domain/enums/private-list.enums";
 import { TargetUserDto } from "../dtos/connection.dto";
 
 export const MANAGE_PRIVATE_LIST_USE_CASE = 'MANAGE_PRIVATE_LIST_USE_CASE';

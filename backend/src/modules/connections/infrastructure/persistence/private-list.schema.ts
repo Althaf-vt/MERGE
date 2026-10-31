@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { PrivateListType } from "../../../domain/enums/connection.enums";
+import { PrivateListType } from "../../domain/enums/private-list.enums";
 
 
 export type PrivateListDocument = PrivateListSchemaClass & Document;

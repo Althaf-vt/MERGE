@@ -1,6 +1,7 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { Transform, Type } from "class-transformer";
-import { ConnectionStatus, PrivateListType } from "../../domain/enums/connection.enums";
+import { ConnectionStatus } from "../../domain/enums/connection.enums";
+import { PrivateListType } from "../../domain/enums/private-list.enums";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
 
 export class PaginationQueryDto {

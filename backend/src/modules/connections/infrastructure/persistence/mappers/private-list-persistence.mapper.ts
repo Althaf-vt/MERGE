@@ -1,6 +1,6 @@
 import { PrivateListAggregate } from "../../../domain/entities/private-list.entity";
-import { PrivateListType } from "../../../domain/enums/connection.enums";
-import { PrivateListDocument } from "../persistence/private-list.schema";
+import { PrivateListType } from "../../../domain/enums/private-list.enums";
+import { PrivateListDocument } from "../private-list.schema";
 
 export class PrivateListPersistenceMapper {
     public static toDomain(raw: PrivateListDocument): PrivateListAggregate {

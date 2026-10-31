@@ -1,7 +1,7 @@
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { PrivateListType } from "../enums/connection.enums";
+import { PrivateListType } from "../enums/private-list.enums";
 import { PRIVATE_LIST_ERROR_MESSAGES } from "../constants/private-list.constants";
 
 export interface PrivateListProps {

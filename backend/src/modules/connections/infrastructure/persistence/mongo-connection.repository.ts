@@ -2,16 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BaseMongoRepository } from "../../../../../shared/infrastructure/persistence/base-mongo.repository";
-import { ConnectionAggregate } from "../../../domain/entities/connection.entity";
+import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { ConnectionAggregate } from "../../domain/entities/connection.entity";
 import { ConnectionDocument, ConnectionSchemaClass } from "./connection.schema";
-import { 
-    GetConnectionsFilters, 
-    IConnectionRepository, 
-    PaginatedConnectionsResult 
-} from "../../../domain/interfaces/connection-repository.interface";
-import { ConnectionPersistenceMapper } from "../mappers/connection-persistence.mapper";
-import { ConnectionRole, ConnectionStatus } from "../../../domain/enums/connection.enums";
+import {
+    GetConnectionsFilters,
+    IConnectionRepository,
+    PaginatedConnectionsResult
+} from "../../domain/interfaces/connection-repository.interface";
+import { ConnectionPersistenceMapper } from "./mappers/connection-persistence.mapper";
+import { ConnectionRole, ConnectionStatus } from "../../domain/enums/connection.enums";
 
 @Injectable()
 export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregate, ConnectionDocument> implements IConnectionRepository {
@@ -44,10 +44,10 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
     }
 
     async findPendingRequest(requesterId: string, recipientId: string): Promise<ConnectionAggregate | null> {
-        const doc = await this._model.findOne({ 
-            requesterId, 
-            recipientId, 
-            status: ConnectionStatus.PENDING 
+        const doc = await this._model.findOne({
+            requesterId,
+            recipientId,
+            status: ConnectionStatus.PENDING
         }).exec();
 
         if (!doc) return null;
@@ -72,9 +72,9 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
             this._model.countDocuments(query).exec()
         ]);
 
-        return { 
-            data: documents.map(doc => this.toDomain(doc as unknown as ConnectionDocument)), 
-            total 
+        return {
+            data: documents.map(doc => this.toDomain(doc as unknown as ConnectionDocument)),
+            total
         };
     }
 }
