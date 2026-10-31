@@ -117,6 +117,8 @@ import { GoogleAuthService } from "./infrastructure/services/google-auth.service
 import { MEDIA_FACADE } from "./application/interfaces/media-facade.interface";
 import { MediaFacade } from "./application/services/media.facade";
 import { EnvConfig } from "../../shared/infrastructure/config/env.config";
+import { PUBLIC_PROFILE_FACADE } from "./application/interfaces/public-profile-facade.interface";
+import { PublicProfileFacade } from "./application/services/public-profile.facade";
 
 @Module({
     imports: [
@@ -397,6 +399,10 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
             provide: GET_BLOCKED_USERS_USE_CASE,
             useClass: GetBlockedUsersUseCase,
         },
+        {
+            provide: PUBLIC_PROFILE_FACADE,
+            useClass: PublicProfileFacade,
+        },
         AdminPhotoReviewListener,
         AdminKycReviewListener,
     ],
@@ -406,6 +412,7 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
         USER_MANAGEMENT_FACADE,
         CASTING_USER_FACADE,
         MEDIA_FACADE,
+        PUBLIC_PROFILE_FACADE,
         USER_SESSION_SERVICE,
     ],
 })
