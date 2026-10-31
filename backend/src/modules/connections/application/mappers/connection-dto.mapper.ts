@@ -15,8 +15,6 @@ export class ConnectionDtoMapper {
             partnerName: partnerProfile?.displayName ?? 'Unknown',
             partnerPhotoUrl: presignedPhotoUrl,
             status: connection.status,
-            isPriority: connection.isPriority,
-            icebreakerMessage: connection.icebreakerMessage,
             createdAt: connection.createdAt,
             isRequester: connection.requesterId === currentUserId,
         };
