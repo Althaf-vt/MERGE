@@ -1,11 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IAddToPrivateListUseCase } from "../interfaces/private-list.use-cases.interface";
 import { IPrivateListRepository, PRIVATE_LIST_REPOSITORY } from "../../domain/interfaces/private-list-repository.interface";
-import { TargetUserDto } from "../dtos/connection.dto";
+import { AddToPrivateListDto } from "../dtos/connection.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PrivateListAggregate } from "../../domain/entities/private-list.entity";
-import { PrivateListType } from "../../domain/enums/connection.enums";
 import { IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
 import { PRIVATE_LIST_ERROR_MESSAGES } from "../../domain/constants/private-list.constants";
 
@@ -16,12 +15,12 @@ export class AddToPrivateListUseCase implements IAddToPrivateListUseCase {
         @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade,
     ) {}
 
-    async execute(userId: string, listType: PrivateListType, dto: TargetUserDto): Promise<void> {
+    async execute(userId: string, dto: AddToPrivateListDto): Promise<void> {
         // Enforce domain invariants upfront (valid non-empty IDs, non-self listing, valid enum)
         const entry = new PrivateListAggregate({
             userId,
             targetUserId: dto.targetUserId,
-            listType,
+            listType: dto.listType,
         });
 
         const targetUser = await this._userFacade.getUserById(entry.targetUserId);

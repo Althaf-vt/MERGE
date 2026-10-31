@@ -5,8 +5,7 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { TargetUserDto } from "../../application/dtos/connection.dto";
-import { PrivateListType } from "../../domain/enums/connection.enums";
+import { AddToPrivateListDto } from "../../application/dtos/connection.dto";
 import { 
     ADD_TO_PRIVATE_LIST_USE_CASE, 
     IAddToPrivateListUseCase, 
@@ -26,10 +25,9 @@ export class PrivateListsController {
     @HttpCode(HttpStatus.OK)
     async addToList(
         @Req() req: AuthenticatedRequest, 
-        @Body() dto: TargetUserDto,
-        @Body('listType') listType: PrivateListType 
+        @Body() dto: AddToPrivateListDto
     ): Promise<ApiResponse> {
-        await this._addToListUseCase.execute(req.user.userId, listType, dto);
+        await this._addToListUseCase.execute(req.user.userId, dto);
         return { success: true, message: RESPONSE_MESSAGES.PRIVATE_LISTS.ADDED };
     }
 
