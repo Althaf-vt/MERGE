@@ -1,9 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGetRecommendationsQuery } from "../api/discovery.api";
 import type { GetRecommendationsQuery } from "../types/discovery.types";
+import {
+    useSendConnectionRequestMutation,
+    useSendPriorityIntroMutation,
+    useAddToPrivateListMutation,
+} from "../../../shared/api/connections.api";
 
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     const { data: response, isLoading, isFetching, isError, error, refetch } = useGetRecommendationsQuery(queryParams);
+
+    // Shared connection mutations
+    const [sendConnectionRequest, { isLoading: isSendingConnect }] = useSendConnectionRequestMutation();
+    const [sendPriorityIntro, { isLoading: isSendingIntro }] = useSendPriorityIntroMutation();
+    const [addToPrivateList, { isLoading: isUpdatingList }] = useAddToPrivateListMutation();
+
+    const isActionLoading = isSendingConnect || isSendingIntro || isUpdatingList;
 
     // Core Mandate: Track an index pointer, never copy the array into local state
     const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -43,39 +55,59 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         setCurrentIndex((prev) => prev + 1);
     }, []);
 
-    // --- Action Stubs (To be wired to Connection mutations later) ---
+    // --- Action Handlers Wired to Shared Connections API ---
 
     const handlePass = useCallback(() => {
         if (!activeProfile) return;
-        console.log(`[STUB] Pass action dispatched for user: ${activeProfile.id}`);
         _advanceFeed();
     }, [activeProfile, _advanceFeed]);
 
-    const handleShortlist = useCallback(() => {
+    const handleShortlist = useCallback(async () => {
         if (!activeProfile) return;
-        console.log(`[STUB] Shortlist action dispatched for user: ${activeProfile.id}`);
-        _advanceFeed();
-    }, [activeProfile, _advanceFeed]);
+        try {
+            await addToPrivateList({ targetUserId: activeProfile.id, listType: 'SHORTLIST' }).unwrap();
+        } catch (err) {
+            console.error('Failed to shortlist profile:', err);
+        } finally {
+            _advanceFeed();
+        }
+    }, [activeProfile, addToPrivateList, _advanceFeed]);
 
-    const handleReviewLater = useCallback(() => {
+    const handleReviewLater = useCallback(async () => {
         if (!activeProfile) return;
-        console.log(`[STUB] Review Later action dispatched for user: ${activeProfile.id}`);
-        _advanceFeed();
-    }, [activeProfile, _advanceFeed]);
+        try {
+            await addToPrivateList({ targetUserId: activeProfile.id, listType: 'REVIEW_LATER' }).unwrap();
+        } catch (err) {
+            console.error('Failed to save profile for review later:', err);
+        } finally {
+            _advanceFeed();
+        }
+    }, [activeProfile, addToPrivateList, _advanceFeed]);
 
-    const handleConnect = useCallback(() => {
+    const handleConnect = useCallback(async () => {
         if (!activeProfile) return;
-        console.log(`[STUB] Connect / Express Interest action dispatched for user: ${activeProfile.id}`);
-        _advanceFeed();
-    }, [activeProfile, _advanceFeed]);
+        try {
+            await sendConnectionRequest({ targetUserId: activeProfile.id }).unwrap();
+        } catch (err) {
+            console.error('Failed to send connection request:', err);
+        } finally {
+            _advanceFeed();
+        }
+    }, [activeProfile, sendConnectionRequest, _advanceFeed]);
 
-    const handlePriorityIntro = useCallback((message?: string) => {
+    const handlePriorityIntro = useCallback(async (message?: string) => {
         if (!activeProfile) return;
-        // NOTE: The UI consuming this hook renders a confirmation modal first 
-        // to warn the user about credit consumption before calling this.
-        console.log(`[STUB] Priority Intro action dispatched for user: ${activeProfile.id}`, { message });
-        _advanceFeed();
-    }, [activeProfile, _advanceFeed]);
+        try {
+            await sendPriorityIntro({
+                targetUserId: activeProfile.id,
+                icebreakerMessage: message || '',
+            }).unwrap();
+        } catch (err) {
+            console.error('Failed to send priority intro:', err);
+        } finally {
+            _advanceFeed();
+        }
+    }, [activeProfile, sendPriorityIntro, _advanceFeed]);
 
     return {
         // State
@@ -93,6 +125,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         isLoading,
         isFetching,
         isError,
+        isActionLoading,
         error,
 
         // Actions

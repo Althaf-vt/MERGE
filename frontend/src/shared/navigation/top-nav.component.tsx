@@ -34,9 +34,14 @@ export const TopNav = () => {
             {/* Left: Navigation Links */}
             <div className={styles.navLeft}>
                 {isAuthenticated && (
-                    <Link to="/discovery" className={styles.logoLink}>
-                        <span className={styles.navLink}>Discover</span>
-                    </Link>
+                    <>
+                        <Link to="/discovery" className={styles.logoLink}>
+                            <span className={styles.navLink}>Discover</span>
+                        </Link>
+                        <Link to="/connections" className={styles.logoLink}>
+                            <span className={styles.navLink}>Connections</span>
+                        </Link>
+                    </>
                 )}
                 <Link to='/profile/edit' className={styles.logoLink}>
                     <span className={styles.navLink}>Account</span>
