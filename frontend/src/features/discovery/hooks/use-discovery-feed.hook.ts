@@ -30,7 +30,22 @@ function extractErrorMessage(err: unknown, fallback: string): string {
 }
 
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
-    const { data: response, isLoading, isFetching, isError, error, refetch } = useGetRecommendationsQuery(queryParams);
+    const [page, setPage] = useState<number>(1);
+    const [hasMorePages, setHasMorePages] = useState<boolean>(true);
+
+    const effectiveQueryParams = useMemo(() => ({
+        ...queryParams,
+        page,
+    }), [queryParams, page]);
+
+    const {
+        data: response,
+        isLoading,
+        isFetching,
+        isError,
+        error,
+        refetch,
+    } = useGetRecommendationsQuery(effectiveQueryParams);
 
     // Shared mutations
     const [passCandidate, { isLoading: isPassingCandidate }] = usePassCandidateMutation();
@@ -46,6 +61,14 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     // Core Mandate: Track an index pointer, never copy the array into local state
     const [currentIndex, setCurrentIndex] = useState<number>(0);
 
+    // Reset pagination, index pointer, and error whenever filter parameters change
+    useEffect(() => {
+        setPage(1);
+        setCurrentIndex(0);
+        setHasMorePages(true);
+        setActionError(null);
+    }, [queryParams.isGlobal]);
+
     // Auto-dismiss action error after 5 seconds
     useEffect(() => {
         if (!actionError) return;
@@ -55,14 +78,33 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         return () => clearTimeout(timer);
     }, [actionError]);
 
-    // Reset index pointer and action error whenever query parameters change
-    useEffect(() => {
-        setCurrentIndex(0);
-        setActionError(null);
-    }, [queryParams.isGlobal, queryParams.page, queryParams.limit]);
-
     const recommendations = response?.data || [];
     const totalAvailable = response?.meta?.total || 0;
+    const limit = queryParams.limit ?? 20;
+
+    // Monitor batch completeness to determine if more pages exist
+    useEffect(() => {
+        if (response?.data) {
+            const isLastPage = (response.meta?.total ?? response.data.length) < limit;
+            if (isLastPage) {
+                setHasMorePages(false);
+            }
+        }
+    }, [response, limit]);
+
+    // Prefetch next page when user is within 3 items from the end of the loaded batch
+    useEffect(() => {
+        const remainingInBatch = recommendations.length - currentIndex;
+        if (
+            remainingInBatch <= 3 &&
+            hasMorePages &&
+            !isFetching &&
+            !isLoading &&
+            recommendations.length > 0
+        ) {
+            setPage((prev) => prev + 1);
+        }
+    }, [currentIndex, recommendations.length, hasMorePages, isFetching, isLoading]);
 
     // Dynamically derive the active profile from the backend data array
     const activeProfile = useMemo(() => {
@@ -96,6 +138,13 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     const _advanceFeed = useCallback(() => {
         setCurrentIndex((prev) => prev + 1);
     }, []);
+
+    const handleRefresh = useCallback(() => {
+        setPage(1);
+        setCurrentIndex(0);
+        setHasMorePages(true);
+        refetch();
+    }, [refetch]);
 
     // --- Action Handlers Wired to Shared Connections API & Discovery Pass ---
 
@@ -194,6 +243,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
 
         // Actions
         refetch,
+        handleRefresh,
         clearActionError,
         actions: {
             handlePass,

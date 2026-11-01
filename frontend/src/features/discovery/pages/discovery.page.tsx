@@ -59,6 +59,7 @@ export const DiscoveryPage: React.FC = () => {
         actionError,
         clearActionError,
         refetch,
+        handleRefresh,
         actions,
     } = useDiscoveryFeed(queryParams);
 
@@ -316,7 +317,7 @@ export const DiscoveryPage: React.FC = () => {
                                         }}
                                     >
                                         <DiscoveryEmpty
-                                            onRefresh={() => refetch()}
+                                            onRefresh={handleRefresh}
                                             onOpenFilters={() => setIsFilterOpen(true)}
                                             onResetFilters={() => handleApplyFilters({ isGlobal: false })}
                                             isRefreshing={isFetching}
