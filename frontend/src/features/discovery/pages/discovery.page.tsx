@@ -56,6 +56,8 @@ export const DiscoveryPage: React.FC = () => {
         isFetching,
         isError,
         isActionLoading,
+        actionError,
+        clearActionError,
         refetch,
         actions,
     } = useDiscoveryFeed(queryParams);
@@ -120,25 +122,41 @@ export const DiscoveryPage: React.FC = () => {
         actions.handlePass();
     };
 
-    const handleConnect = () => {
+    const handleConnect = async () => {
         setScrollDirection(1);
-        actions.handleConnect();
+        try {
+            await actions.handleConnect();
+        } catch {
+            // Handled and surfaced via actionError in feed hook; candidate card remains intact
+        }
     };
 
-    const handleReviewLater = () => {
+    const handleReviewLater = async () => {
         setScrollDirection(1);
-        actions.handleReviewLater();
+        try {
+            await actions.handleReviewLater();
+        } catch {
+            // Handled and surfaced via actionError in feed hook; candidate card remains intact
+        }
     };
 
-    const handleShortlist = () => {
+    const handleShortlist = async () => {
         setScrollDirection(1);
-        actions.handleShortlist();
+        try {
+            await actions.handleShortlist();
+        } catch {
+            // Handled and surfaced via actionError in feed hook; candidate card remains intact
+        }
     };
 
-    const handleConfirmPriorityIntro = (message: string) => {
+    const handleConfirmPriorityIntro = async (message: string) => {
         setScrollDirection(1);
-        actions.handlePriorityIntro(message);
-        setIsPriorityIntroOpen(false);
+        try {
+            await actions.handlePriorityIntro(message);
+            setIsPriorityIntroOpen(false);
+        } catch {
+            // Handled and surfaced via actionError in feed hook; keep modal open so user message is preserved
+        }
     };
 
     const handleNavigate = (direction: number) => {
@@ -196,6 +214,21 @@ export const DiscoveryPage: React.FC = () => {
                         {isFilterActive && <span className={styles.activeDot} />}
                     </button>
                 </header>
+
+                {/* Action Feedback Banner */}
+                {actionError && (
+                    <div className={styles.actionErrorBanner} role="alert">
+                        <span className={styles.actionErrorText}>{actionError}</span>
+                        <button
+                            type="button"
+                            className={styles.actionErrorClose}
+                            onClick={clearActionError}
+                            aria-label="Dismiss error"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                )}
 
                 {/* Reels Stage */}
                 <main className={styles.stage}>
