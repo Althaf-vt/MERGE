@@ -9,7 +9,6 @@ import { IPrivateListRepository } from "../../domain/interfaces/private-list-rep
 import { PrivateListPersistenceMapper } from "./mappers/private-list-persistence.mapper";
 import { PrivateListType } from "../../domain/enums/private-list.enums";
 
-
 @Injectable()
 export class PrivateListRepository extends BaseMongoRepository<PrivateListAggregate, PrivateListDocument> implements IPrivateListRepository {
     constructor(
@@ -51,5 +50,10 @@ export class PrivateListRepository extends BaseMongoRepository<PrivateListAggreg
 
     async deleteExact(userId: string, targetUserId: string): Promise<void> {
         await this._model.deleteOne({ userId, targetUserId }).exec();
+    }
+
+    async findTargetUserIds(userId: string): Promise<string[]> {
+        const docs = await this._model.find({ userId }, { targetUserId: 1 }).lean().exec();
+        return docs.map(d => (d as { targetUserId?: string }).targetUserId).filter((id): id is string => Boolean(id));
     }
 }

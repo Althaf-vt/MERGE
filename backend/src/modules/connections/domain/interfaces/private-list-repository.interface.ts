@@ -8,4 +8,5 @@ export interface IPrivateListRepository extends IBaseRepository<PrivateListAggre
     findExact(userId: string, targetUserId: string): Promise<PrivateListAggregate | null>;
     getPaginatedList(userId: string, listType: PrivateListType, page: number, limit: number): Promise<{ data: PrivateListAggregate[]; total: number }>;
     deleteExact(userId: string, targetUserId: string): Promise<void>;
+    findTargetUserIds(userId: string): Promise<string[]>;
 }
