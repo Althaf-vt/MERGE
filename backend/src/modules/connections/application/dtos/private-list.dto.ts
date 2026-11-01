@@ -41,6 +41,7 @@ export interface PrivateListResponseDto {
     listType: PrivateListType;
     createdAt: Date;
     hasPendingConnectionRequest: boolean;
+    hasIncomingConnectionRequest?: boolean;
 }
 
 export interface PaginatedPrivateListResponseDto {

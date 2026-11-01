@@ -7,7 +7,8 @@ export class PrivateListDtoMapper {
         entry: PrivateListAggregate,
         targetProfile: PublicProfileDto | null,
         presignedPhotoUrl: string | null,
-        hasPendingConnectionRequest: boolean
+        hasPendingConnectionRequest: boolean,
+        hasIncomingConnectionRequest: boolean = false
     ): PrivateListResponseDto {
         return {
             id: entry.id,
@@ -17,6 +18,7 @@ export class PrivateListDtoMapper {
             listType: entry.listType,
             createdAt: entry.createdAt,
             hasPendingConnectionRequest,
+            hasIncomingConnectionRequest,
         };
     }
 }
