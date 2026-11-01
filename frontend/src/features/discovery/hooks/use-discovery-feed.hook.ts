@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useGetRecommendationsQuery } from "../api/discovery.api";
+import { useGetRecommendationsQuery, usePassCandidateMutation } from "../api/discovery.api";
 import type { GetRecommendationsQuery } from "../types/discovery.types";
 import {
     useSendConnectionRequestMutation,
@@ -32,12 +32,13 @@ function extractErrorMessage(err: unknown, fallback: string): string {
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     const { data: response, isLoading, isFetching, isError, error, refetch } = useGetRecommendationsQuery(queryParams);
 
-    // Shared connection mutations
+    // Shared mutations
+    const [passCandidate, { isLoading: isPassingCandidate }] = usePassCandidateMutation();
     const [sendConnectionRequest, { isLoading: isSendingConnect }] = useSendConnectionRequestMutation();
     const [sendPriorityIntro, { isLoading: isSendingIntro }] = useSendPriorityIntroMutation();
     const [addToPrivateList, { isLoading: isUpdatingList }] = useAddToPrivateListMutation();
 
-    const isActionLoading = isSendingConnect || isSendingIntro || isUpdatingList;
+    const isActionLoading = isPassingCandidate || isSendingConnect || isSendingIntro || isUpdatingList;
 
     // Action error state for user feedback
     const [actionError, setActionError] = useState<string | null>(null);
@@ -96,13 +97,21 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
         setCurrentIndex((prev) => prev + 1);
     }, []);
 
-    // --- Action Handlers Wired to Shared Connections API ---
+    // --- Action Handlers Wired to Shared Connections API & Discovery Pass ---
 
-    const handlePass = useCallback(() => {
+    const handlePass = useCallback(async () => {
         if (!activeProfile) return;
         setActionError(null);
-        _advanceFeed();
-    }, [activeProfile, _advanceFeed]);
+        try {
+            await passCandidate({ targetUserId: activeProfile.id }).unwrap();
+            _advanceFeed();
+        } catch (err: unknown) {
+            const message = extractErrorMessage(err, 'Failed to pass profile.');
+            console.error('Failed to pass profile:', err);
+            setActionError(message);
+            throw err;
+        }
+    }, [activeProfile, passCandidate, _advanceFeed]);
 
     const handleShortlist = useCallback(async () => {
         if (!activeProfile) return;

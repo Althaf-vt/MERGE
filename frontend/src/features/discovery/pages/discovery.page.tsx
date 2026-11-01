@@ -117,9 +117,13 @@ export const DiscoveryPage: React.FC = () => {
     }, [isPriorityIntroOpen, isFilterOpen, hasMore, hasPrevious, goToNext, goToPrevious]);
 
     // --- Action Handlers with Forward Slide Direction ---
-    const handlePass = () => {
+    const handlePass = async () => {
         setScrollDirection(1);
-        actions.handlePass();
+        try {
+            await actions.handlePass();
+        } catch {
+            // Handled and surfaced via actionError in feed hook; candidate card remains intact
+        }
     };
 
     const handleConnect = async () => {
