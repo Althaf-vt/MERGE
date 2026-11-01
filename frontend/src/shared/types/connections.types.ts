@@ -10,8 +10,6 @@ export interface ConnectionResponseDto {
     partnerName: string;
     partnerPhotoUrl: string | null;
     status: ConnectionStatus;
-    isPriority: boolean;
-    icebreakerMessage?: string;
     createdAt: string;
     isRequester: boolean;
 }
