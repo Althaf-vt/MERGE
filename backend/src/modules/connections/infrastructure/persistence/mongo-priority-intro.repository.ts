@@ -34,5 +34,23 @@ export class MongoPriorityIntroRepository extends BaseMongoRepository<PriorityIn
         const documents = await this._model.find({ recipientId }).sort({ createdAt: -1 }).exec();
         return documents.map(doc => this.toDomain(doc as unknown as PriorityIntroDocument));
     }
-}
 
+    async findInteractedUserIds(userId: string): Promise<string[]> {
+        const docs = await this._model.find(
+            { $or: [{ senderId: userId }, { recipientId: userId }] },
+            { senderId: 1, recipientId: 1 }
+        ).lean().exec();
+
+        const partnerIds = new Set<string>();
+        for (const doc of docs) {
+            const docObj = doc as { senderId?: string; recipientId?: string };
+            if (docObj.senderId && docObj.senderId !== userId) {
+                partnerIds.add(docObj.senderId);
+            }
+            if (docObj.recipientId && docObj.recipientId !== userId) {
+                partnerIds.add(docObj.recipientId);
+            }
+        }
+        return Array.from(partnerIds);
+    }
+}
