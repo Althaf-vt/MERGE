@@ -23,6 +23,7 @@ export interface PrivateListResponseDto {
     targetPhotoUrl: string | null;
     listType: PrivateListType;
     createdAt: string;
+    hasPendingConnectionRequest: boolean;
 }
 
 export interface GetConnectionsQuery {
