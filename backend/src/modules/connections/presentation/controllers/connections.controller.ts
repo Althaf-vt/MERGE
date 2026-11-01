@@ -19,6 +19,7 @@ import {
     ISendConnectionRequestUseCase,
     REVOKE_MATCH_USE_CASE,
     SEND_CONNECTION_REQUEST_USE_CASE,
+    SendConnectionRequestResult,
 } from "../../application/interfaces/connection.use-cases.interface";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
@@ -50,9 +51,12 @@ export class ConnectionsController {
 
     @Post(API_ENDPOINTS.CONNECTIONS.REQUEST)
     @HttpCode(HttpStatus.OK)
-    async sendRequest(@Req() req: AuthenticatedRequest, @Body() dto: TargetUserDto): Promise<ApiResponse> {
-        await this._sendRequestUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT };
+    async sendRequest(@Req() req: AuthenticatedRequest, @Body() dto: TargetUserDto): Promise<ApiResponse<SendConnectionRequestResult>> {
+        const result = await this._sendRequestUseCase.execute(req.user.userId, dto);
+        const message = result.isMatch
+            ? RESPONSE_MESSAGES.CONNECTIONS.MUTUAL_MATCH
+            : RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT;
+        return { success: true, message, data: result };
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.ACCEPT)

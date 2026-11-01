@@ -56,6 +56,7 @@ export const RESPONSE_MESSAGES = {
     },
     CONNECTIONS: {
         REQUEST_SENT: 'Connection request sent successfully.',
+        MUTUAL_MATCH: "It's a match! You are now connected.",
         PRIORITY_INTRO_SENT: 'Priority introduction sent! Your message is in their inbox.',
         ACCEPTED: 'Connection request accepted. You are now matched!',
         DECLINED: 'Connection request declined.',
