@@ -17,3 +17,7 @@ export interface GetRecommendationsQuery {
     limit?: number;
     isGlobal?: boolean;
 }
+
+export interface PassCandidatePayload {
+    targetUserId: string;
+}
