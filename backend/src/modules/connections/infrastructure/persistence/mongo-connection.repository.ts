@@ -80,7 +80,10 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
 
     async findInteractedUserIds(userId: string): Promise<string[]> {
         const docs = await this._model.find(
-            { $or: [{ requesterId: userId }, { recipientId: userId }] },
+            { 
+                $or: [{ requesterId: userId }, { recipientId: userId }],
+                status: { $in: [ConnectionStatus.PENDING, ConnectionStatus.ACCEPTED] }
+            },
             { requesterId: 1, recipientId: 1 }
         ).lean().exec();
 
