@@ -8,6 +8,8 @@ import { ConnectionsController } from "./presentation/controllers/connections.co
 import { PrivateListsController } from "./presentation/controllers/private-lists.controller";
 import { PriorityIntrosController } from "./presentation/controllers/priority-intros.controller";
 import { BILLING_FACADE } from "./application/interfaces/billing-facade.interface";
+import { CONNECTIONS_FACADE } from "./application/interfaces/connections-facade.interface";
+import { ConnectionsFacade } from "./application/services/connections.facade";
 import { SendConnectionRequestUseCase } from "./application/use-cases/send-connection-request.use-case";
 import { SendPriorityIntroUseCase } from "./application/use-cases/send-priority-intro.use-case";
 import { AcceptConnectionUseCase } from "./application/use-cases/accept-connection.use-case";
@@ -58,6 +60,8 @@ class MockBillingFacade {
         { provide: PRIORITY_INTRO_REPOSITORY, useClass: MongoPriorityIntroRepository },
         { provide: BILLING_FACADE, useClass: MockBillingFacade },
 
+        { provide: CONNECTIONS_FACADE, useClass: ConnectionsFacade },
+
         { provide: GET_CONNECTIONS_USE_CASE, useClass: GetConnectionsUseCase },
         { provide: SEND_CONNECTION_REQUEST_USE_CASE, useClass: SendConnectionRequestUseCase },
         { provide: SEND_PRIORITY_INTRO_USE_CASE, useClass: SendPriorityIntroUseCase },
@@ -71,6 +75,7 @@ class MockBillingFacade {
         { provide: REMOVE_FROM_PRIVATE_LIST_USE_CASE, useClass: RemoveFromPrivateListUseCase },
 
         ConnectionAcceptedListener,
-    ]
+    ],
+    exports: [CONNECTIONS_FACADE]
 })
 export class ConnectionsModule { }
