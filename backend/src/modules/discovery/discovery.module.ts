@@ -7,6 +7,8 @@ import { DISCOVERY_REPOSITORY } from "./domain/interfaces/discovery-repository.i
 import { DiscoveryRepository } from "./infrastructure/persistence/mongo-discovery.repository";
 import { GET_RECOMMENDATIONS_USE_CASE } from "./application/interfaces/get-recommendations.use-case.interface";
 import { GetRecommendationsUseCase } from "./application/use-cases/get-recommendations.use-case";
+import { PASS_CANDIDATE_USE_CASE } from "./application/interfaces/pass-candidate.use-case.interface";
+import { PassCandidateUseCase } from "./application/use-cases/pass-candidate.use-case";
 import { DiscoveryPassSchema, DiscoveryPassSchemaClass } from "./infrastructure/persistence/discovery-pass.schema";
 
 @Module({
@@ -26,7 +28,11 @@ import { DiscoveryPassSchema, DiscoveryPassSchemaClass } from "./infrastructure/
         {
             provide: GET_RECOMMENDATIONS_USE_CASE,
             useClass: GetRecommendationsUseCase,
-        }
+        },
+        {
+            provide: PASS_CANDIDATE_USE_CASE,
+            useClass: PassCandidateUseCase,
+        },
     ],
     exports: []
 })

@@ -53,6 +53,7 @@ export const RESPONSE_MESSAGES = {
     },
     DISCOVERY: {
         RECOMMENDATIONS_FETCHED: 'Discovery recommendations fetched successfully.',
+        CANDIDATE_PASSED: 'Candidate passed successfully.',
     },
     CONNECTIONS: {
         REQUEST_SENT: 'Connection request sent successfully.',
