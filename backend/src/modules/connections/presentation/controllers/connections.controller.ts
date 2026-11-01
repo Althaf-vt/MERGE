@@ -5,8 +5,22 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { ConnectionResponseDto, GetConnectionsQueryDto, SendPriorityIntroDto, TargetUserDto } from "../../application/dtos/connection.dto";
-import { ACCEPT_CONNECTION_USE_CASE, CANCEL_CONNECTION_USE_CASE, DECLINE_CONNECTION_USE_CASE, GET_CONNECTIONS_USE_CASE, IAcceptConnectionUseCase, ICancelConnectionUseCase, IDeclineConnectionUseCase, IGetConnectionsUseCase, IRevokeMatchUseCase, ISendConnectionRequestUseCase, ISendPriorityIntroUseCase, REVOKE_MATCH_USE_CASE, SEND_CONNECTION_REQUEST_USE_CASE, SEND_PRIORITY_INTRO_USE_CASE } from "../../application/interfaces/connection.use-cases.interface";
+import { ConnectionResponseDto, GetConnectionsQueryDto, TargetUserDto } from "../../application/dtos/connection.dto";
+import {
+    ACCEPT_CONNECTION_USE_CASE,
+    CANCEL_CONNECTION_USE_CASE,
+    DECLINE_CONNECTION_USE_CASE,
+    GET_CONNECTIONS_USE_CASE,
+    IAcceptConnectionUseCase,
+    ICancelConnectionUseCase,
+    IDeclineConnectionUseCase,
+    IGetConnectionsUseCase,
+    IRevokeMatchUseCase,
+    ISendConnectionRequestUseCase,
+    REVOKE_MATCH_USE_CASE,
+    SEND_CONNECTION_REQUEST_USE_CASE,
+    SendConnectionRequestResult,
+} from "../../application/interfaces/connection.use-cases.interface";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -14,7 +28,6 @@ export class ConnectionsController {
     constructor(
         @Inject(GET_CONNECTIONS_USE_CASE) private readonly _getConnectionsUseCase: IGetConnectionsUseCase,
         @Inject(SEND_CONNECTION_REQUEST_USE_CASE) private readonly _sendRequestUseCase: ISendConnectionRequestUseCase,
-        @Inject(SEND_PRIORITY_INTRO_USE_CASE) private readonly _sendPriorityIntroUseCase: ISendPriorityIntroUseCase,
         @Inject(ACCEPT_CONNECTION_USE_CASE) private readonly _acceptRequestUseCase: IAcceptConnectionUseCase,
         @Inject(DECLINE_CONNECTION_USE_CASE) private readonly _declineRequestUseCase: IDeclineConnectionUseCase,
         @Inject(CANCEL_CONNECTION_USE_CASE) private readonly _cancelRequestUseCase: ICancelConnectionUseCase,
@@ -38,16 +51,12 @@ export class ConnectionsController {
 
     @Post(API_ENDPOINTS.CONNECTIONS.REQUEST)
     @HttpCode(HttpStatus.OK)
-    async sendRequest(@Req() req: AuthenticatedRequest, @Body() dto: TargetUserDto): Promise<ApiResponse> {
-        await this._sendRequestUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT };
-    }
-
-    @Post(API_ENDPOINTS.CONNECTIONS.PRIORITY_INTRO)
-    @HttpCode(HttpStatus.OK)
-    async sendPriorityIntro(@Req() req: AuthenticatedRequest, @Body() dto: SendPriorityIntroDto): Promise<ApiResponse> {
-        await this._sendPriorityIntroUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.PRIORITY_INTRO_SENT };
+    async sendRequest(@Req() req: AuthenticatedRequest, @Body() dto: TargetUserDto): Promise<ApiResponse<SendConnectionRequestResult>> {
+        const result = await this._sendRequestUseCase.execute(req.user.userId, dto);
+        const message = result.isMatch
+            ? RESPONSE_MESSAGES.CONNECTIONS.MUTUAL_MATCH
+            : RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT;
+        return { success: true, message, data: result };
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.ACCEPT)

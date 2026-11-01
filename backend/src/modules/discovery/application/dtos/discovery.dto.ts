@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class GetRecommendationsQueryDto {
     @IsOptional()
@@ -20,13 +20,20 @@ export class GetRecommendationsQueryDto {
     isGlobal?: boolean;
 }
 
+export class PassCandidateDto {
+    @IsString()
+    @IsNotEmpty()
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    targetUserId!: string;
+}
+
 export interface DiscoveryRecommendationDto {
     id: string;
     displayName: string;
     customLabel?: string;
     age: number | null;
     city: string;
-    state: string
+    state: string;
     country: string;
     distanceKm: number;
     matchScore: number;

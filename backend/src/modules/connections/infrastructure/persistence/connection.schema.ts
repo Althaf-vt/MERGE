@@ -15,12 +15,6 @@ export class ConnectionSchemaClass {
     @Prop({ type: String, enum: ConnectionStatus, required: true, index: true })
     status: string;
 
-    @Prop({ default: false })
-    isPriority: boolean;
-
-    @Prop({ type: String, default: null })
-    icebreakerMessage?: string;
-
     @Prop({ type: Date, default: null })
     respondedAt?: Date | null;
 

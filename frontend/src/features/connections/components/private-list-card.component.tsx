@@ -30,6 +30,9 @@ export const PrivateListCard: React.FC<PrivateListCardProps> = ({
     const [imageError, setImageError] = useState(false);
 
     const isShortlist = item.listType === 'SHORTLIST';
+    const isRequestPending = Boolean(item.hasPendingConnectionRequest);
+    const hasIncoming = Boolean(item.hasIncomingConnectionRequest);
+    const isIncomingMatch = hasIncoming && !isRequestPending;
     const initial = item.targetName?.trim()?.charAt(0)?.toUpperCase() || '?';
 
     const formatTimestamp = (dateString: string): string => {
@@ -96,15 +99,35 @@ export const PrivateListCard: React.FC<PrivateListCardProps> = ({
                 <div className={styles.primaryActionRow}>
                     <button
                         type="button"
-                        className={styles.connectButton}
+                        className={`${styles.connectButton} ${isRequestPending ? styles.connectButtonSent : ''} ${isIncomingMatch ? styles.connectButtonMatch : ''}`}
                         onClick={() => onConnect(item.targetUserId)}
-                        disabled={disabled || isConnecting || isMoving || isRemoving}
-                        aria-label={`Send connection request to ${item.targetName}`}
+                        disabled={disabled || isRequestPending || isConnecting || isMoving || isRemoving}
+                        aria-label={
+                            isRequestPending
+                                ? `Connection request already sent to ${item.targetName}`
+                                : isIncomingMatch
+                                    ? `Accept connection request and match with ${item.targetName}`
+                                    : `Send connection request to ${item.targetName}`
+                        }
                     >
                         {isConnecting ? (
                             <>
                                 <span className={styles.spinner} />
-                                <span>Connecting...</span>
+                                <span>{isIncomingMatch ? 'Matching...' : 'Connecting...'}</span>
+                            </>
+                        ) : isRequestPending ? (
+                            <>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span>Request Sent</span>
+                            </>
+                        ) : isIncomingMatch ? (
+                            <>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                                </svg>
+                                <span>Match!</span>
                             </>
                         ) : (
                             <>

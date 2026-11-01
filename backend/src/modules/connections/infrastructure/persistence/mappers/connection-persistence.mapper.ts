@@ -9,8 +9,6 @@ export class ConnectionPersistenceMapper {
             requesterId: raw.requesterId,
             recipientId: raw.recipientId,
             status: raw.status as ConnectionStatus,
-            isPriority: raw.isPriority,
-            icebreakerMessage: raw.icebreakerMessage ?? undefined,
             respondedAt: raw.respondedAt ?? null,
             createdAt: raw.createdAt,
             updatedAt: raw.updatedAt,
@@ -22,8 +20,6 @@ export class ConnectionPersistenceMapper {
             requesterId: entity.requesterId,
             recipientId: entity.recipientId,
             status: entity.status,
-            isPriority: entity.isPriority,
-            icebreakerMessage: entity.icebreakerMessage ?? null,
             respondedAt: entity.respondedAt ?? null,
             updatedAt: entity.updatedAt,
         };

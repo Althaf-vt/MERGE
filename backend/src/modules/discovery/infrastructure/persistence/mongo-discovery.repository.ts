@@ -84,4 +84,25 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
         return results as DiscoveryCandidateRaw[];
     }
+
+    async recordPass(userId: string, targetUserId: string): Promise<void> {
+        await this._connection.collection('discovery_passes').updateOne(
+            { userId, targetUserId },
+            { $set: { userId, targetUserId, createdAt: new Date() } },
+            { upsert: true }
+        );
+    }
+
+    async getPassedUserIds(userId: string): Promise<string[]> {
+        const cutoffDate = new Date(Date.now() - DISCOVERY_CONSTANTS.PASS_TTL_SECONDS * 1000);
+        const docs = await this._connection.collection('discovery_passes').find(
+            {
+                userId,
+                createdAt: { $gte: cutoffDate },
+            },
+            { projection: { targetUserId: 1 } }
+        ).toArray();
+
+        return docs.map(d => (d as { targetUserId?: string }).targetUserId).filter((id): id is string => Boolean(id));
+    }
 }

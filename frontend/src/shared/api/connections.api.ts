@@ -57,7 +57,12 @@ export const connectionsApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: [{ type: 'PendingConnections', id: 'LIST' }],
+            invalidatesTags: [
+                { type: 'PendingConnections', id: 'LIST' },
+                { type: 'ActiveConnections', id: 'LIST' },
+                { type: 'Shortlist', id: 'LIST' },
+                { type: 'ReviewLater', id: 'LIST' },
+            ],
         }),
 
         sendPriorityIntro: builder.mutation<ApiResponse<void>, SendPriorityIntroPayload>({
@@ -66,7 +71,7 @@ export const connectionsApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: [{ type: 'PendingConnections', id: 'LIST' }],
+            // Priority Intro is completely decoupled from connections and does not create a pending connection request
         }),
 
         acceptConnection: builder.mutation<ApiResponse<void>, string>({
@@ -77,6 +82,8 @@ export const connectionsApi = createApi({
             invalidatesTags: [
                 { type: 'PendingConnections', id: 'LIST' },
                 { type: 'ActiveConnections', id: 'LIST' },
+                { type: 'Shortlist', id: 'LIST' },
+                { type: 'ReviewLater', id: 'LIST' },
             ],
         }),
 
@@ -85,7 +92,11 @@ export const connectionsApi = createApi({
                 url: API_ENDPOINTS.CONNECTIONS.DECLINE(connectionId),
                 method: 'POST',
             }),
-            invalidatesTags: [{ type: 'PendingConnections', id: 'LIST' }],
+            invalidatesTags: [
+                { type: 'PendingConnections', id: 'LIST' },
+                { type: 'Shortlist', id: 'LIST' },
+                { type: 'ReviewLater', id: 'LIST' },
+            ],
         }),
 
         cancelConnection: builder.mutation<ApiResponse<void>, string>({
@@ -93,7 +104,11 @@ export const connectionsApi = createApi({
                 url: API_ENDPOINTS.CONNECTIONS.CANCEL(connectionId),
                 method: 'POST',
             }),
-            invalidatesTags: [{ type: 'PendingConnections', id: 'LIST' }],
+            invalidatesTags: [
+                { type: 'PendingConnections', id: 'LIST' },
+                { type: 'Shortlist', id: 'LIST' },
+                { type: 'ReviewLater', id: 'LIST' },
+            ],
         }),
 
         revokeMatch: builder.mutation<ApiResponse<void>, string>({
@@ -110,8 +125,9 @@ export const connectionsApi = createApi({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: (_result, _error, arg) => [
-                { type: arg.listType === 'SHORTLIST' ? 'Shortlist' : 'ReviewLater', id: 'LIST' },
+            invalidatesTags: [
+                { type: 'Shortlist', id: 'LIST' },
+                { type: 'ReviewLater', id: 'LIST' },
             ],
         }),
 

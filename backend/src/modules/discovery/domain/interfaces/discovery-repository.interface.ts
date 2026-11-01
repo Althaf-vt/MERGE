@@ -56,4 +56,6 @@ export interface VectorSearchParams {
 export interface IDiscoveryRepository {
     getUserSearchContext(userId: string): Promise<DiscoveryUserContext | null>;
     findVectorMatches(params: VectorSearchParams): Promise<DiscoveryCandidateRaw[]>;
+    recordPass(userId: string, targetUserId: string): Promise<void>;
+    getPassedUserIds(userId: string): Promise<string[]>;
 }

@@ -24,6 +24,7 @@ export const USER_REPOSITORY = 'USER_REPOSITORY';
 export interface IUserRepository extends IBaseRepository<UserAggregate> {
     findByEmail(email: string): Promise<UserAggregate | null>;
     findByDocumentHash(documentHash: string): Promise<UserKyc | null>;
+    findByIds(ids: string[]): Promise<UserAggregate[]>;
     addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void>;
 
     saveLivenessUpdate(user: UserAggregate, record: LivenessEvaluationRecord): Promise<void>;

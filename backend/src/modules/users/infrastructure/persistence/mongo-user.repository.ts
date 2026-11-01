@@ -4,18 +4,18 @@ import { InjectModel } from "@nestjs/mongoose";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
 import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
-export class MongoUserRepository extends BaseMongoRepository<UserAggregate, UserDocument> implements IUserRepository{
+export class MongoUserRepository extends BaseMongoRepository<UserAggregate, UserDocument> implements IUserRepository {
 
     constructor(
         @InjectModel(User.name) model: Model<UserDocument>,
         eventEmitter: EventEmitter2
-    ){
+    ) {
         super(model, eventEmitter);
     }
 
@@ -28,8 +28,8 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
     }
 
     async findByEmail(email: string): Promise<UserAggregate | null> {
-        const document = await this._model.findOne({email}).exec();
-        if(!document) return null;
+        const document = await this._model.findOne({ email }).exec();
+        if (!document) return null;
         return UserPersistenceMapper.toDomain(document);
     }
 
@@ -37,17 +37,24 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
         const document = await this._model.findOne({
             'kycVerification.hashedDocumentNumber': documentHash
         }).exec();
-        if(!document) return null;
+        if (!document) return null;
         
         const userAggregate = UserPersistenceMapper.toDomain(document);
         return userAggregate.kycVerification || null;
     }
 
+    async findByIds(ids: string[]): Promise<UserAggregate[]> {
+        const validIds = (ids || []).filter(id => Types.ObjectId.isValid(id));
+        if (validIds.length === 0) return [];
+        const documents = await this._model.find({ _id: { $in: validIds } }).exec();
+        return documents.map(doc => this.toDomain(doc as unknown as UserDocument));
+    }
+
     async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
         await this._model.updateOne(
-            {_id: userId},
+            { _id: userId },
             {
-                $push:{
+                $push: {
                     'kycVerification.livenessResults': record
                 }
             }
@@ -73,10 +80,10 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
     async findAllPaginated(filters: UserFilters): Promise<PaginatedResult<UserAggregate>> {
         const query: Record<string, unknown> = {};
 
-        if(filters.search){
-            query['email'] = {$regex: filters.search, $options: 'i'};
+        if (filters.search) {
+            query['email'] = { $regex: filters.search, $options: 'i' };
         }
-        if(filters.status){
+        if (filters.status) {
             query['accountStatus'] = filters.status;
         }
 

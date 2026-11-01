@@ -10,8 +10,6 @@ export interface ConnectionResponseDto {
     partnerName: string;
     partnerPhotoUrl: string | null;
     status: ConnectionStatus;
-    isPriority: boolean;
-    icebreakerMessage?: string;
     createdAt: string;
     isRequester: boolean;
 }
@@ -23,6 +21,8 @@ export interface PrivateListResponseDto {
     targetPhotoUrl: string | null;
     listType: PrivateListType;
     createdAt: string;
+    hasPendingConnectionRequest: boolean;
+    hasIncomingConnectionRequest?: boolean;
 }
 
 export interface GetConnectionsQuery {

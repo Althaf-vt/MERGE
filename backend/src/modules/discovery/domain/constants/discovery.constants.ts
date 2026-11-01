@@ -6,5 +6,8 @@ export const DISCOVERY_CONSTANTS = {
     SCORE_PERCENTAGE_MULTIPLIER: 100,
     LOCAL_SEARCH_RADIUS_KM: 100,
     EARTH_RADIUS_KM: 6378.1,
+    // 15 minutes (900s) default in development; configurable via env for 30 days (2592000s) in production
+    PASS_TTL_SECONDS: process.env.DISCOVERY_PASS_TTL_SECONDS
+        ? parseInt(process.env.DISCOVERY_PASS_TTL_SECONDS, 10)
+        : 15 * 60,
 } as const;
-

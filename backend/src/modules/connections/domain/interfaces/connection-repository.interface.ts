@@ -21,4 +21,5 @@ export interface IConnectionRepository extends IBaseRepository<ConnectionAggrega
     findExistingInteraction(userIdA: string, userIdB: string): Promise<ConnectionAggregate | null>;
     findPendingRequest(requesterId: string, recipientId: string): Promise<ConnectionAggregate | null>;
     getPaginatedByStatus(filters: GetConnectionsFilters): Promise<PaginatedConnectionsResult>;
+    findInteractedUserIds(userId: string): Promise<string[]>;
 }

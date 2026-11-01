@@ -60,6 +60,7 @@ export const API_ENDPOINTS = {
     DISCOVERY: {
         BASE: '/discovery',
         RECOMMENDATIONS: '/discovery/recommendations',
+        PASS: '/discovery/pass',
     },
     CONNECTIONS: {
         BASE: '/connections',

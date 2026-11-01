@@ -1,4 +1,4 @@
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
 import { Transform, Type } from "class-transformer";
 import { ConnectionRole, ConnectionStatus } from "../../domain/enums/connection.enums";
 import { CONNECTION_CONSTANTS } from "../../domain/constants/connection.constants";
@@ -36,22 +36,12 @@ export class TargetUserDto {
     targetUserId!: string;
 }
 
-export class SendPriorityIntroDto extends TargetUserDto {
-    @IsString()
-    @IsNotEmpty()
-    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-    @MaxLength(CONNECTION_CONSTANTS.ICEBREAKER.MAX_LENGTH)
-    icebreakerMessage!: string;
-}
-
 export interface ConnectionResponseDto {
     id: string;
     partnerId: string;
     partnerName: string;
     partnerPhotoUrl: string | null;
     status: ConnectionStatus;
-    isPriority: boolean;
-    icebreakerMessage?: string;
     createdAt: Date;
     isRequester: boolean;
 }

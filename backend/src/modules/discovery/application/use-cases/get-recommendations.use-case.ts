@@ -5,6 +5,7 @@ import { GetRecommendationsQueryDto, PaginatedRecommendationsDto } from "../dtos
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
+import { CONNECTIONS_FACADE, IConnectionsFacade } from "../../../connections/application/interfaces/connections-facade.interface";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
 import { DiscoveryRecommendationMapper } from "../mappers/discovery-recommendation.mapper";
 
@@ -13,10 +14,15 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
     constructor(
         @Inject(DISCOVERY_REPOSITORY) private readonly _repository: IDiscoveryRepository,
         @Inject(MEDIA_FACADE) private readonly _userMediaFacade: IMediaFacade,
+        @Inject(CONNECTIONS_FACADE) private readonly _connectionsFacade: IConnectionsFacade,
     ) { }
 
     async execute(userId: string, query: GetRecommendationsQueryDto): Promise<PaginatedRecommendationsDto> {
-        const userContext = await this._repository.getUserSearchContext(userId);
+        const [userContext, interactedIds, passedUserIds] = await Promise.all([
+            this._repository.getUserSearchContext(userId),
+            this._connectionsFacade.getInteractedUserIds(userId),
+            this._repository.getPassedUserIds(userId),
+        ]);
 
         if (!userContext?.personalityVector || userContext.personalityVector.length !== DISCOVERY_CONSTANTS.PERSONALITY_VECTOR_DIMENSIONS) {
             throw new DomainException(
@@ -32,8 +38,8 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         // Resolve global search intent: Either explicitly requested in query, or enabled via user preferences
         const isGlobal = query.isGlobal ?? (userContext.preference?.immigrationReady === true);
 
-        // Exclude current user (will be expanded for passed/shortlisted/blocked candidates)
-        const excludedIds = [userId];
+        // Exclude current user, interacted profiles (connections, private lists, priority intros), and active passes
+        const excludedIds = Array.from(new Set([userId, ...interactedIds, ...passedUserIds]));
 
         const rawCandidates = await this._repository.findVectorMatches({
             userContext,

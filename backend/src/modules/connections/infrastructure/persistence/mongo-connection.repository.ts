@@ -77,4 +77,26 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
             total
         };
     }
+
+    async findInteractedUserIds(userId: string): Promise<string[]> {
+        const docs = await this._model.find(
+            { 
+                $or: [{ requesterId: userId }, { recipientId: userId }],
+                status: { $in: [ConnectionStatus.PENDING, ConnectionStatus.ACCEPTED] }
+            },
+            { requesterId: 1, recipientId: 1 }
+        ).lean().exec();
+
+        const partnerIds = new Set<string>();
+        for (const doc of docs) {
+            const docObj = doc as { requesterId?: string; recipientId?: string };
+            if (docObj.requesterId && docObj.requesterId !== userId) {
+                partnerIds.add(docObj.requesterId);
+            }
+            if (docObj.recipientId && docObj.recipientId !== userId) {
+                partnerIds.add(docObj.recipientId);
+            }
+        }
+        return Array.from(partnerIds);
+    }
 }

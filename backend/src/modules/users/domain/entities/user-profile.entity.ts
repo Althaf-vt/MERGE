@@ -182,6 +182,18 @@ export class UserProfile{
     get relationshipGoal(): string | undefined {return this._props.relationshipGoal}
     get selectedTraits(): string[] | undefined {return this._props.selectedTraits}
     get interests(): string[] | undefined {return this._props.interests}
+    get state(): string | undefined { return this._props.state; }
+    get country(): string | undefined { return this._props.country; }
+    get pronouns(): string | undefined { return this._props.pronouns; }
+    get sexualOrientation(): string | undefined { return this._props.sexualOrientation; }
+    get heightCm(): number | undefined { return this._props.heightCm; }
+    get languages(): string[] { return [...(this._props.languages ?? [])]; }
+    get education(): string[] { return [...(this._props.education ?? [])]; }
+    get occupation(): string | undefined { return this._props.occupation; }
+    get diet(): DietType | undefined { return this._props.diet; }
+    get smokingHabit(): SmokingHabit | undefined { return this._props.smokingHabit; }
+    get drinkingHabit(): DrinkingHabit | undefined { return this._props.drinkingHabit; }
+    get religion(): string | undefined { return this._props.religion; }
     get remainingBioAttempts(): number{
         const used = this._props.bioGenerationAttempts || 0;
         return Math.max(0, MAX_BIO_GENERATION_ATTEMPTS - used);
