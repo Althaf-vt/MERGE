@@ -30,6 +30,7 @@ export const PrivateListCard: React.FC<PrivateListCardProps> = ({
     const [imageError, setImageError] = useState(false);
 
     const isShortlist = item.listType === 'SHORTLIST';
+    const isRequestPending = Boolean(item.hasPendingConnectionRequest);
     const initial = item.targetName?.trim()?.charAt(0)?.toUpperCase() || '?';
 
     const formatTimestamp = (dateString: string): string => {
@@ -96,15 +97,22 @@ export const PrivateListCard: React.FC<PrivateListCardProps> = ({
                 <div className={styles.primaryActionRow}>
                     <button
                         type="button"
-                        className={styles.connectButton}
+                        className={`${styles.connectButton} ${isRequestPending ? styles.connectButtonSent : ''}`}
                         onClick={() => onConnect(item.targetUserId)}
-                        disabled={disabled || isConnecting || isMoving || isRemoving}
-                        aria-label={`Send connection request to ${item.targetName}`}
+                        disabled={disabled || isRequestPending || isConnecting || isMoving || isRemoving}
+                        aria-label={isRequestPending ? `Connection request already sent to ${item.targetName}` : `Send connection request to ${item.targetName}`}
                     >
                         {isConnecting ? (
                             <>
                                 <span className={styles.spinner} />
                                 <span>Connecting...</span>
+                            </>
+                        ) : isRequestPending ? (
+                            <>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span>Request Sent</span>
                             </>
                         ) : (
                             <>

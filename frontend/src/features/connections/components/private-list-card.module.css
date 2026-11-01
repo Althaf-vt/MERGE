@@ -130,6 +130,21 @@
     cursor: not-allowed;
 }
 
+.connectButtonSent {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.connectButtonSent:hover {
+    background: #f3f4f6;
+    transform: none;
+    box-shadow: none;
+}
+
 .priorityIntroButton {
     display: inline-flex;
     align-items: center;
