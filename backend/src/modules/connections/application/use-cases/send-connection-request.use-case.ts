@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ISendConnectionRequestUseCase } from "../interfaces/connection.use-cases.interface";
+import { ISendConnectionRequestUseCase, SendConnectionRequestResult } from "../interfaces/connection.use-cases.interface";
 import { CONNECTION_REPOSITORY, IConnectionRepository } from "../../domain/interfaces/connection-repository.interface";
 import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { TargetUserDto } from "../dtos/connection.dto";
@@ -15,7 +15,7 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
         @Inject(PUBLIC_PROFILE_FACADE) private readonly _publicProfileFacade: IPublicProfileFacade,
     ) { }
 
-    async execute(requesterId: string, dto: TargetUserDto): Promise<void> {
+    async execute(requesterId: string, dto: TargetUserDto): Promise<SendConnectionRequestResult> {
         if (requesterId === dto.targetUserId) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.CANNOT_REQUEST_YOURSELF);
         }
@@ -27,6 +27,14 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
 
         const existingInteraction = await this._connectionRepo.findExistingInteraction(requesterId, dto.targetUserId);
         if (existingInteraction) {
+            // Mutual Auto-Match: If the target user already sent a pending request to the current user,
+            // this request confirms mutual interest and immediately forms an accepted match.
+            if (existingInteraction.requesterId === dto.targetUserId && existingInteraction.isPending()) {
+                existingInteraction.accept(requesterId);
+                await this._connectionRepo.update(existingInteraction);
+                return { isMatch: true };
+            }
+
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CONNECTION_ERROR_MESSAGES.INTERACTION_ALREADY_EXISTS);
         }
 
@@ -36,5 +44,6 @@ export class SendConnectionRequestUseCase implements ISendConnectionRequestUseCa
         });
 
         await this._connectionRepo.create(newConnection);
+        return { isMatch: false };
     }
 }

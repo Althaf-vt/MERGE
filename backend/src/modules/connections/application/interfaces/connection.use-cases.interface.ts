@@ -7,12 +7,16 @@ export const DECLINE_CONNECTION_USE_CASE = 'DECLINE_CONNECTION_USE_CASE';
 export const CANCEL_CONNECTION_USE_CASE = 'CANCEL_CONNECTION_USE_CASE';
 export const REVOKE_MATCH_USE_CASE = 'REVOKE_MATCH_USE_CASE';
 
+export interface SendConnectionRequestResult {
+    isMatch: boolean;
+}
+
 export interface IGetConnectionsUseCase {
     execute(userId: string, query: GetConnectionsQueryDto): Promise<PaginatedConnectionsResponseDto>;
 }
 
 export interface ISendConnectionRequestUseCase {
-    execute(requesterId: string, dto: TargetUserDto): Promise<void>;
+    execute(requesterId: string, dto: TargetUserDto): Promise<SendConnectionRequestResult>;
 }
 
 export interface IAcceptConnectionUseCase {
