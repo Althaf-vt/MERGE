@@ -59,6 +59,7 @@ export const connectionsApi = createApi({
             }),
             invalidatesTags: [
                 { type: 'PendingConnections', id: 'LIST' },
+                { type: 'ActiveConnections', id: 'LIST' },
                 { type: 'Shortlist', id: 'LIST' },
                 { type: 'ReviewLater', id: 'LIST' },
             ],

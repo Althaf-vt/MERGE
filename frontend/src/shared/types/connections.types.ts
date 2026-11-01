@@ -22,6 +22,7 @@ export interface PrivateListResponseDto {
     listType: PrivateListType;
     createdAt: string;
     hasPendingConnectionRequest: boolean;
+    hasIncomingConnectionRequest?: boolean;
 }
 
 export interface GetConnectionsQuery {

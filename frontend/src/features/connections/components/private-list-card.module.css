@@ -145,6 +145,19 @@
     box-shadow: none;
 }
 
+.connectButtonMatch {
+    background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.35);
+}
+
+.connectButtonMatch:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.45);
+    transform: translateY(-1px);
+}
+
 .priorityIntroButton {
     display: inline-flex;
     align-items: center;
