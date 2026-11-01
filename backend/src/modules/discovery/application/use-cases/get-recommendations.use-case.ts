@@ -18,9 +18,10 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
     ) { }
 
     async execute(userId: string, query: GetRecommendationsQueryDto): Promise<PaginatedRecommendationsDto> {
-        const [userContext, interactedIds] = await Promise.all([
+        const [userContext, interactedIds, passedUserIds] = await Promise.all([
             this._repository.getUserSearchContext(userId),
             this._connectionsFacade.getInteractedUserIds(userId),
+            this._repository.getPassedUserIds(userId),
         ]);
 
         if (!userContext?.personalityVector || userContext.personalityVector.length !== DISCOVERY_CONSTANTS.PERSONALITY_VECTOR_DIMENSIONS) {
@@ -37,8 +38,8 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         // Resolve global search intent: Either explicitly requested in query, or enabled via user preferences
         const isGlobal = query.isGlobal ?? (userContext.preference?.immigrationReady === true);
 
-        // Exclude current user and all interacted profiles (connections, private lists, priority intros)
-        const excludedIds = Array.from(new Set([userId, ...interactedIds]));
+        // Exclude current user, interacted profiles (connections, private lists, priority intros), and active passes
+        const excludedIds = Array.from(new Set([userId, ...interactedIds, ...passedUserIds]));
 
         const rawCandidates = await this._repository.findVectorMatches({
             userContext,
