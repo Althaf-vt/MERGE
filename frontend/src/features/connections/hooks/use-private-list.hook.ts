@@ -29,10 +29,9 @@ export const usePrivateList = (
 
     const handleRemove = useCallback((targetUserId: string) => removeFromList(targetUserId).unwrap(), [removeFromList]);
 
-    const handleMove = useCallback(async (targetUserId: string, targetType: PrivateListType) => {
-        await addToList({ targetUserId, listType: targetType }).unwrap();
-        await removeFromList(targetUserId).unwrap();
-    }, [addToList, removeFromList]);
+    const handleMove = useCallback((targetUserId: string, targetType: PrivateListType) => {
+        return addToList({ targetUserId, listType: targetType }).unwrap();
+    }, [addToList]);
 
     const handleSendRequest = useCallback((targetUserId: string) => sendRequest({ targetUserId }).unwrap(), [sendRequest]);
 
@@ -72,4 +71,3 @@ export const usePrivateList = (
         },
     };
 };
-
