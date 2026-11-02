@@ -25,8 +25,6 @@ import {
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { PhotoTaskDtoMapper } from "../mappers/photo-task-dto.mapper";
-import { HydratedPhotoTaskResult } from "../../application/interfaces/photo-verification.use-case.interface";
 
 @Controller(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -46,13 +44,9 @@ export class PhotoVerificationController {
     async getTasks(@Query() query: GetPhotoTasksQueryDto): Promise<ApiResponse<PhotoVerificationTaskResponseDto[]>> {
         const result = await this._getPhotoTasksUseCase.execute(query);
 
-        const mappedData = result.data.map((item: HydratedPhotoTaskResult) =>
-            PhotoTaskDtoMapper.toResponseDto(item.task, item.signedKycUrl, item.signedUploadedUrl)
-        );
-
         return {
             success: true,
-            data: mappedData,
+            data: result.data,
             meta: { total: result.total, page: result.page, limit: result.limit }
         };
     }

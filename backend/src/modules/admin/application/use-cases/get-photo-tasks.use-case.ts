@@ -1,8 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { HydratedPhotoTaskResult, IGetPhotoTasksUseCase, PaginatedHydratedPhotoTasks } from "../interfaces/photo-verification.use-case.interface";
+import { IGetPhotoTasksUseCase, PaginatedHydratedPhotoTasks } from "../interfaces/photo-verification.use-case.interface";
 import { IPhotoVerificationTaskRepository, PHOTO_VERIFICATION_TASK_REPOSITORY } from "../../domain/interfaces/photo-verification-task-repository.interface";
 import { GetPhotoTasksQueryDto } from "../dtos/photo-verification.dto";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
+import { PhotoTaskDtoMapper } from "../mappers/photo-task-dto.mapper";
 
 @Injectable()
 export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
@@ -21,17 +22,17 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
         });
 
         // Hydrate the raw S3 keys into secure presingned URLs concurrently
-        const hydratedData: HydratedPhotoTaskResult[] = await Promise.all(
+        const mappedData = await Promise.all(
             result.data.map(async (task) => {
                 const signedKycUrl = await this._mediaFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
                 const signedUploadedUrl = await this._mediaFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
 
-                return { task, signedKycUrl, signedUploadedUrl };
+                return PhotoTaskDtoMapper.toResponseDto(task, signedKycUrl, signedUploadedUrl)
             })
         );
 
         return {
-            data: hydratedData,
+            data: mappedData,
             total: result.total,
             page: result.page,
             limit: result.limit

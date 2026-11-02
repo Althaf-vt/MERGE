@@ -1,4 +1,4 @@
-import { PhotoVerificationTaskResponseDto } from "../../application/dtos/photo-verification.dto";
+import { PhotoVerificationTaskResponseDto } from "../dtos/photo-verification.dto";
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 
 export class PhotoTaskDtoMapper {
