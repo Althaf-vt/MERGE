@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IAdminLoginUseCase } from "../interfaces/admin-login.use-case.interface";
+import { AdminLoginResponse, IAdminLoginUseCase } from "../interfaces/admin-login.use-case.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
 import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
@@ -10,6 +10,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
@@ -19,7 +20,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(ADMIN_SESSION_SERVICE) private readonly _sessionService: IAdminSessionService,
     ) { }
-    async execute(dto: AdminLoginDto): Promise<{ accessToken: string; refreshToken: string; admin: AdminAggregate; }> {
+    async execute(dto: AdminLoginDto): Promise<AdminLoginResponse> {
         const emailVo = new EmailVO(dto.email);
 
         // 1. Fetch admin by exact normalized email
@@ -57,7 +58,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(payload),
             refreshToken: this._tokenService.generateRefreshToken(payload),
-            admin: admin,
+            admin: AdminResponseMapper.toResponse(admin),
         }
     }
 }

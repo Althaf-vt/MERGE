@@ -1,8 +1,8 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { ADMIN_LOGIN_USE_CASE, IAdminLoginUseCase } from "../../application/interfaces/admin-login.use-case.interface";
-import { AdminLoginDto } from "../../application/dtos/admin-login.dto";
+import { AdminLoginDto, AdminResponseDto } from "../../application/dtos/admin-login.dto";
 import { Request, Response } from "express";
-import { AdminResponseMapper } from "../mappers/admin-response.mapper";
+import { AdminResponseMapper } from "../../application/mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
@@ -28,7 +28,7 @@ export class AdminAuthController {
     async login(
         @Body() dto: AdminLoginDto,
         @Res({ passthrough: true }) res: Response
-    ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
+    ): Promise<ApiResponse<{ accessToken: string; admin: AdminResponseDto }>> {
         const result = await this._adminLoginUseCase.execute(dto);
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
@@ -36,10 +36,7 @@ export class AdminAuthController {
         return {
             success: true,
             message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
-            data: {
-                accessToken: result.accessToken,
-                admin: AdminResponseMapper.toResponse(result.admin)
-            }
+            data: { accessToken: result.accessToken, admin: result.admin }
         };
     }
 
