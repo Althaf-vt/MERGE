@@ -8,7 +8,6 @@ import { RequirePermissions } from "../../../../shared/infrastructure/security/d
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { GetKycTasksQueryDto, KycEscalationTaskResponseDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../../application/dtos/kyc-escalation.dto";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
-import { KycEscalationDtoMapper } from "../mappers/kyc-escalation-dto.mapper";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AdminRole } from "../../domain/enums/admin.enums";
@@ -33,12 +32,10 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_VIEW)
     async getTasks(@Query() query: GetKycTasksQueryDto): Promise<ApiResponse<KycEscalationTaskResponseDto[]>> {
         const result = await this._getTasksUseCase.execute(query);
-        
-        const mappedData = result.data.map(item => KycEscalationDtoMapper.toResponseDto(item));
 
         return { 
             success: true, 
-            data: mappedData, 
+            data: result.data, 
             meta: { total: result.total, page: result.page, limit: result.limit } 
         };
     }

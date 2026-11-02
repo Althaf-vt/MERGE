@@ -2,16 +2,54 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
     IApproveKycTaskUseCase,
     IClaimKycTaskUseCase,
+    IGetKycTasksUseCase,
     IRejectKycTaskUseCase,
     IReleaseKycTaskClaimUseCase,
     IRequestKycResubmissionUseCase,
-    ITakeoverKycTaskClaimUseCase
+    ITakeoverKycTaskClaimUseCase,
+    PaginatedHydratedKycTasks
 } from "../interfaces/kyc-escalation.use-case.interface";
 import { IKycEscalationTaskRepository, KYC_ESCALATION_TASK_REPOSITORY } from "../../domain/interfaces/kyc-escalation-task-repository.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { RejectKycTaskDto, RequestKycResubmissionDto } from "../dtos/kyc-escalation.dto";
+import { GetKycTasksQueryDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../dtos/kyc-escalation.dto";
 import { AdminRole } from "../../domain/enums/admin.enums";
+import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
+import { KycEscalationDtoMapper } from "../mappers/kyc-escalation-dto.mapper";
+
+@Injectable()
+export class GetKycTasksUseCase implements IGetKycTasksUseCase {
+    constructor(
+        @Inject(KYC_ESCALATION_TASK_REPOSITORY) private readonly _repository: IKycEscalationTaskRepository,
+        @Inject(MEDIA_FACADE) private readonly _mediaFacade: IMediaFacade,
+    ) { }
+
+    async execute(query: GetKycTasksQueryDto): Promise<PaginatedHydratedKycTasks> {
+        const result = await this._repository.findAllPaginated({
+            page: query.page ?? 1,
+            limit: query.limit ?? 20,
+            status: query.status,
+            claimStatus: query.claimStatus,
+            claimedBy: query.claimedBy,
+        });
+
+        const mappedData = await Promise.all(
+            result.data.map(async (task) => {
+                const signedSelfieUrl = await this._mediaFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
+                const signedDocumentUrl = await this._mediaFacade.getPresignedMediaUrl(task.uploadedDocumentUrl) || task.uploadedDocumentUrl;
+
+                return KycEscalationDtoMapper.toResponseDto(task, signedSelfieUrl, signedDocumentUrl);
+            })
+        );
+
+        return {
+            data: mappedData,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+        }
+    }
+}
 
 @Injectable()
 export class ClaimKycTaskUseCase implements IClaimKycTaskUseCase {

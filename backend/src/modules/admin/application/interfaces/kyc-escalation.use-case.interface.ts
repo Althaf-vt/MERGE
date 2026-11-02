@@ -1,5 +1,5 @@
 import { KycEscalationTask } from "../../domain/entities/kyc-escalation-task.entity";
-import { GetKycTasksQueryDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../dtos/kyc-escalation.dto";
+import { GetKycTasksQueryDto, KycEscalationTaskResponseDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../dtos/kyc-escalation.dto";
 
 export const GET_KYC_TASKS_USE_CASE = 'GET_KYC_TASKS_USE_CASE';
 export const CLAIM_KYC_TASK_USE_CASE = 'CLAIM_KYC_TASK_USE_CASE';
@@ -9,14 +9,8 @@ export const APPROVE_KYC_TASK_USE_CASE = 'APPROVE_KYC_TASK_USE_CASE';
 export const REJECT_KYC_TASK_USE_CASE = 'REJECT_KYC_TASK_USE_CASE';
 export const REQUEST_RESUBMISSION_KYC_TASK_USE_CASE = 'REQUEST_RESUBMISSION_KYC_TASK_USE_CASE';
 
-export interface HydratedKycTaskResult {
-    task: KycEscalationTask;
-    signedSelfieUrl: string;
-    signedDocumentUrl: string;
-}
-
 export interface PaginatedHydratedKycTasks {
-    data: HydratedKycTaskResult[];
+    data: KycEscalationTaskResponseDto[];
     total: number;
     page: number;
     limit: number;
