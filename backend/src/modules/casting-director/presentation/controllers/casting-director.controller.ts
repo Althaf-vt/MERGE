@@ -5,7 +5,6 @@ import { IProcessCastingMessageUseCase, PROCESS_CASTING_MESSAGE_USE_CASE } from 
 import { FINALIZE_CASTING_SESSION_USE_CASE, IFinalizeCastingSessionUseCase } from "../../application/interfaces/finalize-casting-session.use-case.interface";
 import { ProcessMessageDto } from "../../application/dtos/process-message.dto";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
-import { CastingSessionDtoMapper } from "../mappers/casting-session-dto.mapper";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
@@ -28,7 +27,7 @@ export class CastingDirectorController {
         return {
             success: true,
             message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED,
-            data: CastingSessionDtoMapper.toResponseDto(session)
+            data: session
         };
     }
 
@@ -42,7 +41,7 @@ export class CastingDirectorController {
         return {
             success: true,
             message: RESPONSE_MESSAGES.CASTING_DIRECTOR.MESSAGE_PROCESSED,
-            data: CastingSessionDtoMapper.toResponseDto(session)
+            data: session
         };
     }
 

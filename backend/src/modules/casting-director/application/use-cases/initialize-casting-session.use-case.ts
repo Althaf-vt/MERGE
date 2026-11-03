@@ -7,6 +7,8 @@ import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { CastingSessionResponseDto } from "../dtos/casting-session-response.dto";
+import { CastingSessionDtoMapper } from "../mappers/casting-session-dto.mapper";
 
 @Injectable()
 export class InitializeCastingSessionUseCase implements IInitializeCastingSessionUseCase {
@@ -16,11 +18,11 @@ export class InitializeCastingSessionUseCase implements IInitializeCastingSessio
         @Inject(CASTING_AI_SERVICE) private readonly _aiService: ICastingAiService
     ) { }
 
-    async execute(userId: string): Promise<CastingSession> {
+    async execute(userId: string): Promise<CastingSessionResponseDto> {
         // 1. prevent duplicate active sessions by returning the existing one if it is already IN_PROGRESS
         const existingSession = await this._sessionRepository.findActiveSessionByUserId(userId);
         if(existingSession){
-            return existingSession;
+            return CastingSessionDtoMapper.toResponseDto(existingSession);
         }
 
         // 2. Fetch user context across module boundaries using the isolated Facade
@@ -44,6 +46,8 @@ export class InitializeCastingSessionUseCase implements IInitializeCastingSessio
         session.addTurn(TranscriptRole.AI, openingQuestion);
 
         // 6. Persist and return the new aggregate root
-        return await this._sessionRepository.create(session);
+        const newSession = await this._sessionRepository.create(session);
+
+        return CastingSessionDtoMapper.toResponseDto(newSession)
     }
 }

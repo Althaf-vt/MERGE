@@ -1,4 +1,4 @@
-import { CastingSessionResponseDto } from "../../application/dtos/casting-session-response.dto";
+import { CastingSessionResponseDto } from "../dtos/casting-session-response.dto";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
 
 export class CastingSessionDtoMapper {
