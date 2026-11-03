@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForgotPasswordMutation, useResetPasswordMutation } from '../api/auth.api';
 import styles from './login-form.module.css';
@@ -12,6 +12,10 @@ export const ForgotPassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Resend countdown state
+    const [countdown, setCountdown] = useState(60);
 
     // UI Toggle State
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -19,6 +23,15 @@ export const ForgotPassword = () => {
 
     const [forgotPassword, { isLoading: isSending }] = useForgotPasswordMutation();
     const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+
+    // Timer countdown logic for Step 2
+    useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>;
+        if (step === 2 && countdown > 0) {
+            timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [step, countdown]);
 
     // Realtime password criteria verification
     const passwordChecks = {
@@ -45,13 +58,30 @@ export const ForgotPassword = () => {
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setSuccessMessage(null);
         if (!email.trim()) return setError('Please enter your email.');
 
         try {
-            await forgotPassword({ email: email.trim() }).unwrap();
+            const res = await forgotPassword({ email: email.trim() }).unwrap();
             setStep(2);
+            setCountdown(60);
+            setSuccessMessage(res.message || 'If an account exists, a reset code has been sent.');
         } catch (err: unknown) {
             setError(getErrorMessage(err, 'Failed to send reset code. Try again.'));
+        }
+    };
+
+    const handleResendCode = async () => {
+        if (countdown > 0 || isSending) return;
+        setError(null);
+        setSuccessMessage(null);
+
+        try {
+            const res = await forgotPassword({ email: email.trim() }).unwrap();
+            setCountdown(60);
+            setSuccessMessage(res.message || 'A new verification code has been sent.');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err, 'Failed to resend reset code. Try again.'));
         }
     };
 
@@ -92,8 +122,8 @@ export const ForgotPassword = () => {
         }
 
         try {
-            await resetPassword({ email: email.trim(), otp: otp.trim(), newPassword }).unwrap();
-            navigate('/login', { replace: true });
+            const res = await resetPassword({ email: email.trim(), otp: otp.trim(), newPassword }).unwrap();
+            navigate('/login', { state: { successMessage: res.message }, replace: true });
         } catch (err: unknown) {
             setError(getErrorMessage(err, 'Failed to reset password.'));
         }
@@ -139,13 +169,30 @@ export const ForgotPassword = () => {
             <div className={styles.branding}>
                 <h1 className={styles.title}>Reset Password</h1>
                 <p className={styles.subtitle}>
-                    {step === 1
-                        ? 'Enter your email to receive a code.'
-                        : 'Enter the code and confirm your new password.'}
+                    {step === 1 ? (
+                        'Enter your email to receive a code.'
+                    ) : (
+                        <>
+                            Code sent to <span style={{ fontWeight: 600, color: '#111827' }}>{email}</span>.{' '}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setStep(1);
+                                    setError(null);
+                                    setSuccessMessage(null);
+                                }}
+                                className={styles.resendLink}
+                                style={{ fontSize: '0.85rem' }}
+                            >
+                                Change
+                            </button>
+                        </>
+                    )}
                 </p>
             </div>
 
             <form className={styles.form} onSubmit={step === 1 ? handleSendCode : handleReset}>
+                {successMessage && <div className={styles.successBanner}>{successMessage}</div>}
                 {error && <div className={styles.errorBanner}>{error}</div>}
 
                 {step === 1 ? (
@@ -311,6 +358,24 @@ export const ForgotPassword = () => {
                     </span>
                 </button>
             </form>
+
+            {step === 2 && (
+                <p className={styles.resendText}>
+                    Didn't receive the code?{' '}
+                    <button
+                        type="button"
+                        className={styles.resendLink}
+                        onClick={handleResendCode}
+                        disabled={countdown > 0 || isSending}
+                        style={{
+                            opacity: countdown > 0 ? 0.6 : 1,
+                            cursor: countdown > 0 ? 'not-allowed' : 'pointer',
+                        }}
+                    >
+                        {isSending ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
+                    </button>
+                </p>
+            )}
 
             <p className={styles.footerText} style={{ marginTop: '1.5rem' }}>
                 Remembered it?{' '}

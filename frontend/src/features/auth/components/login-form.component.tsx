@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import { useLoginUserMutation } from '../api/auth.api';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './login-form.module.css';
 import { setCredentials } from '../slices/auth.slice';
 import { GoogleAuthButton } from './google-auth.component';
@@ -11,6 +11,7 @@ import { getErrorCode, getErrorMessage } from '../../../shared/utils/error.util'
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [login, { isLoading }] = useLoginUserMutation();
 
@@ -18,12 +19,14 @@ export const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [clientError, setClientError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(location.state?.successMessage || null);
 
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setClientError(null);
+        setSuccessMessage(null);
 
         if (!email || !password) {
             setClientError('Please fill in both fields.');
@@ -105,6 +108,7 @@ export const LoginForm = () => {
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>
+                {successMessage && <div className={styles.successBanner}>{successMessage}</div>}
                 {clientError && <div className={styles.errorBanner}>{clientError}</div>}
 
                 <div className={styles.inputGroup}>
