@@ -3,7 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Admin, AdminSchema } from "./infrastructure/persistence/admin.schema";
 import { AdminSeederService } from "./infrastructure/services/admin-seeder.service";
 import { ADMIN_REPOSITORY } from "./domain/interfaces/admin-repository.interface";
-import { MongoAdminRepository } from "./infrastructure/persistence/mongo-admin.repository";
+import { AdminRepository } from "./infrastructure/persistence/mongo-admin.repository";
 import { AdminAuthController } from "./presentation/controllers/admin-auth.controller";
 import { AdminLoginUseCase } from "./application/use-cases/admin-login.use-case";
 import { ADMIN_LOGIN_USE_CASE } from "./application/interfaces/admin-login.use-case.interface";
@@ -20,7 +20,7 @@ import { AdminLogoutUseCase } from "./application/use-cases/admin-logout.use-cas
 import { UserModule } from "../users/users.module";
 import { ModerationLogSchema, ModerationLogSchemaClass } from "./infrastructure/persistence/moderation-log.schema";
 import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-repository.interface";
-import { MongoModerationLogRepository } from "./infrastructure/persistence/mongo-moderation-log.repository";
+import { ModerationLogRepository } from "./infrastructure/persistence/mongo-moderation-log.repository";
 import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
@@ -50,7 +50,7 @@ import { GetAdminDetailsUseCase } from "./application/use-cases/get-admin-detail
 import { AdminRedisSessionService } from "./infrastructure/services/admin-redis-session.service";
 import { ADMIN_SESSION_SERVICE } from "./domain/interfaces/admin-session.interface";
 import { PHOTO_VERIFICATION_TASK_REPOSITORY } from "./domain/interfaces/photo-verification-task-repository.interface";
-import { MongoPhotoVerificationTaskRepository } from "./infrastructure/persistence/mongo-photo-verification-task.repository";
+import { PhotoVerificationTaskRepository } from "./infrastructure/persistence/mongo-photo-verification-task.repository";
 import { APPROVE_PHOTO_VERIFICATION_USE_CASE, CLAIM_PHOTO_TASK_USE_CASE, CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, GET_PHOTO_TASKS_USE_CASE, REJECT_PHOTO_VERIFICATION_USE_CASE, RELEASE_PHOTO_TASK_CLAIM_USE_CASE, TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE } from "./application/interfaces/photo-verification.use-case.interface";
 import { GetPhotoTasksUseCase } from "./application/use-cases/get-photo-tasks.use-case";
 import { ApprovePhotoVerificationUseCase, ClaimPhotoTaskUseCase, CreatePhotoVerificationTaskUseCase, RejectPhotoVerificationUseCase, ReleasePhotoTaskClaimUseCase, TakeoverPhotoTaskClaimUseCase } from "./application/use-cases/manage-photo-verification.use-case";
@@ -80,7 +80,7 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
 
         {
             provide: ADMIN_REPOSITORY,
-            useClass: MongoAdminRepository,
+            useClass: AdminRepository,
         },
         {
             provide: ADMIN_LOGIN_USE_CASE,
@@ -112,7 +112,7 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         },
         {
             provide: MODERATION_LOG_REPOSITORY,
-            useClass: MongoModerationLogRepository,
+            useClass: ModerationLogRepository,
         },
         {
             provide: MANAGE_USER_STATUS_USE_CASE,
@@ -181,7 +181,7 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
 
         {
             provide: PHOTO_VERIFICATION_TASK_REPOSITORY,
-            useClass: MongoPhotoVerificationTaskRepository
+            useClass: PhotoVerificationTaskRepository
         },
         {
             provide: GET_PHOTO_TASKS_USE_CASE,

@@ -7,20 +7,20 @@ import { Model } from "mongoose";
 import { IModerationLogRepository } from "../../domain/interfaces/moderation-log-repository.interface";
 
 @Injectable()
-export class MongoModerationLogRepository implements IModerationLogRepository{
+export class ModerationLogRepository implements IModerationLogRepository {
     constructor(
         @InjectModel(ModerationLogSchemaClass.name)
         private readonly _model: Model<ModerationLogDocument>
-    ){}
+    ) { }
 
-    async save(log: ModerationLog): Promise<void>{
+    async save(log: ModerationLog): Promise<void> {
         const persistenceData = ModerationLogPersistenceMapper.toPersistence(log);
         const created = new this._model(persistenceData);
         await created.save();
     }
 
-    async findByUserId(userId: string): Promise<ModerationLog[]>{
-        const docs = await this._model.find({targetUserId: userId}).sort({createdAt: -1}).exec();
+    async findByUserId(userId: string): Promise<ModerationLog[]> {
+        const docs = await this._model.find({ targetUserId: userId }).sort({ createdAt: -1 }).exec();
         return docs.map(doc => ModerationLogPersistenceMapper.toDomain(doc));
     }
 }

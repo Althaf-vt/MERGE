@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { Admin, AdminDocument } from "./admin.schema";
 import { GetAdminsFilters, IAdminRepository, PaginatedAdminsResult } from "../../domain/interfaces/admin-repository.interface";
@@ -10,12 +10,12 @@ import { AdminRole } from "../../domain/enums/admin.enums";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
-export class MongoAdminRepository extends BaseMongoRepository<AdminAggregate, AdminDocument> implements IAdminRepository {
+export class AdminRepository extends BaseRepository<AdminAggregate, AdminDocument> implements IAdminRepository {
     constructor(
         @InjectModel(Admin.name) model: Model<AdminDocument>,
-        eventEmitter: EventEmitter2 
+        eventEmitter: EventEmitter2
     ) {
-        super(model, eventEmitter); 
+        super(model, eventEmitter);
     }
 
     protected toDomain(document: AdminDocument): AdminAggregate {

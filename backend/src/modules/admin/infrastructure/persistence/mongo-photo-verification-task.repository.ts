@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 import { PhotoVerificationTaskDocument, PhotoVerificationTaskSchemaClass } from "./photo-verification-task.schema";
 import { GetPhotoTasksFilters, IPhotoVerificationTaskRepository, PaginatedPhotoTasksResult } from "../../domain/interfaces/photo-verification-task-repository.interface";
@@ -9,7 +9,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PhotoTaskPersistenceMapper } from "./mappers/photo-task-persistence.mapper";
 
 @Injectable()
-export class MongoPhotoVerificationTaskRepository extends BaseMongoRepository<PhotoVerificationTask, PhotoVerificationTaskDocument> implements IPhotoVerificationTaskRepository {
+export class PhotoVerificationTaskRepository extends BaseRepository<PhotoVerificationTask, PhotoVerificationTaskDocument> implements IPhotoVerificationTaskRepository {
     constructor(
         @InjectModel(PhotoVerificationTaskSchemaClass.name) model: Model<PhotoVerificationTaskDocument>,
         eventEmitter: EventEmitter2
