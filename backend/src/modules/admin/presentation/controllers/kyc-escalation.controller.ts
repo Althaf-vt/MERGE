@@ -13,6 +13,7 @@ import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/res
 import { AdminRole } from "../../domain/enums/admin.enums";
 import { AdminRolesGuard } from "../../../../shared/infrastructure/security/guards/admin-roles.guard";
 import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.ADMIN.KYC_ESCALATION.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -33,11 +34,11 @@ export class KycEscalationController {
     async getTasks(@Query() query: GetKycTasksQueryDto): Promise<ApiResponse<KycEscalationTaskResponseDto[]>> {
         const result = await this._getTasksUseCase.execute(query);
 
-        return { 
-            success: true, 
-            data: result.data, 
-            meta: { total: result.total, page: result.page, limit: result.limit } 
-        };
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.KYC_TASKS_FETCHED,
+            result.data,
+            { total: result.total, page: result.page, limit: result.limit }
+        );
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.CLAIM)
@@ -45,7 +46,7 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async claimTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._claimTaskUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.RELEASE)
@@ -53,7 +54,7 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async releaseClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._releaseClaimUseCase.execute(taskId, req.user.userId, req.user.role);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.TAKEOVER)
@@ -63,7 +64,7 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async takeoverClaim(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER);
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.APPROVE)
@@ -71,7 +72,7 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_APPROVE)
     async approveTask(@Param('id') taskId: string, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._approveTaskUseCase.execute(taskId, req.user.userId, req.user.role);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.KYC_APPROVED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.KYC_APPROVED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.REJECT)
@@ -79,7 +80,7 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_REJECT)
     async rejectTask(@Param('id') taskId: string, @Body() dto: RejectKycTaskDto, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._rejectTaskUseCase.execute(taskId, req.user.userId, req.user.role, dto);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.KYC_REJECTED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.KYC_REJECTED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.KYC_ESCALATION.REQUEST_RESUBMISSION)
@@ -87,6 +88,6 @@ export class KycEscalationController {
     @RequirePermissions(AdminPermission.KYC_REJECT)
     async requestResubmission(@Param('id') taskId: string, @Body() dto: RequestKycResubmissionDto, @Req() req: AuthenticatedRequest): Promise<ApiResponse> {
         await this._requestResubmissionUseCase.execute(taskId, req.user.userId, req.user.role, dto);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.KYC_RESUBMISSION_REQUESTED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.KYC_RESUBMISSION_REQUESTED);
     }
 }
