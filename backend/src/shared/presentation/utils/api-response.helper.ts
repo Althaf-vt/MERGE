@@ -1,11 +1,12 @@
-import { ApiResponse } from "../interfaces/api-response.interface";
+import { ApiResponse, PaginationMeta } from "../interfaces/api-response.interface";
 
 export class ApiResponseHelper {
-    static success<T>(message: string, data?: T): ApiResponse<T> {
+    static success<T>(message: string, data?: T, meta?: PaginationMeta): ApiResponse<T> {
         return {
             success: true,
             message,
             ...(data !== undefined && { data }),
+            ...(meta !== undefined && { meta }),
         };
     }
 
