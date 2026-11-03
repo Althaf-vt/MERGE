@@ -7,6 +7,7 @@ import { UserSessionGuard } from "../../../../shared/infrastructure/security/gua
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { AddToPrivateListDto, GetPrivateListQueryDto, PrivateListResponseDto } from "../../application/dtos/private-list.dto";
 import { ADD_TO_PRIVATE_LIST_USE_CASE, GET_PRIVATE_LIST_USE_CASE, IAddToPrivateListUseCase, IGetPrivateListUseCase, IRemoveFromPrivateListUseCase, REMOVE_FROM_PRIVATE_LIST_USE_CASE } from "../../application/interfaces/private-list.use-cases.interface";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.PRIVATE_LISTS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -25,11 +26,11 @@ export class PrivateListsController {
     ): Promise<ApiResponse<PrivateListResponseDto[]>> {
         const result = await this._getListUseCase.execute(req.user.userId, query);
         
-        return { 
-            success: true, 
-            data: result.data,
-            meta: { total: result.total, page: result.page, limit: result.limit }
-        };
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.PRIVATE_LISTS.FETCHED,
+            result.data,
+            { total: result.total, page: result.page, limit: result.limit }
+        );
     }
 
     @Post(API_ENDPOINTS.PRIVATE_LISTS.ADD)
@@ -39,13 +40,13 @@ export class PrivateListsController {
         @Body() dto: AddToPrivateListDto
     ): Promise<ApiResponse> {
         await this._addToListUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.PRIVATE_LISTS.ADDED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PRIVATE_LISTS.ADDED);
     }
 
     @Delete(API_ENDPOINTS.PRIVATE_LISTS.REMOVE)
     @HttpCode(HttpStatus.OK)
     async removeFromList(@Req() req: AuthenticatedRequest, @Param('id') targetUserId: string): Promise<ApiResponse> {
         await this._removeFromListUseCase.execute(req.user.userId, targetUserId);
-        return { success: true, message: RESPONSE_MESSAGES.PRIVATE_LISTS.REMOVED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PRIVATE_LISTS.REMOVED);
     }
 }

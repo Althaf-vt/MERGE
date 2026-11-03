@@ -10,6 +10,7 @@ import {
     ISendPriorityIntroUseCase,
     SEND_PRIORITY_INTRO_USE_CASE,
 } from "../../application/interfaces/priority-intro.use-cases.interface";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -25,6 +26,6 @@ export class PriorityIntrosController {
         @Body() dto: SendPriorityIntroDto
     ): Promise<ApiResponse> {
         await this._sendPriorityIntroUseCase.execute(req.user.userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.PRIORITY_INTRO_SENT };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CONNECTIONS.PRIORITY_INTRO_SENT);
     }
 }
