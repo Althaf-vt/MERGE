@@ -29,6 +29,7 @@ import { RequiredFile, UploadImage } from "../../../../shared/presentation/decor
 import { UpdateFullPreferencesDto } from "../../application/dtos/update-full-preferences.dto";
 import { IUpdatePreferencesUseCase, UPDATE_PREFERENCES_USE_CASE } from "../../application/interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../../application/dtos/update-preferences.dto";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -58,11 +59,7 @@ export class ProfileController {
         const userId = req.user.userId;
         const result = await this._updatePersonaUseCase.execute(userId, dto);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.PERSONA_UPDATED,
-            data: result
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PERSONA_UPDATED, result);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.LIFESTYLE)
@@ -74,11 +71,7 @@ export class ProfileController {
         const userId = req.user.userId;
         const result = await this._updateLifestyleUseCase.execute(userId, dto);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.LIFESTYLE_UPDATED,
-            data: { profile: result }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.LIFESTYLE_UPDATED, { profile: result });
     }
 
     @Patch(API_ENDPOINTS.PROFILE.PREFERENCES)
@@ -88,10 +81,7 @@ export class ProfileController {
         @Body() dto: UpdatePreferencesDto
     ): Promise<ApiResponse<undefined>> {
         await this._updatePreferences.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.FULL_PREFERENCES)
@@ -101,10 +91,7 @@ export class ProfileController {
         @Body() dto: UpdateFullPreferencesDto
     ): Promise<ApiResponse<undefined>> {
         await this._updateFullPreferencesUseCase.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PREFERENCES_UPDATED);
     }
 
     @Post(API_ENDPOINTS.PROFILE.BIO_GENERATE)
@@ -116,13 +103,10 @@ export class ProfileController {
         const userId = req.user.userId;
         const result = await this._generateBioUseCase.execute(userId, dto);
 
-        return {
-            success: true,
-            data: {
-                bios: result.bios,
-                remainingAttempts: result.remainingAttempts
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.BIO_GENERATED, {
+            bios: result.bios,
+            remainingAttempts: result.remainingAttempts
+        });
     }
 
     @Patch(API_ENDPOINTS.PROFILE.BIO_SAVE)
@@ -134,10 +118,7 @@ export class ProfileController {
         const userId = req.user.userId;
         await this._saveBioUseCase.execute(userId, dto);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.BIO_SAVED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.BIO_SAVED);
     }
 
     @Get()
@@ -146,10 +127,7 @@ export class ProfileController {
         const userId = req.user.userId;
         const profileData = await this._getProfileUseCase.execute(userId);
 
-        return {
-            success: true,
-            data: profileData
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PROFILE_FETCHED, profileData);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.FULL)
@@ -160,7 +138,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._updateFullProfileUseCase.execute(userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.UPDATE_SUCCESS };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.UPDATE_SUCCESS);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.MEDICAL)
@@ -171,7 +149,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._updateMedicalRecordUseCase.execute(userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.MEDICAL_UPDATED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.MEDICAL_UPDATED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.PRIVACY)
@@ -182,7 +160,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._updatePrivacySettingsUseCase.execute(userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.PRIVACY_UPDATED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PRIVACY_UPDATED);
     }
 
     @Post(API_ENDPOINTS.PROFILE.PHOTOS)
@@ -194,7 +172,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._uploadProfilePhotoUseCase.execute(userId, file.buffer, file.mimetype);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.PHOTO_UPLOADED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PHOTO_UPLOADED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.PHOTOS_PRIMARY)
@@ -205,7 +183,7 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._setPrimaryPhotoUseCase.execute(userId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.PRIMARY_PHOTO_SET };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PRIMARY_PHOTO_SET);
     }
 
     @Delete(API_ENDPOINTS.PROFILE.PHOTO_BY_ID)
@@ -216,6 +194,6 @@ export class ProfileController {
     ): Promise<ApiResponse<undefined>> {
         const userId = req.user.userId;
         await this._removeProfilePhotoUseCase.execute(userId, photoId);
-        return { success: true, message: RESPONSE_MESSAGES.PROFILE.PHOTO_DELETED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.PHOTO_DELETED);
     }
 }

@@ -20,6 +20,7 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { UserResponseDto } from "../../application/dtos/user-response.dto";
 import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.AUTH.BASE)
 export class AuthController {
@@ -39,31 +40,21 @@ export class AuthController {
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() dto: RegisterUserDto): Promise<ApiResponse<undefined>> {
         await this._registerUserUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.REGISTER_SUCCESS
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.REGISTER_SUCCESS);
     }
 
     @Post(API_ENDPOINTS.AUTH.VERIFY_OTP)
     @HttpCode(HttpStatus.OK)
     async verifyOtp(@Body() dto: VerifyOtpDto): Promise<ApiResponse<UserResponseDto>> {
         const user = await this._verifyOtpUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.EMAIL_VERIFIED,
-            data: user,
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.EMAIL_VERIFIED, user);
     }
 
     @Post(API_ENDPOINTS.AUTH.RESEND_OTP)
     @HttpCode(HttpStatus.OK)
     async resendOtp(@Body() dto: ResendOtpDto): Promise<ApiResponse<undefined>> {
         await this._resendOtpUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.REGISTER_SUCCESS // Reuse standard OTP message
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.OTP_RESENT);
     }
 
     @Post(API_ENDPOINTS.AUTH.LOGIN)
@@ -77,34 +68,24 @@ export class AuthController {
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
-            data: {
-                accessToken: result.accessToken,
-                user: result.user,
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS, {
+            accessToken: result.accessToken,
+            user: result.user,
+        });
     }
 
     @Post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT);
     }
 
     @Post(API_ENDPOINTS.AUTH.RESET_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() dto: ResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
     }
 
     @Post(API_ENDPOINTS.AUTH.GOOGLE)
@@ -118,14 +99,10 @@ export class AuthController {
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken, { sameSite: 'lax' });
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
-            data: {
-                accessToken: result.accessToken,
-                user: result.user,
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,{
+            accessToken: result.accessToken,
+            user: result.user,
+        });
     }
 
     @Post(API_ENDPOINTS.AUTH.REFRESH)
@@ -135,36 +112,24 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response
     ): Promise<ApiResponse<{ accessToken: string; user: UserResponseDto }>> {
         const refreshToken = req.cookies[COOKIE_NAMES.USER_REFRESH_TOKEN];
-        if (!refreshToken) {
-            throw new UnauthorizedException("No refresh token found");
-        }
+        if (!refreshToken) throw new UnauthorizedException("No refresh token found");
 
         const result = await this._refreshTokenUseCase.execute({ refreshToken });
-
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, result.refreshToken);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
-            data: {
-                accessToken: result.accessToken,
-                user: result.user,
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,{
+            accessToken: result.accessToken,
+            user: result.user,
+        });
     }
 
     @Post(API_ENDPOINTS.AUTH.LOGOUT)
     @HttpCode(HttpStatus.OK)
     async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<undefined>> {
         const refreshToken = req.cookies[COOKIE_NAMES.USER_REFRESH_TOKEN];
-
         await this._logoutUseCase.execute(refreshToken);
-
         CookieUtil.clearAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS);
     }
 }

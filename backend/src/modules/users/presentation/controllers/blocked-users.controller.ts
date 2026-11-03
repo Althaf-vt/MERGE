@@ -7,6 +7,7 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.BLOCKED_USERS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -24,10 +25,7 @@ export class BlockedUsersController {
         @Query() query: GetBlockedUsersQueryDto
     ): Promise<ApiResponse<BlockedUserResponseDto[]>> {
         const data = await this._getBlockedUsersUseCase.execute(req.user.userId, query.search, query.sortBy);
-        return {
-            success: true,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.BLOCKED_USERS_FETCHED, data);
     }
 
     @Post(API_ENDPOINTS.BLOCKED_USERS.BLOCKED)
@@ -37,10 +35,7 @@ export class BlockedUsersController {
         @Body() dto: BlockUserDto
     ): Promise<ApiResponse<undefined>> {
         await this._blockUserUseCase.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.USER_BLOCKED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.USER_BLOCKED);
     }
 
     @Delete(API_ENDPOINTS.BLOCKED_USERS.BLOCKED_BY_ID)
@@ -50,9 +45,6 @@ export class BlockedUsersController {
         @Param('blockedId') blockedId: string
     ): Promise<ApiResponse<undefined>> {
         await this._unblockUserUseCase.execute(req.user.userId, blockedId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.PROFILE.USER_UNBLOCKED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.PROFILE.USER_UNBLOCKED);
     }
 }

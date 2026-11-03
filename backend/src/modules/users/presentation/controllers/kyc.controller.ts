@@ -12,6 +12,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { RequiredFile, UploadFile, UploadImage, UploadVideo } from "../../../../shared/presentation/decorators/file-upload.decorator";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.KYC.BASE)
 @UseGuards(JwtAuthGuard)
@@ -38,11 +39,7 @@ export class KycController {
             fileBuffer: file.buffer,
         });
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.KYC.DOCUMENT_VALIDATED,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.DOCUMENT_VALIDATED, data);
     }
 
     @Post(API_ENDPOINTS.KYC.SELFIE)
@@ -56,11 +53,7 @@ export class KycController {
 
         const data = await this._submitLiveSelfieUseCase.execute(userId, file.buffer);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.KYC.SELFIE_CAPTURED,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.SELFIE_CAPTURED, data);
     }
 
     @Post(API_ENDPOINTS.KYC.LIVENESS)
@@ -74,11 +67,7 @@ export class KycController {
         const userId = req.user.userId;
         const data = await this._submitLivenessCheckUseCase.execute(userId, dto.promptType, file.buffer);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.KYC.LIVENESS_VERIFIED,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.LIVENESS_VERIFIED, data);
     }
 
     @Post(API_ENDPOINTS.KYC.SUBMIT_VERIFICATION)
@@ -87,10 +76,6 @@ export class KycController {
         const userId = req.user.userId;
         const data = await this._submitFinalVerificationUseCase.execute(userId);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.KYC.VERIFICATION_SUBMITTED,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.VERIFICATION_SUBMITTED, data);
     }
 }

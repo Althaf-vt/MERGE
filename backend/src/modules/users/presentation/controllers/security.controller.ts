@@ -7,6 +7,7 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.PROFILE.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -27,10 +28,7 @@ export class SecurityController {
     @HttpCode(HttpStatus.OK)
     async requestOtp(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._requestOtpUseCase.execute(req.user.userId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.OTP_REQUESTED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.OTP_REQUESTED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.SECURITY_PASSWORD)
@@ -40,30 +38,21 @@ export class SecurityController {
         @Body() dto: UpdateSecurityPasswordDto
     ): Promise<ApiResponse<undefined>> {
         await this._updatePasswordUseCase.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.PASSWORD_UPDATED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.PASSWORD_UPDATED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DEACTIVATE)
     @HttpCode(HttpStatus.OK)
     async deactivateAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deactivateUseCase.execute(req.user.userId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DEACTIVATED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.ACCOUNT_DEACTIVATED);
     }
 
     @Delete(API_ENDPOINTS.PROFILE.SECURITY_ACCOUNT_DELETE)
     @HttpCode(HttpStatus.OK)
     async deleteAccount(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._deleteUseCase.execute(req.user.userId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.ACCOUNT_DELETED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.ACCOUNT_DELETED);
     }
 
     @Post(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_INITIATE)
@@ -73,10 +62,7 @@ export class SecurityController {
         @Body() dto: InitiateEmailChangeDto
     ): Promise<ApiResponse<undefined>> {
         await this._initiateEmailChangeUseCase.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGE_INITIATED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGE_INITIATED);
     }
 
     @Patch(API_ENDPOINTS.PROFILE.SECURITY_EMAIL_CONFIRM)
@@ -86,10 +72,7 @@ export class SecurityController {
         @Body() dto: ConfirmEmailChangeDto
     ): Promise<ApiResponse<undefined>> {
         await this._confirmEmailChangeUseCase.execute(req.user.userId, dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.EMAIL_CHANGED);
     }
 
     @Get(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS)
@@ -101,10 +84,7 @@ export class SecurityController {
         }
 
         const sessions = await this._getSessionsUseCase.execute(req.user.userId, currentSessionId);
-        return {
-            success: true,
-            data: sessions
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.SESSIONS_FETCHED, sessions);
     }
 
     @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_OTHER)
@@ -116,10 +96,7 @@ export class SecurityController {
         }
 
         await this._revokeOtherSessionsUseCase.execute(req.user.userId, currentSessionId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.ALL_SESSIONS_REVOKED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.ALL_SESSIONS_REVOKED);
     }
 
     @Delete(API_ENDPOINTS.PROFILE.SECURITY_SESSIONS_REVOKE)
@@ -129,9 +106,6 @@ export class SecurityController {
         @Param('sessionId') sessionId: string
     ): Promise<ApiResponse<undefined>> {
         await this._revokeSessionUseCase.execute(req.user.userId, { sessionId });
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.SECURITY.SESSION_REVOKED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SECURITY.SESSION_REVOKED);
     }
 }

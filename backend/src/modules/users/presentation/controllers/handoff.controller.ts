@@ -10,6 +10,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.HANDOFF.BASE)
 export class HandoffController {
@@ -30,11 +31,7 @@ export class HandoffController {
         const userId = req.user.userId;
         const data = await this._generateSessionUseCase.execute(userId, origin);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.KYC.HANDOFF_CREATED,
-            data
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.HANDOFF_CREATED, data);
     }
 
     @Get(API_ENDPOINTS.HANDOFF.VALIDATE)
@@ -47,14 +44,10 @@ export class HandoffController {
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN, refreshToken, { sameSite: 'lax' });
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.HANDOFF.PHONE_CONNECTED,
-            data: {
-                accessToken: accessToken,
-                status: 'PHONE_CONNECTED'
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.HANDOFF.PHONE_CONNECTED, {
+            accessToken: accessToken,
+            status: 'PHONE_CONNECTED'
+        });
     }
 
     @Post(API_ENDPOINTS.HANDOFF.COMPLETE)
@@ -65,10 +58,7 @@ export class HandoffController {
     ): Promise<ApiResponse<undefined>> {
         await this._completeHandoffSessionUseCase.execute(sessionId);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.HANDOFF.COMPLETED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.HANDOFF.COMPLETED);
     }
 
     @Post(API_ENDPOINTS.HANDOFF.CANCEL)
@@ -79,9 +69,6 @@ export class HandoffController {
     ): Promise<ApiResponse<undefined>> {
         await this._cancelHandoffSessionUseCase.execute(sessionId);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.HANDOFF.CANCELLED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.HANDOFF.CANCELLED);
     }
 }
