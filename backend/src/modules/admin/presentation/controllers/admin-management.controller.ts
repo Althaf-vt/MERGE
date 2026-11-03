@@ -17,6 +17,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AdminDetailsDto } from "../../application/dtos/admin-output.dto";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.ADMIN.MANAGEMENT.BASE)
 export class AdminManagementController {
@@ -44,15 +45,15 @@ export class AdminManagementController {
     ): Promise<ApiResponse<AdminDetailsDto[]>> {
         const result = await this._getAdminsUseCase.execute(query, req.user.userId);
 
-        return {
-            success: true,
-            data: result.data,
-            meta: {
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.ADMINS_FETCHED,
+            result.data,
+            {
                 total: result.total,
                 page: result.page,
                 limit: result.limit,
             }
-        };
+        );
     }
 
     @Get(API_ENDPOINTS.ADMIN.MANAGEMENT.BY_ID)
@@ -61,7 +62,7 @@ export class AdminManagementController {
     @HttpCode(HttpStatus.OK)
     async getAdminDetails(@Param('id') targetAdminId: string): Promise<ApiResponse<AdminDetailsDto>> {
         const data = await this._getAdminDetailsUseCase.execute(targetAdminId);
-        return { success: true, data };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_DETAILS_FETCHED, data);
     }
 
     @Post(API_ENDPOINTS.ADMIN.MANAGEMENT.INVITE)
@@ -73,15 +74,14 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._inviteAdminUseCase.execute(dto, req.user.userId, req.user.email);
-
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_INVITED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_INVITED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.MANAGEMENT.ACCEPT_INVITE)
     @HttpCode(HttpStatus.OK)
     async acceptInvite(@Body() dto: AcceptAdminInviteDto): Promise<ApiResponse<undefined>> {
         await this._acceptInviteUseCase.execute(dto);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.INVITE_ACCEPTED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.INVITE_ACCEPTED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.MANAGEMENT.REINVITE)
@@ -93,8 +93,7 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._reinviteAdminUseCase.execute(targetAdminId, req.user.email);
-
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.REINVITE_SENT };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.REINVITE_SENT);
     }
 
     @Delete(API_ENDPOINTS.ADMIN.MANAGEMENT.CANCEL_INVITE)
@@ -103,7 +102,7 @@ export class AdminManagementController {
     @HttpCode(HttpStatus.OK)
     async cancelAdminInvite(@Param('id') targetAdminId: string): Promise<ApiResponse<undefined>> {
         await this._cancelAdminInviteUseCase.execute(targetAdminId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.INVITE_CANCELLED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.INVITE_CANCELLED);
     }
 
     @Patch(API_ENDPOINTS.ADMIN.MANAGEMENT.BY_ID)
@@ -115,7 +114,7 @@ export class AdminManagementController {
         @Body() dto: UpdateAdminDto
     ): Promise<ApiResponse<undefined>> {
         await this._updateAdminUseCase.execute(targetAdminId, dto);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_UPDATED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_UPDATED);
     }
 
     @Patch(API_ENDPOINTS.ADMIN.MANAGEMENT.SUSPEND)
@@ -128,7 +127,7 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._suspendAdminUseCase.execute(targetAdminId, dto, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED }; // Reuse message
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_SUSPENDED);
     }
 
     @Patch(API_ENDPOINTS.ADMIN.MANAGEMENT.DEACTIVATE)
@@ -141,7 +140,7 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._deactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_DEACTIVATED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_DEACTIVATED);
     }
 
     @Patch(API_ENDPOINTS.ADMIN.MANAGEMENT.REACTIVATE)
@@ -154,7 +153,7 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._reactivateAdminUseCase.execute(targetAdminId, dto.reason, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_REACTIVATED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_REACTIVATED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.MANAGEMENT.FORCE_LOGOUT)
@@ -166,6 +165,6 @@ export class AdminManagementController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._forceLogoutUseCase.execute(targetAdminId, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.ADMIN_LOGGED_OUT };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.ADMIN_LOGGED_OUT);
     }
 }
