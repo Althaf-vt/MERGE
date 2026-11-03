@@ -8,6 +8,7 @@ import { DiscoveryRecommendationDto, GetRecommendationsQueryDto, PassCandidateDt
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.DISCOVERY.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -25,16 +26,15 @@ export class DiscoveryController {
     ): Promise<ApiResponse<DiscoveryRecommendationDto[]>> {
         const result = await this._getRecommendationsUseCase.execute(req.user.userId, query);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.DISCOVERY.RECOMMENDATIONS_FETCHED,
-            data: result.data,
-            meta: {
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.DISCOVERY.RECOMMENDATIONS_FETCHED,
+            result.data,
+            {
                 total: result.total,
                 page: result.page,
                 limit: result.limit
             }
-        };
+        );
     }
 
     @Post(API_ENDPOINTS.DISCOVERY.PASS)
@@ -45,9 +45,6 @@ export class DiscoveryController {
     ): Promise<ApiResponse<void>> {
         await this._passCandidateUseCase.execute(req.user.userId, dto);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.DISCOVERY.CANDIDATE_PASSED,
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.DISCOVERY.CANDIDATE_PASSED);
     }
 }
