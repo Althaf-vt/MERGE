@@ -25,6 +25,7 @@ import {
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -44,11 +45,11 @@ export class PhotoVerificationController {
     async getTasks(@Query() query: GetPhotoTasksQueryDto): Promise<ApiResponse<PhotoVerificationTaskResponseDto[]>> {
         const result = await this._getPhotoTasksUseCase.execute(query);
 
-        return {
-            success: true,
-            data: result.data,
-            meta: { total: result.total, page: result.page, limit: result.limit }
-        };
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.PHOTO_TASKS_FETCHED,
+            result.data,
+            { total: result.total, page: result.page, limit: result.limit }
+        );
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.CLAIM)
@@ -59,7 +60,7 @@ export class PhotoVerificationController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._claimTaskUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.TASK_CLAIMED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.RELEASE)
@@ -70,7 +71,7 @@ export class PhotoVerificationController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._releaseClaimUseCase.execute(taskId, req.user.userId, req.user.role);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.CLAIM_RELEASED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.TAKEOVER)
@@ -82,7 +83,7 @@ export class PhotoVerificationController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._takeoverClaimUseCase.execute(taskId, req.user.userId);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.FORCE_TAKEOVER);
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.APPROVE)
@@ -93,7 +94,7 @@ export class PhotoVerificationController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._approvePhotoUseCase.execute(taskId, req.user.userId, req.user.role);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_APPROVED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.PHOTO_APPROVED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.PHOTO_VERIFICATION.REJECT)
@@ -105,6 +106,6 @@ export class PhotoVerificationController {
         @Req() req: AuthenticatedRequest
     ): Promise<ApiResponse<undefined>> {
         await this._rejectPhotoUseCase.execute(taskId, req.user.userId, req.user.role, dto);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.PHOTO_REJECTED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.PHOTO_REJECTED);
     }
 }
