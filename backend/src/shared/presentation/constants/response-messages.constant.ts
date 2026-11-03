@@ -103,5 +103,6 @@ export const RESPONSE_MESSAGES = {
         USERS_FETCHED: 'Users retrieved successfully.',
         USER_DETAILS_FETCHED: 'User details retrieved successfully.',
         KYC_TASKS_FETCHED: 'KYC escalation tasks retrieved successfully.',
+        PHOTO_TASKS_FETCHED: 'Photo verification tasks retrieved successfully.',
     }
 } as const;
