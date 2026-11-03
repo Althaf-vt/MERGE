@@ -6,11 +6,11 @@ import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
 import { Model, Types } from "mongoose";
 import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
-export class MongoUserRepository extends BaseMongoRepository<UserAggregate, UserDocument> implements IUserRepository {
+export class UserRepository extends BaseRepository<UserAggregate, UserDocument> implements IUserRepository {
 
     constructor(
         @InjectModel(User.name) model: Model<UserDocument>,
@@ -38,7 +38,7 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
             'kycVerification.hashedDocumentNumber': documentHash
         }).exec();
         if (!document) return null;
-        
+
         const userAggregate = UserPersistenceMapper.toDomain(document);
         return userAggregate.kycVerification || null;
     }
@@ -63,7 +63,7 @@ export class MongoUserRepository extends BaseMongoRepository<UserAggregate, User
 
     async saveLivenessUpdate(user: UserAggregate, record: LivenessEvaluationRecord): Promise<void> {
         if (!user.id) return;
-        
+
         await this._model.updateOne(
             { _id: user.id },
             {

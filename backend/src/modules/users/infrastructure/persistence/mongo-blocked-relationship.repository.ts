@@ -9,7 +9,7 @@ import { SortOrder } from "../../domain/enums/user.enums";
 import { PhotoVerificationStatus } from "../../domain/enums/profile.enums";
 
 @Injectable()
-export class MongoBlockedRelationshipRepository implements IBlockedRelationshipRepository {
+export class BlockedRelationshipRepository implements IBlockedRelationshipRepository {
     constructor(
         @InjectModel(BlockedRelationshipSchemaClass.name)
         private readonly _model: Model<BlockedRelationshipDocument>
@@ -65,11 +65,11 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
                     as: 'targetUser'
                 }
             },
-            { 
-                $unwind: { 
-                    path: '$targetUser', 
-                    preserveNullAndEmptyArrays: true 
-                } 
+            {
+                $unwind: {
+                    path: '$targetUser',
+                    preserveNullAndEmptyArrays: true
+                }
             }
         ];
 
@@ -99,7 +99,7 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
                 customLabel: { $ifNull: ['$targetUser.profile.customLabel', null] },
                 city: { $ifNull: ['$targetUser.profile.city', null] },
                 state: { $ifNull: ['$targetUser.profile.state', null] },
-                
+
                 avatarUrl: {
                     $let: {
                         vars: {
@@ -116,7 +116,7 @@ export class MongoBlockedRelationshipRepository implements IBlockedRelationshipR
                                                 ]
                                             }
                                         }
-                                    }, 
+                                    },
                                     0
                                 ]
                             }

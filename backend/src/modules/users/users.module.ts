@@ -5,7 +5,7 @@ import { AuthController } from "./presentation/controllers/auth.controller";
 import { RegisterUserUseCase } from "./application/use-cases/register-user.use-case";
 import { VerifyOtpUseCase } from "./application/use-cases/verify-otp.use-case";
 import { USER_REPOSITORY } from "./domain/interfaces/user-repository.interface";
-import { MongoUserRepository } from "./infrastructure/persistence/mongo-user.repository";
+import { UserRepository } from "./infrastructure/persistence/mongo-user.repository";
 import { OTP_SERVICE } from "./domain/interfaces/otp-service.interface";
 import { RedisOtpService } from "./infrastructure/services/redis-otp.service";
 import { LoginUserUseCase } from "./application/use-cases/login-user.use-case";
@@ -105,7 +105,7 @@ import { UpdateSecurityPasswordUseCase } from "./application/use-cases/update-se
 import { BlockedRelationshipSchema, BlockedRelationshipSchemaClass } from "./infrastructure/persistence/blocked-relationship.schema";
 import { BlockedUsersController } from "./presentation/controllers/blocked-users.controller";
 import { BLOCKED_RELATIONSHIP_REPOSITORY } from "./domain/interfaces/blocked-relationship-repository.interface";
-import { MongoBlockedRelationshipRepository } from "./infrastructure/persistence/mongo-blocked-relationship.repository";
+import { BlockedRelationshipRepository } from "./infrastructure/persistence/mongo-blocked-relationship.repository";
 import { BLOCK_USER_USE_CASE, GET_BLOCKED_USERS_USE_CASE, UNBLOCK_USER_USE_CASE } from "./application/interfaces/block-management.use-case.interface";
 import { BlockUserUseCase } from "./application/use-cases/block-user.use-case";
 import { UnblockUserUseCase } from "./application/use-cases/unblock-user.use-case";
@@ -173,7 +173,7 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
 
         {
             provide: USER_REPOSITORY,
-            useClass: MongoUserRepository,
+            useClass: UserRepository,
         },
         {
             provide: OTP_SERVICE,
@@ -211,8 +211,8 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
             provide: REGISTER_USER_USE_CASE,
             useClass: RegisterUserUseCase,
         },
-        { 
-            provide: GOOGLE_AUTH_SERVICE, 
+        {
+            provide: GOOGLE_AUTH_SERVICE,
             useClass: GoogleAuthService,
         },
         {
@@ -347,45 +347,45 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
             provide: GET_PROFILE_USE_CASE,
             useClass: GetProfileUseCase,
         },
-        { 
-            provide: REQUEST_SECURITY_OTP_USE_CASE, 
-            useClass: RequestSecurityOtpUseCase 
+        {
+            provide: REQUEST_SECURITY_OTP_USE_CASE,
+            useClass: RequestSecurityOtpUseCase
         },
-        { 
-            provide: UPDATE_SECURITY_PASSWORD_USE_CASE, 
+        {
+            provide: UPDATE_SECURITY_PASSWORD_USE_CASE,
             useClass: UpdateSecurityPasswordUseCase,
         },
-        { 
-            provide: INITIATE_EMAIL_CHANGE_USE_CASE, 
-            useClass: InitiateEmailChangeUseCase 
+        {
+            provide: INITIATE_EMAIL_CHANGE_USE_CASE,
+            useClass: InitiateEmailChangeUseCase
         },
-        { 
-            provide: CONFIRM_EMAIL_CHANGE_USE_CASE, 
-            useClass: ConfirmEmailChangeUseCase 
+        {
+            provide: CONFIRM_EMAIL_CHANGE_USE_CASE,
+            useClass: ConfirmEmailChangeUseCase
         },
-        { 
-            provide: DEACTIVATE_ACCOUNT_USE_CASE, 
-            useClass: DeactivateAccountUseCase 
+        {
+            provide: DEACTIVATE_ACCOUNT_USE_CASE,
+            useClass: DeactivateAccountUseCase
         },
-        { 
-            provide: DELETE_ACCOUNT_USE_CASE, 
-            useClass: DeleteAccountUseCase 
+        {
+            provide: DELETE_ACCOUNT_USE_CASE,
+            useClass: DeleteAccountUseCase
         },
-        { 
-            provide: GET_ACTIVE_SESSIONS_USE_CASE, 
-            useClass: GetActiveSessionsUseCase 
+        {
+            provide: GET_ACTIVE_SESSIONS_USE_CASE,
+            useClass: GetActiveSessionsUseCase
         },
-        { 
-            provide: REVOKE_SESSION_USE_CASE, 
-            useClass: RevokeSessionUseCase 
+        {
+            provide: REVOKE_SESSION_USE_CASE,
+            useClass: RevokeSessionUseCase
         },
-        { 
-            provide: REVOKE_OTHER_SESSIONS_USE_CASE, 
+        {
+            provide: REVOKE_OTHER_SESSIONS_USE_CASE,
             useClass: RevokeOtherSessionsUseCase
         },
         {
             provide: BLOCKED_RELATIONSHIP_REPOSITORY,
-            useClass: MongoBlockedRelationshipRepository,
+            useClass: BlockedRelationshipRepository,
         },
         {
             provide: BLOCK_USER_USE_CASE,
