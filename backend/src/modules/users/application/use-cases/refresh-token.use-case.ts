@@ -5,9 +5,9 @@ import { type IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/u
 import { type ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { RefreshTokenDto } from "../dtos/refresh-token.dto";
 import { UserStatus } from "../../domain/enums/user.enums";
-import { IRefreshTokenUseCase } from "../interfaces/refresh-token.use-case.interface";
-import { UserAggregate } from "../../domain/entities/user.entity";
+import { IRefreshTokenUseCase, RefreshTokenResponse } from "../interfaces/refresh-token.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
+import { UserResponseMapper } from "../mappers/user-response.mapper";
 
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
@@ -17,7 +17,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
     ) { };
 
-    async execute(paylod: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
+    async execute(paylod: RefreshTokenDto): Promise<RefreshTokenResponse> {
         // 1. Validate signature and expiration using the infrastructure service
         // If the token is invalid or expired, this throws an UnauthorizedException
         const payload = this._tokenService.verifyRefreshToken(paylod.refreshToken);
@@ -47,7 +47,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(newPayload),
             refreshToken: this._tokenService.generateRefreshToken(newPayload),
-            user: user,
+            user: UserResponseMapper.toResponse(user),
         };
     }
 }

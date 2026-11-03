@@ -1,6 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
-import { UserResponseMapper } from "../../application/mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
 import { LoginUserDto } from "../../application/dtos/login-user.dto";
 import type { Request, Response } from "express";
@@ -83,7 +82,7 @@ export class AuthController {
             message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
             data: {
                 accessToken: result.accessToken,
-                user: UserResponseMapper.toResponse(result.user)
+                user: result.user,
             }
         };
     }
@@ -124,7 +123,7 @@ export class AuthController {
             message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
             data: {
                 accessToken: result.accessToken,
-                user: UserResponseMapper.toResponse(result.user)
+                user: result.user,
             }
         };
     }
@@ -149,7 +148,7 @@ export class AuthController {
             message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
             data: {
                 accessToken: result.accessToken,
-                user: UserResponseMapper.toResponse(result.user)
+                user: result.user,
             }
         };
     }

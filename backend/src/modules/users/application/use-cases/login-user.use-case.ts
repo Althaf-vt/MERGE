@@ -9,9 +9,10 @@ import { LoginUserDto } from "../dtos/login-user.dto";
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
-import { ILoginUserUseCase } from "../interfaces/login-user.use-case.interface";
+import { ILoginUserUseCase, LoginUserResponse } from "../interfaces/login-user.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { UserResponseMapper } from "../mappers/user-response.mapper";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -22,7 +23,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
     ) { }
 
-    async execute(dto: LoginUserDto, deviceInfo: string, ipAddress: string): Promise<{ accessToken: string; refreshToken: string; user: UserAggregate; }> {
+    async execute(dto: LoginUserDto, deviceInfo: string, ipAddress: string): Promise<LoginUserResponse> {
         const user = await this._userRepository.findByEmail(dto.email);
 
         if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
@@ -48,7 +49,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(payload),
             refreshToken: this._tokenService.generateRefreshToken(payload),
-            user: user,
+            user: UserResponseMapper.toResponse(user),
         };
     }
 }

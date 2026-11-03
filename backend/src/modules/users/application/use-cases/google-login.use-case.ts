@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { IGoogleLoginResult, IGoogleLoginUseCase } from "../interfaces/google-login.use-case.interface";
+import { GoogleLoginResult, IGoogleLoginUseCase } from "../interfaces/google-login.use-case.interface";
 import { IGoogleAuthService, GOOGLE_AUTH_SERVICE } from "../../domain/interfaces/google-auth-service.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GoogleLoginDto } from "../dtos/google-login.dto";
@@ -11,6 +11,7 @@ import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { UserResponseMapper } from "../mappers/user-response.mapper";
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
@@ -21,7 +22,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         @Inject(GOOGLE_AUTH_SERVICE) private readonly _googleAuthService: IGoogleAuthService,
     ){}
 
-    async execute(dto: GoogleLoginDto, deviceInfo: string, ipAddress: string): Promise<IGoogleLoginResult> {
+    async execute(dto: GoogleLoginDto, deviceInfo: string, ipAddress: string): Promise<GoogleLoginResult> {
         const payload = await this._googleAuthService.verifyToken(dto.idToken);
 
         if (!payload) {
@@ -77,7 +78,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         return {
             accessToken,
             refreshToken,
-            user: user
+            user: UserResponseMapper.toResponse(user),
         };
     }
 }
