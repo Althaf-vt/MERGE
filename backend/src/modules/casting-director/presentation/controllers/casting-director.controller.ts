@@ -10,6 +10,7 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { CastingSessionResponseDto } from "../../application/dtos/casting-session-response.dto";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.CASTING_DIRECTOR.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -24,11 +25,7 @@ export class CastingDirectorController {
     @HttpCode(HttpStatus.OK)
     async initialize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<CastingSessionResponseDto>> {
         const session = await this._initializeCastingSessionUseCase.execute(req.user.userId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED,
-            data: session
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_INITIALIZED, session);
     }
 
     @Post(API_ENDPOINTS.CASTING_DIRECTOR.MESSAGE)
@@ -38,20 +35,13 @@ export class CastingDirectorController {
         @Body() dto: ProcessMessageDto
     ): Promise<ApiResponse<CastingSessionResponseDto>> {
         const session = await this._processCastingMessageUseCase.execute(req.user.userId, dto.content);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.MESSAGE_PROCESSED,
-            data: session
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CASTING_DIRECTOR.MESSAGE_PROCESSED, session);
     }
 
     @Post(API_ENDPOINTS.CASTING_DIRECTOR.FINALIZE)
     @HttpCode(HttpStatus.OK)
     async finalize(@Req() req: AuthenticatedRequest): Promise<ApiResponse<undefined>> {
         await this._finalizeCastingSessionUseCase.execute(req.user.userId);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_FINALIZED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CASTING_DIRECTOR.SESSION_FINALIZED);
     }
 }
