@@ -10,6 +10,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { CookieUtil, COOKIE_NAMES } from "../../../../shared/presentation/utils/cookie.util";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.ADMIN.AUTH.BASE)
 export class AdminAuthController {
@@ -32,11 +33,10 @@ export class AdminAuthController {
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS,
-            data: { accessToken: result.accessToken, admin: result.admin }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGIN_SUCCESS, {
+            accessToken: result.accessToken,
+            admin: result.admin,
+        });
     }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.REFRESH)
@@ -55,44 +55,31 @@ export class AdminAuthController {
 
         CookieUtil.setAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN, result.refreshToken);
 
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
-            data: {
-                accessToken: result.accessToken,
-                admin: result.admin
-            }
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED, {
+            accessToken: result.accessToken,
+            admin: result.admin,
+        });
     }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.FORGOT_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() dto: AdminForgotPasswordDto): Promise<ApiResponse<undefined>> {
         await this._forgotPasswordUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_OTP_SENT);
     }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.VERIFY_RESET_OTP)
     @HttpCode(HttpStatus.OK)
     async verifyResetOtp(@Body() dto: AdminVerifyResetOtpDto): Promise<ApiResponse<undefined>> {
         await this._adminVerifyResetOtpUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.OTP_VERIFIED
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.OTP_VERIFIED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.RESET_PASSWORD)
     @HttpCode(HttpStatus.OK)
     async resetPassword(@Body() dto: AdminResetPasswordDto): Promise<ApiResponse<undefined>> {
         await this._resetPasswordUseCase.execute(dto);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.PASSWORD_RESET_SUCCESS);
     }
 
     @Post(API_ENDPOINTS.ADMIN.AUTH.LOGOUT)
@@ -106,9 +93,6 @@ export class AdminAuthController {
         await this._adminLogoutUseCase.execute(refreshToken);
 
         CookieUtil.clearAuthCookie(res, COOKIE_NAMES.ADMIN_REFRESH_TOKEN);
-        return {
-            success: true,
-            message: RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS
-        };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS);
     }
 }
