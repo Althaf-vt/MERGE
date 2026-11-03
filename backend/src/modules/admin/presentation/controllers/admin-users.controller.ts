@@ -13,6 +13,7 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { FacadeUserDto } from "../../../users/application/interfaces/user-management-facade.interface";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.ADMIN.USERS.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -29,15 +30,15 @@ export class AdminUsersController {
     async listUsers(@Query() query: GetUsersQueryDto): Promise<ApiResponse<FacadeUserDto[]>> {
         const result = await this._getUsersUseCase.execute(query);
 
-        return {
-            success: true,
-            data: result.data,
-            meta: {
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.USERS_FETCHED,
+            result.data,
+            {
                 total: result.total,
                 page: result.page,
                 limit: result.limit,
             }
-        };
+        );
     }
 
     @Get(API_ENDPOINTS.ADMIN.USERS.BY_ID)
@@ -45,7 +46,7 @@ export class AdminUsersController {
     @RequirePermissions(AdminPermission.USERS_VIEW)
     async getUserDetails(@Param('id') id: string): Promise<ApiResponse<FacadeUserDto>> {
         const user = await this._getUserDetailsUseCase.execute(id);
-        return { success: true, data: user };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.USER_DETAILS_FETCHED, user);
     }
 
     @Post(API_ENDPOINTS.ADMIN.USERS.SUSPEND)
@@ -58,7 +59,7 @@ export class AdminUsersController {
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.suspendUser(adminId, targetUserId, dto.duration, dto.unit, dto.reason);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.USER_SUSPENDED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.USERS.UNSUSPEND)
@@ -71,7 +72,7 @@ export class AdminUsersController {
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unsuspendUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_UNSUSPENDED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.USER_UNSUSPENDED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.USERS.BAN)
@@ -84,7 +85,7 @@ export class AdminUsersController {
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.banUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_BANNED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.USER_BANNED);
     }
 
     @Post(API_ENDPOINTS.ADMIN.USERS.UNBAN)
@@ -97,6 +98,6 @@ export class AdminUsersController {
     ): Promise<ApiResponse<undefined>> {
         const adminId = req.user.userId;
         await this._manageUserStatusUseCase.unbanUser(adminId, targetUserId, dto.reason);
-        return { success: true, message: RESPONSE_MESSAGES.ADMIN.USER_UNBANNED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.USER_UNBANNED);
     }
 }
