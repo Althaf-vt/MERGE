@@ -35,6 +35,9 @@ export const RESPONSE_MESSAGES = {
         PRIVACY_UPDATED: 'Privacy settings updated successfully.',
         USER_BLOCKED: 'Profile blocked successfully. They will no longer be able to see you.',
         USER_UNBLOCKED: 'Profile unblocked. They may appear in your matching pool again.',
+        BLOCKED_USERS_FETCHED: 'Blocked users retrieved successfully.',
+        BIO_GENERATED: 'Bio generated successfully.',
+        PROFILE_FETCHED: 'Profile retrieved successfully.',
     },
     SECURITY: {
         SESSION_REVOKED: 'Session revoked successfully.',
@@ -45,6 +48,7 @@ export const RESPONSE_MESSAGES = {
         EMAIL_CHANGE_INITIATED: 'Email change initiated. OTP sent to new email.',
         EMAIL_CHANGED: 'Email address updated successfully.',
         OTP_REQUESTED: 'Security verification code sent.',
+        SESSIONS_FETCHED: 'Active sessions retrieved successfully.',
     },
     CASTING_DIRECTOR: {
         SESSION_INITIALIZED: 'Casting session initialized.',
