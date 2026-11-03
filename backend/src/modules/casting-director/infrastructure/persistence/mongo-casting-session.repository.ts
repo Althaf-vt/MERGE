@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionStatus } from "../../domain/enums/casting.enums";
 import { CastingSessionDocument, CastingSessionSchemaClass } from "./casting-session.schema";
@@ -10,11 +10,11 @@ import { CastingSessionPersistenceMapper } from "./mappers/casting-session-persi
 import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
-export class MongoCastingSessionRepository extends BaseMongoRepository<CastingSession, CastingSessionDocument> implements ICastingSessionRepository{
+export class CastingSessionRepository extends BaseRepository<CastingSession, CastingSessionDocument> implements ICastingSessionRepository {
     constructor(
         @InjectModel(CastingSessionSchemaClass.name) model: Model<CastingSessionDocument>,
         eventEmitter: EventEmitter2
-    ){
+    ) {
         super(model, eventEmitter);
     }
 
@@ -33,7 +33,7 @@ export class MongoCastingSessionRepository extends BaseMongoRepository<CastingSe
             status: { $in: [CastingSessionStatus.IN_PROGRESS, CastingSessionStatus.ANALYZING] }
         }).exec();
 
-        if(!document) return null;
+        if (!document) return null;
         return this.toDomain(document as CastingSessionDocument);
     }
 }

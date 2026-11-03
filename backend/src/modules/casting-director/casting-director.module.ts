@@ -4,7 +4,7 @@ import { CastingSessionSchema, CastingSessionSchemaClass } from "./infrastructur
 import { UserModule } from "../users/users.module";
 import { CastingDirectorController } from "./presentation/controllers/casting-director.controller";
 import { CASTING_SESSION_REPOSITORY } from "./domain/interfaces/casting-session-repository.interface";
-import { MongoCastingSessionRepository } from "./infrastructure/persistence/mongo-casting-session.repository";
+import { CastingSessionRepository } from "./infrastructure/persistence/mongo-casting-session.repository";
 import { CASTING_AI_SERVICE } from "./domain/interfaces/casting-ai-service.interface";
 import { OpenRouterCastingAiService } from "./infrastructure/services/openrouter-casting-ai.service";
 import { INITIALIZE_CASTING_SESSION_USE_CASE } from "./application/interfaces/initialize-casting-session.use-case.interface";
@@ -23,7 +23,7 @@ import { FinalizeCastingSessionUseCase } from "./application/use-cases/finalize-
     providers: [
         {
             provide: CASTING_SESSION_REPOSITORY,
-            useClass: MongoCastingSessionRepository,
+            useClass: CastingSessionRepository,
         },
         {
             provide: CASTING_AI_SERVICE,
