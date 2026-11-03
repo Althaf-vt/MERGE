@@ -102,5 +102,6 @@ export const RESPONSE_MESSAGES = {
         ADMIN_DETAILS_FETCHED: 'Admin details retrieved successfully.',
         USERS_FETCHED: 'Users retrieved successfully.',
         USER_DETAILS_FETCHED: 'User details retrieved successfully.',
+        KYC_TASKS_FETCHED: 'KYC escalation tasks retrieved successfully.',
     }
 } as const;
