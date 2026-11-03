@@ -100,5 +100,7 @@ export const RESPONSE_MESSAGES = {
         KYC_RESUBMISSION_REQUESTED: 'KYC resubmission requested successfully',
         ADMINS_FETCHED: 'Admins retrieved successfully.',
         ADMIN_DETAILS_FETCHED: 'Admin details retrieved successfully.',
+        USERS_FETCHED: 'Users retrieved successfully.',
+        USER_DETAILS_FETCHED: 'User details retrieved successfully.',
     }
 } as const;
