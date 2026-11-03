@@ -1,5 +1,5 @@
 import { UserAggregate } from "../../domain/entities/user.entity";
-import { UserResponseDto } from "../../application/dtos/user-response.dto";
+import { UserResponseDto } from "../dtos/user-response.dto";
 
 export class UserResponseMapper {
     public static toResponse(entity: UserAggregate): UserResponseDto {
@@ -17,10 +17,10 @@ export class UserResponseMapper {
             lumenEnabled: entity.lumenEnabled,
 
             castingDirectorCompleted: entity.castingDirectorCompleted,
-            
+
             profile: entity.profile ? entity.profile.toJSON() : null,
             preference: entity.preference ? entity.preference.toJSON() : null,
-            
+
             kycVerification: entity.kycVerification ? {
                 verificationStatus: entity.kycVerification.verificationStatus,
                 documentType: entity.kycVerification.documentType,
@@ -34,7 +34,7 @@ export class UserResponseMapper {
             photos: (entity.photos || []).map(p => p.toJSON()),
             privacySettings: entity.privacySettings ? entity.privacySettings.toJSON() : null,
             medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
-            
+
             createdAt: entity.createdAt
         };
     }

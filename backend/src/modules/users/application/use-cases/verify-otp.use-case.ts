@@ -10,6 +10,8 @@ import type { IOtpService } from "../../domain/interfaces/otp-service.interface"
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { IVerifyOtpUseCase } from "../interfaces/verify-otp.use-case.interface";
+import { UserResponseDto } from "../dtos/user-response.dto";
+import { UserResponseMapper } from "../mappers/user-response.mapper";
 
 // Handles the OTP verification process and marks the user's email as verified
 @Injectable()
@@ -21,7 +23,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         @Inject(OTP_SERVICE) private readonly _otpService: IOtpService,
     ) { };
 
-    async execute(dto: VerifyOtpDto): Promise<UserAggregate> {
+    async execute(dto: VerifyOtpDto): Promise<UserResponseDto> {
 
         // Verify OTP and retrieve temporary data from Redis
         const draftData = await this._otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
@@ -59,6 +61,6 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
         await this._otpService.deleteDraft(dto.email);
 
-        return savedUser;
+        return UserResponseMapper.toResponse(savedUser);
     }
 }

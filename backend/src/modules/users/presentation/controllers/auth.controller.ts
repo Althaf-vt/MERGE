@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, UnauthorizedException } from "@nestjs/common";
 import { RegisterUserDto } from "../../application/dtos/register-user.dto";
-import { UserResponseMapper } from "../mappers/user-response.mapper";
+import { UserResponseMapper } from "../../application/mappers/user-response.mapper";
 import { VerifyOtpDto } from "../../application/dtos/verify-otp.dto";
 import { LoginUserDto } from "../../application/dtos/login-user.dto";
 import type { Request, Response } from "express";
@@ -53,7 +53,7 @@ export class AuthController {
         return {
             success: true,
             message: RESPONSE_MESSAGES.AUTH.EMAIL_VERIFIED,
-            data: UserResponseMapper.toResponse(user),
+            data: user,
         };
     }
 
