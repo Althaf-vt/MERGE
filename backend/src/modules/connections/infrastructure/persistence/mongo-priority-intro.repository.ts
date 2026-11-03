@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { PriorityIntroAggregate } from "../../domain/entities/priority-intro.entity";
 import { PriorityIntroDocument, PriorityIntroSchemaClass } from "./priority-intro.schema";
 import { IPriorityIntroRepository } from "../../domain/interfaces/priority-intro-repository.interface";
 import { PriorityIntroPersistenceMapper } from "./mappers/priority-intro-persistence.mapper";
 
 @Injectable()
-export class MongoPriorityIntroRepository extends BaseMongoRepository<PriorityIntroAggregate, PriorityIntroDocument> implements IPriorityIntroRepository {
+export class PriorityIntroRepository extends BaseRepository<PriorityIntroAggregate, PriorityIntroDocument> implements IPriorityIntroRepository {
     constructor(
         @InjectModel(PriorityIntroSchemaClass.name) model: Model<PriorityIntroDocument>,
         eventEmitter: EventEmitter2

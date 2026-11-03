@@ -33,7 +33,7 @@ import { ConnectionRepository } from "./infrastructure/persistence/mongo-connect
 import { PrivateListSchema, PrivateListSchemaClass } from "./infrastructure/persistence/private-list.schema";
 import { PrivateListRepository } from "./infrastructure/persistence/mongo-private-list.repository";
 import { PriorityIntroSchema, PriorityIntroSchemaClass } from "./infrastructure/persistence/priority-intro.schema";
-import { MongoPriorityIntroRepository } from "./infrastructure/persistence/mongo-priority-intro.repository";
+import { PriorityIntroRepository } from "./infrastructure/persistence/mongo-priority-intro.repository";
 import { GetPrivateListUseCase } from "./application/use-cases/get-private-list.use-case";
 import { GetConnectionsUseCase } from "./application/use-cases/get-connections.use-case";
 import { ConnectionAcceptedListener } from "./application/listeners/connection-accepted.listener";
@@ -57,7 +57,7 @@ class MockBillingFacade {
     providers: [
         { provide: CONNECTION_REPOSITORY, useClass: ConnectionRepository },
         { provide: PRIVATE_LIST_REPOSITORY, useClass: PrivateListRepository },
-        { provide: PRIORITY_INTRO_REPOSITORY, useClass: MongoPriorityIntroRepository },
+        { provide: PRIORITY_INTRO_REPOSITORY, useClass: PriorityIntroRepository },
         { provide: BILLING_FACADE, useClass: MockBillingFacade },
 
         { provide: CONNECTIONS_FACADE, useClass: ConnectionsFacade },

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { ConnectionAggregate } from "../../domain/entities/connection.entity";
 import { ConnectionDocument, ConnectionSchemaClass } from "./connection.schema";
 import {
@@ -14,7 +14,7 @@ import { ConnectionPersistenceMapper } from "./mappers/connection-persistence.ma
 import { ConnectionRole, ConnectionStatus } from "../../domain/enums/connection.enums";
 
 @Injectable()
-export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregate, ConnectionDocument> implements IConnectionRepository {
+export class ConnectionRepository extends BaseRepository<ConnectionAggregate, ConnectionDocument> implements IConnectionRepository {
     constructor(
         @InjectModel(ConnectionSchemaClass.name) model: Model<ConnectionDocument>,
         eventEmitter: EventEmitter2
@@ -80,7 +80,7 @@ export class ConnectionRepository extends BaseMongoRepository<ConnectionAggregat
 
     async findInteractedUserIds(userId: string): Promise<string[]> {
         const docs = await this._model.find(
-            { 
+            {
                 $or: [{ requesterId: userId }, { recipientId: userId }],
                 status: { $in: [ConnectionStatus.PENDING, ConnectionStatus.ACCEPTED] }
             },

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { BaseMongoRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
+import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { PrivateListAggregate } from "../../domain/entities/private-list.entity";
 import { PrivateListDocument, PrivateListSchemaClass } from "./private-list.schema";
 import { IPrivateListRepository } from "../../domain/interfaces/private-list-repository.interface";
@@ -10,7 +10,7 @@ import { PrivateListPersistenceMapper } from "./mappers/private-list-persistence
 import { PrivateListType } from "../../domain/enums/private-list.enums";
 
 @Injectable()
-export class PrivateListRepository extends BaseMongoRepository<PrivateListAggregate, PrivateListDocument> implements IPrivateListRepository {
+export class PrivateListRepository extends BaseRepository<PrivateListAggregate, PrivateListDocument> implements IPrivateListRepository {
     constructor(
         @InjectModel(PrivateListSchemaClass.name) model: Model<PrivateListDocument>,
         eventEmitter: EventEmitter2
