@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IAdminRefreshTokenUseCase } from "../interfaces/admin-refresh-token.use-case.interface";
+import { AdminRefreshTokenResponse, IAdminRefreshTokenUseCase } from "../interfaces/admin-refresh-token.use-case.interface";
 import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admin-repository.interface";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface"; // <-- IMPORT THIS
@@ -8,6 +8,7 @@ import { AdminStatus } from "../../domain/enums/admin.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { AdminResponseMapper } from "../mappers/admin-response.mapper";
 
 @Injectable()
 export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
@@ -17,7 +18,7 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
         @Inject(ADMIN_SESSION_SERVICE) private readonly _sessionService: IAdminSessionService, // <-- INJECT THIS
     ) { }
 
-    async execute(token: string): Promise<{ accessToken: string; refreshToken: string; admin: AdminAggregate; }> {
+    async execute(token: string): Promise<AdminRefreshTokenResponse> {
         const payload = this._tokenService.verifyRefreshToken(token);
 
         // 1. STRICT CHECK: Does the Redis session still exist?
@@ -46,7 +47,7 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(newPayload),
             refreshToken: this._tokenService.generateRefreshToken(newPayload),
-            admin: admin,
+            admin: AdminResponseMapper.toResponse(admin),
         };
     }
 }

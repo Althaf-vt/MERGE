@@ -2,7 +2,6 @@ import { Body, Controller, HttpCode, HttpStatus, Inject, Post, Req, Res, Unautho
 import { ADMIN_LOGIN_USE_CASE, IAdminLoginUseCase } from "../../application/interfaces/admin-login.use-case.interface";
 import { AdminLoginDto, AdminResponseDto } from "../../application/dtos/admin-login.dto";
 import { Request, Response } from "express";
-import { AdminResponseMapper } from "../../application/mappers/admin-response.mapper";
 import { ADMIN_FORGOT_PASSWORD_USE_CASE, ADMIN_RESET_PASSWORD_USE_CASE, ADMIN_VERIFY_RESET_OTP_USE_CASE, IAdminForgotPasswordUseCase, IAdminResetPasswordUseCase, IAdminVerifyResetOtpUseCase } from "../../application/interfaces/admin-forgot-password.use-case.interface";
 import { AdminForgotPasswordDto, AdminResetPasswordDto, AdminVerifyResetOtpDto } from "../../application/dtos/admin-forgot-password.dto";
 import { ADMIN_REFRESH_TOKEN_USE_CASE, IAdminRefreshTokenUseCase } from "../../application/interfaces/admin-refresh-token.use-case.interface";
@@ -45,7 +44,7 @@ export class AdminAuthController {
     async refresh(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response
-    ): Promise<ApiResponse<{ accessToken: string; admin: Record<string, unknown> }>> {
+    ): Promise<ApiResponse<{ accessToken: string; admin: AdminResponseDto }>> {
         const refreshToken = req.cookies[COOKIE_NAMES.ADMIN_REFRESH_TOKEN];
 
         if (!refreshToken) {
@@ -61,7 +60,7 @@ export class AdminAuthController {
             message: RESPONSE_MESSAGES.AUTH.TOKEN_REFRESHED,
             data: {
                 accessToken: result.accessToken,
-                admin: AdminResponseMapper.toResponse(result.admin)
+                admin: result.admin
             }
         };
     }
