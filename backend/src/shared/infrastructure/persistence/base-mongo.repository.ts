@@ -5,7 +5,7 @@ import { ErrorCode } from "../../domain/enums/error-code.enum";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { AggregateRoot } from "../../domain/events/aggregate-root";
 
-export abstract class BaseMongoRepository<TAggregate extends AggregateRoot & { id?: string }, TDocument extends Document> implements IBaseRepository<TAggregate> {
+export abstract class BaseRepository<TAggregate extends AggregateRoot & { id?: string }, TDocument extends Document> implements IBaseRepository<TAggregate> {
 
     constructor(
         protected readonly _model: Model<TDocument>,
