@@ -98,5 +98,7 @@ export const RESPONSE_MESSAGES = {
         KYC_APPROVED: 'KYC approved successfully',
         KYC_REJECTED: 'KYC rejected successfully',
         KYC_RESUBMISSION_REQUESTED: 'KYC resubmission requested successfully',
+        ADMINS_FETCHED: 'Admins retrieved successfully.',
+        ADMIN_DETAILS_FETCHED: 'Admin details retrieved successfully.',
     }
 } as const;
