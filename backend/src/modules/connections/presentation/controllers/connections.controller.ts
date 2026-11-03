@@ -21,6 +21,7 @@ import {
     SEND_CONNECTION_REQUEST_USE_CASE,
     SendConnectionRequestResult,
 } from "../../application/interfaces/connection.use-cases.interface";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 
 @Controller(API_ENDPOINTS.CONNECTIONS.BASE)
 @UseGuards(JwtAuthGuard, UserSessionGuard)
@@ -41,12 +42,11 @@ export class ConnectionsController {
         @Query() query: GetConnectionsQueryDto
     ): Promise<ApiResponse<ConnectionResponseDto[]>> {
         const result = await this._getConnectionsUseCase.execute(req.user.userId, query);
-        
-        return { 
-            success: true, 
-            data: result.data,
-            meta: { total: result.total, page: result.page, limit: result.limit }
-        };
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.CONNECTIONS.LIST_FETCHED,
+            result.data,
+            { total: result.total, page: result.page, limit: result.limit }
+        );
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.REQUEST)
@@ -56,34 +56,34 @@ export class ConnectionsController {
         const message = result.isMatch
             ? RESPONSE_MESSAGES.CONNECTIONS.MUTUAL_MATCH
             : RESPONSE_MESSAGES.CONNECTIONS.REQUEST_SENT;
-        return { success: true, message, data: result };
+        return ApiResponseHelper.success(message, result);
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.ACCEPT)
     @HttpCode(HttpStatus.OK)
     async acceptRequest(@Req() req: AuthenticatedRequest, @Param('id') connectionId: string): Promise<ApiResponse> {
         await this._acceptRequestUseCase.execute(req.user.userId, connectionId);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.ACCEPTED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CONNECTIONS.ACCEPTED);
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.DECLINE)
     @HttpCode(HttpStatus.OK)
     async declineRequest(@Req() req: AuthenticatedRequest, @Param('id') connectionId: string): Promise<ApiResponse> {
         await this._declineRequestUseCase.execute(req.user.userId, connectionId);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.DECLINED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CONNECTIONS.DECLINED);
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.CANCEL)
     @HttpCode(HttpStatus.OK)
     async cancelRequest(@Req() req: AuthenticatedRequest, @Param('id') connectionId: string): Promise<ApiResponse> {
         await this._cancelRequestUseCase.execute(req.user.userId, connectionId);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.CANCELLED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CONNECTIONS.CANCELLED);
     }
 
     @Post(API_ENDPOINTS.CONNECTIONS.REVOKE)
     @HttpCode(HttpStatus.OK)
     async revokeMatch(@Req() req: AuthenticatedRequest, @Param('id') connectionId: string): Promise<ApiResponse> {
         await this._revokeMatchUseCase.execute(req.user.userId, connectionId);
-        return { success: true, message: RESPONSE_MESSAGES.CONNECTIONS.REVOKED };
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.CONNECTIONS.REVOKED);
     }
 }
