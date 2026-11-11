@@ -204,7 +204,7 @@ export interface UserSessionData {
 export type GetActiveSessionsResponse = ApiResponse<UserSessionData[]>;
 
 export interface UpdateSecurityPasswordRequest {
-    otp: string;
+    currentPassword: string;
     newPassword: string;
     confirmPassword: string;
 }

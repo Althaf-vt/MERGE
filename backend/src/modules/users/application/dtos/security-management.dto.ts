@@ -3,8 +3,8 @@ import { Match } from '../../../../shared/presentation/validation/match.decorato
 
 export class UpdateSecurityPasswordDto {
     @IsString()
-    @IsNotEmpty({ message: 'OTP verification code is required.' })
-    otp!: string;
+    @IsNotEmpty({ message: 'Current password is required.' })
+    currentPassword!: string;
 
     @IsString()
     @IsNotEmpty({ message: 'New password is required.' })
