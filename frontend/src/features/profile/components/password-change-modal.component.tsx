@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRequestSecurityOtpMutation, useUpdateSecurityPasswordMutation } from '../api/profile.api';
+import { useUpdateSecurityPasswordMutation } from '../api/profile.api';
 import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './security-modals.module.css';
 
@@ -10,45 +10,21 @@ interface PasswordChangeModalProps {
 }
 
 export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen, onClose, onSuccess }) => {
-    const [requestOtp] = useRequestSecurityOtpMutation();
     const [updatePassword, { isLoading }] = useUpdateSecurityPasswordMutation();
 
-    const [step, setStep] = useState<1 | 2>(1);
-    const [otp, setOtp] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    const [timeLeft, setTimeLeft] = useState(60);
-
-    // Trigger OTP send on mount
     useEffect(() => {
         if (isOpen) {
-            handleRequestOtp();
-            setStep(1);
-            setOtp('');
+            setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
             setError('');
         }
     }, [isOpen]);
-
-    // Timer countdown logic
-    useEffect(() => {
-        if (!isOpen || timeLeft <= 0) return;
-        const timerId = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-        return () => clearInterval(timerId);
-    }, [isOpen, timeLeft]);
-
-    const handleRequestOtp = async () => {
-        try {
-            await requestOtp().unwrap();
-            setTimeLeft(60);
-            setError('');
-        } catch (err: unknown) {
-            setError(getErrorMessage(err, 'Failed to send verification code. Please try again.'));
-        }
-    };
 
     const calculateStrength = (pass: string) => {
         let score = 0;
@@ -64,28 +40,33 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
     const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Excellent'];
     const strengthColors = ['#e5e7eb', '#ef4444', '#f59e0b', '#10b981', '#059669'];
 
-    const handleNext = () => {
-        if (otp.trim().length !== 6) {
-            setError('Please enter a valid 6-digit verification code.');
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+
+        if (!currentPassword) {
+            setError('Please enter your current password.');
             return;
         }
-        setError('');
-        setStep(2);
-    };
-
-    const handleSubmit = async () => {
-        if (newPassword !== confirmPassword) {
-            setError('Passwords do not match.');
+        if (!newPassword) {
+            setError('Please enter a new password.');
+            return;
+        }
+        if (newPassword === currentPassword) {
+            setError('New password cannot be the same as your current password.');
             return;
         }
         if (strength < 3) {
-            setError('Please choose a stronger password.');
+            setError('Please choose a stronger password (must contain uppercase, numbers, and symbols).');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setError('Passwords do not match.');
             return;
         }
 
         setError('');
         try {
-            await updatePassword({ otp, newPassword, confirmPassword }).unwrap();
+            await updatePassword({ currentPassword, newPassword, confirmPassword }).unwrap();
             onSuccess(); // Triggers frontend logout
         } catch (err: unknown) {
             setError(getErrorMessage(err, 'Failed to update password.'));
@@ -109,97 +90,77 @@ export const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen
 
                 {error && <div className={styles.errorBanner}>{error}</div>}
 
-                {step === 1 ? (
-                    <>
-                        <p className={styles.description}>
-                            We've sent a 6-digit verification code to your registered email address to authorize this
-                            change.
-                        </p>
-                        <div className={styles.inputGroup}>
-                            <label>Verification Code</label>
-                            <input
-                                className={`${styles.input} ${styles.otpInput}`}
-                                value={otp}
-                                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                placeholder="------"
-                            />
+                <p className={styles.description}>
+                    Enter your current password and choose a new secure password.
+                </p>
+
+                <form onSubmit={handleSubmit}>
+                    <div className={styles.inputGroup}>
+                        <label>Current Password</label>
+                        <input
+                            type="password"
+                            className={styles.input}
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            placeholder="Enter current password"
+                            autoComplete="current-password"
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label>New Password</label>
+                        <input
+                            type="password"
+                            className={styles.input}
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            placeholder="Enter new password"
+                            autoComplete="new-password"
+                        />
+                        <div className={styles.strengthMeter}>
+                            {[1, 2, 3, 4].map((level) => (
+                                <div
+                                    key={level}
+                                    className={styles.strengthBar}
+                                    style={{
+                                        backgroundColor: strength >= level ? strengthColors[strength] : '#e5e7eb',
+                                    }}
+                                />
+                            ))}
                         </div>
-                        <div className={styles.timerRow}>
-                            <span style={{ color: '#6b7280' }}>
-                                {timeLeft > 0 ? `Resend code in ${timeLeft}s` : 'Did not receive code?'}
-                            </span>
-                            <button
-                                type="button"
-                                className={styles.resendBtn}
-                                disabled={timeLeft > 0}
-                                onClick={handleRequestOtp}
-                            >
-                                Resend Code
-                            </button>
+                        <div
+                            className={styles.strengthText}
+                            style={{ color: strength > 0 ? strengthColors[strength] : '#6b7280' }}
+                        >
+                            {newPassword ? strengthLabels[strength] : 'Enter a password'}
                         </div>
-                        <div className={styles.actionRow}>
-                            <button type="button" className={styles.btnSecondary} onClick={onClose}>
-                                Cancel
-                            </button>
-                            <button type="button" className={styles.btnPrimary} onClick={handleNext}>
-                                Next →
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <div className={styles.inputGroup}>
-                            <label>New Password</label>
-                            <input
-                                type="password"
-                                className={styles.input}
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="Enter new password"
-                            />
-                            <div className={styles.strengthMeter}>
-                                {[1, 2, 3, 4].map((level) => (
-                                    <div
-                                        key={level}
-                                        className={styles.strengthBar}
-                                        style={{
-                                            backgroundColor: strength >= level ? strengthColors[strength] : '#e5e7eb',
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                            <div
-                                className={styles.strengthText}
-                                style={{ color: strength > 0 ? strengthColors[strength] : '#6b7280' }}
-                            >
-                                {newPassword ? strengthLabels[strength] : 'Enter a password'}
-                            </div>
-                        </div>
-                        <div className={styles.inputGroup}>
-                            <label>Confirm Password</label>
-                            <input
-                                type="password"
-                                className={styles.input}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Confirm new password"
-                            />
-                        </div>
-                        <div className={styles.actionRow}>
-                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}>
-                                ← Back
-                            </button>
-                            <button
-                                type="button"
-                                className={styles.btnPrimary}
-                                onClick={handleSubmit}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Saving...' : 'Save Password'}
-                            </button>
-                        </div>
-                    </>
-                )}
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label>Confirm New Password</label>
+                        <input
+                            type="password"
+                            className={styles.input}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                            autoComplete="new-password"
+                        />
+                    </div>
+
+                    <div className={styles.actionRow}>
+                        <button type="button" className={styles.btnSecondary} onClick={onClose} disabled={isLoading}>
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className={styles.btnPrimary}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Saving...' : 'Save Password'}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
