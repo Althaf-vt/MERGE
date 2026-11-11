@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import styles from './admin-users.module.css';
 import { useGetUsersQuery } from '../api/admin-users.api';
-import type { AdminUserStatus } from '../types/admin-users.types';
+import type { AdminUserStatus, AdminUserDto } from '../types/admin-users.types';
 import { UserActionModal } from '../components/user-action-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import { AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +52,93 @@ export const AdminUsersPage: React.FC = () => {
         setActionModal({ isOpen: true, type, userId, userEmail });
     };
 
+    const columns: AdminTableColumn<AdminUserDto>[] = [
+        {
+            header: 'UID / EMAIL',
+            render: (user) => (
+                <>
+                    <div style={{ color: 'var(--admin-text-primary)', marginBottom: '4px' }}>
+                        {user.email}
+                    </div>
+                    <div style={{ color: 'var(--admin-text-secondary)', fontSize: '10px' }}>
+                        {user.id}
+                    </div>
+                </>
+            ),
+        },
+        {
+            header: 'STATUS',
+            render: (user) => getStatusBadge(user.accountStatus),
+        },
+        {
+            header: 'KYC',
+            render: (user) => (
+                <span
+                    style={{
+                        color: user.kycCompleted
+                            ? 'var(--badge-active-text)'
+                            : 'var(--admin-text-secondary)',
+                    }}
+                >
+                    {user.kycCompleted ? 'VERIFIED' : 'PENDING'}
+                </span>
+            ),
+        },
+        {
+            header: 'RESTRICTION EXPIRY',
+            render: (user) => (user.suspendedUntil ? new Date(user.suspendedUntil).toLocaleString() : '—'),
+        },
+        {
+            header: 'CREATED',
+            render: (user) => new Date(user.createdAt).toLocaleDateString(),
+        },
+        {
+            header: 'ACTIONS',
+            render: (user) => (
+                <div className={styles.actions}>
+                    <button
+                        onClick={() => navigate(`/admin/users/${user.id}`)}
+                        className={styles.actionBtn}
+                    >
+                        VIEW
+                    </button>
+                    {user.accountStatus === 'ACTIVE' && (
+                        <>
+                            <button
+                                onClick={() => handleActionClick('SUSPEND', user.id, user.email)}
+                                className={`${styles.actionBtn} ${styles.warning}`}
+                            >
+                                SUSPEND
+                            </button>
+                            <button
+                                onClick={() => handleActionClick('BAN', user.id, user.email)}
+                                className={`${styles.actionBtn} ${styles.danger}`}
+                            >
+                                BAN
+                            </button>
+                        </>
+                    )}
+                    {user.accountStatus === 'SUSPENDED' && (
+                        <button
+                            onClick={() => handleActionClick('UNSUSPEND', user.id, user.email)}
+                            className={styles.actionBtn}
+                        >
+                            LIFT SUSPENSION
+                        </button>
+                    )}
+                    {user.accountStatus === 'BANNED' && (
+                        <button
+                            onClick={() => handleActionClick('UNBAN', user.id, user.email)}
+                            className={styles.actionBtn}
+                        >
+                            REVOKE BAN
+                        </button>
+                    )}
+                </div>
+            ),
+        },
+    ];
+
     return (
         <AdminPageTransition className={styles.container}>
             <header className={styles.header}>
@@ -77,130 +166,21 @@ export const AdminUsersPage: React.FC = () => {
                 </div>
             </header>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>UID / EMAIL</th>
-                            <th>STATUS</th>
-                            <th>KYC</th>
-                            <th>RESTRICTION EXPIRY</th>
-                            <th>CREATED</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>
-                                    INITIALIZING DATA STREAM...
-                                </td>
-                            </tr>
-                        ) : users.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>
-                                    NO RECORDS FOUND.
-                                </td>
-                            </tr>
-                        ) : (
-                            users.map((user) => (
-                                <tr key={user.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
-                                    <td>
-                                        <div style={{ color: 'var(--admin-text-primary)', marginBottom: '4px' }}>
-                                            {user.email}
-                                        </div>
-                                        <div style={{ color: 'var(--admin-text-secondary)', fontSize: '10px' }}>
-                                            {user.id}
-                                        </div>
-                                    </td>
-                                    <td>{getStatusBadge(user.accountStatus)}</td>
-                                    <td>
-                                        <span
-                                            style={{
-                                                color: user.kycCompleted
-                                                    ? 'var(--badge-active-text)'
-                                                    : 'var(--admin-text-secondary)',
-                                            }}
-                                        >
-                                            {user.kycCompleted ? 'VERIFIED' : 'PENDING'}
-                                        </span>
-                                    </td>
-                                    <td>{user.suspendedUntil ? new Date(user.suspendedUntil).toLocaleString() : '—'}</td>
-                                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                    <td>
-                                        <div className={styles.actions}>
-                                            <button
-                                                onClick={() => navigate(`/admin/users/${user.id}`)}
-                                                className={styles.actionBtn}
-                                            >
-                                                VIEW
-                                            </button>
-                                            {user.accountStatus === 'ACTIVE' && (
-                                                <>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleActionClick('SUSPEND', user.id, user.email)
-                                                        }
-                                                        className={`${styles.actionBtn} ${styles.warning}`}
-                                                    >
-                                                        SUSPEND
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleActionClick('BAN', user.id, user.email)}
-                                                        className={`${styles.actionBtn} ${styles.danger}`}
-                                                    >
-                                                        BAN
-                                                    </button>
-                                                </>
-                                            )}
-                                            {user.accountStatus === 'SUSPENDED' && (
-                                                <button
-                                                    onClick={() => handleActionClick('UNSUSPEND', user.id, user.email)}
-                                                    className={styles.actionBtn}
-                                                >
-                                                    LIFT SUSPENSION
-                                                </button>
-                                            )}
-                                            {user.accountStatus === 'BANNED' && (
-                                                <button
-                                                    onClick={() => handleActionClick('UNBAN', user.id, user.email)}
-                                                    className={styles.actionBtn}
-                                                >
-                                                    REVOKE BAN
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <AdminTable
+                columns={columns}
+                data={users}
+                keyExtractor={(user) => user.id}
+                isLoading={isLoading}
+                isFetching={isFetching}
+            />
 
-            {data && (
-                <div className={styles.pagination}>
-                    <span>
-                        DISPLAYING {(page - 1) * 15 + 1} - {Math.min(page * 15, total)} OF {total}
-                    </span>
-                    <div className={styles.pageControls}>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page === 1}
-                            onClick={() => setPage((p) => p - 1)}
-                        >
-                            PREV
-                        </button>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page * 15 >= total}
-                            onClick={() => setPage((p) => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={15}
+                total={total}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {actionModal.isOpen && (

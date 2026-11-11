@@ -6,6 +6,8 @@ import { useGetKycTasksQuery } from '../api/kyc-escalation.api';
 import type { KycTaskStatus, ClaimStatus, KycEscalationTask } from '../types/kyc-escalation.types';
 import { KycReviewModal } from '../components/kyc-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import { DEFAULT_KYC_STATUS_FILTER, KYC_CLAIM_OPTIONS, KYC_CLAIM_STATUS, KYC_STATUS_OPTIONS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
 import styles from './kyc-escalation.module.css';
@@ -33,9 +35,96 @@ export const KycEscalationPage: React.FC = () => {
 
     const tasks = data?.data || [];
     const total = data?.meta?.total || 0;
-    const totalPages = Math.ceil(total / limit) || 1;
 
     const activeTask = selectedTask ? tasks.find((t) => t.id === selectedTask.id) || selectedTask : null;
+
+    const columns: AdminTableColumn<KycEscalationTask>[] = [
+        {
+            header: 'TARGET USER ID',
+            render: (task) => (
+                <span className={styles.userIdCell} title={task.targetUserId}>
+                    {task.targetUserId}
+                </span>
+            ),
+        },
+        {
+            header: 'DOCUMENT',
+            render: (task) => (
+                <span className={styles.docType}>
+                    {task.documentType ? task.documentType.replace(/_/g, ' ') : 'N/A'}
+                </span>
+            ),
+        },
+        {
+            header: 'COUNTRY',
+            render: (task) => task.issuingCountry || 'N/A',
+        },
+        {
+            header: 'FACE MATCH',
+            render: (task) => (
+                <span style={{ fontFamily: 'monospace' }}>
+                    {typeof task.faceMatchScore === 'number'
+                        ? task.faceMatchScore.toFixed(2)
+                        : task.faceMatchScore}
+                </span>
+            ),
+        },
+        {
+            header: 'LIVENESS',
+            render: (task) => (
+                <span style={{ fontFamily: 'monospace' }}>
+                    {typeof task.livenessScore === 'number'
+                        ? (task.livenessScore <= 1
+                            ? `${(task.livenessScore * 100).toFixed(1)}%`
+                            : `${task.livenessScore.toFixed(1)}%`)
+                        : task.livenessScore}
+                </span>
+            ),
+        },
+        {
+            header: 'DECISION',
+            render: (task) => (
+                <span className={`${styles.badge} ${styles[`badge_${task.taskStatus}`]}`}>
+                    {task.taskStatus.replace(/_/g, ' ')}
+                </span>
+            ),
+        },
+        {
+            header: 'CLAIM STATE',
+            render: (task) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                    <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
+                        {task.claimStatus}
+                    </span>
+                    {task.claimStatus === KYC_CLAIM_STATUS.CLAIMED && task.claimedBy && (
+                        <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
+                            BY: {task.claimedBy === currentAdminId ? 'YOU' : task.claimedBy.slice(0, 10)}
+                        </span>
+                    )}
+                </div>
+            ),
+        },
+        {
+            header: 'CREATED',
+            render: (task) => (
+                <span style={{ fontSize: '11px', color: 'var(--admin-text-secondary)' }}>
+                    {new Date(task.createdAt).toLocaleDateString()}
+                </span>
+            ),
+        },
+        {
+            header: 'ACTIONS',
+            render: (task) => (
+                <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
+                    {task.taskStatus !== KYC_TASK_STATUS.PENDING
+                        ? 'VIEW'
+                        : task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED
+                            ? 'CLAIM'
+                            : 'REVIEW'}
+                </button>
+            ),
+        },
+    ];
 
     const toggleMyClaims = () => {
         if (claimedByFilter === currentAdminId) {
@@ -110,113 +199,22 @@ export const KycEscalationPage: React.FC = () => {
                 </div>
             </header>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>TARGET USER ID</th>
-                            <th>DOCUMENT</th>
-                            <th>COUNTRY</th>
-                            <th>FACE MATCH</th>
-                            <th>LIVENESS</th>
-                            <th>DECISION</th>
-                            <th>CLAIM STATE</th>
-                            <th>CREATED</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={9} className={styles.loading}>
-                                    INITIALIZING DATA STREAM...
-                                </td>
-                            </tr>
-                        ) : tasks.length === 0 ? (
-                            <tr>
-                                <td colSpan={9} className={styles.emptyState}>
-                                    NO KYC ESCALATION TASKS FOUND.
-                                </td>
-                            </tr>
-                        ) : (
-                            tasks.map((task) => (
-                                <tr key={task.id} style={{ opacity: isFetching ? 0.6 : 1 }}>
-                                    <td className={styles.userIdCell} title={task.targetUserId}>
-                                        {task.targetUserId}
-                                    </td>
-                                    <td>
-                                        <span className={styles.docType}>
-                                            {task.documentType ? task.documentType.replace(/_/g, ' ') : 'N/A'}
-                                        </span>
-                                    </td>
-                                    <td>{task.issuingCountry || 'N/A'}</td>
-                                    <td style={{ fontFamily: 'monospace' }}>
-                                        {typeof task.faceMatchScore === 'number'
-                                            ? task.faceMatchScore.toFixed(2)
-                                            : task.faceMatchScore}
-                                    </td>
-                                    <td style={{ fontFamily: 'monospace' }}>
-                                        {typeof task.livenessScore === 'number'
-                                            ? (task.livenessScore <= 1
-                                                ? `${(task.livenessScore * 100).toFixed(1)}%`
-                                                : `${task.livenessScore.toFixed(1)}%`)
-                                            : task.livenessScore}
-                                    </td>
-                                    <td>
-                                        <span className={`${styles.badge} ${styles[`badge_${task.taskStatus}`]}`}>
-                                            {task.taskStatus.replace(/_/g, ' ')}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                                            <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
-                                                {task.claimStatus}
-                                            </span>
-                                            {task.claimStatus === KYC_CLAIM_STATUS.CLAIMED && task.claimedBy && (
-                                                <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
-                                                    BY: {task.claimedBy === currentAdminId ? 'YOU' : task.claimedBy.slice(0, 10)}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td style={{ fontSize: '11px', color: 'var(--admin-text-secondary)' }}>
-                                        {new Date(task.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td>
-                                        <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus !== KYC_TASK_STATUS.PENDING
-                                                ? 'VIEW'
-                                                : task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED
-                                                    ? 'CLAIM'
-                                                    : 'REVIEW'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <AdminTable
+                columns={columns}
+                data={tasks}
+                keyExtractor={(task) => task.id}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                emptyMessage="NO KYC ESCALATION TASKS FOUND."
+            />
 
-            {!isLoading && tasks.length > 0 && (
-                <div className={styles.pagination}>
-                    <span>
-                        DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, total)} OF {total}
-                    </span>
-                    <div className={styles.pageControls}>
-                        <button className={styles.actionBtn} disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-                            PREV
-                        </button>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((p) => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={limit}
+                total={total}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {activeTask && (

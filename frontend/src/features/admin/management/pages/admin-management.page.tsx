@@ -10,6 +10,8 @@ import { AdminStatusModal, type AdminActionType } from '../components/admin-stat
 import { AdminInviteActionModal, type InviteActionType } from '../components/admin-invite-action-modal.component';
 import { AdminForceLogoutModal } from '../components/admin-force-logout-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import styles from './admin-management.module.css';
 
 export const AdminManagementPage = () => {
@@ -80,7 +82,130 @@ export const AdminManagementPage = () => {
 
     // Filter out the currently logged-in admin
     const displayedAdmins = (data?.data || []).filter(admin => admin.id !== currentAdmin?.id);
-    const totalPages = data?.meta?.total ? Math.ceil(data.meta.total / limit) : 1;
+
+    const columns: AdminTableColumn<AdminDetails>[] = [
+        {
+            header: 'PERSONNEL DETAILS',
+            render: (admin) => (
+                <div className={styles.adminInfo}>
+                    <span 
+                        className={`${styles.adminName} ${styles.clickableName}`}
+                        onClick={() => navigate(`/admin/management/${admin.id}`)}
+                        title="View Admin Details"
+                    >
+                        {admin.fullName}
+                    </span>
+                    <span className={styles.adminEmail}>{admin.email}</span>
+                </div>
+            ),
+        },
+        {
+            header: 'ROLE',
+            render: (admin) => (
+                <span className={`${styles.badge} ${styles[`role_${admin.role}`]}`}>
+                    {admin.role.replace('_', ' ')}
+                </span>
+            ),
+        },
+        {
+            header: 'STATUS',
+            render: (admin) => (
+                <span className={`${styles.badge} ${styles[`status_${admin.status}`]}`}>
+                    {admin.status}
+                </span>
+            ),
+        },
+        {
+            header: 'CREATED',
+            render: (admin) => new Date(admin.createdAt).toLocaleDateString(),
+        },
+        {
+            header: 'ACTIONS',
+            render: (admin) => (
+                <div className={styles.actionGroup}>
+                    <button 
+                        className={styles.actionBtn}
+                        onClick={() => navigate(`/admin/management/${admin.id}`)}
+                        title="View full audit log and profile"
+                    >
+                        VIEW
+                    </button>
+
+                    {admin.status === 'INVITED' ? (
+                        <>
+                            {admin.inviteExpiresAt && new Date(admin.inviteExpiresAt).getTime() < Date.now() ? (
+                                <button 
+                                    className={`${styles.actionBtn} ${styles.reactivateBtn}`}
+                                    onClick={() => handleInviteAction(admin.id, admin.fullName, 'REINVITE')}
+                                >
+                                    RE-INVITE
+                                </button>
+                            ) : (
+                                <span style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', alignSelf: 'center', marginRight: '4px', fontWeight: 600 }}>
+                                    PENDING
+                                </span>
+                            )}
+                            
+                            <button 
+                                className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                onClick={() => handleInviteAction(admin.id, admin.fullName, 'CANCEL')}
+                            >
+                                CANCEL
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button 
+                                className={styles.actionBtn}
+                                onClick={() => setSelectedAdmin(admin)}
+                            >
+                                EDIT
+                            </button>
+
+                            {admin.role !== ADMIN_ROLES.SUPER_ADMIN && (
+                                <>
+                                    {admin.status === 'ACTIVE' && (
+                                        <button 
+                                            className={styles.actionBtn}
+                                            onClick={() => setForceLogoutConfig({ isOpen: true, adminId: admin.id, adminName: admin.fullName })}
+                                            title="Revoke session token"
+                                        >
+                                            LOGOUT
+                                        </button>
+                                    )}
+
+                                    {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
+                                        <button 
+                                            className={`${styles.actionBtn} ${styles.reactivateBtn}`}
+                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'REACTIVATE')}
+                                        >
+                                            REACTIVATE
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'SUSPEND')}
+                                        >
+                                            SUSPEND
+                                        </button>
+                                    )}
+                                    
+                                    {admin.status !== 'DEACTIVATED' && (
+                                        <button 
+                                            className={`${styles.actionBtn} ${styles.suspendBtn}`}
+                                            onClick={() => handleStatusAction(admin.id, admin.fullName, 'DEACTIVATE')}
+                                        >
+                                            DEACTIVATE
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+            ),
+        },
+    ];
 
     return (
         <AdminPageTransition className={styles.container}>
@@ -129,159 +254,22 @@ export const AdminManagementPage = () => {
                 </div>
             </header>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>PERSONNEL DETAILS</th>
-                            <th>ROLE</th>
-                            <th>STATUS</th>
-                            <th>CREATED</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr><td colSpan={5} className={styles.loading}>INITIALIZING DATA STREAM...</td></tr>
-                        ) : displayedAdmins.length === 0 ? (
-                            <tr><td colSpan={5} className={styles.emptyState}>NO PERSONNEL RECORDS FOUND.</td></tr>
-                        ) : (
-                            displayedAdmins.map((admin) => (
-                                <tr key={admin.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
-                                    <td>
-                                        <div className={styles.adminInfo}>
-                                            <span 
-                                                className={`${styles.adminName} ${styles.clickableName}`}
-                                                onClick={() => navigate(`/admin/management/${admin.id}`)}
-                                                title="View Admin Details"
-                                            >
-                                                {admin.fullName}
-                                            </span>
-                                            <span className={styles.adminEmail}>{admin.email}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span className={`${styles.badge} ${styles[`role_${admin.role}`]}`}>
-                                            {admin.role.replace('_', ' ')}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className={`${styles.badge} ${styles[`status_${admin.status}`]}`}>
-                                            {admin.status}
-                                        </span>
-                                    </td>
-                                    <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
-                                    <td>
-                                        <div className={styles.actionGroup}>
-                                            <button 
-                                                className={styles.actionBtn}
-                                                onClick={() => navigate(`/admin/management/${admin.id}`)}
-                                                title="View full audit log and profile"
-                                            >
-                                                VIEW
-                                            </button>
+            <AdminTable
+                columns={columns}
+                data={displayedAdmins}
+                keyExtractor={(admin) => admin.id}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                emptyMessage="NO PERSONNEL RECORDS FOUND."
+            />
 
-                                            {admin.status === 'INVITED' ? (
-                                                <>
-                                                    {admin.inviteExpiresAt && new Date(admin.inviteExpiresAt).getTime() < Date.now() ? (
-                                                        <button 
-                                                            className={`${styles.actionBtn} ${styles.reactivateBtn}`}
-                                                            onClick={() => handleInviteAction(admin.id, admin.fullName, 'REINVITE')}
-                                                        >
-                                                            RE-INVITE
-                                                        </button>
-                                                    ) : (
-                                                        <span style={{ fontSize: '11px', color: 'var(--admin-text-subtle)', alignSelf: 'center', marginRight: '4px', fontWeight: 600 }}>
-                                                            PENDING
-                                                        </span>
-                                                    )}
-                                                    
-                                                    <button 
-                                                        className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                        onClick={() => handleInviteAction(admin.id, admin.fullName, 'CANCEL')}
-                                                    >
-                                                        CANCEL
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button 
-                                                        className={styles.actionBtn}
-                                                        onClick={() => setSelectedAdmin(admin)}
-                                                    >
-                                                        EDIT
-                                                    </button>
-
-                                                    {admin.role !== ADMIN_ROLES.SUPER_ADMIN && (
-                                                        <>
-                                                            {admin.status === 'ACTIVE' && (
-                                                                <button 
-                                                                    className={styles.actionBtn}
-                                                                    onClick={() => setForceLogoutConfig({ isOpen: true, adminId: admin.id, adminName: admin.fullName })}
-                                                                    title="Revoke session token"
-                                                                >
-                                                                    LOGOUT
-                                                                </button>
-                                                            )}
-
-                                                            {admin.status === 'SUSPENDED' || admin.status === 'DEACTIVATED' ? (
-                                                                <button 
-                                                                    className={`${styles.actionBtn} ${styles.reactivateBtn}`}
-                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'REACTIVATE')}
-                                                                >
-                                                                    REACTIVATE
-                                                                </button>
-                                                            ) : (
-                                                                <button 
-                                                                    className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'SUSPEND')}
-                                                                >
-                                                                    SUSPEND
-                                                                </button>
-                                                            )}
-                                                            
-                                                            {admin.status !== 'DEACTIVATED' && (
-                                                                <button 
-                                                                    className={`${styles.actionBtn} ${styles.suspendBtn}`}
-                                                                    onClick={() => handleStatusAction(admin.id, admin.fullName, 'DEACTIVATE')}
-                                                                >
-                                                                    DEACTIVATE
-                                                                </button>
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-
-            {data?.meta && data.meta.total > 0 && (
-                <div className={styles.pagination}>
-                    <span>DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, data.meta.total)} OF {data.meta.total}</span>
-                    <div className={styles.pageControls}>
-                        <button 
-                            className={styles.actionBtn} 
-                            disabled={page === 1} 
-                            onClick={() => setPage(p => p - 1)}
-                        >
-                            PREV
-                        </button>
-                        <button 
-                            className={styles.actionBtn} 
-                            disabled={page === totalPages} 
-                            onClick={() => setPage(p => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={limit}
+                total={data?.meta?.total || 0}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {isInviteModalOpen && (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useRefreshMutation } from '../api/auth.api';
 import { setCredentials, setInitialized } from '../slices/auth.slice';
@@ -7,40 +7,42 @@ import { Outlet } from 'react-router-dom';
 export const SessionInitializer = () => {
     const [refresh] = useRefreshMutation();
     const dispatch = useAppDispatch();
-    const accessToken = useAppSelector((state) => state.auth.accessToken);
-    const [, setChecked] = useState(false);
+    const { accessToken, isAuthenticated } = useAppSelector((state) => state.auth);
+    const effectRan = useRef(false);
 
     useEffect(() => {
-        let isMounted = true;
+        // Prevent React 18 strict mode double-firing
+        if (effectRan.current) return;
 
         const restoreSession = async () => {
             try {
                 const response = await refresh().unwrap();
-                if (isMounted && response.data?.accessToken) {
-                    dispatch(setCredentials({ accessToken: response.data.accessToken, user: response.data.user }));
+                if (response.data?.accessToken) {
+                    dispatch(
+                        setCredentials({
+                            accessToken: response.data.accessToken,
+                            user: response.data.user,
+                        })
+                    );
                 }
             } catch {
-                if (isMounted) {
-                    dispatch(setInitialized());
-                }
+                // If it fails, cookie is missing or expired.
+                // Downstream route guards will naturally handle the unauthenticated state.
             } finally {
-                if (isMounted) {
-                    setChecked(true);
-                }
+                dispatch(setInitialized());
             }
         };
 
-        if (!accessToken) {
+        if (!accessToken && !isAuthenticated) {
             restoreSession();
         } else {
             dispatch(setInitialized());
-            setChecked(true);
         }
 
         return () => {
-            isMounted = false;
+            effectRan.current = true;
         };
-    }, [accessToken, refresh, dispatch]);
+    }, [accessToken, isAuthenticated, refresh, dispatch]);
 
     return <Outlet />;
 };

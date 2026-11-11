@@ -1,43 +1,13 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../app/hooks';
 import type { RootState } from '../../../app/store';
 import Topography from '../../../shared/components/ui/topography/topography.component';
 import styles from './landing-page.module.css';
 
-// Import the refresh mutation and action to update Redux dynamically
-import { useRefreshMutation } from '../../auth/api/auth.api';
-import { setCredentials } from '../../auth/slices/auth.slice';
-
 export const LandingComponent: React.FC = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
     const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-
-    // 1. Initialize the refresh mutation
-    const [refresh] = useRefreshMutation();
-
-    // 2. Silent background sync: Fetch the latest user state every time they view the homepage
-    useEffect(() => {
-        if (isAuthenticated) {
-            refresh()
-                .unwrap()
-                .then((res) => {
-                    if (res.data) {
-                        dispatch(
-                            setCredentials({
-                                accessToken: res.data.accessToken,
-                                user: res.data.user,
-                            })
-                        );
-                    }
-                })
-                .catch((err: unknown) => {
-                    console.error('Silent sync failed:', err);
-                });
-        }
-    }, [isAuthenticated, refresh, dispatch]);
 
     // Calculate onboarding progress using strict data presence checks
     const { progress, nextRoute, stepName } = useMemo(() => {
