@@ -11,6 +11,7 @@ import { AdminInviteActionModal, type InviteActionType } from '../components/adm
 import { AdminForceLogoutModal } from '../components/admin-force-logout-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import styles from './admin-management.module.css';
 
 export const AdminManagementPage = () => {
@@ -81,7 +82,6 @@ export const AdminManagementPage = () => {
 
     // Filter out the currently logged-in admin
     const displayedAdmins = (data?.data || []).filter(admin => admin.id !== currentAdmin?.id);
-    const totalPages = data?.meta?.total ? Math.ceil(data.meta.total / limit) : 1;
 
     const columns: AdminTableColumn<AdminDetails>[] = [
         {
@@ -263,27 +263,13 @@ export const AdminManagementPage = () => {
                 emptyMessage="NO PERSONNEL RECORDS FOUND."
             />
 
-            {data?.meta && data.meta.total > 0 && (
-                <div className={styles.pagination}>
-                    <span>DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, data.meta.total)} OF {data.meta.total}</span>
-                    <div className={styles.pageControls}>
-                        <button 
-                            className={styles.actionBtn} 
-                            disabled={page === 1} 
-                            onClick={() => setPage(p => p - 1)}
-                        >
-                            PREV
-                        </button>
-                        <button 
-                            className={styles.actionBtn} 
-                            disabled={page === totalPages} 
-                            onClick={() => setPage(p => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={limit}
+                total={data?.meta?.total || 0}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {isInviteModalOpen && (
