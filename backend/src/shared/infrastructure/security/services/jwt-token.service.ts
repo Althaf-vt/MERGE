@@ -46,7 +46,7 @@ export class JwtTokenService implements ITokenservice {
             return this._jwtService.verify<ITokenPayload>(token, {
                 secret: this._accessSecret,
             });
-        } catch (error) {
+        } catch (error: unknown) {
             throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
         }
     }
@@ -56,7 +56,7 @@ export class JwtTokenService implements ITokenservice {
             return this._jwtService.verify<ITokenPayload>(token, {
                 secret: this._refreshSecret,
             });
-        } catch (error) {
+        } catch (error: unknown) {
             throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired refresh token');
         }
     }
