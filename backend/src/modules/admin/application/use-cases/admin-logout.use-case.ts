@@ -22,7 +22,7 @@ export class AdminLogoutUseCase implements IAdminLogoutUseCase {
             if (payload && payload.userId) {
                 await this._sessionService.deleteSession(payload.userId);
             }
-        } catch (error) {
+        } catch (error: unknown) {
             this._logger.debug('Admin refresh token invalid during logout; proceeding with cookie cleanup.');
         }
     }
