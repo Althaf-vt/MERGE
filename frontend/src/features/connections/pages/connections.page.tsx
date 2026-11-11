@@ -12,6 +12,7 @@ import { PendingSubfilter } from '../components/pending-subfilter.component';
 import { PendingCard } from '../components/pending-card.component';
 import { PrivateListCard } from '../components/private-list-card.component';
 import { PriorityIntroModal } from '../components/priority-intro-modal.component';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './connections.module.css';
 
 // Shimmering Skeleton Loader Grid
@@ -107,8 +108,8 @@ const ActiveTabSection: React.FC<ActiveTabSectionProps> = ({ hook }) => {
         try {
             await hook.revokeMatch(selectedRevoke.id);
             setSelectedRevoke(null);
-        } catch (error) {
-            console.error('Failed to revoke match:', error);
+        } catch (error: unknown) {
+            console.error('Failed to revoke match:', getErrorMessage(error, 'Failed to revoke match.'));
         }
     };
 
@@ -163,8 +164,8 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
         setActiveActionId(connectionId);
         try {
             await hook.actions.accept(connectionId);
-        } catch (err) {
-            console.error('Failed to accept request:', err);
+        } catch (err: unknown) {
+            console.error('Failed to accept request:', getErrorMessage(err, 'Failed to accept request.'));
         } finally {
             setActiveActionId(null);
         }
@@ -174,8 +175,8 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
         setActiveActionId(connectionId);
         try {
             await hook.actions.decline(connectionId);
-        } catch (err) {
-            console.error('Failed to decline request:', err);
+        } catch (err: unknown) {
+            console.error('Failed to decline request:', getErrorMessage(err, 'Failed to decline request.'));
         } finally {
             setActiveActionId(null);
         }
@@ -185,8 +186,8 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
         setActiveActionId(connectionId);
         try {
             await hook.actions.cancel(connectionId);
-        } catch (err) {
-            console.error('Failed to cancel request:', err);
+        } catch (err: unknown) {
+            console.error('Failed to cancel request:', getErrorMessage(err, 'Failed to cancel request.'));
         } finally {
             setActiveActionId(null);
         }
@@ -267,8 +268,8 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
         setActionState({ id: targetUserId, type: 'CONNECT' });
         try {
             await hook.actions.sendRequest(targetUserId);
-        } catch (err) {
-            console.error('Failed to send connection request:', err);
+        } catch (err: unknown) {
+            console.error('Failed to send connection request:', getErrorMessage(err, 'Failed to send connection request.'));
         } finally {
             setActionState(null);
         }
@@ -278,8 +279,8 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
         setActionState({ id: targetUserId, type: 'MOVE' });
         try {
             await hook.actions.move(targetUserId, targetType);
-        } catch (err) {
-            console.error('Failed to move profile:', err);
+        } catch (err: unknown) {
+            console.error('Failed to move profile:', getErrorMessage(err, 'Failed to move profile.'));
         } finally {
             setActionState(null);
         }
@@ -289,8 +290,8 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
         setActionState({ id: targetUserId, type: 'REMOVE' });
         try {
             await hook.actions.remove(targetUserId);
-        } catch (err) {
-            console.error('Failed to remove profile from shortlist:', err);
+        } catch (err: unknown) {
+            console.error('Failed to remove profile from shortlist:', getErrorMessage(err, 'Failed to remove profile from shortlist.'));
         } finally {
             setActionState(null);
         }
@@ -305,8 +306,8 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
         try {
             await hook.actions.sendPriorityIntro(priorityTarget.id, message);
             setPriorityTarget(null);
-        } catch (err) {
-            console.error('Failed to send priority intro:', err);
+        } catch (err: unknown) {
+            console.error('Failed to send priority intro:', getErrorMessage(err, 'Failed to send priority intro.'));
         }
     };
 
@@ -367,8 +368,8 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
         setActionState({ id: targetUserId, type: 'CONNECT' });
         try {
             await hook.actions.sendRequest(targetUserId);
-        } catch (err) {
-            console.error('Failed to send connection request:', err);
+        } catch (err: unknown) {
+            console.error('Failed to send connection request:', getErrorMessage(err, 'Failed to send connection request.'));
         } finally {
             setActionState(null);
         }
@@ -378,8 +379,8 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
         setActionState({ id: targetUserId, type: 'MOVE' });
         try {
             await hook.actions.move(targetUserId, targetType);
-        } catch (err) {
-            console.error('Failed to move profile:', err);
+        } catch (err: unknown) {
+            console.error('Failed to move profile:', getErrorMessage(err, 'Failed to move profile.'));
         } finally {
             setActionState(null);
         }
@@ -389,8 +390,8 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
         setActionState({ id: targetUserId, type: 'REMOVE' });
         try {
             await hook.actions.remove(targetUserId);
-        } catch (err) {
-            console.error('Failed to remove profile from review later:', err);
+        } catch (err: unknown) {
+            console.error('Failed to remove profile from review later:', getErrorMessage(err, 'Failed to remove profile from review later.'));
         } finally {
             setActionState(null);
         }
@@ -405,8 +406,8 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
         try {
             await hook.actions.sendPriorityIntro(priorityTarget.id, message);
             setPriorityTarget(null);
-        } catch (err) {
-            console.error('Failed to send priority intro:', err);
+        } catch (err: unknown) {
+            console.error('Failed to send priority intro:', getErrorMessage(err, 'Failed to send priority intro.'));
         }
     };
 
