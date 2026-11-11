@@ -17,13 +17,14 @@ export class AdminLogoutUseCase implements IAdminLogoutUseCase {
             return;
         }
 
-        try {
-            const payload = this._tokenService.verifyRefreshToken(token);
-            if (payload && payload.userId) {
-                await this._sessionService.deleteSession(payload.userId);
-            }
-        } catch (error: unknown) {
+        const payload = this._tokenService.verifyRefreshToken(token);
+        if (!payload) {
             this._logger.debug('Admin refresh token invalid during logout; proceeding with cookie cleanup.');
+            return;
+        }
+
+        if (payload.userId) {
+            await this._sessionService.deleteSession(payload.userId);
         }
     }
 }
