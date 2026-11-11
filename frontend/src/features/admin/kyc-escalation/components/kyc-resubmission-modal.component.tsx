@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import styles from './kyc-resubmission-modal.module.css';
 import type { KycResubmissionReason } from '../types/kyc-escalation.types';
 import { KYC_RESUBMISSION_OPTIONS } from '../constants/kyc-escalation.constants';
 import { useRequestResubmissionKycTaskMutation } from '../api/kyc-escalation.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 
 interface KycResubmissionModalProps {
     isOpen: boolean;
@@ -70,125 +70,97 @@ export const KycResubmissionModal: React.FC<KycResubmissionModalProps> = ({
     };
 
     return (
-        <AnimatePresence>
-            <motion.div
-                className={styles.overlay}
-                onClick={isLoading ? undefined : onClose}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
-            >
-                <motion.div
-                    className={styles.modal}
-                    onClick={(e) => e.stopPropagation()}
-                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                    transition={{ type: 'spring', visualDuration: 0.5, bounce: 0.1 }}
-                >
-                    <header className={styles.header}>
-                        <div className={styles.headerText}>
-                            <h2 className={styles.title}>REQUEST KYC RESUBMISSION</h2>
-                            <p className={styles.subtitle}>Select the items requiring user re-submission</p>
+        <AdminModal
+            isOpen={isOpen}
+            onClose={isLoading ? () => {} : onClose}
+            title="REQUEST KYC RESUBMISSION"
+            subtitle="Select the items requiring user re-submission"
+            size="md"
+        >
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.body}>
+                    <div className={styles.section}>
+                        <label className={styles.sectionLabel}>
+                            RESUBMISSION REASONS <span className={styles.requiredIndicator}>*</span>
+                        </label>
+                        <div className={styles.optionsList}>
+                            {KYC_RESUBMISSION_OPTIONS.map((opt) => {
+                                const isSelected = selectedReasons.includes(opt.value);
+                                return (
+                                    <div
+                                        key={opt.value}
+                                        className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ''}`}
+                                        onClick={() => toggleReason(opt.value)}
+                                        role="checkbox"
+                                        aria-checked={isSelected}
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === ' ' || e.key === 'Enter') {
+                                                e.preventDefault();
+                                                toggleReason(opt.value);
+                                            }
+                                        }}
+                                    >
+                                        <div className={`${styles.customCheckbox} ${isSelected ? styles.checkboxChecked : ''}`}>
+                                            {isSelected && (
+                                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                                                    <path
+                                                        d="M1 4L3.5 6.5L9 1"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className={styles.optionLabel}>{opt.label}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
-                        <button
-                            type="button"
-                            className={styles.closeBtn}
-                            onClick={onClose}
+                    </div>
+
+                    <div className={styles.section}>
+                        <label className={styles.sectionLabel} htmlFor="resubmission-message">
+                            INSTRUCTIONS / NOTES FOR USER <span className={styles.optionalHint}>(OPTIONAL)</span>
+                        </label>
+                        <textarea
+                            id="resubmission-message"
+                            className={styles.textarea}
+                            placeholder="e.g. Ensure all 4 corners of ID are visible and lighting is clear..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
                             disabled={isLoading}
-                            aria-label="Close modal"
-                        >
-                            &times;
-                        </button>
-                    </header>
-
-                    <form onSubmit={handleSubmit} className={styles.form}>
-                        <div className={styles.body}>
-                            <div className={styles.section}>
-                                <label className={styles.sectionLabel}>
-                                    RESUBMISSION REASONS <span className={styles.requiredIndicator}>*</span>
-                                </label>
-                                <div className={styles.optionsList}>
-                                    {KYC_RESUBMISSION_OPTIONS.map((opt) => {
-                                        const isSelected = selectedReasons.includes(opt.value);
-                                        return (
-                                            <div
-                                                key={opt.value}
-                                                className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ''}`}
-                                                onClick={() => toggleReason(opt.value)}
-                                                role="checkbox"
-                                                aria-checked={isSelected}
-                                                tabIndex={0}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === ' ' || e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        toggleReason(opt.value);
-                                                    }
-                                                }}
-                                            >
-                                                <div className={`${styles.customCheckbox} ${isSelected ? styles.checkboxChecked : ''}`}>
-                                                    {isSelected && (
-                                                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                                            <path
-                                                                d="M1 4L3.5 6.5L9 1"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            />
-                                                        </svg>
-                                                    )}
-                                                </div>
-                                                <span className={styles.optionLabel}>{opt.label}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            <div className={styles.section}>
-                                <label className={styles.sectionLabel} htmlFor="resubmission-message">
-                                    INSTRUCTIONS / NOTES FOR USER <span className={styles.optionalHint}>(OPTIONAL)</span>
-                                </label>
-                                <textarea
-                                    id="resubmission-message"
-                                    className={styles.textarea}
-                                    placeholder="e.g. Ensure all 4 corners of ID are visible and lighting is clear..."
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    disabled={isLoading}
-                                    maxLength={500}
-                                />
-                                <div className={styles.charCount}>
-                                    {message.length} / 500
-                                </div>
-                            </div>
-
-                            {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
+                            maxLength={500}
+                        />
+                        <div className={styles.charCount}>
+                            {message.length} / 500
                         </div>
+                    </div>
 
-                        <footer className={styles.footer}>
-                            <button
-                                type="button"
-                                className={styles.btnCancel}
-                                onClick={onClose}
-                                disabled={isLoading}
-                            >
-                                CANCEL
-                            </button>
-                            <button
-                                type="submit"
-                                className={styles.btnSubmit}
-                                disabled={isLoading || selectedReasons.length === 0}
-                            >
-                                {isLoading ? 'SENDING REQUEST...' : 'CONFIRM RESUBMISSION'}
-                            </button>
-                        </footer>
-                    </form>
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+                    {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
+                </div>
+
+                <footer className={styles.footer}>
+                    <button
+                        type="button"
+                        className={styles.btnCancel}
+                        onClick={onClose}
+                        disabled={isLoading}
+                    >
+                        CANCEL
+                    </button>
+                    <button
+                        type="submit"
+                        className={styles.btnSubmit}
+                        disabled={isLoading || selectedReasons.length === 0}
+                    >
+                        {isLoading ? 'SENDING REQUEST...' : 'CONFIRM RESUBMISSION'}
+                    </button>
+                </footer>
+            </form>
+        </AdminModal>
     );
 };
 

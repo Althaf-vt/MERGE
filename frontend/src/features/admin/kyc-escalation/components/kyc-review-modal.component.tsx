@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import styles from './kyc-review-modal.module.css';
 import type { KycEscalationTask } from '../types/kyc-escalation.types';
 import { KYC_CLAIM_STATUS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
@@ -7,6 +6,7 @@ import { KycComparison } from './kyc-comparison.component';
 import { KycResubmissionModal } from './kyc-resubmission-modal.component';
 import { useApproveKycTaskMutation, useClaimKycTaskMutation, useRejectKycTaskMutation, useReleaseKycTaskMutation, useTakeoverKycTaskMutation } from '../api/kyc-escalation.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 
 interface KycReviewModalProps {
     isOpen: boolean;
@@ -55,35 +55,15 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
 
     return (
         <>
-            <motion.div
-                className={styles.overlay}
-                onClick={onClose}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+            <AdminModal
+                isOpen={isOpen}
+                onClose={onClose}
+                title="REVIEW KYC ESCALATION"
+                subtitle={`USER: ${task.targetUserId} • CREATED: ${new Date(task.createdAt).toLocaleString()}`}
+                size="xl"
+                contentClassName={styles.modal}
             >
-                <motion.div
-                    className={styles.modal}
-                    onClick={(e) => e.stopPropagation()}
-                    initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 18, scale: 0.97 }}
-                    transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
-                >
-                    <header className={styles.header}>
-                        <div className={styles.titleWrap}>
-                            <h2 className={styles.title}>REVIEW KYC ESCALATION</h2>
-                            <span className={styles.taskMeta}>
-                                USER: {task.targetUserId} • CREATED: {new Date(task.createdAt).toLocaleString()}
-                            </span>
-                        </div>
-                        <button className={styles.closeBtn} onClick={onClose} aria-label="Close modal">
-                            &times;
-                        </button>
-                    </header>
-
-                    <div className={styles.body}>
+                <div className={styles.body}>
                         {task.claimStatus === KYC_CLAIM_STATUS.UNCLAIMED && !isResolved && (
                             <div className={styles.lockBanner}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -257,8 +237,7 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
                             </>
                         )}
                     </footer>
-                </motion.div>
-            </motion.div>
+            </AdminModal>
 
             {/* Resubmission Request Sub-Modal */}
             <KycResubmissionModal
