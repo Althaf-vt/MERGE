@@ -5,6 +5,7 @@ import type { AdminUserStatus, AdminUserDto } from '../types/admin-users.types';
 import { UserActionModal } from '../components/user-action-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import { AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -173,29 +174,13 @@ export const AdminUsersPage: React.FC = () => {
                 isFetching={isFetching}
             />
 
-            {data && (
-                <div className={styles.pagination}>
-                    <span>
-                        DISPLAYING {(page - 1) * 15 + 1} - {Math.min(page * 15, total)} OF {total}
-                    </span>
-                    <div className={styles.pageControls}>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page === 1}
-                            onClick={() => setPage((p) => p - 1)}
-                        >
-                            PREV
-                        </button>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page * 15 >= total}
-                            onClick={() => setPage((p) => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={15}
+                total={total}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {actionModal.isOpen && (
