@@ -17,29 +17,18 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
     ){}
 
     async execute(dto: ResendOtpDto): Promise<void> {
-        try {
-
-            const existingUser = await this._userRepository.findByEmail(dto.email);
-            if(existingUser){
-                throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
-            }
-
-            const emailVo = new EmailVO(dto.email);
-            const standardizedEmail = emailVo.getValue();
-
-            const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-            await this._otpService.refreshRegistrationDraft(standardizedEmail, newOtp, 600);
-
-            await this._emailService.sendOtpEmail(standardizedEmail, newOtp)
-
-
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred.';
-            if (errorMessage.includes('expired')) {
-                throw new DomainException(ErrorCode.OTP_EXPIRED, 'Session expired. Please restart registration.');
-            }
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, errorMessage || 'Failed to resend OTP.');
+        const existingUser = await this._userRepository.findByEmail(dto.email);
+        if (existingUser) {
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
         }
+
+        const emailVo = new EmailVO(dto.email);
+        const standardizedEmail = emailVo.getValue();
+
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await this._otpService.refreshRegistrationDraft(standardizedEmail, newOtp, 600);
+
+        await this._emailService.sendOtpEmail(standardizedEmail, newOtp);
     }
 }
