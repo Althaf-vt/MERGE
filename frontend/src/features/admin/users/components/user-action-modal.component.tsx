@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import styles from './user-action-modal.module.css';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 import { 
     useSuspendUserMutation, 
     useUnsuspendUserMutation, 
@@ -33,7 +33,7 @@ export const UserActionModal: React.FC<UserActionModalProps> = ({ type, userId, 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError(null);
-        
+
         try {
             switch (type) {
                 case 'SUSPEND':
@@ -59,27 +59,15 @@ export const UserActionModal: React.FC<UserActionModalProps> = ({ type, userId, 
     const isSubmitDisabled = reason.trim().length < 5 || isSubmitting;
 
     return (
-        <motion.div 
-            className={styles.overlay}
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+        <AdminModal
+            isOpen={true}
+            onClose={onClose}
+            title={`EXECUTE ${type}`}
+            subtitle={`${userEmail} (${userId})`}
+            showCloseButton={false}
+            size="sm"
         >
-            <motion.div 
-                className={styles.modal}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.97 }}
-                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
-            >
-                <div className={styles.header}>
-                    <h2 className={styles.title}>EXECUTE {type}</h2>
-                    <div className={styles.target}>{userEmail} ({userId})</div>
-                </div>
-
+            <div style={{ padding: '24px' }}>
                 {submitError && (
                     <div style={{
                         padding: '8px 12px',
@@ -155,7 +143,7 @@ export const UserActionModal: React.FC<UserActionModalProps> = ({ type, userId, 
                         </button>
                     </div>
                 </form>
-            </motion.div>
-        </motion.div>
+            </div>
+        </AdminModal>
     );
 };
