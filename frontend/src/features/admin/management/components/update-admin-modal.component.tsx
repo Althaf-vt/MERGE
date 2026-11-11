@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
 import { useUpdateAdminMutation } from '../api/admin-management.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 import styles from './admin-modal.module.css';
 import { ADMIN_PERMISSIONS, ADMIN_ROLES, type AdminPermission, type AdminRole } from '../types/admin-management.types';
 
@@ -35,8 +35,6 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
         setErrorMsg('');
     }, [isOpen, currentRole, currentPermissions]);
 
-    if (!isOpen) return null;
-
     const handlePermissionToggle = (permission: AdminPermission) => {
         setSelectedPermissions((prev) =>
             prev.includes(permission) ? prev.filter((p) => p !== permission) : [...prev, permission]
@@ -63,68 +61,50 @@ export const UpdateAdminModal: React.FC<UpdateAdminModalProps> = ({
     };
 
     return (
-        <motion.div
-            className={styles.overlay}
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+        <AdminModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={`UPDATE PERSONNEL: ${adminName}`}
+            size="md"
         >
-            <motion.div
-                className={styles.modal}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.97 }}
-                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
-            >
-                <div className={styles.header}>
-                    <h2 className={styles.title}>UPDATE PERSONNEL: {adminName}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>
-                        &times;
-                    </button>
+            {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
+
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.inputGroup}>
+                    <label>Role</label>
+                    <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)}>
+                        <option value={ADMIN_ROLES.ADMIN}>Administrator</option>
+                        <option value={ADMIN_ROLES.SUPER_ADMIN}>Super Admin</option>
+                    </select>
                 </div>
 
-                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
-
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label>Role</label>
-                        <select value={role} onChange={(e) => setRole(e.target.value as AdminRole)}>
-                            <option value={ADMIN_ROLES.ADMIN}>Administrator</option>
-                            <option value={ADMIN_ROLES.SUPER_ADMIN}>Super Admin</option>
-                        </select>
-                    </div>
-
-                    {role === ADMIN_ROLES.ADMIN && (
-                        <div className={styles.permissionsSection}>
-                            <label>Permissions</label>
-                            <div className={styles.permissionsGrid}>
-                                {Object.entries(ADMIN_PERMISSIONS).map(([key, value]) => (
-                                    <label key={value} className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPermissions.includes(value)}
-                                            onChange={() => handlePermissionToggle(value)}
-                                        />
-                                        {key.replace(/_/g, ' ')}
-                                    </label>
-                                ))}
-                            </div>
+                {role === ADMIN_ROLES.ADMIN && (
+                    <div className={styles.permissionsSection}>
+                        <label>Permissions</label>
+                        <div className={styles.permissionsGrid}>
+                            {Object.entries(ADMIN_PERMISSIONS).map(([key, value]) => (
+                                <label key={value} className={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedPermissions.includes(value)}
+                                        onChange={() => handlePermissionToggle(value)}
+                                    />
+                                    {key.replace(/_/g, ' ')}
+                                </label>
+                            ))}
                         </div>
-                    )}
-
-                    <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.btnCancel}>
-                            Cancel
-                        </button>
-                        <button type="submit" disabled={isLoading} className={styles.btnSubmit}>
-                            {isLoading ? 'Saving...' : 'Save Changes'}
-                        </button>
                     </div>
-                </form>
-            </motion.div>
-        </motion.div>
+                )}
+
+                <div className={styles.footer}>
+                    <button type="button" onClick={onClose} className={styles.btnCancel}>
+                        Cancel
+                    </button>
+                    <button type="submit" disabled={isLoading} className={styles.btnSubmit}>
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
+        </AdminModal>
     );
 };
