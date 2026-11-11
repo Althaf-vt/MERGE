@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import { useReinviteAdminMutation, useCancelAdminInviteMutation } from '../api/admin-management.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 import styles from './admin-modal.module.css';
 
 export type InviteActionType = 'REINVITE' | 'CANCEL';
@@ -27,8 +27,6 @@ export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
     const [errorMsg, setErrorMsg] = useState('');
 
     const isLoading = isReinviting || isCanceling;
-
-    if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -63,66 +61,48 @@ export const AdminInviteActionModal: React.FC<AdminInviteActionModalProps> = ({
     };
 
     return (
-        <motion.div
-            className={styles.overlay}
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+        <AdminModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={getTitle()}
+            size="sm"
         >
-            <motion.div
-                className={styles.modal}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.97 }}
-                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
+            <div
+                style={{
+                    padding: '24px 24px 0 24px',
+                    fontSize: '13px',
+                    color: 'var(--admin-text-secondary)',
+                    lineHeight: '1.6',
+                }}
             >
-                <div className={styles.header}>
-                    <h2 className={styles.title}>{getTitle()}</h2>
-                    <button onClick={onClose} className={styles.closeBtn}>
-                        &times;
+                {getMessage()}
+            </div>
+
+            {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
+
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.footer}>
+                    <button type="button" onClick={onClose} className={styles.btnCancel} disabled={isLoading}>
+                        Close
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className={`${styles.btnSubmit} ${actionType === 'CANCEL' ? styles.suspendBtn : ''}`}
+                        style={
+                            actionType === 'REINVITE'
+                                ? {
+                                      backgroundColor: 'var(--badge-active-bg)',
+                                      borderColor: 'var(--badge-active-bg)',
+                                      color: 'var(--badge-active-text)',
+                                  }
+                                : {}
+                        }
+                    >
+                        {getBtnText()}
                     </button>
                 </div>
-
-                <div
-                    style={{
-                        padding: '24px 24px 0 24px',
-                        fontSize: '13px',
-                        color: 'var(--admin-text-secondary)',
-                        lineHeight: '1.6',
-                    }}
-                >
-                    {getMessage()}
-                </div>
-
-                {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
-
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.footer}>
-                        <button type="button" onClick={onClose} className={styles.btnCancel} disabled={isLoading}>
-                            Close
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className={`${styles.btnSubmit} ${actionType === 'CANCEL' ? styles.suspendBtn : ''}`}
-                            style={
-                                actionType === 'REINVITE'
-                                    ? {
-                                          backgroundColor: 'var(--badge-active-bg)',
-                                          borderColor: 'var(--badge-active-bg)',
-                                          color: 'var(--badge-active-text)',
-                                      }
-                                    : {}
-                            }
-                        >
-                            {getBtnText()}
-                        </button>
-                    </div>
-                </form>
-            </motion.div>
-        </motion.div>
+            </form>
+        </AdminModal>
     );
 };
