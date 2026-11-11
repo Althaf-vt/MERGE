@@ -6,6 +6,7 @@ import { useGetPhotoTasksQuery } from '../api/photo-verification.api';
 import type { PhotoTaskStatus, ClaimStatus, PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoReviewModal } from '../components/photo-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
+import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
 import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import styles from './photo-verification.module.css';
 
@@ -35,6 +36,56 @@ export const PhotoVerificationPage: React.FC = () => {
     const totalPages = Math.ceil(total / limit) || 1;
 
     const activeTask = selectedTask ? tasks.find((t) => t.id === selectedTask.id) || selectedTask : null;
+
+    const columns: AdminTableColumn<PhotoVerificationTask>[] = [
+        {
+            header: 'TARGET USER ID',
+            render: (task) => task.targetUserId,
+        },
+        {
+            header: 'SUBMITTED ON',
+            render: (task) => new Date(task.createdAt).toLocaleDateString(),
+        },
+        {
+            header: 'L2 DISTANCE',
+            render: (task) => <span style={{ fontFamily: 'monospace' }}>{task.faceMatchScore.toFixed(4)}</span>,
+        },
+        {
+            header: 'DECISION',
+            render: (task) => (
+                <span className={`${styles.badge} ${styles[`badge_${task.taskStatus}`]}`}>
+                    {task.taskStatus}
+                </span>
+            ),
+        },
+        {
+            header: 'CLAIM STATE',
+            render: (task) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                    <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
+                        {task.claimStatus}
+                    </span>
+                    {task.claimStatus === 'CLAIMED' && (
+                        <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
+                            BY: {task.claimedBy}
+                        </span>
+                    )}
+                </div>
+            ),
+        },
+        {
+            header: 'ACTIONS',
+            render: (task) => (
+                <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
+                    {task.taskStatus !== 'PENDING'
+                        ? 'VIEW'
+                        : task.claimStatus === 'UNCLAIMED'
+                          ? 'CLAIM'
+                          : 'REVIEW'}
+                </button>
+            ),
+        },
+    ];
 
     return (
         <AdminPageTransition className={styles.container}>
@@ -89,69 +140,14 @@ export const PhotoVerificationPage: React.FC = () => {
                 </div>
             </header>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>TARGET USER ID</th>
-                            <th>SUBMITTED ON</th>
-                            <th>L2 DISTANCE</th>
-                            <th>DECISION</th>
-                            <th>CLAIM STATE</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {isLoading ? (
-                            <tr>
-                                <td colSpan={6} className={styles.loading}>
-                                    INITIALIZING DATA STREAM...
-                                </td>
-                            </tr>
-                        ) : tasks.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className={styles.emptyState}>
-                                    NO PHOTO TASKS FOUND.
-                                </td>
-                            </tr>
-                        ) : (
-                            tasks.map((task) => (
-                                <tr key={task.id} style={{ opacity: isFetching ? 0.5 : 1 }}>
-                                    <td>{task.targetUserId}</td>
-                                    <td>{new Date(task.createdAt).toLocaleDateString()}</td>
-                                    <td style={{ fontFamily: 'monospace' }}>{task.faceMatchScore.toFixed(4)}</td>
-                                    <td>
-                                        <span className={`${styles.badge} ${styles[`badge_${task.taskStatus}`]}`}>
-                                            {task.taskStatus}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
-                                            <span className={`${styles.badge} ${styles[`badge_${task.claimStatus}`]}`}>
-                                                {task.claimStatus}
-                                            </span>
-                                            {task.claimStatus === 'CLAIMED' && (
-                                                <span style={{ fontSize: '10px', color: 'var(--admin-text-subtle)' }}>
-                                                    BY: {task.claimedBy}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button className={styles.actionBtn} onClick={() => setSelectedTask(task)}>
-                                            {task.taskStatus !== 'PENDING'
-                                                ? 'VIEW'
-                                                : task.claimStatus === 'UNCLAIMED'
-                                                  ? 'CLAIM'
-                                                  : 'REVIEW'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            <AdminTable
+                columns={columns}
+                data={tasks}
+                keyExtractor={(task) => task.id}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                emptyMessage="NO PHOTO TASKS FOUND."
+            />
 
             {!isLoading && tasks.length > 0 && (
                 <div className={styles.pagination}>
