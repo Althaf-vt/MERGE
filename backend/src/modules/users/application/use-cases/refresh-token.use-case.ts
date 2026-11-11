@@ -19,8 +19,10 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
 
     async execute(paylod: RefreshTokenDto): Promise<RefreshTokenResponse> {
         // 1. Validate signature and expiration using the infrastructure service
-        // If the token is invalid or expired, this throws an UnauthorizedException
         const payload = this._tokenService.verifyRefreshToken(paylod.refreshToken);
+        if (!payload) {
+            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired refresh token');
+        }
 
         // Check if the session was remotely revoked in Redis
         if (!payload.sessionId) {
