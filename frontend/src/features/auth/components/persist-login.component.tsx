@@ -1,52 +1,34 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { useRefreshMutation } from '../api/auth.api';
-import { setCredentials, setInitialized } from '../slices/auth.slice';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../app/hooks';
 
 export const PersistLogin = () => {
-    const [refresh, { isLoading, isUninitialized }] = useRefreshMutation();
-    const dispatch = useAppDispatch();
-    const accessToken = useAppSelector((state) => state.auth.accessToken);
-    const [hasAttempted, setHasAttempted] = useState(false);
+    const { isAuthenticated, isInitializing } = useAppSelector((state) => state.auth);
+    const location = useLocation();
 
-    useEffect(() => {
-        const verifyRefreshToken = async () => {
-            try {
-                // Silently hit the backend /refresh endpoint
-                const response = await refresh().unwrap();
-
-                if (!response.data?.accessToken) {
-                    throw new Error('No access token found in the refresh payload.');
-                }
-
-                // Save the fresh token and latest user data to Redux
-                dispatch(setCredentials({ accessToken: response.data.accessToken, user: response.data.user }));
-            } catch {
-                console.error('Silent refresh failed. User must log in manually');
-                dispatch(setInitialized());
-            } finally {
-                setHasAttempted(true);
-            }
-        };
-
-        // Only attempt the refresh if we don't currently have a token in memory
-        if (!accessToken) {
-            verifyRefreshToken();
-        } else {
-            setHasAttempted(true);
-        }
-    }, [accessToken, refresh, dispatch]);
-
-    if (isLoading || (!hasAttempted && isUninitialized)) {
-        return <div style={{ padding: '2rem', textAlign: 'center' }}>Restoring secure session...</div>;
+    // While SessionInitializer is verifying the session, block child routes from mounting
+    if (isInitializing) {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    height: '100vh',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: 'var(--text-muted, #71717a)',
+                    fontSize: '14px',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                }}
+            >
+                Restoring secure session...
+            </div>
+        );
     }
 
-    // If we attempted a refresh and still have no token, kick them to login
-    if (!accessToken) {
-        return <Navigate to={'/login'} replace />;
+    // Once initialization finishes, if not authenticated, redirect to login
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Otherwise, render the protected child routes
+    // Authenticated, render protected child routes
     return <Outlet />;
 };

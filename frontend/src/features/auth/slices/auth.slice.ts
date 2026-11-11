@@ -105,6 +105,7 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.currentStep = 'REGISTER';
             state.registeredEmail = null;
+            state.isInitializing = false;
         },
     },
 });
