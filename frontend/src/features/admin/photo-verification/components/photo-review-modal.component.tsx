@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import styles from './photo-review-modal.module.css';
 import type { PhotoVerificationTask } from '../types/photo-verification.types';
 import { PhotoComparison } from './photo-comparison.component';
@@ -11,6 +10,7 @@ import {
     useTakeoverTaskMutation,
 } from '../api/photo-verification.api';
 import { getErrorMessage } from '../../../../shared/utils/error.util';
+import { AdminModal } from '../../../../shared/admin/components/admin-modal.component';
 
 interface PhotoReviewModalProps {
     isOpen: boolean;
@@ -57,30 +57,14 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
     const isLoading = isClaiming || isReleasing || isTakingOver || isApproving || isSubmittingReject;
 
     return (
-        <motion.div
-            className={styles.overlay}
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+        <AdminModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="REVIEW PROFILE PHOTO"
+            size="lg"
+            contentClassName={styles.modal}
         >
-            <motion.div
-                className={styles.modal}
-                onClick={(e) => e.stopPropagation()}
-                initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.97 }}
-                transition={{ type: 'spring', visualDuration: 0.6, bounce: 0.12 }}
-            >
-                <header className={styles.header}>
-                    <h2 className={styles.title}>REVIEW PROFILE PHOTO</h2>
-                    <button className={styles.closeBtn} onClick={onClose}>
-                        &times;
-                    </button>
-                </header>
-
-                <div className={styles.body}>
+            <div className={styles.body}>
                     {task.claimStatus === 'UNCLAIMED' && !isResolved && (
                         <div className={styles.lockBanner}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -215,7 +199,6 @@ export const PhotoReviewModal: React.FC<PhotoReviewModalProps> = ({
                         </button>
                     )}
                 </footer>
-            </motion.div>
-        </motion.div>
+        </AdminModal>
     );
 };
