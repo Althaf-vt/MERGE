@@ -22,7 +22,7 @@ export class LogoutUseCase implements ILogoutUseCase {
             if (payload && payload.userId && payload.sessionId) {
                 await this._sessionService.revokeSession(payload.userId, payload.sessionId);
             }
-        } catch (error) {
+        } catch (error: unknown) {
             this._logger.debug('Refresh token invalid during logout; proceeding with cookie cleanup.');
         }
     }
