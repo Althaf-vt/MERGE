@@ -35,8 +35,8 @@ export const AdminLayout: React.FC = () => {
     const handleLogout = async () => {
         try {
             await logoutApi().unwrap();
-        } catch (error) {
-            console.error('Logout API failed, forcing local logout', error);
+        } catch (error: unknown) {
+            console.error('Logout API failed, forcing local logout', error instanceof Error ? error.message : String(error));
         } finally {
             dispatch(adminLogout());
             navigate('/admin/login', { replace: true });
