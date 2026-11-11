@@ -7,6 +7,7 @@ import type { KycTaskStatus, ClaimStatus, KycEscalationTask } from '../types/kyc
 import { KycReviewModal } from '../components/kyc-review-modal.component';
 import { AdminPageTransition } from '../../../../shared/admin/components/admin-page-transition.component';
 import { AdminTable, type AdminTableColumn } from '../../../../shared/admin/components/admin-table.component';
+import { AdminPagination } from '../../../../shared/admin/components/admin-pagination.component';
 import { ADMIN_ROLES } from '../../../../shared/admin/constants/admin-rbac.constants';
 import { DEFAULT_KYC_STATUS_FILTER, KYC_CLAIM_OPTIONS, KYC_CLAIM_STATUS, KYC_STATUS_OPTIONS, KYC_TASK_STATUS } from '../constants/kyc-escalation.constants';
 import styles from './kyc-escalation.module.css';
@@ -34,7 +35,6 @@ export const KycEscalationPage: React.FC = () => {
 
     const tasks = data?.data || [];
     const total = data?.meta?.total || 0;
-    const totalPages = Math.ceil(total / limit) || 1;
 
     const activeTask = selectedTask ? tasks.find((t) => t.id === selectedTask.id) || selectedTask : null;
 
@@ -208,25 +208,13 @@ export const KycEscalationPage: React.FC = () => {
                 emptyMessage="NO KYC ESCALATION TASKS FOUND."
             />
 
-            {!isLoading && tasks.length > 0 && (
-                <div className={styles.pagination}>
-                    <span>
-                        DISPLAYING {(page - 1) * limit + 1} - {Math.min(page * limit, total)} OF {total}
-                    </span>
-                    <div className={styles.pageControls}>
-                        <button className={styles.actionBtn} disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-                            PREV
-                        </button>
-                        <button
-                            className={styles.actionBtn}
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((p) => p + 1)}
-                        >
-                            NEXT
-                        </button>
-                    </div>
-                </div>
-            )}
+            <AdminPagination
+                page={page}
+                limit={limit}
+                total={total}
+                onPageChange={setPage}
+                isLoading={isLoading}
+            />
 
             <AnimatePresence>
                 {activeTask && (
