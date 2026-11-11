@@ -71,8 +71,9 @@ export class S3StorageService implements IStorageService {
 
       // Generate teh secure URL valid for exactly 30 minutes
       return await getSignedUrl(this._s3Client, command, { expiresIn: expiresInSeconds });
-    } catch (error) {
-      console.error('Failed to generate presigned URL', error);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('Failed to generate presigned URL', message);
       return fullUrl; // Fallback
     }
   }

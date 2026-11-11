@@ -20,6 +20,9 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
 
     async execute(token: string): Promise<AdminRefreshTokenResponse> {
         const payload = this._tokenService.verifyRefreshToken(token);
+        if (!payload) {
+            throw new DomainException(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token");
+        }
 
         // 1. STRICT CHECK: Does the Redis session still exist?
         const hasSession = await this._sessionService.hasValidSession(payload.userId);

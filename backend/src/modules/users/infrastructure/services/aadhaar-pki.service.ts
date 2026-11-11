@@ -31,7 +31,7 @@ export class AadhaarPkiService implements IPkiVerificationService, OnModuleInit 
             this._trustedRootCert = new crypto.X509Certificate(rawCert);
             this._trustedRootCertPem = this._trustedRootCert.toString();
             this._logger.log('UIDAI root certificate loaded and validated successfully.');
-        } catch (error) {
+        } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
             this._logger.error(`Failed to parse UIDAI root certificate: ${message}`);
         }

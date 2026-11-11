@@ -3,6 +3,7 @@ import { useAppDispatch } from '../../../app/hooks';
 import { useCancelSessionMutation, useGenerateSessionMutation } from '../api/handoff.api';
 import { io, type Socket } from 'socket.io-client';
 import { setKycStep } from '../slices/kyc.slice';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './device-selection.module.css';
 import QRCode from 'react-qr-code';
 
@@ -49,8 +50,8 @@ export const DeviceSelection = () => {
                 setSessionData({ id: res.data.sessionId, url: res.data.qrCodeUrl });
                 setMode('QR_WAITING');
             }
-        } catch (error) {
-            console.error('Failed to generate handoff session', error);
+        } catch (error: unknown) {
+            console.error('Failed to generate handoff session', getErrorMessage(error, 'Failed to generate handoff session'));
         }
     };
 

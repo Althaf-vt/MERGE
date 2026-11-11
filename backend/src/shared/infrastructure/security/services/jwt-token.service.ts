@@ -2,8 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as jwt from 'jsonwebtoken';
 import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-service.interface";
-import { DomainException } from "../../../domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../domain/enums/error-code.enum";
 import { EnvConfig } from "../../config/env.config";
 
 @Injectable()
@@ -41,23 +39,23 @@ export class JwtTokenService implements ITokenservice {
         });
     }
 
-    verifyAccessToken(token: string): ITokenPayload {
+    verifyAccessToken(token: string): ITokenPayload | null {
         try {
             return this._jwtService.verify<ITokenPayload>(token, {
                 secret: this._accessSecret,
             });
-        } catch (error) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired access token');
+        } catch {
+            return null;
         }
     }
 
-    verifyRefreshToken(token: string): ITokenPayload {
+    verifyRefreshToken(token: string): ITokenPayload | null {
         try {
             return this._jwtService.verify<ITokenPayload>(token, {
                 secret: this._refreshSecret,
             });
-        } catch (error) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired refresh token');
+        } catch {
+            return null;
         }
     }
 }

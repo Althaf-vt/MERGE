@@ -20,13 +20,8 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
 
         const kyc = user.kycVerification;
 
-        // Trigger the phase 7 domain gate
-        try {
-            kyc.submitVerification(); // Must match the 4 prompts (BLINK, TURN_LEFT, TURN_RIGHT, SMILE)
-        } catch (error: unknown) {
-            const message = error instanceof Error ? error.message : 'Liveness check verification failed.';
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, message);
-        }
+        // Trigger the phase 7 domain gate (must match required prompts: BLINK, TURN_LEFT, TURN_RIGHT, SMILE)
+        kyc.submitVerification();
 
         // If the system auto-approves based on thresholds, update the aggregate
         if (kyc.verificationStatus === VerificationStatus.APPROVED) {

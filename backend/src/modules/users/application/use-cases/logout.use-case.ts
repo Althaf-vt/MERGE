@@ -17,13 +17,14 @@ export class LogoutUseCase implements ILogoutUseCase {
             return;
         }
 
-        try {
-            const payload = this._tokenService.verifyRefreshToken(refreshToken);
-            if (payload && payload.userId && payload.sessionId) {
-                await this._sessionService.revokeSession(payload.userId, payload.sessionId);
-            }
-        } catch (error) {
+        const payload = this._tokenService.verifyRefreshToken(refreshToken);
+        if (!payload) {
             this._logger.debug('Refresh token invalid during logout; proceeding with cookie cleanup.');
+            return;
+        }
+
+        if (payload.userId && payload.sessionId) {
+            await this._sessionService.revokeSession(payload.userId, payload.sessionId);
         }
     }
 }

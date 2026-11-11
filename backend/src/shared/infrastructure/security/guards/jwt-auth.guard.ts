@@ -20,12 +20,12 @@ export class JwtAuthGuard implements CanActivate {
 
         const token = authHeader.split(' ')[1];
         
-        try {
-            const payload = this._tokenService.verifyAccessToken(token);
-            request.user = payload;
-            return true;
-        } catch (error: unknown) {
+        const payload = this._tokenService.verifyAccessToken(token);
+        if (!payload) {
             throw new DomainException(ErrorCode.UNAUTHORIZED, 'Invalid or expired access token.');
         }
+
+        request.user = payload;
+        return true;
     }
 }

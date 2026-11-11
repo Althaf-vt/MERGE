@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import styles from './user-action-modal.module.css';
+import { getErrorMessage } from '../../../../shared/utils/error.util';
 import { 
     useSuspendUserMutation, 
     useUnsuspendUserMutation, 
@@ -50,9 +51,7 @@ export const UserActionModal: React.FC<UserActionModalProps> = ({ type, userId, 
             }
             onClose();
         } catch (err: unknown) {
-            const apiError = err as { data?: { error?: { message?: string }; message?: string } };
-            const message = apiError?.data?.error?.message || apiError?.data?.message || 'Action failed to execute.';
-            setSubmitError(message);
+            setSubmitError(getErrorMessage(err, 'Action failed to execute.'));
         }
     };
 

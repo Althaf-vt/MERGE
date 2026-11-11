@@ -20,8 +20,8 @@ export const TopNav = () => {
     const handleLogout = async () => {
         try {
             await logoutUser().unwrap();
-        } catch (error) {
-            console.error('Logout failed on server:', error);
+        } catch (error: unknown) {
+            console.error('Logout failed on server:', error instanceof Error ? error.message : String(error));
         } finally {
             dispatch(logout());
             dispatch(authApi.util.resetApiState());
