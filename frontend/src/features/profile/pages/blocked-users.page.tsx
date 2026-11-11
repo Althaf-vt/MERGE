@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGetBlockedUsersQuery, useUnblockUserMutation } from '../api/profile.api';
 import { SecurityConfirmationModal } from '../components/security-confirmation-modal.component';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './blocked-users.module.css';
 
 export const BlockedUsersPage: React.FC = () => {
@@ -32,8 +33,8 @@ export const BlockedUsersPage: React.FC = () => {
             await unblockUser(unblockTarget.id).unwrap();
             setUnblockTarget(null);
             // Optional: Dispatch a global success toast here
-        } catch (error) {
-            console.error('Failed to unblock user:', error);
+        } catch (error: unknown) {
+            console.error('Failed to unblock user:', getErrorMessage(error, 'Failed to unblock user.'));
         }
     };
 
