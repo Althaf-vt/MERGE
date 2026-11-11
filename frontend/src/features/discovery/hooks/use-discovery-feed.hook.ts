@@ -6,28 +6,7 @@ import {
     useSendPriorityIntroMutation,
     useAddToPrivateListMutation,
 } from "../../../shared/api/connections.api";
-
-function extractErrorMessage(err: unknown, fallback: string): string {
-    if (typeof err === 'object' && err !== null) {
-        const errorObj = err as Record<string, unknown>;
-        if (typeof errorObj.data === 'object' && errorObj.data !== null) {
-            const dataObj = errorObj.data as Record<string, unknown>;
-            if (typeof dataObj.error === 'object' && dataObj.error !== null) {
-                const subError = dataObj.error as Record<string, unknown>;
-                if (typeof subError.message === 'string') {
-                    return subError.message;
-                }
-            }
-            if (typeof dataObj.message === 'string') {
-                return dataObj.message;
-            }
-        }
-        if (typeof errorObj.message === 'string') {
-            return errorObj.message;
-        }
-    }
-    return fallback;
-}
+import { getErrorMessage } from "../../../shared/utils/error.util";
 
 export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
     const [page, setPage] = useState<number>(1);
@@ -155,7 +134,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             await passCandidate({ targetUserId: activeProfile.id }).unwrap();
             _advanceFeed();
         } catch (err: unknown) {
-            const message = extractErrorMessage(err, 'Failed to pass profile.');
+            const message = getErrorMessage(err, 'Failed to pass profile.');
             console.error('Failed to pass profile:', err);
             setActionError(message);
             throw err;
@@ -169,7 +148,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             await addToPrivateList({ targetUserId: activeProfile.id, listType: 'SHORTLIST' }).unwrap();
             _advanceFeed();
         } catch (err: unknown) {
-            const message = extractErrorMessage(err, 'Failed to add profile to shortlist.');
+            const message = getErrorMessage(err, 'Failed to add profile to shortlist.');
             console.error('Failed to shortlist profile:', err);
             setActionError(message);
             throw err;
@@ -183,7 +162,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             await addToPrivateList({ targetUserId: activeProfile.id, listType: 'REVIEW_LATER' }).unwrap();
             _advanceFeed();
         } catch (err: unknown) {
-            const message = extractErrorMessage(err, 'Failed to save profile for review later.');
+            const message = getErrorMessage(err, 'Failed to save profile for review later.');
             console.error('Failed to save profile for review later:', err);
             setActionError(message);
             throw err;
@@ -197,7 +176,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             await sendConnectionRequest({ targetUserId: activeProfile.id }).unwrap();
             _advanceFeed();
         } catch (err: unknown) {
-            const message = extractErrorMessage(err, 'Failed to send connection request.');
+            const message = getErrorMessage(err, 'Failed to send connection request.');
             console.error('Failed to send connection request:', err);
             setActionError(message);
             throw err;
@@ -214,7 +193,7 @@ export const useDiscoveryFeed = (queryParams: GetRecommendationsQuery) => {
             }).unwrap();
             _advanceFeed();
         } catch (err: unknown) {
-            const messageText = extractErrorMessage(err, 'Failed to send priority introduction.');
+            const messageText = getErrorMessage(err, 'Failed to send priority introduction.');
             console.error('Failed to send priority intro:', err);
             setActionError(messageText);
             throw err;
