@@ -8,6 +8,11 @@ export const SCENE_PARTNER_POLICY = {
     MAX_SCENARIO_PROMPT_LENGTH: 500,
 } as const;
 
+export const SCENE_PARTNER_SAFETY = {
+    // Prohibited severe profanity, hate speech, and explicit sexual solicitations (Layer 1 safety)
+    PROHIBITED_CONTENT_REGEX: /\b(nude|nudes|horny|slut|bitch|dick|pussy|fuck|asshole|bastard|blowjob|porn|penis|vagina|whore)\b/i,
+} as const;
+
 export const SCENE_PARTNER_ERROR_MESSAGES = {
     USER_ID_REQUIRED: 'User ID is required to operate a scene session.',
     SESSION_NOT_FOUND: 'Scene session not found.',
