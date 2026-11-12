@@ -34,19 +34,19 @@ export class CoachNoteVO {
         }
 
         if (!props.observation || props.observation.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Coach observation cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.COACH_OBSERVATION_REQUIRED);
         }
 
         if (!props.tone || props.tone.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Coach tone assessment cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.COACH_TONE_REQUIRED);
         }
 
         if (!props.pacing || props.pacing.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Coach pacing assessment cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.COACH_PACING_REQUIRED);
         }
 
         if (!props.nextTip || props.nextTip.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Coach next tip cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.COACH_NEXT_TIP_REQUIRED);
         }
     }
 
