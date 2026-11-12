@@ -73,7 +73,7 @@ export class Scenario {
 
     private _validateInvariants(props: ScenarioProps): void {
         if (!props.id || props.id.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Scenario ID is required.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_ID_REQUIRED);
         }
 
         const trimmedTitle = props.title?.trim() ?? '';
@@ -83,7 +83,10 @@ export class Scenario {
         ) {
             throw new DomainException(
                 ErrorCode.VALIDATION_FAILED,
-                `Scenario title must be between ${SCENE_PARTNER_POLICY.MIN_SCENARIO_TITLE_LENGTH} and ${SCENE_PARTNER_POLICY.MAX_SCENARIO_TITLE_LENGTH} characters.`
+                SCENE_PARTNER_ERROR_MESSAGES.INVALID_SCENARIO_TITLE_LENGTH(
+                    SCENE_PARTNER_POLICY.MIN_SCENARIO_TITLE_LENGTH,
+                    SCENE_PARTNER_POLICY.MAX_SCENARIO_TITLE_LENGTH
+                )
             );
         }
 
@@ -94,12 +97,15 @@ export class Scenario {
         ) {
             throw new DomainException(
                 ErrorCode.VALIDATION_FAILED,
-                `Scenario prompt context must be between ${SCENE_PARTNER_POLICY.MIN_SCENARIO_PROMPT_LENGTH} and ${SCENE_PARTNER_POLICY.MAX_SCENARIO_PROMPT_LENGTH} characters.`
+                SCENE_PARTNER_ERROR_MESSAGES.INVALID_SCENARIO_PROMPT_LENGTH(
+                    SCENE_PARTNER_POLICY.MIN_SCENARIO_PROMPT_LENGTH,
+                    SCENE_PARTNER_POLICY.MAX_SCENARIO_PROMPT_LENGTH
+                )
             );
         }
 
         if (props.isCustom && (!props.creatorUserId || props.creatorUserId.trim().length === 0)) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Custom scenario requires a creator user ID.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.CREATOR_USER_ID_REQUIRED);
         }
 
         // Layer 1 Content Safety Guardrail: Prevent abusive, obscene, or explicitly sexual custom scenarios
