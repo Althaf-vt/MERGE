@@ -1,12 +1,6 @@
-import { ScenarioCategory, SceneSpeakerRole, SimulationType } from "../enums/scene-partner.enums";
+import { ScenarioCategory, SimulationType } from "../enums/scene-partner.enums";
 import { CoachNoteProps } from "../value-objects/coach-note.vo";
-
-export interface SceneTurnItem {
-    role: SceneSpeakerRole;
-    content: string;
-    coachNote?: CoachNoteProps | null;
-    timestamp: Date;
-}
+import { SceneTurnSnapshot } from "./scene-session.types";
 
 export interface SceneSimulationContext {
     scenarioTitle: string;
@@ -49,6 +43,6 @@ export const SCENE_PARTNER_AI_SERVICE = 'SCENE_PARTNER_AI_SERVICE';
 
 export interface IScenePartnerAiService {
     generateInitialGreeting(context: SceneSimulationContext): Promise<GenerateInitialGreetingResult>;
-    generateTurn(context: SceneSimulationContext, userMessage: string, history: SceneTurnItem[]): Promise<GenerateTurnResult>;
-    generateSessionSummary(context: SceneSimulationContext, history: SceneTurnItem[]): Promise<SceneSessionSummaryData>;
+    generateTurn(context: SceneSimulationContext, userMessage: string, transcript: SceneTurnSnapshot[]): Promise<GenerateTurnResult>;
+    generateSessionSummary(context: SceneSimulationContext, transcript: SceneTurnSnapshot[]): Promise<SceneSessionSummaryData>;
 }
