@@ -23,7 +23,6 @@ export interface ScenePartnerHomeProps {
     onViewHistory: () => void;
 }
 
-// 10 scenarios mapped to Figma UI references while ensuring 100% backend compatibility
 export interface FigmaScenarioItem {
     id: string;
     title: string;
@@ -72,26 +71,19 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
 
     const activeMatches = connectionsResponse?.data ?? [];
 
-    // Selected partner state (defaults to Generic Alex)
     const [selectedPartner, setSelectedPartner] = useState<SelectedPartnerState>({
         type: 'GENERIC',
         name: 'Generic Practice Partner',
     });
 
-    // Selected Figma Scenario state (default: First Message)
     const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>('first-message');
-
-    // Selected improvement skill focus (default: First Impressions)
     const [selectedSkill, setSelectedSkill] = useState<string>('First Impressions');
 
-    // Resolve active backend scenario ID
     const activeFigmaScenario = FIGMA_SCENARIO_ITEMS.find((s) => s.id === selectedScenarioKey) || FIGMA_SCENARIO_ITEMS[0];
 
     const resolveBackendScenarioId = (): string => {
-        // First check if backend has exact matching ID
         const directMatch = scenarios.find((s) => s.id === activeFigmaScenario.backendFallbackId);
         if (directMatch) return directMatch.id;
-        // Fallback to first available backend scenario
         return scenarios[0]?.id || 'scenario-first-message';
     };
 
@@ -120,7 +112,6 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
         });
     };
 
-    // Quick-start recommendations
     const handleQuickStartBreakIce = () => {
         setSelectedScenarioKey('first-message');
         setSelectedSkill('First Impressions');
@@ -136,7 +127,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
             {/* Header */}
             <header className={styles.header}>
                 <div className={styles.titleRow}>
-                    <svg className={styles.sparkleIcon} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <svg className={styles.sparkleIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EAB308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
                         <path d="M5 3v4"/>
                         <path d="M19 17v4"/>
@@ -145,7 +136,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     </svg>
                     <h1 className={styles.title}>Scene Partner</h1>
                     <span className={styles.premiumBadge}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                             <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
                         </svg>
                         Premium
@@ -178,7 +169,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         }}
                     >
                         <div className={styles.genericIconWrapper}>
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                             </svg>
                         </div>
@@ -212,7 +203,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                                     >
                                         {isSelected && (
                                             <div className={styles.selectedCheckmarkBadge} aria-label="Selected">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                     <polyline points="20 6 9 17 4 12" />
                                                 </svg>
                                             </div>
@@ -228,19 +219,19 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                                                 )}
                                             </div>
                                             <div className={`${styles.photoQuadrant} ${styles.photoQuadrantTint1}`}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                     <circle cx="12" cy="7" r="4" />
                                                 </svg>
                                             </div>
                                             <div className={`${styles.photoQuadrant} ${styles.photoQuadrantTint2}`}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                     <circle cx="12" cy="7" r="4" />
                                                 </svg>
                                             </div>
                                             <div className={`${styles.photoQuadrant} ${styles.photoQuadrantTint3}`}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                     <circle cx="12" cy="7" r="4" />
                                                 </svg>
@@ -248,22 +239,18 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                                         </div>
 
                                         <div className={styles.matchMetaBlock}>
-                                            <div className={styles.matchNameRow}>
-                                                <span className={styles.matchName}>{match.partnerName}</span>
-                                            </div>
+                                            <span className={styles.matchName}>{match.partnerName}</span>
                                             <div className={styles.compatibilityPill}>
-                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                                                <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                                 </svg>
-                                                <span>92% Compatibility</span>
+                                                <span>92% Match</span>
                                             </div>
-                                            <span className={styles.identityTag}>Connected Match</span>
 
-                                            {/* Insights Chips */}
                                             <div className={styles.insightsRow}>
                                                 <span className={styles.insightsHeader}>INSIGHTS</span>
                                                 <div className={styles.insightsTags}>
-                                                    <span className={styles.insightChip}>Warm & Friendly</span>
+                                                    <span className={styles.insightChip}>Friendly</span>
                                                     <span className={styles.insightChip}>Thoughtful</span>
                                                 </div>
                                             </div>
@@ -291,7 +278,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             }}
                         >
                             <div className={styles.viewAllIconCircle}>
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
                                 </svg>
@@ -334,7 +321,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             className={styles.customScenarioTextarea}
                             placeholder="Describe the conversation you want to practice..."
                             disabled
-                            rows={3}
+                            rows={2}
                             aria-label="Custom Scenario"
                         />
                     </div>
@@ -396,14 +383,14 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                 <div className={styles.readyBar} aria-label="Session configuration summary">
                     <span className={styles.readyLabel}>Ready:</span>
                     <span className={styles.readyPill}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                             <circle cx="12" cy="7" r="4" />
                         </svg>
                         <span>{selectedPartner.name}</span>
                     </span>
                     <span className={styles.readyPill}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="10" />
                             <circle cx="12" cy="12" r="6" />
                             <circle cx="12" cy="12" r="2" />
@@ -411,7 +398,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         <span>{selectedSkill}</span>
                     </span>
                     <span className={styles.readyPill}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                             <line x1="12" x2="12" y1="19" y2="22" />
@@ -419,7 +406,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         <span>Coach: ON</span>
                     </span>
                     <span className={styles.readyPill}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
@@ -436,7 +423,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             className={styles.recommendedBtn}
                             onClick={handleQuickStartBreakIce}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
                             </svg>
                             <span>Practice Breaking The Ice With {selectedPartner.name.split(' ')[0]}</span>
@@ -446,7 +433,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             className={styles.recommendedBtn}
                             onClick={handleQuickStartFollowUp}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="10" />
                                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                                 <line x1="12" x2="12.01" y1="17" y2="17" />
@@ -471,7 +458,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             </>
                         ) : (
                             <>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                                 </svg>
                                 <span>Start Practice Session</span>
