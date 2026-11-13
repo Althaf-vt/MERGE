@@ -71,8 +71,6 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
         .slice(0, 2);
 
     const firstUserTurn = session.transcript.find((t) => t.role === 'USER');
-    const firstCoachTip = session.transcript.find((t) => t.coachNote)?.coachNote?.nextTip ||
-        'Try asking a follow-up question referencing what they just shared to keep conversation flowing naturally.';
 
     const handleSaveInsight = () => {
         setSavedInsight(true);
@@ -194,20 +192,28 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
                                 ))
                             ) : (
                                 <div className={styles.replayBox}>
-                                    <div className={styles.dialogueRow}>
-                                        <span className={styles.dialogueSpeaker}>You:</span>
-                                        <span className={styles.dialogueText}>&quot;{firstUserTurn?.content || 'Hi there!'} &quot;</span>
-                                    </div>
-                                    <div className={styles.replayCoachNote}>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <path d="M12 16v-4"/>
-                                            <path d="M12 8h.01"/>
-                                        </svg>
-                                        <span>
-                                            <strong>Coach Insight:</strong> Great initial greeting. In your next rehearsal, reference a specific profile interest early to build instant common ground.
-                                        </span>
-                                    </div>
+                                    {firstUserTurn ? (
+                                        <>
+                                            <div className={styles.dialogueRow}>
+                                                <span className={styles.dialogueSpeaker}>You:</span>
+                                                <span className={styles.dialogueText}>&quot;{firstUserTurn.content}&quot;</span>
+                                            </div>
+                                            <div className={styles.replayCoachNote}>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                    <path d="M12 16v-4"/>
+                                                    <path d="M12 8h.01"/>
+                                                </svg>
+                                                <span>
+                                                    No coaching interventions were triggered during this turn.
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <p className={styles.emptyStateNotice}>
+                                            No messages exchanged in this rehearsal.
+                                        </p>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -235,26 +241,9 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
                                         </li>
                                     ))
                                 ) : (
-                                    <>
-                                        <li className={styles.bulletItem}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                            <span>Asked open-ended questions</span>
-                                        </li>
-                                        <li className={styles.bulletItem}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                            <span>Referenced shared interests</span>
-                                        </li>
-                                        <li className={styles.bulletItem}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                            <span>Maintained natural engagement</span>
-                                        </li>
-                                    </>
+                                    <li className={styles.bulletItem}>
+                                        <span className={styles.emptyStateNotice}>No specific strengths recorded for this session.</span>
+                                    </li>
                                 )}
                             </ul>
                         </section>
@@ -280,213 +269,35 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
                                         </li>
                                     ))
                                 ) : (
-                                    <>
-                                        <li className={styles.bulletItem}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true">
-                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                            </svg>
-                                            <span>Some responses were short or passive</span>
-                                        </li>
-                                        <li className={styles.bulletItem}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true">
-                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                            </svg>
-                                            <span>Missed opportunities for follow-up questions</span>
-                                        </li>
-                                    </>
+                                    <li className={styles.bulletItem}>
+                                        <span className={styles.emptyStateNotice}>No improvement areas flagged.</span>
+                                    </li>
                                 )}
                             </ul>
                         </section>
                     </div>
 
-                    {/* 4. Key Moments Timeline */}
-                    <section className={styles.timelineCard} aria-labelledby="timeline-heading">
-                        <h2 id="timeline-heading" className={styles.cardSectionTitle}>Key Moments</h2>
-                        <div className={styles.timelineList}>
-                            <div className={styles.timelineItem}>
-                                <div className={`${styles.timelineNode} ${styles.timelineNodePurple}`} />
-                                <div className={styles.timelineContent}>
-                                    <h3 className={styles.timelineTitle}>Strong Opening Message</h3>
-                                    <p className={styles.timelineDesc}>
-                                        You initiated with an engaging hook, establishing a welcoming and playful tone right away.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className={styles.timelineItem}>
-                                <div className={`${styles.timelineNode} ${styles.timelineNodePurple}`} />
-                                <div className={styles.timelineContent}>
-                                    <h3 className={styles.timelineTitle}>Good Follow-Up</h3>
-                                    <p className={styles.timelineDesc}>
-                                        You expanded the discussion naturally, acknowledging their answer before contributing your own perspective.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className={styles.timelineItem}>
-                                <div className={`${styles.timelineNode} ${styles.timelineNodeGray}`} />
-                                <div className={styles.timelineContent}>
-                                    <h3 className={styles.timelineTitle}>Missed Opportunity</h3>
-                                    <p className={styles.timelineDesc}>
-                                        A topic switch occurred a bit too quickly. Linger one turn longer on shared interests before pivoting.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* 5. Alternative Responses Card */}
-                    <section className={styles.alternativeCard} aria-labelledby="alt-heading">
-                        <h2 id="alt-heading" className={styles.cardSectionTitle}>Alternative Responses</h2>
-                        <div className={styles.altComparisonBox}>
-                            <div className={styles.altUserResponseBox}>
-                                <span className={styles.altLabel}>YOUR RESPONSE</span>
-                                <p className={styles.altUserText}>&quot;{firstUserTurn?.content || 'I like traveling.'}&quot;</p>
-                            </div>
-
-                            <div className={styles.altSwapIconRow}>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                    {/* 4. Coach's Notes Card */}
+                    <section className={styles.coachNotesCard} aria-labelledby="notes-heading">
+                        <div className={styles.coachNotesHeader}>
+                            <h2 id="notes-heading" className={styles.cardSectionTitle}>Coach&apos;s Notes</h2>
+                            <button
+                                type="button"
+                                className={styles.saveInsightBtn}
+                                onClick={handleSaveInsight}
+                            >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill={savedInsight ? '#7C3AED' : 'none'} stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                                 </svg>
-                            </div>
-
-                            <div className={styles.altSuggestedBox}>
-                                <span className={styles.altSuggestedLabel}>SUGGESTED ALTERNATIVE</span>
-                                <p className={styles.altSuggestedText}>&quot;{firstCoachTip}&quot;</p>
-                                <div className={styles.altWhyWorks}>
-                                    <strong>Why This Works Better:</strong> Turns a simple statement into a bridge. Sharing a vivid detail followed by an open question makes it effortless for your match to reply.
-                                </div>
-                            </div>
+                                <span>{savedInsight ? 'Saved!' : 'Save Insight'}</span>
+                            </button>
                         </div>
+                        <p className={styles.coachNotesText}>
+                            {summary.coachingNotes || 'Great effort in completing this rehearsal session.'}
+                        </p>
                     </section>
 
-                    {/* 6. Top Coaching Takeaways */}
-                    <section className={styles.takeawaysCard} aria-labelledby="takeaways-heading">
-                        <h2 id="takeaways-heading" className={styles.cardSectionTitle}>Top Coaching Takeaways</h2>
-                        <div className={styles.takeawaysList}>
-                            <div className={styles.takeawayItem}>
-                                <div className={styles.takeawayBadge}>1</div>
-                                <div className={styles.takeawayTextCol}>
-                                    <strong>Linger on &apos;Hooks&apos;:</strong> When your match mentions a hobby, place, or feeling, ask at least one follow-up before changing the subject.
-                                </div>
-                            </div>
-                            <div className={styles.takeawayItem}>
-                                <div className={styles.takeawayBadge}>2</div>
-                                <div className={styles.takeawayTextCol}>
-                                    <strong>Show, Don&apos;t Just Tell:</strong> Instead of saying &quot;I like that too,&quot; share a concise 5-second detail about your own real-life experience.
-                                </div>
-                            </div>
-                            <div className={styles.takeawayItem}>
-                                <div className={styles.takeawayBadge}>3</div>
-                                <div className={styles.takeawayTextCol}>
-                                    <strong>Match Energy & Pacing:</strong> Keep your message length and enthusiasm calibrated to your match&apos;s tone to avoid one-sided dynamics.
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* 7. Communication Style & Coach's Notes */}
-                    <div className={styles.twoColumnGrid}>
-                        {/* Style Card */}
-                        <section className={styles.styleCard} aria-labelledby="style-heading">
-                            <h2 id="style-heading" className={styles.cardSectionTitle}>Your Communication Style</h2>
-                            <div className={styles.styleTagsRow}>
-                                <span className={styles.styleTag}>Curious</span>
-                                <span className={styles.styleTag}>Friendly</span>
-                                <span className={styles.styleTag}>Thoughtful</span>
-                                <span className={styles.styleTag}>Reserved</span>
-                            </div>
-                            <p className={styles.styleDescText}>
-                                You tend to ask thoughtful questions and maintain a relaxed, low-pressure conversation pace.
-                            </p>
-                        </section>
-
-                        {/* Coach's Notes Card */}
-                        <section className={styles.coachNotesCard} aria-labelledby="notes-heading">
-                            <div className={styles.coachNotesHeader}>
-                                <h2 id="notes-heading" className={styles.cardSectionTitle}>Coach&apos;s Notes</h2>
-                                <button
-                                    type="button"
-                                    className={styles.saveInsightBtn}
-                                    onClick={handleSaveInsight}
-                                >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill={savedInsight ? '#7C3AED' : 'none'} stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
-                                    <span>{savedInsight ? 'Saved!' : 'Save Insight'}</span>
-                                </button>
-                            </div>
-                            <p className={styles.coachNotesText}>
-                                {summary.coachingNotes || 'Great effort in completing this scenario. Focus on maintaining momentum by pairing every personal share with an open question.'}
-                            </p>
-                        </section>
-                    </div>
-
-                    {/* 8. Recommended Next Sessions */}
-                    <section className={styles.recommendationsCard} aria-labelledby="next-heading">
-                        <h2 id="next-heading" className={styles.cardSectionTitle}>Recommended Next Sessions</h2>
-                        <div className={styles.nextScenariosGrid}>
-                            <div
-                                className={styles.nextScenarioCard}
-                                onClick={() => {
-                                    onClose();
-                                    onTryNewScenario?.();
-                                }}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <div className={styles.nextScenarioIcon}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="16" y1="2" x2="16" y2="6"/>
-                                        <line x1="8" y1="2" x2="8" y2="6"/>
-                                        <line x1="3" y1="10" x2="21" y2="10"/>
-                                    </svg>
-                                </div>
-                                <h3 className={styles.nextScenarioTitle}>Planning A First Date</h3>
-                                <p className={styles.nextScenarioDesc}>Practice logistics and finding mutual interests.</p>
-                            </div>
-
-                            <div
-                                className={styles.nextScenarioCard}
-                                onClick={() => {
-                                    onClose();
-                                    onTryNewScenario?.();
-                                }}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <div className={styles.nextScenarioIcon}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                    </svg>
-                                </div>
-                                <h3 className={styles.nextScenarioTitle}>Relationship Goals</h3>
-                                <p className={styles.nextScenarioDesc}>Navigate discussing long-term expectations.</p>
-                            </div>
-
-                            <div
-                                className={styles.nextScenarioCard}
-                                onClick={() => {
-                                    onClose();
-                                    onTryNewScenario?.();
-                                }}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <div className={styles.nextScenarioIcon}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                                    </svg>
-                                </div>
-                                <h3 className={styles.nextScenarioTitle}>Setting Boundaries</h3>
-                                <p className={styles.nextScenarioDesc}>Communicate personal limits respectfully.</p>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* 9. Action Buttons */}
+                    {/* 5. Action Buttons */}
                     <div className={styles.actionsBar}>
                         <button
                             type="button"
