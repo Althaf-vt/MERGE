@@ -41,6 +41,9 @@ export const TopNav = () => {
                         <Link to="/connections" className={styles.logoLink}>
                             <span className={styles.navLink}>Connections</span>
                         </Link>
+                        <Link to="/scene-partner" className={styles.logoLink}>
+                            <span className={styles.navLink}>Practice</span>
+                        </Link>
                     </>
                 )}
                 <Link to='/profile/edit' className={styles.logoLink}>
