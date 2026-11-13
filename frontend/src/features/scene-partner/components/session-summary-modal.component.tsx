@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { SceneSessionDto } from '../types/scene-partner.types';
+import { toast } from '../../../shared/utils/toast.util';
 import styles from './session-summary-modal.module.css';
 
 export interface SessionSummaryModalProps {
@@ -75,6 +76,7 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
 
     const handleSaveInsight = () => {
         setSavedInsight(true);
+        toast.success('Insights saved to your profile.');
         setTimeout(() => setSavedInsight(false), 2500);
     };
 
