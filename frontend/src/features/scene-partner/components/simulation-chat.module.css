@@ -1,223 +1,615 @@
-.chatContainer {
+.simulationLayout {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    gap: 1.5rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    box-sizing: border-box;
+    min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 900px) {
+    .simulationLayout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Left Sidebar (Partner Context, Scenario & Coaching Panel)
+   ========================================================================== */
+
+.sidebar {
     display: flex;
     flex-direction: column;
-    height: 75vh;
-    min-height: 550px;
-    max-height: 850px;
-    background: #ffffff;
-    border-radius: 20px;
-    border: 1px solid #f3f4f6;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #f3f4f6;
-    background: #ffffff;
     gap: 1rem;
-    flex-wrap: wrap;
-    z-index: 5;
 }
 
-.headerLeft {
+.sidebarCard {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.15rem;
+    box-sizing: border-box;
+}
+
+/* Partner Profile Card */
+.partnerProfileHeader {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
 }
 
-.title {
-    font-size: 1.05rem;
+.partnerAvatarRing {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, #7C3AED, #A78BFA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.partnerAvatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #4B5563;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.partnerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.partnerName {
+    margin: 0;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #111827;
+}
+
+.compatibilityBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #F3E8FF;
+    color: #6D28D9;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.interestsSection {
+    border-top: 1px solid #F3F4F6;
+    padding-top: 0.65rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sidebarSectionTitle {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #9CA3AF;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.interestsTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.interestTag {
+    font-size: 0.75rem;
+    background: #F3F4F6;
+    color: #4B5563;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Current Scenario Card */
+.cardHeaderRow {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #6B7280;
+    margin-bottom: 0.45rem;
+}
+
+.scenarioCardTitle {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.scenarioCardDesc {
+    font-size: 0.8rem;
+    color: #4B5563;
+    line-height: 1.4;
+    margin: 0 0 0.65rem 0;
+}
+
+.difficultyPill {
+    display: inline-block;
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.65rem;
+}
+
+.scenarioCardNote {
+    font-size: 0.75rem;
+    color: #6B7280;
+    line-height: 1.35;
     margin: 0;
 }
 
-.badge {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    background: rgba(109, 40, 217, 0.08);
-    color: #6D28D9;
-}
-
-.typeBadge {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    background: #f3f4f6;
-    color: #4b5563;
-}
-
-.headerActions {
+/* Active Coaching Toggle Card */
+.activeCoachingRow {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+
+.coachingIconBox {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: #EDE9FE;
+    color: #7C3AED;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activeCoachingTexts {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.65rem;
+    flex-grow: 1;
+}
+
+.activeCoachingTitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.activeCoachingSubtitle {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.toggleSwitchLocked {
+    width: 36px;
+    height: 20px;
+    background: #7C3AED;
+    border-radius: 9999px;
+    padding: 2px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.toggleKnob {
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Coaching Insights Card */
+.insightsHeaderRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.65rem;
+}
+
+.flowBadge {
+    background: #EDE9FE;
+    color: #6D28D9;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.coachingTipsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
 }
 
-.timerPill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.65rem;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    font-weight: 600;
+.coachingTipItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: 0.8rem;
     color: #374151;
-    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
 }
 
-.actionButton {
+.coachingTipItem svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Session Controls */
+.sidebarActionsBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.actionRowGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.sidebarActionBtn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    justify-content: center;
+    gap: 0.3rem;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
     border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
+    padding: 0.55rem 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
     color: #374151;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
-.actionButton:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #d1d5db;
+.sidebarActionBtn:hover:not(:disabled) {
+    border-color: #D1D5DB;
+    background: #F9FAFB;
 }
 
-.endButton {
+.sidebarActionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.savedNotice {
+    font-size: 0.75rem;
+    color: #059669;
+    text-align: center;
+    font-weight: 600;
+}
+
+.endSessionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    background: #FFFFFF;
+    border: 1.5px solid #F87171;
+    color: #DC2626;
+    border-radius: 8px;
+    padding: 0.65rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+}
+
+.endSessionBtn:hover:not(:disabled) {
+    background: #FEF2F2;
+    border-color: #DC2626;
+}
+
+.endSessionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Right Main Chat Pane
+   ========================================================================== */
+
+.chatPane {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 100%;
+    min-height: 580px;
+    box-sizing: border-box;
+}
+
+/* Chat Header */
+.chatHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.15rem 1.5rem;
+    border-bottom: 1.5px solid #F3F4F6;
+    background: #FFFFFF;
+}
+
+.backLink {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    border-radius: 8px;
-    border: 1px solid #fecaca;
-    background: #ffffff;
-    color: #dc2626;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 0.82rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    padding: 0;
+    width: fit-content;
+    transition: color 0.15s ease;
 }
 
-.endButton:hover:not(:disabled) {
-    background: #fef2f2;
+.backLink:hover {
+    color: #111827;
 }
 
-.messagesList {
+.roleplayTitleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.roleplayTitle {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.simulationActiveBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #059669;
+    letter-spacing: 0.04em;
+}
+
+.activeGreenDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    display: inline-block;
+}
+
+/* Messages Stream */
+.messagesStream {
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    background: #fafafa;
+    background: #FAFAFA;
 }
 
-.introBox {
-    background: #f3f4f6;
-    border-radius: 12px;
-    padding: 0.875rem 1.25rem;
-    text-align: center;
-    font-size: 0.8125rem;
-    color: #6b7280;
-    max-width: 520px;
-    margin: 0 auto 0.5rem auto;
-    line-height: 1.45;
+.scenarioDividerPill {
+    align-self: center;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    color: #4B5563;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    margin-bottom: 0.5rem;
 }
 
-.messageRowUser {
+.userRow {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    align-self: flex-end;
-    max-width: 75%;
+    justify-content: flex-end;
+    width: 100%;
 }
 
-.bubbleUser {
+.userBubble {
     background: #6D28D9;
-    color: #ffffff;
-    padding: 0.75rem 1rem;
-    border-radius: 18px 18px 4px 18px;
-    font-size: 0.9375rem;
-    line-height: 1.5;
-    word-break: break-word;
-    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.2);
+    color: #FFFFFF;
+    border-radius: 16px 16px 4px 16px;
+    padding: 0.85rem 1.15rem;
+    max-width: 72%;
+    box-shadow: 0 1px 3px rgba(109, 40, 217, 0.15);
 }
 
-.messageRowSim {
+.partnerRow {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-self: flex-start;
-    max-width: 80%;
+    align-items: flex-end;
+    gap: 0.65rem;
+    width: 100%;
 }
 
-.simContentWrapper {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.625rem;
-}
-
-.avatar {
+.chatPartnerAvatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #ede9fe;
-    color: #6D28D9;
+    background: #4B5563;
+    color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 700;
     flex-shrink: 0;
+    margin-bottom: 2px;
 }
 
-.bubbleSim {
-    background: #ffffff;
+.partnerBubble {
+    background: #F3F4F6;
     color: #111827;
-    padding: 0.75rem 1rem;
-    border-radius: 18px 18px 18px 4px;
-    border: 1px solid #e5e7eb;
-    font-size: 0.9375rem;
-    line-height: 1.5;
+    border-radius: 16px 16px 16px 4px;
+    padding: 0.85rem 1.15rem;
+    max-width: 72%;
+}
+
+.bubbleText {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.45;
     word-break: break-word;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.timestamp {
-    font-size: 0.7rem;
-    color: #9ca3af;
-    margin-top: 0.25rem;
-    padding: 0 0.25rem;
-}
+/* ==========================================================================
+   Inline Coach Feedback & Suggested Response
+   ========================================================================== */
 
-.typingIndicator {
+.inlineCoachContainer {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 0.5rem 0;
+    width: 100%;
+}
+
+/* Inline Praise Pill */
+.inlinePraisePill {
+    display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.625rem 1rem;
-    background: #ffffff;
-    border-radius: 16px;
-    border: 1px solid #e5e7eb;
-    align-self: flex-start;
+    background: #FFFFFF;
+    border: 1.5px solid #C4B5FD;
+    color: #6D28D9;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+}
+
+/* Inline Coach Intervention Card */
+.coachInterventionCard {
+    width: 100%;
+    max-width: 540px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+    box-sizing: border-box;
+}
+
+.coachInterventionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.35rem;
+}
+
+.coachInterventionTitle {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.coachInterventionBody {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #4B5563;
+    line-height: 1.4;
+}
+
+/* Inline Suggested Response Card */
+.suggestedResponseCard {
+    width: 100%;
+    max-width: 540px;
+    background: #FAF5FF;
+    border: 1.5px solid #DDD6FE;
+    border-radius: 10px;
+    padding: 0.95rem 1.15rem;
+    box-sizing: border-box;
+}
+
+.suggestedResponseHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+}
+
+.suggestedResponseTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.suggestedResponseTitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #7C3AED;
+}
+
+.suggestedResponseQuote {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: #1F2937;
+    line-height: 1.4;
+}
+
+.suggestedResponseWhy {
+    font-size: 0.75rem;
+    color: #6B7280;
+    line-height: 1.35;
+    border-top: 1px solid #EDE9FE;
+    padding-top: 0.45rem;
+}
+
+/* Typing Indicator */
+.typingBubble {
+    background: #F3F4F6;
+    border-radius: 16px 16px 16px 4px;
+    padding: 0.75rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .typingDot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #a78bfa;
+    background: #9CA3AF;
     animation: bounce 1.2s infinite ease-in-out;
 }
 
@@ -234,61 +626,64 @@
         transform: translateY(0);
     }
     40% {
-        transform: translateY(-5px);
+        transform: translateY(-4px);
     }
 }
 
-.inputFooter {
+/* ==========================================================================
+   Bottom Input Bar
+   ========================================================================== */
+
+.inputArea {
     padding: 1rem 1.5rem;
-    border-top: 1px solid #f3f4f6;
-    background: #ffffff;
+    background: #FFFFFF;
+    border-top: 1.5px solid #F3F4F6;
 }
 
-.pausedBanner {
+.inputBar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    color: #92400e;
-}
-
-.inputRow {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.75rem;
-}
-
-.textarea {
-    flex: 1;
-    min-height: 44px;
-    max-height: 120px;
-    padding: 0.625rem 0.875rem;
-    font-size: 0.9375rem;
-    font-family: inherit;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    outline: none;
-    resize: none;
-    line-height: 1.4;
+    gap: 0.65rem;
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 9999px;
+    padding: 0.35rem 0.5rem 0.35rem 1.25rem;
     transition: border-color 0.15s ease;
 }
 
-.textarea:focus {
-    border-color: #6D28D9;
-    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+.inputBar:focus-within {
+    border-color: #7C3AED;
+    background: #FFFFFF;
+}
+
+.chatTextarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.92rem;
+    color: #111827;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    line-height: 1.35;
+    max-height: 80px;
+}
+
+.chatTextarea::placeholder {
+    color: #9CA3AF;
+}
+
+.chatTextarea:disabled {
+    cursor: not-allowed;
 }
 
 .sendButton {
-    height: 44px;
-    width: 44px;
-    background: #6D28D9;
-    color: #ffffff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #7C3AED;
+    color: #FFFFFF;
     border: none;
-    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -298,24 +693,13 @@
 }
 
 .sendButton:hover:not(:disabled) {
-    background: #5b21b6;
-    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.25);
+    background: #6D28D9;
+    transform: scale(1.05);
 }
 
 .sendButton:disabled {
-    background: #e5e7eb;
-    color: #9ca3af;
+    background: #E5E7EB;
+    color: #9CA3AF;
     cursor: not-allowed;
+    transform: none;
 }
-
-.counterRow {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 0.35rem;
-}
-
-.charCounter {
-    font-size: 0.75rem;
-    color: #9ca3af;
-}
-
