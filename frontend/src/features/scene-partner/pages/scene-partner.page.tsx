@@ -111,38 +111,40 @@ export const ScenePartnerPage: React.FC = () => {
         setIsSummaryModalOpen(true);
     };
 
+    const handleRestartCurrentSimulation = async () => {
+        if (!currentSimSession) return;
+        try {
+            await handleEnd();
+            await handleStartPracticeFromHome({
+                scenarioId: currentSimSession.scenarioId,
+                simulationType: currentSimSession.simulationType,
+                targetUserId: currentSimSession.targetUserId ?? undefined,
+                partnerName: currentSimSession.simulationType === 'MATCH_BASED' ? 'Match Partner' : 'Generic Partner',
+            });
+        } catch (err) {
+            console.error('Failed to restart simulation:', err);
+        }
+    };
+
     // If currently inside an active simulation chat session
     if (activeSessionId && currentSimSession) {
         return (
             <main className={styles.pageContainer}>
-                <div className={styles.contentWrapper}>
-                    <div className={styles.simulationViewWrapper}>
-                        <div className={styles.backBar}>
-                            <button
-                                type="button"
-                                className={styles.backButton}
-                                onClick={() => setActiveSessionId(null)}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                                </svg>
-                                <span>Back to Practice Hub</span>
-                            </button>
-                        </div>
-
-                        <SimulationChat
-                            session={currentSimSession}
-                            onSendMessage={handleSendMessage}
-                            onPause={handlePause}
-                            onResume={handleResume}
-                            onEnd={handleEndCurrentSimulation}
-                            isSendingTurn={isSendingTurn}
-                            isPausing={isPausing}
-                            isResuming={isResuming}
-                            isEnding={isEnding}
-                            formattedTime={formattedTime}
-                        />
-                    </div>
+                <div className={styles.contentWrapper} style={{ maxWidth: '1240px' }}>
+                    <SimulationChat
+                        session={currentSimSession}
+                        onSendMessage={handleSendMessage}
+                        onPause={handlePause}
+                        onResume={handleResume}
+                        onEnd={handleEndCurrentSimulation}
+                        onRestart={handleRestartCurrentSimulation}
+                        onBack={() => setActiveSessionId(null)}
+                        isSendingTurn={isSendingTurn}
+                        isPausing={isPausing}
+                        isResuming={isResuming}
+                        isEnding={isEnding}
+                        formattedTime={formattedTime}
+                    />
                 </div>
 
                 <SessionSummaryModal
