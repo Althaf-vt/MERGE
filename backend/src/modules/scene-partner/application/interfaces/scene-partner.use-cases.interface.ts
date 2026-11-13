@@ -9,6 +9,8 @@ export const PAUSE_SCENE_SESSION_USE_CASE = "PAUSE_SCENE_SESSION_USE_CASE";
 export const RESUME_SCENE_SESSION_USE_CASE = "RESUME_SCENE_SESSION_USE_CASE";
 export const END_SCENE_SESSION_USE_CASE = "END_SCENE_SESSION_USE_CASE";
 export const SEND_SCENE_TURN_USE_CASE = "SEND_SCENE_TURN_USE_CASE";
+export const GET_ACTIVE_SCENE_SESSION_USE_CASE = "GET_ACTIVE_SCENE_SESSION_USE_CASE";
+export const GET_SCENE_SESSION_BY_ID_USE_CASE = "GET_SCENE_SESSION_BY_ID_USE_CASE";
 export const GET_SCENE_SESSION_HISTORY_USE_CASE = "GET_SCENE_SESSION_HISTORY_USE_CASE";
 export const GET_SCENARIOS_USE_CASE = "GET_SCENARIOS_USE_CASE";
 
@@ -32,13 +34,18 @@ export interface ISendSceneTurnUseCase {
     execute(userId: string, sessionId: string, dto: SendSceneTurnDto): Promise<SceneSessionResponseDto>;
 }
 
+export interface IGetActiveSceneSessionUseCase {
+    execute(userId: string): Promise<SceneSessionResponseDto | null>;
+}
+
+export interface IGetSceneSessionByIdUseCase {
+    execute(userId: string, sessionId: string): Promise<SceneSessionResponseDto>;
+}
+
 export interface IGetSceneSessionHistoryUseCase {
-    getSessionById(userId: string, sessionId: string): Promise<SceneSessionResponseDto>;
-    getActiveSession(userId: string): Promise<SceneSessionResponseDto | null>;
-    getUserHistory(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResponseDto>;
+    execute(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResponseDto>;
 }
 
 export interface IGetScenariosUseCase {
     execute(category?: ScenarioCategory): Promise<ScenarioResponseDto[]>;
 }
-
