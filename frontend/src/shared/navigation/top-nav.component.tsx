@@ -42,7 +42,7 @@ export const TopNav = () => {
                             <span className={styles.navLink}>Connections</span>
                         </Link>
                         <Link to="/scene-partner" className={styles.logoLink}>
-                            <span className={styles.navLink}>Practice</span>
+                            <span className={styles.navLink}>Coaching</span>
                         </Link>
                     </>
                 )}
