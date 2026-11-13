@@ -78,10 +78,10 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
     ): Promise<SceneSessionSummaryData> {
         const fallback: SceneSessionSummaryData = {
             summary: `Completed practice rehearsal session for ${context.scenarioTitle}.`,
-            thingsToNote: ['Engaged thoughtfully throughout the scenario.'],
-            takeaways: ['Keep practicing active listening and asking open-ended questions.'],
-            coachingNotes: 'Great effort in completing this scenario. Continue refining your natural conversation pace.',
-            communicationScore: 80,
+            takeaways: ['Showed politeness and willingness to practice conversational scenarios.'],
+            thingsToNote: ['Offer more specific personal details and ask follow-up questions to build reciprocal momentum.'],
+            coachingNotes: 'A good initial rehearsal. Focus on sharing more about your own perspective and proactively inquiring about your partner to spark deeper connection.',
+            communicationScore: 50,
         };
 
         try {
