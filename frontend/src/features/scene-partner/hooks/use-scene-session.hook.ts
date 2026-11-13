@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useGetSessionByIdQuery, useSendTurnMutation, usePauseSessionMutation, useResumeSessionMutation, useEndSessionMutation } from '../api/scene-partner.api';
 
 export const useSceneSession = (sessionId?: string) => {
-    const [inputText, setInputText] = useState('');
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
     const {
@@ -55,25 +54,21 @@ export const useSceneSession = (sessionId?: string) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }, [remainingSeconds]);
 
-    const handleSendMessage = useCallback(async () => {
-        if (!sessionId || !inputText.trim() || isSendingTurn || session?.status !== 'IN_PROGRESS') {
+    const handleSendMessage = useCallback(async (content?: string) => {
+        const contentToSend = (content ?? '').trim();
+        if (!sessionId || !contentToSend || isSendingTurn || session?.status !== 'IN_PROGRESS') {
             return;
         }
-
-        const content = inputText.trim();
-        setInputText('');
 
         try {
             await sendTurn({
                 sessionId,
-                content,
+                content: contentToSend,
             }).unwrap();
         } catch (err) {
             console.error('Failed to send turn:', err);
-            // Restore input on failure
-            setInputText(content);
         }
-    }, [sessionId, inputText, isSendingTurn, session?.status, sendTurn]);
+    }, [sessionId, isSendingTurn, session?.status, sendTurn]);
 
     const handlePause = useCallback(async () => {
         if (!sessionId || isPausing || session?.status !== 'IN_PROGRESS') return;
@@ -108,8 +103,6 @@ export const useSceneSession = (sessionId?: string) => {
         isFetching,
         isError,
         error,
-        inputText,
-        setInputText,
         handleSendMessage,
         isSendingTurn,
         handlePause,
