@@ -5,7 +5,6 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 import {
-    GenerateInitialGreetingResult,
     GenerateTurnResult,
     IScenePartnerAiService,
     SceneSessionSummaryData,
@@ -14,7 +13,7 @@ import {
 import { SceneTurnSnapshot } from "../../domain/interfaces/scene-session.types";
 import { CoachNoteProps } from "../../domain/value-objects/coach-note.vo";
 import { PersonaPrompt } from "../../domain/prompts/persona.prompt";
-import { CoachPrompt } from "../../domain/prompts/coach.prompt";
+import { CoachEvaluationRawResult, CoachPrompt } from "../../domain/prompts/coach.prompt";
 import { SessionSummaryPrompt } from "../../domain/prompts/session-summary.prompt";
 
 @Injectable()
@@ -44,17 +43,9 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         this._coachTemperature = EnvConfig.gemini.coachTemperature;
     }
 
-    public async generateInitialGreeting(context: SceneSimulationContext): Promise<GenerateInitialGreetingResult> {
+    public async generateInitialGreeting(context: SceneSimulationContext): Promise<string> {
         try {
-            const [openingMessage, coachNote] = await Promise.all([
-                this._generatePersonaGreeting(context),
-                this._generateInitialCoachTip(context),
-            ]);
-
-            return {
-                openingMessage,
-                coachNote,
-            };
+            return await this._generatePersonaGreeting(context);
         } catch (error) {
             this._handleAiError(error);
         }
@@ -127,30 +118,6 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         return result.response.text().trim();
     }
 
-    private async _generateInitialCoachTip(context: SceneSimulationContext): Promise<CoachNoteProps> {
-        const model = this._genAi.getGenerativeModel({
-            model: this._modelName,
-            systemInstruction: CoachPrompt.getSystemPrompt(context),
-            generationConfig: {
-                temperature: this._coachTemperature,
-            },
-            safetySettings: this._safetySettings,
-        });
-
-        const prompt = CoachPrompt.getInitialCoachTipPrompt(context);
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-
-        const fallback: CoachNoteProps = {
-            observation: `Starting rehearsal session for ${context.scenarioTitle}.`,
-            tone: 'Ready to connect',
-            pacing: 'Initial',
-            nextTip: 'Start with a friendly, open-ended question to establish rapport.',
-        };
-
-        return this._parseJson<CoachNoteProps>(text, fallback);
-    }
-
     private async _generatePersonaReply(
         context: SceneSimulationContext,
         userMessage: string,
@@ -178,7 +145,7 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         context: SceneSimulationContext,
         userMessage: string,
         transcript: SceneTurnSnapshot[]
-    ): Promise<CoachNoteProps> {
+    ): Promise<CoachNoteProps | null> {
         const model = this._genAi.getGenerativeModel({
             model: this._modelName,
             systemInstruction: CoachPrompt.getSystemPrompt(context),
@@ -192,14 +159,31 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         const result = await model.generateContent(prompt);
         const text = result.response.text();
 
-        const fallback: CoachNoteProps = {
-            observation: 'Natural conversation exchange.',
-            tone: 'Engaged',
+        const fallback: CoachEvaluationRawResult = {
+            shouldIntervene: false,
+            observation: '',
+            tone: 'Natural',
             pacing: 'Balanced',
-            nextTip: 'Keep asking curious follow-up questions to show authentic interest.',
+            nextTip: '',
         };
 
-        return this._parseJson<CoachNoteProps>(text, fallback);
+        const parsed = this._parseJson<CoachEvaluationRawResult>(text, fallback);
+
+        // Anti-nagging / Selective intervention policy
+        if (!parsed.shouldIntervene) {
+            return null;
+        }
+
+        if (!parsed.observation || parsed.observation.trim().length === 0) {
+            return null;
+        }
+
+        return {
+            observation: parsed.observation.trim(),
+            tone: parsed.tone?.trim() || 'Natural',
+            pacing: parsed.pacing?.trim() || 'Balanced',
+            nextTip: parsed.nextTip?.trim() || 'Continue exploring shared topics naturally.',
+        };
     }
 
     private _parseJson<T>(rawText: string, fallback: T): T {
