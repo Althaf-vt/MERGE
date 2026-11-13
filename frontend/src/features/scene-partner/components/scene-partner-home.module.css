@@ -586,6 +586,69 @@
     color: #6D28D9;
 }
 
+.startErrorBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 8px;
+    padding: 0.45rem 0.85rem;
+    width: 100%;
+    max-width: 520px;
+    color: #991B1B;
+    font-size: 0.76rem;
+    box-sizing: border-box;
+    animation: toastSlideDown 0.18s ease-out;
+}
+
+.startErrorText {
+    flex: 1;
+    line-height: 1.35;
+}
+
+.startErrorDismiss {
+    background: transparent;
+    border: none;
+    color: #991B1B;
+    cursor: pointer;
+    padding: 0.15rem;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+}
+
+.startErrorDismiss:hover {
+    opacity: 1;
+}
+
+.sectionErrorBanner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    color: #991B1B;
+    font-size: 0.74rem;
+    margin-bottom: 0.75rem;
+}
+
+.retryBtn {
+    background: #991B1B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+}
+
 /* Primary Action Buttons */
 .actionsSection {
     display: flex;

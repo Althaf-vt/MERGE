@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetConnectionsQuery } from '../../../shared/api/connections.api';
 import type { ScenarioDto, SimulationType, SceneSessionDto } from '../types/scene-partner.types';
+import { getErrorMessage } from '../../../shared/utils/error.util';
 import { ActiveSessionBanner } from './active-session-banner.component';
 import styles from './scene-partner-home.module.css';
 
@@ -26,6 +27,9 @@ export interface ScenePartnerHomeProps {
     onResumeActive?: () => void;
     onEndActive?: () => void;
     isEndingActive?: boolean;
+    isScenariosError?: boolean;
+    scenariosErrorMessage?: string;
+    onRetryScenarios?: () => void;
 }
 
 export interface FigmaScenarioItem {
@@ -67,6 +71,9 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     onResumeActive,
     onEndActive,
     isEndingActive = false,
+    isScenariosError = false,
+    scenariosErrorMessage,
+    onRetryScenarios,
 }) => {
     const navigate = useNavigate();
 
@@ -87,6 +94,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
 
     const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>('first-message');
     const [selectedSkill, setSelectedSkill] = useState<string>('First Impressions');
+    const [startError, setStartError] = useState<string | null>(null);
 
     const activeFigmaScenario = FIGMA_SCENARIO_ITEMS.find((s) => s.id === selectedScenarioKey) || FIGMA_SCENARIO_ITEMS[0];
 
@@ -97,6 +105,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     };
 
     const handleSelectGeneric = () => {
+        setStartError(null);
         setSelectedPartner({
             type: 'GENERIC',
             name: 'Generic Practice Partner',
@@ -104,6 +113,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     };
 
     const handleSelectMatch = (partnerId: string, partnerName: string) => {
+        setStartError(null);
         setSelectedPartner({
             type: 'MATCH_BASED',
             targetUserId: partnerId,
@@ -112,21 +122,29 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     };
 
     const handleStart = async () => {
-        const scenarioId = resolveBackendScenarioId();
-        await onStartPractice({
-            scenarioId,
-            simulationType: selectedPartner.type,
-            targetUserId: selectedPartner.targetUserId,
-            partnerName: selectedPartner.name,
-        });
+        setStartError(null);
+        try {
+            const scenarioId = resolveBackendScenarioId();
+            await onStartPractice({
+                scenarioId,
+                simulationType: selectedPartner.type,
+                targetUserId: selectedPartner.targetUserId,
+                partnerName: selectedPartner.name,
+            });
+        } catch (err: unknown) {
+            const message = getErrorMessage(err, 'Failed to start practice session.');
+            setStartError(message);
+        }
     };
 
     const handleQuickStartBreakIce = () => {
+        setStartError(null);
         setSelectedScenarioKey('first-message');
         setSelectedSkill('First Impressions');
     };
 
     const handleQuickStartFollowUp = () => {
+        setStartError(null);
         setSelectedScenarioKey('breaking-silence');
         setSelectedSkill('Better Questions');
     };
@@ -313,6 +331,22 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         Choose A Scenario
                     </h2>
 
+                    {isScenariosError && (
+                        <div className={styles.sectionErrorBanner} role="alert">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>{scenariosErrorMessage || 'Failed to load scenarios. Using standard templates.'}</span>
+                            {onRetryScenarios && (
+                                <button type="button" onClick={onRetryScenarios} className={styles.retryBtn}>
+                                    Retry
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     <div className={styles.scenariosGrid}>
                         {FIGMA_SCENARIO_ITEMS.map((item) => {
                             const isSelected = selectedScenarioKey === item.id;
@@ -464,6 +498,28 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
 
                 {/* Primary Actions */}
                 <div className={styles.actionsSection}>
+                    {startError && (
+                        <div className={styles.startErrorBanner} role="alert">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span className={styles.startErrorText}>{startError}</span>
+                            <button
+                                type="button"
+                                className={styles.startErrorDismiss}
+                                onClick={() => setStartError(null)}
+                                aria-label="Dismiss error"
+                            >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+
                     <button
                         type="button"
                         className={styles.startButton}
