@@ -235,6 +235,9 @@ export const ScenePartnerPage: React.FC = () => {
                             hasPreviousPage={historyHasPreviousPage}
                             isLoading={isHistoryLoading}
                             onViewSummary={handleOpenSummary}
+                            onPracticeAgain={handlePracticeAgainFromSummary}
+                            onContinueSession={(session) => setActiveSessionId(session.id)}
+                            onStartNewSession={() => setMainTab('SCENARIOS')}
                         />
                     </section>
                 )}
