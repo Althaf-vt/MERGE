@@ -21,14 +21,9 @@ export interface SceneSimulationContext {
     };
 }
 
-export interface GenerateInitialGreetingResult {
-    openingMessage: string;
-    coachNote?: CoachNoteProps;
-}
-
 export interface GenerateTurnResult {
     personaReply: string;
-    coachNote: CoachNoteProps;
+    coachNote: CoachNoteProps | null;
 }
 
 export interface SceneSessionSummaryData {
@@ -42,7 +37,7 @@ export interface SceneSessionSummaryData {
 export const SCENE_PARTNER_AI_SERVICE = 'SCENE_PARTNER_AI_SERVICE';
 
 export interface IScenePartnerAiService {
-    generateInitialGreeting(context: SceneSimulationContext): Promise<GenerateInitialGreetingResult>;
+    generateInitialGreeting(context: SceneSimulationContext): Promise<string>;
     generateTurn(context: SceneSimulationContext, userMessage: string, transcript: SceneTurnSnapshot[]): Promise<GenerateTurnResult>;
     generateSessionSummary(context: SceneSimulationContext, transcript: SceneTurnSnapshot[]): Promise<SceneSessionSummaryData>;
 }

@@ -121,7 +121,7 @@ export class SceneSession extends AggregateRoot {
     }
 
     // State Transitions & Turn Management (Intention-Revealing Methods)
-    public startSession(openingMessage: string, openingCoachNote?: CoachNoteVO): void {
+    public startSession(openingMessage: string): void {
         if (this._props.status !== SceneSessionStatus.INITIALIZING) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.INVALID_STATUS_FOR_TURN(this._props.status));
         }
@@ -134,7 +134,7 @@ export class SceneSession extends AggregateRoot {
         this._props.transcript.push({
             role: SceneSpeakerRole.SIMULATION,
             content: openingMessage.trim(),
-            coachNote: openingCoachNote ?? null,
+            coachNote: null,
             timestamp: now,
         });
 
@@ -182,7 +182,7 @@ export class SceneSession extends AggregateRoot {
         this._props.updatedAt = now;
     }
 
-    public addSimulationTurn(personaReply: string, coachNote: CoachNoteVO): void {
+    public addSimulationTurn(personaReply: string, coachNote: CoachNoteVO | null = null): void {
         if (this._props.status !== SceneSessionStatus.IN_PROGRESS) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.INVALID_STATUS_FOR_TURN(this._props.status));
         }
@@ -190,10 +190,6 @@ export class SceneSession extends AggregateRoot {
         const trimmedReply = personaReply?.trim() ?? '';
         if (trimmedReply.length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.SIMULATION_REPLY_EMPTY);
-        }
-
-        if (!coachNote) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.COACH_NOTE_REQUIRED);
         }
 
         const now = new Date();
