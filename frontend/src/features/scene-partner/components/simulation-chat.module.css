@@ -93,35 +93,12 @@
     width: fit-content;
 }
 
-.interestsSection {
-    border-top: 1px solid #F3F4F6;
-    padding-top: 0.45rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
 .sidebarSectionTitle {
     font-size: 0.62rem;
     font-weight: 800;
     color: #9CA3AF;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-}
-
-.interestsTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-}
-
-.interestTag {
-    font-size: 0.68rem;
-    background: #F3F4F6;
-    color: #4B5563;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    font-weight: 500;
 }
 
 /* Current Scenario Card */
@@ -134,36 +111,10 @@
 }
 
 .scenarioCardTitle {
-    margin: 0 0 0.25rem 0;
+    margin: 0;
     font-size: 0.85rem;
     font-weight: 700;
     color: #111827;
-}
-
-.scenarioCardDesc {
-    font-size: 0.74rem;
-    color: #4B5563;
-    line-height: 1.35;
-    margin: 0 0 0.45rem 0;
-}
-
-.difficultyPill {
-    display: inline-block;
-    background: #EDE9FE;
-    color: #6D28D9;
-    font-size: 0.62rem;
-    font-weight: 700;
-    padding: 0.15rem 0.45rem;
-    border-radius: 3px;
-    letter-spacing: 0.03em;
-    margin-bottom: 0.45rem;
-}
-
-.scenarioCardNote {
-    font-size: 0.68rem;
-    color: #6B7280;
-    line-height: 1.3;
-    margin: 0;
 }
 
 /* Active Coaching Toggle Card */
@@ -240,6 +191,23 @@
     font-weight: 700;
     padding: 0.1rem 0.35rem;
     border-radius: 3px;
+}
+
+.flowBadgeStandby {
+    background: #F3F4F6;
+    color: #6B7280;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+}
+
+.coachingStandbyText {
+    font-size: 0.74rem;
+    color: #6B7280;
+    line-height: 1.35;
+    margin: 0;
+    font-style: italic;
 }
 
 .coachingTipsList {
@@ -579,20 +547,11 @@
     color: #7C3AED;
 }
 
-.suggestedResponseQuote {
-    margin: 0 0 0.35rem 0;
-    font-size: 0.82rem;
-    font-style: italic;
+.coachTipBody {
+    margin: 0;
+    font-size: 0.78rem;
     color: #1F2937;
     line-height: 1.35;
-}
-
-.suggestedResponseWhy {
-    font-size: 0.72rem;
-    color: #6B7280;
-    line-height: 1.3;
-    border-top: 1px solid #EDE9FE;
-    padding-top: 0.35rem;
 }
 
 /* Typing Indicator */

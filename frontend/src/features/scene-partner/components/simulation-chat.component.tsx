@@ -95,19 +95,8 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                         <div className={styles.partnerInfo}>
                             <h3 className={styles.partnerName}>{resolvedPartnerName}</h3>
                             <span className={styles.compatibilityBadge}>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                </svg>
-                                92% Compatibility
+                                {session.simulationType === 'MATCH_BASED' ? 'Matched Partner' : 'Practice Partner'}
                             </span>
-                        </div>
-                    </div>
-                    <div className={styles.interestsSection}>
-                        <span className={styles.sidebarSectionTitle}>INTERESTS</span>
-                        <div className={styles.interestsTags}>
-                            <span className={styles.interestTag}>Travel</span>
-                            <span className={styles.interestTag}>Photography</span>
-                            <span className={styles.interestTag}>Coffee</span>
                         </div>
                     </div>
                 </div>
@@ -123,13 +112,6 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                         <span className={styles.sidebarSectionTitle}>CURRENT SCENARIO</span>
                     </div>
                     <h4 className={styles.scenarioCardTitle}>{session.scenarioTitle}</h4>
-                    <p className={styles.scenarioCardDesc}>
-                        Practice reaching out to a new match referencing their profile interests.
-                    </p>
-                    <div className={styles.difficultyPill}>DIFFICULTY: MEDIUM</div>
-                    <p className={styles.scenarioCardNote}>
-                        This simulation uses balanced responses and a natural conversation flow.
-                    </p>
                 </div>
 
                 {/* 3. Active Coaching Toggle Card (Locked ON) */}
@@ -158,30 +140,46 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                 <div className={styles.sidebarCard}>
                     <div className={styles.insightsHeaderRow}>
                         <span className={styles.sidebarSectionTitle}>COACHING INSIGHTS</span>
-                        <span className={styles.flowBadge}>
-                            Flow: {latestCoachNote?.pacing || 'Natural'}
-                        </span>
+                        {latestCoachNote ? (
+                            <span className={styles.flowBadge}>
+                                Flow: {latestCoachNote.pacing || 'Active'}
+                            </span>
+                        ) : (
+                            <span className={styles.flowBadgeStandby}>
+                                Standby
+                            </span>
+                        )}
                     </div>
-                    <ul className={styles.coachingTipsList}>
-                        <li className={styles.coachingTipItem}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M9 18h6"/>
-                                <path d="M10 22h4"/>
-                                <path d="M12 2v1"/>
-                                <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
-                            </svg>
-                            <span>{latestCoachNote?.nextTip || 'Ask an open-ended follow-up question.'}</span>
-                        </li>
-                        <li className={styles.coachingTipItem}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M9 18h6"/>
-                                <path d="M10 22h4"/>
-                                <path d="M12 2v1"/>
-                                <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
-                            </svg>
-                            <span>Reference their profile interests to build shared momentum.</span>
-                        </li>
-                    </ul>
+                    {latestCoachNote ? (
+                        <ul className={styles.coachingTipsList}>
+                            {latestCoachNote.nextTip && (
+                                <li className={styles.coachingTipItem}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <path d="M9 18h6"/>
+                                        <path d="M10 22h4"/>
+                                        <path d="M12 2v1"/>
+                                        <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
+                                    </svg>
+                                    <span>{latestCoachNote.nextTip}</span>
+                                </li>
+                            )}
+                            {latestCoachNote.observation && (
+                                <li className={styles.coachingTipItem}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <path d="M9 18h6"/>
+                                        <path d="M10 22h4"/>
+                                        <path d="M12 2v1"/>
+                                        <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
+                                    </svg>
+                                    <span>{latestCoachNote.observation}</span>
+                                </li>
+                            )}
+                        </ul>
+                    ) : (
+                        <p className={styles.coachingStandbyText}>
+                            Coaching feedback will update dynamically as you exchange messages.
+                        </p>
+                    )}
                 </div>
 
                 {/* 5. Session Actions */}
@@ -302,54 +300,54 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Inline Coach Feedback & Suggested Response (when present) */}
+                                {/* Inline Coach Feedback & Suggested Action (when present) */}
                                 {coachNote && (
                                     <div className={styles.inlineCoachContainer}>
-                                        {/* Inline Praise / Observation Pill */}
-                                        <div className={styles.inlinePraisePill}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                            <span>Great use of a shared interest.</span>
-                                        </div>
-
-                                        {/* Inline Coach Intervention Card */}
-                                        <div className={styles.coachInterventionCard}>
-                                            <div className={styles.coachInterventionHeader}>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                        {/* Dynamic Tone/Flow Pill (when tone exists) */}
+                                        {coachNote.tone && (
+                                            <div className={styles.inlinePraisePill}>
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
                                                 </svg>
-                                                <span className={styles.coachInterventionTitle}>
-                                                    Try asking an open-ended question
-                                                </span>
+                                                <span>Tone: {coachNote.tone}</span>
                                             </div>
-                                            <p className={styles.coachInterventionBody}>
-                                                {coachNote.observation || coachNote.nextTip}
-                                            </p>
-                                        </div>
+                                        )}
 
-                                        {/* Inline Suggested Response Card */}
-                                        <div className={styles.suggestedResponseCard}>
-                                            <div className={styles.suggestedResponseHeader}>
-                                                <div className={styles.suggestedResponseTitleRow}>
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                        {/* Coach Observation Card */}
+                                        {coachNote.observation && (
+                                            <div className={styles.coachInterventionCard}>
+                                                <div className={styles.coachInterventionHeader}>
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
                                                     </svg>
-                                                    <span className={styles.suggestedResponseTitle}>Suggested Response</span>
+                                                    <span className={styles.coachInterventionTitle}>
+                                                        Coach Observation
+                                                    </span>
                                                 </div>
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                                </svg>
+                                                <p className={styles.coachInterventionBody}>
+                                                    {coachNote.observation}
+                                                </p>
                                             </div>
-                                            <blockquote className={styles.suggestedResponseQuote}>
-                                                &quot;{coachNote.nextTip}&quot;
-                                            </blockquote>
-                                            <div className={styles.suggestedResponseWhy}>
-                                                <strong>Why This Works:</strong> Keeps conversational momentum and invites your partner to share stories rather than single-word answers.
+                                        )}
+
+                                        {/* Coach Recommendation Card */}
+                                        {coachNote.nextTip && (
+                                            <div className={styles.suggestedResponseCard}>
+                                                <div className={styles.suggestedResponseHeader}>
+                                                    <div className={styles.suggestedResponseTitleRow}>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                                        </svg>
+                                                        <span className={styles.suggestedResponseTitle}>Coach Recommendation</span>
+                                                    </div>
+                                                </div>
+                                                <p className={styles.coachTipBody}>
+                                                    {coachNote.nextTip}
+                                                </p>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 )}
                             </React.Fragment>
