@@ -5,7 +5,6 @@ import { toast } from '../../../shared/utils/toast.util';
 
 export const useSceneSession = (sessionId?: string) => {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
-    const [sendError, setSendError] = useState<string | null>(null);
 
     const {
         data: sessionData,
@@ -63,7 +62,6 @@ export const useSceneSession = (sessionId?: string) => {
             return false;
         }
 
-        setSendError(null);
         try {
             await sendTurn({
                 sessionId,
@@ -72,7 +70,6 @@ export const useSceneSession = (sessionId?: string) => {
             return true;
         } catch (err) {
             const errorMsg = getErrorMessage(err, 'Failed to send message. Please try again.');
-            setSendError(errorMsg);
             toast.error(errorMsg);
             console.error('Failed to send turn:', err);
             return false;
@@ -125,8 +122,6 @@ export const useSceneSession = (sessionId?: string) => {
         error,
         handleSendMessage,
         isSendingTurn,
-        sendError,
-        clearSendError: () => setSendError(null),
         handlePause,
         isPausing,
         handleResume,

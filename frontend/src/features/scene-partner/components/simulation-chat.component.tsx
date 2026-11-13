@@ -16,8 +16,6 @@ export interface SimulationChatProps {
     isEnding?: boolean;
     formattedTime?: string;
     partnerName?: string;
-    sendError?: string | null;
-    onClearSendError?: () => void;
 }
 
 export const SimulationChat: React.FC<SimulationChatProps> = ({
@@ -33,8 +31,6 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
     isResuming = false,
     isEnding = false,
     partnerName,
-    sendError,
-    onClearSendError,
 }) => {
     const [inputValue, setInputValue] = useState('');
     const [savedNotice, setSavedNotice] = useState(false);
@@ -59,9 +55,6 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
         const text = inputValue.trim();
         if (!text || isSendingTurn || isPaused || isCompleted) return;
         setInputValue('');
-        if (onClearSendError) {
-            onClearSendError();
-        }
         const success = await onSendMessage(text);
         if (success === false) {
             // Restore input text on failure so user does not lose message
@@ -380,29 +373,6 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 
                 {/* Message Input Bar */}
                 <div className={styles.inputArea}>
-                    {sendError && (
-                        <div className={styles.sendErrorBanner} role="alert">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="8" x2="12" y2="12"></line>
-                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                            </svg>
-                            <span className={styles.sendErrorText}>{sendError}</span>
-                            {onClearSendError && (
-                                <button
-                                    type="button"
-                                    onClick={onClearSendError}
-                                    className={styles.sendErrorDismiss}
-                                    aria-label="Dismiss error"
-                                >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                    </svg>
-                                </button>
-                            )}
-                        </div>
-                    )}
                     <div className={styles.inputBar}>
                         <textarea
                             className={styles.chatTextarea}
