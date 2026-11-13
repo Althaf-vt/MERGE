@@ -1,7 +1,603 @@
 .container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
+    gap: 1.75rem;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   1. Header & Stats Strip
+   ========================================================================== */
+
+.historyHeader {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    margin: 0 0 1.25rem 0;
+    font-size: 0.95rem;
+    color: #4B5563;
+    line-height: 1.4;
+}
+
+.statsStrip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.statPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    color: #4B5563;
+}
+
+.statValuePurple {
+    color: #7C3AED;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   2. Search & Filter Bar
+   ========================================================================== */
+
+.filterCard {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 1.15rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+}
+
+.searchAndSortRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 0.45rem 0.85rem;
+    flex: 1;
+    min-width: 240px;
+    color: #9CA3AF;
+}
+
+.searchBox:focus-within {
+    border-color: #7C3AED;
+    background: #FFFFFF;
+}
+
+.searchInput {
+    border: none;
+    background: transparent;
+    font-size: 0.88rem;
+    color: #111827;
+    outline: none;
+    width: 100%;
+}
+
+.searchInput::placeholder {
+    color: #9CA3AF;
+}
+
+.sortDropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: #4B5563;
+}
+
+.sortLabel {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sortSelect {
+    border: 1.5px solid #E5E7EB;
+    border-radius: 8px;
+    background: #FFFFFF;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #111827;
+    outline: none;
+    cursor: pointer;
+}
+
+.sortSelect:focus {
+    border-color: #7C3AED;
+}
+
+.filterTabsRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filterPill {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filterPill:hover {
+    border-color: #D1D5DB;
+    background: #F9FAFB;
+}
+
+.filterPillActive {
+    background: #7C3AED;
+    border-color: #7C3AED;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   3. Session Cards List
+   ========================================================================== */
+
+.cardsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.sessionCard {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.35rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
     gap: 1.5rem;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.sessionCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.sessionCardCompleted {
+    border-left: 4px solid #10B981;
+}
+
+.sessionCardPaused {
+    border-left: 4px solid #F59E0B;
+}
+
+.cardMainCol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+}
+
+.cardHeaderRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+    flex-wrap: wrap;
+}
+
+.statusBadge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.statusBadgeCompleted {
+    background: #ECFDF5;
+    color: #059669;
+}
+
+.statusBadgePaused {
+    background: #FFFBEB;
+    color: #D97706;
+}
+
+.cardDate {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6B7280;
+    letter-spacing: 0.04em;
+}
+
+.cardDuration {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+.sessionTitle {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.partnerText {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #4B5563;
+}
+
+.tagsRow {
+    display: flex;
+    gap: 0.35rem;
+    margin: 0.35rem 0;
+}
+
+.styleChip {
+    font-size: 0.72rem;
+    background: #F3F4F6;
+    color: #4B5563;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.quoteBox {
+    background: #F9FAFB;
+    border-left: 2px solid #E5E7EB;
+    padding: 0.4rem 0.75rem;
+    margin-top: 0.25rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.quoteText {
+    font-size: 0.82rem;
+    font-style: italic;
+    color: #4B5563;
+    line-height: 1.35;
+}
+
+/* Card Aside (Score & Actions) */
+.cardAsideCol {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-shrink: 0;
+}
+
+.scoreContainer {
+    width: 68px;
+    height: 68px;
+    border: 1.5px solid #F3F4F6;
+    background: #FAF5FF;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.scoreNum {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #7C3AED;
+}
+
+.scoreDenominator {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #9CA3AF;
+    margin-top: 2px;
+}
+
+.actionsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 105px;
+}
+
+.actionBtnOutline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.actionBtnOutline:hover {
+    border-color: #D1D5DB;
+    background: #F9FAFB;
+}
+
+.continueBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    background: #FFFBEB;
+    border: 1.5px solid #FCD34D;
+    color: #D97706;
+    border-radius: 6px;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.continueBtn:hover {
+    background: #FEF3C7;
+}
+
+.deleteBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1.5px solid #F3F4F6;
+    border-radius: 6px;
+    padding: 0.35rem;
+    color: #9CA3AF;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.deleteBtn:hover {
+    color: #EF4444;
+    border-color: #FEE2E2;
+    background: #FEF2F2;
+}
+
+.emptyNoticeCard {
+    padding: 2.5rem;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   4. Pagination
+   ========================================================================== */
+
+.paginationRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin: 0.5rem 0;
+}
+
+.pageArrowBtn,
+.pageNumberBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #4B5563;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pageArrowBtn:hover:not(:disabled),
+.pageNumberBtn:hover {
+    border-color: #D1D5DB;
+    background: #F9FAFB;
+}
+
+.pageArrowBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pageNumberBtnActive {
+    background: #7C3AED;
+    border-color: #7C3AED;
+    color: #FFFFFF;
+}
+
+/* ==========================================================================
+   5. Your Progress Section
+   ========================================================================== */
+
+.progressSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1rem;
+}
+
+.progressSectionTitle {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.progressCardsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .progressCardsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.progressCard {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    box-sizing: border-box;
+}
+
+.progressCardLabel {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #9CA3AF;
+    letter-spacing: 0.05em;
+}
+
+.progressCardValue {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1F2937;
+}
+
+.progressCardLatest {
+    border-color: #DDD6FE;
+    background: #FAF5FF;
+}
+
+.progressCardLabelPurple {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #7C3AED;
+    letter-spacing: 0.05em;
+}
+
+.progressCardValuePurple {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #7C3AED;
+}
+
+.progressCardImprovement {
+    border-color: #A7F3D0;
+    background: #ECFDF5;
+}
+
+.progressCardLabelGreen {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #059669;
+    letter-spacing: 0.05em;
+}
+
+.progressCardValueGreen {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #059669;
+}
+
+/* ==========================================================================
+   6. Ready For Another Session? Bottom CTA Banner
+   ========================================================================== */
+
+.bottomCtaBanner {
+    background: #F5F3FF;
+    border: 1.5px solid #DDD6FE;
+    border-radius: 14px;
+    padding: 2.25rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    box-sizing: border-box;
+}
+
+.ctaBannerTitle {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.ctaBannerSubtitle {
+    margin: 0 0 0.85rem 0;
+    font-size: 0.9rem;
+    color: #4B5563;
+    max-width: 540px;
+    line-height: 1.4;
+}
+
+.ctaBannerBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #6D28D9;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.65rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);
+}
+
+.ctaBannerBtn:hover {
+    background: #5B21B6;
+    transform: translateY(-1px);
 }
 
 .loadingWrapper {
@@ -9,15 +605,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem 1rem;
-    color: #6b7280;
-    gap: 0.75rem;
+    min-height: 240px;
+    gap: 1rem;
+    color: #6B7280;
+    font-size: 0.9rem;
 }
 
 .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid rgba(109, 40, 217, 0.15);
+    border: 3px solid rgba(109, 40, 217, 0.2);
     border-top-color: #6D28D9;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -28,196 +625,3 @@
         transform: rotate(360deg);
     }
 }
-
-.emptyState {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3.5rem 1.5rem;
-    background: #ffffff;
-    border: 1px dashed #e5e7eb;
-    border-radius: 16px;
-    text-align: center;
-}
-
-.emptyIcon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #f3f4f6;
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.emptyTitle {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 0.25rem 0;
-}
-
-.emptyDescription {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin: 0;
-    max-width: 380px;
-}
-
-.historyList {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.historyItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #ffffff;
-    border: 1px solid #f3f4f6;
-    border-radius: 14px;
-    padding: 1rem 1.25rem;
-    transition: all 0.15s ease;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.historyItem:hover {
-    border-color: #e5e7eb;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-
-.itemLeft {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    flex: 1;
-    min-width: 220px;
-}
-
-.badgeRow {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.categoryBadge {
-    padding: 0.15rem 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    background: rgba(109, 40, 217, 0.08);
-    color: #6D28D9;
-}
-
-.simulationTypeBadge {
-    padding: 0.15rem 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    background: #f3f4f6;
-    color: #4b5563;
-}
-
-.scenarioTitle {
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-}
-
-.metaText {
-    font-size: 0.8125rem;
-    color: #6b7280;
-}
-
-.itemRight {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.scoreBadge {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.2rem;
-    padding: 0.35rem 0.75rem;
-    background: #ecfdf5;
-    border: 1px solid #d1fae5;
-    border-radius: 10px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: #059669;
-}
-
-.scoreTotal {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #10b981;
-}
-
-.viewButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 0.875rem;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.viewButton:hover {
-    background: #f9fafb;
-    border-color: #6D28D9;
-    color: #6D28D9;
-}
-
-.paginationContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.navButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.navButton:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #d1d5db;
-}
-
-.navButton:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.pageIndicator {
-    font-size: 0.8125rem;
-    color: #6b7280;
-    padding: 0 0.5rem;
-}
-
