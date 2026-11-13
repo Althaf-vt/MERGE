@@ -51,6 +51,18 @@ export const API_ENDPOINTS = {
         BLOCKED: '/profile/blocked',
         BLOCKED_BY_ID: (blockedId: string) => `/profile/blocked/${blockedId}`,
     },
+    SCENE_PARTNER: {
+        BASE: '/scene-partner',
+        SESSIONS: '/scene-partner/sessions',
+        SESSION_BY_ID: (id: string) => `/scene-partner/sessions/${id}`,
+        ACTIVE_SESSION: '/scene-partner/sessions/active',
+        HISTORY: '/scene-partner/sessions/history',
+        MESSAGE: (id: string) => `/scene-partner/sessions/${id}/message`,
+        PAUSE: (id: string) => `/scene-partner/sessions/${id}/pause`,
+        RESUME: (id: string) => `/scene-partner/sessions/${id}/resume`,
+        END: (id: string) => `/scene-partner/sessions/${id}/end`,
+        SCENARIOS: '/scene-partner/scenarios',
+    },
     CASTING_DIRECTOR: {
         BASE: '/casting-director',
         INITIALIZE: '/casting-director/initialize',
