@@ -188,7 +188,7 @@ export const ScenePartnerPage: React.FC = () => {
             <div className={styles.contentWrapper}>
                 {/* Active Session Banner (if an ongoing session is found) */}
                 {activeSession && (
-                    <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ maxWidth: '760px', width: '100%', margin: '0 auto 0.75rem auto' }}>
                         <ActiveSessionBanner
                             session={activeSession}
                             onResume={() => setActiveSessionId(activeSession.id)}
