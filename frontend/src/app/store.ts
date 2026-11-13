@@ -9,6 +9,7 @@ import kycReducer from "../features/onboarding/slices/kyc.slice";
 import { KycEscalationApi } from "../features/admin/kyc-escalation/api/kyc-escalation.api";
 import { discoveryApi } from "../features/discovery/api/discovery.api";
 import { connectionsApi } from '../shared/api/connections.api';
+import { scenePartnerApi } from "../features/scene-partner/api/scene-partner.api";
 
 export const store = configureStore({
     reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
         [KycEscalationApi.reducerPath]: KycEscalationApi.reducer,
         [discoveryApi.reducerPath]: discoveryApi.reducer,
         [connectionsApi.reducerPath]: connectionsApi.reducer,
+        [scenePartnerApi.reducerPath]: scenePartnerApi.reducer,
     },
 
     // 3. Middleware
@@ -33,6 +35,7 @@ export const store = configureStore({
             KycEscalationApi.middleware,
             discoveryApi.middleware,
             connectionsApi.middleware,
+            scenePartnerApi.middleware,
         ),
 });
 
