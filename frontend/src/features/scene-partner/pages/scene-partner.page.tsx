@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGetActiveSessionQuery, useStartSessionMutation, useEndSessionMutation } from '../api/scene-partner.api';
 import { useSceneScenarios } from '../hooks/use-scene-scenarios.hook';
 import { useSceneSession } from '../hooks/use-scene-session.hook';
@@ -12,6 +13,7 @@ import type { SceneSessionDto, SimulationType } from '../types/scene-partner.typ
 import styles from './scene-partner.module.css';
 
 export const ScenePartnerPage: React.FC = () => {
+    const navigate = useNavigate();
     const [mainTab, setMainTab] = useState<'SCENARIOS' | 'HISTORY'>('SCENARIOS');
     const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
@@ -126,6 +128,28 @@ export const ScenePartnerPage: React.FC = () => {
         }
     };
 
+    const handlePracticeAgainFromSummary = (session: SceneSessionDto) => {
+        setIsSummaryModalOpen(false);
+        handleStartPracticeFromHome({
+            scenarioId: session.scenarioId,
+            simulationType: session.simulationType,
+            targetUserId: session.targetUserId ?? undefined,
+            partnerName: session.simulationType === 'MATCH_BASED' ? 'Match Partner' : 'Generic Partner',
+        });
+    };
+
+    const handleTryNewScenarioFromSummary = () => {
+        setIsSummaryModalOpen(false);
+        setActiveSessionId(null);
+        setMainTab('SCENARIOS');
+    };
+
+    const handleReturnToMatchesFromSummary = () => {
+        setIsSummaryModalOpen(false);
+        setActiveSessionId(null);
+        navigate('/connections');
+    };
+
     // If currently inside an active simulation chat session
     if (activeSessionId && currentSimSession) {
         return (
@@ -151,6 +175,9 @@ export const ScenePartnerPage: React.FC = () => {
                     isOpen={isSummaryModalOpen}
                     onClose={() => setIsSummaryModalOpen(false)}
                     session={summaryModalSession}
+                    onPracticeAgain={handlePracticeAgainFromSummary}
+                    onTryNewScenario={handleTryNewScenarioFromSummary}
+                    onReturnToMatches={handleReturnToMatchesFromSummary}
                 />
             </main>
         );
@@ -218,6 +245,9 @@ export const ScenePartnerPage: React.FC = () => {
                 isOpen={isSummaryModalOpen}
                 onClose={() => setIsSummaryModalOpen(false)}
                 session={summaryModalSession}
+                onPracticeAgain={handlePracticeAgainFromSummary}
+                onTryNewScenario={handleTryNewScenarioFromSummary}
+                onReturnToMatches={handleReturnToMatchesFromSummary}
             />
         </main>
     );
