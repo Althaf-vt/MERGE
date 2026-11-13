@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    padding: 1.5rem 1rem;
+    padding: 1rem;
     box-sizing: border-box;
     overflow-y: auto;
 }
@@ -19,10 +19,10 @@
     position: relative;
     background: #FFFFFF;
     width: 100%;
-    max-width: 860px;
-    max-height: 90vh;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-width: 700px;
+    max-height: 88vh;
+    border-radius: 12px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -32,21 +32,21 @@
 /* Modal Header */
 .modalHeader {
     position: relative;
-    padding: 2.25rem 2rem 1.25rem 2rem;
+    padding: 1.35rem 1.5rem 0.85rem 1.5rem;
     text-align: center;
     border-bottom: 1.5px solid #F3F4F6;
 }
 
 .closeBtn {
     position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
+    top: 1rem;
+    right: 1rem;
     background: transparent;
     border: none;
     color: #9CA3AF;
     cursor: pointer;
-    padding: 0.35rem;
-    border-radius: 6px;
+    padding: 0.25rem;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,73 +58,73 @@
 }
 
 .title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.75rem;
+    margin: 0 0 0.35rem 0;
+    font-size: 1.35rem;
     font-weight: 800;
     color: #111827;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
 }
 
 .subtitle {
-    margin: 0 0 1.25rem 0;
-    font-size: 0.92rem;
+    margin: 0 0 0.85rem 0;
+    font-size: 0.78rem;
     color: #4B5563;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .metadataStrip {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
 .metaPill {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.3rem;
     background: #F9FAFB;
     border: 1px solid #E5E7EB;
     color: #4B5563;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-weight: 500;
-    padding: 0.3rem 0.75rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 9999px;
 }
 
 /* Body Content */
 .bodyContent {
-    padding: 1.75rem 2rem 2.25rem 2rem;
+    padding: 1.15rem 1.5rem 1.75rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .cardSectionTitle {
-    margin: 0 0 0.85rem 0;
-    font-size: 1.05rem;
+    margin: 0 0 0.55rem 0;
+    font-size: 0.88rem;
     font-weight: 700;
     color: #111827;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
 }
 
 /* 1. Conversation Score Card */
 .scoreCard {
     display: flex;
     align-items: center;
-    gap: 1.75rem;
+    gap: 1.15rem;
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1.15rem;
     box-sizing: border-box;
 }
 
 .scoreGaugeBox {
     position: relative;
-    width: 96px;
-    height: 96px;
+    width: 76px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -145,69 +145,69 @@
 }
 
 .scoreValueText {
-    font-size: 1.85rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #7C3AED;
 }
 
 .scoreMaxText {
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: #6B7280;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .scoreMetaColumn {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.2rem;
 }
 
 .scoreHeading {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 0.98rem;
     font-weight: 700;
     color: #111827;
 }
 
 .scoreDescriptionText {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 0.78rem;
     color: #4B5563;
-    line-height: 1.45;
+    line-height: 1.4;
 }
 
 /* 2. Conversation Replay Card */
 .replayCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .replaySnippetList {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 0.65rem;
 }
 
 .replayBox {
     background: #F9FAFB;
     border: 1px solid #E5E7EB;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.35rem;
 }
 
 .dialogueRow {
     display: flex;
     align-items: baseline;
-    gap: 0.45rem;
-    font-size: 0.88rem;
-    line-height: 1.4;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    line-height: 1.35;
 }
 
 .dialogueSpeaker {
@@ -223,14 +223,14 @@
 .replayCoachNote {
     display: flex;
     align-items: flex-start;
-    gap: 0.45rem;
+    gap: 0.35rem;
     background: #FAF5FF;
     border: 1px solid #EDE9FE;
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.74rem;
     color: #6D28D9;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 .replayCoachNote svg {
@@ -242,10 +242,10 @@
 .twoColumnGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+    gap: 0.85rem;
 }
 
-@media (max-width: 680px) {
+@media (max-width: 600px) {
     .twoColumnGrid {
         grid-template-columns: 1fr;
     }
@@ -255,21 +255,21 @@
 .opportunitiesCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.35rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .columnHeaderRow {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
-    margin-bottom: 0.85rem;
+    gap: 0.35rem;
+    margin-bottom: 0.55rem;
 }
 
 .columnHeaderTitle {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #111827;
 }
@@ -280,29 +280,29 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.45rem;
 }
 
 .bulletItem {
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
-    font-size: 0.85rem;
+    gap: 0.4rem;
+    font-size: 0.76rem;
     color: #374151;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .bulletItem svg {
     flex-shrink: 0;
-    margin-top: 3px;
+    margin-top: 2px;
 }
 
 /* 4. Key Moments Timeline */
 .timelineCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
@@ -310,16 +310,16 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding-left: 0.5rem;
+    gap: 0.75rem;
+    padding-left: 0.35rem;
 }
 
 .timelineList::before {
     content: '';
     position: absolute;
-    top: 6px;
-    bottom: 6px;
-    left: 11px;
+    top: 5px;
+    bottom: 5px;
+    left: 8px;
     width: 2px;
     background: #E5E7EB;
 }
@@ -328,15 +328,15 @@
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .timelineNode {
     position: relative;
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    margin-top: 2px;
+    margin-top: 3px;
     flex-shrink: 0;
     border: 2px solid #FFFFFF;
     box-shadow: 0 0 0 2px #E5E7EB;
@@ -356,36 +356,36 @@
 .timelineContent {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
 }
 
 .timelineTitle {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #111827;
 }
 
 .timelineDesc {
     margin: 0;
-    font-size: 0.82rem;
+    font-size: 0.74rem;
     color: #6B7280;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 /* 5. Alternative Responses Card */
 .alternativeCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .altComparisonBox {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.35rem;
     align-items: center;
 }
 
@@ -393,23 +393,23 @@
     width: 100%;
     background: #F9FAFB;
     border: 1px solid #E5E7EB;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
     box-sizing: border-box;
 }
 
 .altLabel {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     font-weight: 800;
     color: #9CA3AF;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
 }
 
 .altUserText {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 0.78rem;
     font-style: italic;
     color: #374151;
 }
@@ -418,8 +418,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: #EDE9FE;
     color: #7C3AED;
@@ -429,64 +429,64 @@
     width: 100%;
     background: #FAF5FF;
     border: 1.5px solid #DDD6FE;
-    border-radius: 10px;
-    padding: 0.95rem 1.15rem;
+    border-radius: 8px;
+    padding: 0.75rem 0.95rem;
     box-sizing: border-box;
 }
 
 .altSuggestedLabel {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
     font-weight: 800;
     color: #7C3AED;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     display: block;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
 }
 
 .altSuggestedText {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
+    margin: 0 0 0.35rem 0;
+    font-size: 0.78rem;
     font-style: italic;
     color: #1F2937;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .altWhyWorks {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     color: #6B7280;
-    line-height: 1.4;
+    line-height: 1.35;
     border-top: 1px solid #EDE9FE;
-    padding-top: 0.45rem;
+    padding-top: 0.35rem;
 }
 
 /* 6. Top Coaching Takeaways */
 .takeawaysCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .takeawaysList {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.55rem;
 }
 
 .takeawayItem {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.55rem;
 }
 
 .takeawayBadge {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: #EDE9FE;
     color: #7C3AED;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -496,9 +496,9 @@
 }
 
 .takeawayTextCol {
-    font-size: 0.85rem;
+    font-size: 0.76rem;
     color: #374151;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 /* 7. Communication Style & Coach's Notes */
@@ -506,52 +506,52 @@
 .coachNotesCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.35rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .styleTagsRow {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-bottom: 0.65rem;
+    gap: 0.25rem;
+    margin-bottom: 0.45rem;
 }
 
 .styleTag {
-    font-size: 0.75rem;
+    font-size: 0.68rem;
     background: #F3F4F6;
     color: #4B5563;
-    padding: 0.2rem 0.55rem;
-    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
     font-weight: 500;
 }
 
 .styleDescText {
     margin: 0;
-    font-size: 0.84rem;
+    font-size: 0.75rem;
     color: #6B7280;
-    line-height: 1.4;
+    line-height: 1.35;
 }
 
 .coachNotesHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.45rem;
 }
 
 .saveInsightBtn {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
     background: transparent;
     border: none;
     color: #7C3AED;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     cursor: pointer;
-    padding: 0.2rem 0.4rem;
+    padding: 0.15rem 0.35rem;
     border-radius: 4px;
     transition: background 0.15s ease;
 }
@@ -562,27 +562,27 @@
 
 .coachNotesText {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.76rem;
     color: #374151;
-    line-height: 1.45;
+    line-height: 1.4;
 }
 
 /* 8. Recommended Next Sessions */
 .recommendationsCard {
     background: #FFFFFF;
     border: 1.5px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
     box-sizing: border-box;
 }
 
 .nextScenariosGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.85rem;
+    gap: 0.65rem;
 }
 
-@media (max-width: 680px) {
+@media (max-width: 600px) {
     .nextScenariosGrid {
         grid-template-columns: 1fr;
     }
@@ -591,13 +591,13 @@
 .nextScenarioCard {
     background: #F9FAFB;
     border: 1.5px solid #E5E7EB;
-    border-radius: 10px;
-    padding: 1rem;
+    border-radius: 8px;
+    padding: 0.75rem;
     cursor: pointer;
     transition: all 0.15s ease;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.25rem;
 }
 
 .nextScenarioCard:hover {
@@ -606,28 +606,28 @@
 }
 
 .nextScenarioIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
     background: #EDE9FE;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
 }
 
 .nextScenarioTitle {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #111827;
 }
 
 .nextScenarioDesc {
     margin: 0;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     color: #6B7280;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 /* 9. Action Buttons Bar */
@@ -635,8 +635,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.85rem;
-    margin-top: 0.5rem;
+    gap: 0.65rem;
+    margin-top: 0.35rem;
     flex-wrap: wrap;
 }
 
@@ -644,9 +644,9 @@
     background: #6D28D9;
     color: #FFFFFF;
     border: none;
-    border-radius: 10px;
-    padding: 0.8rem 1.65rem;
-    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -660,9 +660,9 @@
     background: #F5F3FF;
     color: #6D28D9;
     border: 1.5px solid #DDD6FE;
-    border-radius: 10px;
-    padding: 0.8rem 1.65rem;
-    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.82rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -676,9 +676,9 @@
     background: #FFFFFF;
     color: #374151;
     border: 1.5px solid #D1D5DB;
-    border-radius: 10px;
-    padding: 0.8rem 1.65rem;
-    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
