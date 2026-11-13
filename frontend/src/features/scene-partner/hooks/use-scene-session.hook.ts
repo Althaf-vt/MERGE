@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useGetSessionByIdQuery, useSendTurnMutation, usePauseSessionMutation, useResumeSessionMutation, useEndSessionMutation } from '../api/scene-partner.api';
+import { getErrorMessage } from '../../../shared/utils/error.util';
+import { toast } from '../../../shared/utils/toast.util';
 
 export const useSceneSession = (sessionId?: string) => {
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
+    const [sendError, setSendError] = useState<string | null>(null);
 
     const {
         data: sessionData,
@@ -54,19 +57,25 @@ export const useSceneSession = (sessionId?: string) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }, [remainingSeconds]);
 
-    const handleSendMessage = useCallback(async (content?: string) => {
+    const handleSendMessage = useCallback(async (content?: string): Promise<boolean> => {
         const contentToSend = (content ?? '').trim();
         if (!sessionId || !contentToSend || isSendingTurn || session?.status !== 'IN_PROGRESS') {
-            return;
+            return false;
         }
 
+        setSendError(null);
         try {
             await sendTurn({
                 sessionId,
                 content: contentToSend,
             }).unwrap();
+            return true;
         } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to send message. Please try again.');
+            setSendError(errorMsg);
+            toast.error(errorMsg);
             console.error('Failed to send turn:', err);
+            return false;
         }
     }, [sessionId, isSendingTurn, session?.status, sendTurn]);
 
@@ -74,7 +83,10 @@ export const useSceneSession = (sessionId?: string) => {
         if (!sessionId || isPausing || session?.status !== 'IN_PROGRESS') return;
         try {
             await pauseSession({ sessionId }).unwrap();
+            toast.success('Simulation paused.');
         } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to pause session.');
+            toast.error(errorMsg);
             console.error('Failed to pause session:', err);
         }
     }, [sessionId, isPausing, session?.status, pauseSession]);
@@ -83,7 +95,10 @@ export const useSceneSession = (sessionId?: string) => {
         if (!sessionId || isResuming || session?.status !== 'PAUSED') return;
         try {
             await resumeSession({ sessionId }).unwrap();
+            toast.success('Simulation resumed.');
         } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to resume session.');
+            toast.error(errorMsg);
             console.error('Failed to resume session:', err);
         }
     }, [sessionId, isResuming, session?.status, resumeSession]);
@@ -91,9 +106,14 @@ export const useSceneSession = (sessionId?: string) => {
     const handleEnd = useCallback(async () => {
         if (!sessionId || isEnding) return;
         try {
-            return await endSession({ sessionId }).unwrap();
+            const result = await endSession({ sessionId }).unwrap();
+            toast.success('Session ended.');
+            return result;
         } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to end session.');
+            toast.error(errorMsg);
             console.error('Failed to end session:', err);
+            throw err;
         }
     }, [sessionId, isEnding, endSession]);
 
@@ -105,6 +125,8 @@ export const useSceneSession = (sessionId?: string) => {
         error,
         handleSendMessage,
         isSendingTurn,
+        sendError,
+        clearSendError: () => setSendError(null),
         handlePause,
         isPausing,
         handleResume,
