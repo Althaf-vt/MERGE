@@ -15,6 +15,9 @@ export interface SessionHistoryListProps {
     onPracticeAgain?: (session: SceneSessionDto) => void;
     onContinueSession?: (session: SceneSessionDto) => void;
     onStartNewSession?: () => void;
+    isError?: boolean;
+    errorMessage?: string;
+    onRetry?: () => void;
 }
 
 type FilterTab = 'ALL' | 'COMPLETED' | 'IN_PROGRESS' | 'HIGH_SCORE' | 'RECENT';
@@ -33,6 +36,9 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
     onPracticeAgain,
     onContinueSession,
     onStartNewSession,
+    isError = false,
+    errorMessage,
+    onRetry,
 }) => {
     const [filterTab, setFilterTab] = useState<FilterTab>('ALL');
     const [searchTerm, setSearchTerm] = useState('');
@@ -178,6 +184,25 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
                     </div>
                 </div>
             </header>
+
+            {/* Error Banner (if fetch fails) */}
+            {isError && (
+                <div className={styles.historyErrorBanner} role="alert">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span className={styles.historyErrorText}>
+                        {errorMessage || 'Failed to load past practice sessions from server.'}
+                    </span>
+                    {onRetry && (
+                        <button type="button" onClick={onRetry} className={styles.retryButton}>
+                            Retry
+                        </button>
+                    )}
+                </div>
+            )}
 
             {/* 2. Search & Filter Bar */}
             <div className={styles.filterCard}>
