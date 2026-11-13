@@ -47,7 +47,7 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
     const score = summary.communicationScore ?? 80;
 
     // Calculate score ring offset
-    const radius = 38;
+    const radius = 32;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (Math.min(100, Math.max(0, score)) / 100) * circumference;
 
@@ -129,7 +129,7 @@ export const SessionSummaryModal: React.FC<SessionSummaryModalProps> = ({
                     {/* 1. Conversation Score Card */}
                     <section className={styles.scoreCard} aria-label="Conversation Score">
                         <div className={styles.scoreGaugeBox}>
-                            <svg className={styles.gaugeSvg} width="96" height="96" viewBox="0 0 100 100" aria-hidden="true">
+                            <svg className={styles.gaugeSvg} width="76" height="76" viewBox="0 0 100 100" aria-hidden="true">
                                 <circle
                                     cx="50"
                                     cy="50"
