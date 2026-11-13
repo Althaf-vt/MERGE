@@ -1,0 +1,276 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+.modal {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: modalEnter 0.2s ease-out;
+}
+
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid #f3f4f6;
+    background: #ffffff;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.badgeRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.categoryBadge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(109, 40, 217, 0.08);
+    color: #6D28D9;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.dateText {
+    font-size: 0.8125rem;
+    color: #6b7280;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0.35rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+    color: #111827;
+    background: #f3f4f6;
+}
+
+.body {
+    padding: 1.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.scoreBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(109, 40, 217, 0.08) 0%, rgba(124, 58, 237, 0.04) 100%);
+    border: 1px solid rgba(109, 40, 217, 0.15);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+}
+
+.scoreLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.scoreHeading {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6D28D9;
+    margin: 0;
+}
+
+.scoreDesc {
+    font-size: 0.8125rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+.scoreValue {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #6D28D9;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.scoreTotal {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #9ca3af;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sectionTitle {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summaryText {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.6;
+    margin: 0;
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 3px solid #6D28D9;
+}
+
+.takeawayList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.takeawayItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.45;
+    background: #f0fdf4;
+    border: 1px solid #dcfce7;
+    padding: 0.625rem 0.875rem;
+    border-radius: 10px;
+}
+
+.takeawayIcon {
+    color: #16a34a;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.noteList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.noteItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.45;
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    padding: 0.625rem 0.875rem;
+    border-radius: 10px;
+}
+
+.noteIcon {
+    color: #d97706;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.coachingNotesText {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.6;
+    margin: 0;
+    background: #fbfbfc;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    padding: 1rem;
+    white-space: pre-line;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1.25rem 1.75rem;
+    border-top: 1px solid #f3f4f6;
+    background: #ffffff;
+}
+
+.doneButton {
+    padding: 0.625rem 1.5rem;
+    background: #6D28D9;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.doneButton:hover {
+    background: #5b21b6;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+}
+
