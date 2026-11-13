@@ -1,8 +1,8 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
+import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 import {
     GenerateTurnResult,
@@ -76,46 +76,53 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         context: SceneSimulationContext,
         transcript: SceneTurnSnapshot[]
     ): Promise<SceneSessionSummaryData> {
+        const fallback: SceneSessionSummaryData = {
+            summary: `Completed practice rehearsal session for ${context.scenarioTitle}.`,
+            thingsToNote: ['Engaged thoughtfully throughout the scenario.'],
+            takeaways: ['Keep practicing active listening and asking open-ended questions.'],
+            coachingNotes: 'Great effort in completing this scenario. Continue refining your natural conversation pace.',
+            communicationScore: 80,
+        };
+
         try {
-            const model = this._genAi.getGenerativeModel({
-                model: this._modelName,
-                generationConfig: {
-                    temperature: this._coachTemperature,
-                },
-                safetySettings: this._safetySettings,
+            return await this._retryWithBackoff(async () => {
+                const model = this._genAi.getGenerativeModel({
+                    model: this._modelName,
+                    generationConfig: {
+                        temperature: this._coachTemperature,
+                    },
+                    safetySettings: this._safetySettings,
+                });
+
+                const prompt = SessionSummaryPrompt.getPrompt(context, transcript);
+                const result = await model.generateContent(prompt);
+                const responseText = result.response.text();
+
+                return this._parseJson<SceneSessionSummaryData>(responseText, fallback);
             });
-
-            const prompt = SessionSummaryPrompt.getPrompt(context, transcript);
-            const result = await model.generateContent(prompt);
-            const responseText = result.response.text();
-
-            const fallback: SceneSessionSummaryData = {
-                summary: `Completed practice rehearsal session for ${context.scenarioTitle}.`,
-                thingsToNote: ['Engaged thoughtfully throughout the scenario.'],
-                takeaways: ['Keep practicing active listening and asking open-ended questions.'],
-                coachingNotes: 'Great effort in completing this scenario. Continue refining your natural conversation pace.',
-                communicationScore: 80,
-            };
-
-            return this._parseJson<SceneSessionSummaryData>(responseText, fallback);
         } catch (error) {
-            this._handleAiError(error);
+            this._logger.warn(
+                `Session summary generation hit transient error: ${error instanceof Error ? error.message : String(error)}. Utilizing structured fallback summary.`
+            );
+            return fallback;
         }
     }
 
     private async _generatePersonaGreeting(context: SceneSimulationContext): Promise<string> {
-        const model = this._genAi.getGenerativeModel({
-            model: this._modelName,
-            systemInstruction: PersonaPrompt.getSystemPrompt(context),
-            generationConfig: {
-                temperature: this._personaTemperature,
-            },
-            safetySettings: this._safetySettings,
-        });
+        return this._retryWithBackoff(async () => {
+            const model = this._genAi.getGenerativeModel({
+                model: this._modelName,
+                systemInstruction: PersonaPrompt.getSystemPrompt(context),
+                generationConfig: {
+                    temperature: this._personaTemperature,
+                },
+                safetySettings: this._safetySettings,
+            });
 
-        const prompt = PersonaPrompt.getInitialGreetingPrompt(context);
-        const result = await model.generateContent(prompt);
-        return result.response.text().trim();
+            const prompt = PersonaPrompt.getInitialGreetingPrompt(context);
+            const result = await model.generateContent(prompt);
+            return result.response.text().trim();
+        });
     }
 
     private async _generatePersonaReply(
@@ -123,22 +130,24 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         userMessage: string,
         transcript: SceneTurnSnapshot[]
     ): Promise<string> {
-        const model = this._genAi.getGenerativeModel({
-            model: this._modelName,
-            systemInstruction: PersonaPrompt.getSystemPrompt(context),
-            generationConfig: {
-                temperature: this._personaTemperature,
-            },
-            safetySettings: this._safetySettings,
-        });
+        return this._retryWithBackoff(async () => {
+            const model = this._genAi.getGenerativeModel({
+                model: this._modelName,
+                systemInstruction: PersonaPrompt.getSystemPrompt(context),
+                generationConfig: {
+                    temperature: this._personaTemperature,
+                },
+                safetySettings: this._safetySettings,
+            });
 
-        const formattedHistory = PersonaPrompt.formatTranscript(transcript);
-        const chat = model.startChat({
-            history: formattedHistory,
-        });
+            const formattedHistory = PersonaPrompt.formatTranscript(transcript);
+            const chat = model.startChat({
+                history: formattedHistory,
+            });
 
-        const result = await chat.sendMessage(userMessage);
-        return result.response.text().trim();
+            const result = await chat.sendMessage(userMessage);
+            return result.response.text().trim();
+        });
     }
 
     private async _generateCoachFeedback(
@@ -146,44 +155,84 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         userMessage: string,
         transcript: SceneTurnSnapshot[]
     ): Promise<CoachNoteProps | null> {
-        const model = this._genAi.getGenerativeModel({
-            model: this._modelName,
-            systemInstruction: CoachPrompt.getSystemPrompt(context),
-            generationConfig: {
-                temperature: this._coachTemperature,
-            },
-            safetySettings: this._safetySettings,
-        });
+        try {
+            return await this._retryWithBackoff(async () => {
+                const model = this._genAi.getGenerativeModel({
+                    model: this._modelName,
+                    systemInstruction: CoachPrompt.getSystemPrompt(context),
+                    generationConfig: {
+                        temperature: this._coachTemperature,
+                    },
+                    safetySettings: this._safetySettings,
+                });
 
-        const prompt = CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript);
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
+                const prompt = CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript);
+                const result = await model.generateContent(prompt);
+                const text = result.response.text();
 
-        const fallback: CoachEvaluationRawResult = {
-            shouldIntervene: false,
-            observation: '',
-            tone: 'Natural',
-            pacing: 'Balanced',
-            nextTip: '',
-        };
+                const fallback: CoachEvaluationRawResult = {
+                    shouldIntervene: false,
+                    observation: '',
+                    tone: 'Natural',
+                    pacing: 'Balanced',
+                    nextTip: '',
+                };
 
-        const parsed = this._parseJson<CoachEvaluationRawResult>(text, fallback);
+                const parsed = this._parseJson<CoachEvaluationRawResult>(text, fallback);
 
-        // Anti-nagging / Selective intervention policy
-        if (!parsed.shouldIntervene) {
-            return null;
+                // Anti-nagging / Selective intervention policy
+                if (!parsed.shouldIntervene) {
+                    return null;
+                }
+
+                if (!parsed.observation || parsed.observation.trim().length === 0) {
+                    return null;
+                }
+
+                return {
+                    observation: parsed.observation.trim(),
+                    tone: parsed.tone?.trim() || 'Natural',
+                    pacing: parsed.pacing?.trim() || 'Balanced',
+                    nextTip: parsed.nextTip?.trim() || 'Continue exploring shared topics naturally.',
+                };
+            });
+        } catch (error) {
+            this._logger.warn(
+                `Coach feedback generation temporarily unavailable: ${error instanceof Error ? error.message : String(error)}`
+            );
+            return null; // Gracefully degrade - omit coach note on transient error
         }
+    }
 
-        if (!parsed.observation || parsed.observation.trim().length === 0) {
-            return null;
+    private async _retryWithBackoff<T>(
+        operation: () => Promise<T>,
+        maxRetries = 2,
+        delayMs = 1200
+    ): Promise<T> {
+        let lastError: unknown;
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                return await operation();
+            } catch (error) {
+                lastError = error;
+                const message = error instanceof Error ? error.message : String(error);
+                const isTransient =
+                    message.includes('503') ||
+                    message.includes('high demand') ||
+                    message.includes('ResourceExhausted') ||
+                    message.includes('429');
+
+                if (!isTransient || attempt === maxRetries) {
+                    throw error;
+                }
+
+                this._logger.warn(
+                    `Gemini transient overload (attempt ${attempt + 1}/${maxRetries + 1}): ${message}. Retrying in ${delayMs}ms...`
+                );
+                await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(1.5, attempt)));
+            }
         }
-
-        return {
-            observation: parsed.observation.trim(),
-            tone: parsed.tone?.trim() || 'Natural',
-            pacing: parsed.pacing?.trim() || 'Balanced',
-            nextTip: parsed.nextTip?.trim() || 'Continue exploring shared topics naturally.',
-        };
+        throw lastError;
     }
 
     private _parseJson<T>(rawText: string, fallback: T): T {
@@ -211,4 +260,3 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
         throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, SCENE_PARTNER_ERROR_MESSAGES.AI_SERVICE_UNAVAILABLE);
     }
 }
-
