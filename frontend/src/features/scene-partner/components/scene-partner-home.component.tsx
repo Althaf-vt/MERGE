@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetConnectionsQuery } from '../../../shared/api/connections.api';
-import type { ScenarioDto, SimulationType } from '../types/scene-partner.types';
+import type { ScenarioDto, SimulationType, SceneSessionDto } from '../types/scene-partner.types';
+import { ActiveSessionBanner } from './active-session-banner.component';
 import styles from './scene-partner-home.module.css';
 
 export interface SelectedPartnerState {
@@ -21,6 +22,10 @@ export interface ScenePartnerHomeProps {
         partnerName: string;
     }) => Promise<void>;
     onViewHistory: () => void;
+    activeSession?: SceneSessionDto | null;
+    onResumeActive?: () => void;
+    onEndActive?: () => void;
+    isEndingActive?: boolean;
 }
 
 export interface FigmaScenarioItem {
@@ -58,6 +63,10 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     isStarting = false,
     onStartPractice,
     onViewHistory,
+    activeSession,
+    onResumeActive,
+    onEndActive,
+    isEndingActive = false,
 }) => {
     const navigate = useNavigate();
 
@@ -146,6 +155,16 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     Practice conversations before sending them in real life. Build confidence, explore scenarios, and prepare for meaningful connections.
                 </p>
             </header>
+
+            {/* Active Ongoing Practice Banner (Home Page only) */}
+            {activeSession && (
+                <ActiveSessionBanner
+                    session={activeSession}
+                    onResume={onResumeActive || (() => {})}
+                    onEnd={onEndActive || (() => {})}
+                    isEnding={isEndingActive}
+                />
+            )}
 
             {/* Main Hub Card */}
             <div className={styles.hubCard}>

@@ -5,7 +5,6 @@ import { useSceneScenarios } from '../hooks/use-scene-scenarios.hook';
 import { useSceneSession } from '../hooks/use-scene-session.hook';
 import { useSceneHistory } from '../hooks/use-scene-history.hook';
 import { ScenePartnerHome } from '../components/scene-partner-home.component';
-import { ActiveSessionBanner } from '../components/active-session-banner.component';
 import { SimulationChat } from '../components/simulation-chat.component';
 import { SessionSummaryModal } from '../components/session-summary-modal.component';
 import { SessionHistoryList } from '../components/session-history-list.component';
@@ -186,18 +185,6 @@ export const ScenePartnerPage: React.FC = () => {
     return (
         <main className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
-                {/* Active Session Banner (if an ongoing session is found) */}
-                {activeSession && (
-                    <div style={{ maxWidth: '760px', width: '100%', margin: '0 auto 0.75rem auto' }}>
-                        <ActiveSessionBanner
-                            session={activeSession}
-                            onResume={() => setActiveSessionId(activeSession.id)}
-                            onEnd={handleEndBannerSession}
-                            isEnding={isEndingActive}
-                        />
-                    </div>
-                )}
-
                 {/* Tab: Scenarios / Scene Partner Home */}
                 {mainTab === 'SCENARIOS' && (
                     <ScenePartnerHome
@@ -206,6 +193,10 @@ export const ScenePartnerPage: React.FC = () => {
                         isStarting={Boolean(startingScenarioId)}
                         onStartPractice={handleStartPracticeFromHome}
                         onViewHistory={() => setMainTab('HISTORY')}
+                        activeSession={activeSession}
+                        onResumeActive={() => activeSession && setActiveSessionId(activeSession.id)}
+                        onEndActive={handleEndBannerSession}
+                        isEndingActive={isEndingActive}
                     />
                 )}
 
