@@ -61,8 +61,6 @@ export const ScenePartnerPage: React.FC = () => {
         session: currentSimSession,
         handleSendMessage,
         isSendingTurn,
-        sendError,
-        clearSendError,
         handlePause,
         isPausing,
         handleResume,
@@ -95,7 +93,6 @@ export const ScenePartnerPage: React.FC = () => {
             const errorMsg = getErrorMessage(err, 'Failed to start practice session.');
             toast.error(errorMsg);
             console.error('Failed to start scene session:', err);
-            throw err;
         } finally {
             setStartingScenarioId(null);
         }
@@ -225,8 +222,6 @@ export const ScenePartnerPage: React.FC = () => {
                         isResuming={isResuming}
                         isEnding={isEnding}
                         formattedTime={formattedTime}
-                        sendError={sendError}
-                        onClearSendError={clearSendError}
                     />
                 </div>
 
