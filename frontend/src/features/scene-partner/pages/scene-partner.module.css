@@ -2,16 +2,16 @@
     width: 100%;
     min-height: 100vh;
     background-color: #fafafa;
-    padding-top: 6.5rem;
-    padding-bottom: 4rem;
+    padding-top: 5.5rem;
+    padding-bottom: 2.5rem;
     box-sizing: border-box;
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #111827;
 }
 
 .contentWrapper {
-    max-width: 1140px;
-    width: 90%;
+    max-width: 1040px;
+    width: 92%;
     margin: 0 auto;
 }
 
