@@ -1,0 +1,321 @@
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 75vh;
+    min-height: 550px;
+    max-height: 850px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    background: #ffffff;
+    gap: 1rem;
+    flex-wrap: wrap;
+    z-index: 5;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: rgba(109, 40, 217, 0.08);
+    color: #6D28D9;
+}
+
+.typeBadge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timerPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+    font-variant-numeric: tabular-nums;
+}
+
+.actionButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.actionButton:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.endButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #ffffff;
+    color: #dc2626;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.endButton:hover:not(:disabled) {
+    background: #fef2f2;
+}
+
+.messagesList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: #fafafa;
+}
+
+.introBox {
+    background: #f3f4f6;
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    max-width: 520px;
+    margin: 0 auto 0.5rem auto;
+    line-height: 1.45;
+}
+
+.messageRowUser {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    align-self: flex-end;
+    max-width: 75%;
+}
+
+.bubbleUser {
+    background: #6D28D9;
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 18px 18px 4px 18px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    word-break: break-word;
+    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.2);
+}
+
+.messageRowSim {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: flex-start;
+    max-width: 80%;
+}
+
+.simContentWrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ede9fe;
+    color: #6D28D9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.bubbleSim {
+    background: #ffffff;
+    color: #111827;
+    padding: 0.75rem 1rem;
+    border-radius: 18px 18px 18px 4px;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    word-break: break-word;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.timestamp {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+    padding: 0 0.25rem;
+}
+
+.typingIndicator {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.625rem 1rem;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    align-self: flex-start;
+}
+
+.typingDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a78bfa;
+    animation: bounce 1.2s infinite ease-in-out;
+}
+
+.typingDot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
+    }
+}
+
+.inputFooter {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f3f4f6;
+    background: #ffffff;
+}
+
+.pausedBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: #92400e;
+}
+
+.inputRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.textarea {
+    flex: 1;
+    min-height: 44px;
+    max-height: 120px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    font-family: inherit;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    outline: none;
+    resize: none;
+    line-height: 1.4;
+    transition: border-color 0.15s ease;
+}
+
+.textarea:focus {
+    border-color: #6D28D9;
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.1);
+}
+
+.sendButton {
+    height: 44px;
+    width: 44px;
+    background: #6D28D9;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+    background: #5b21b6;
+    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.25);
+}
+
+.sendButton:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.counterRow {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.35rem;
+}
+
+.charCounter {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
