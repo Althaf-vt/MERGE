@@ -9,6 +9,7 @@ import { CastingDirectorModule } from "./modules/casting-director/casting-direct
 import { EnvConfig } from "./shared/infrastructure/config/env.config";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
 import { ConnectionsModule } from "./modules/connections/connections.module";
+import { ScenePartnerModule } from "./modules/scene-partner/scene-partner.module";
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { ConnectionsModule } from "./modules/connections/connections.module";
         CastingDirectorModule,
         DiscoveryModule,
         ConnectionsModule,
+        ScenePartnerModule,
     ]
 })
 
