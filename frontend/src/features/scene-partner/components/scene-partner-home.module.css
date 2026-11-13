@@ -478,37 +478,6 @@
     margin: 0;
 }
 
-/* Skill Improvement Chips */
-.skillsPillsGrid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-}
-
-.skillPill {
-    border: 1.5px solid #E5E7EB;
-    background: #FFFFFF;
-    color: #374151;
-    font-size: 0.76rem;
-    font-weight: 500;
-    padding: 0.35rem 0.75rem;
-    border-radius: 9999px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.skillPill:hover {
-    border-color: #D1D5DB;
-    background: #F9FAFB;
-}
-
-.skillPillSelected {
-    border-color: #7C3AED;
-    background: #7C3AED;
-    color: #FFFFFF;
-    font-weight: 600;
-}
-
 /* Ready Status Bar */
 .readyBar {
     display: flex;
@@ -537,53 +506,6 @@
     background: #F3F4F6;
     padding: 0.2rem 0.45rem;
     border-radius: 4px;
-}
-
-/* Recommended Section */
-.recommendedSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.45rem;
-    width: 100%;
-}
-
-.recommendedTitle {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: #6B7280;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.recommendedButtonsRow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    width: 100%;
-}
-
-.recommendedBtn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 6px;
-    padding: 0.38rem 0.65rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.recommendedBtn:hover {
-    border-color: #C4B5FD;
-    background: #F5F3FF;
-    color: #6D28D9;
 }
 
 .sectionErrorBanner {

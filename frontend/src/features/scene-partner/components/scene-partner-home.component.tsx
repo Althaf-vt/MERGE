@@ -51,15 +51,6 @@ const FIGMA_SCENARIO_ITEMS: FigmaScenarioItem[] = [
     { id: 'long-term-compatibility', title: 'Long-Term Compatibility', categoryTag: 'RELATIONSHIP_GOALS', backendFallbackId: 'scenario-relationship-goals' },
 ];
 
-const SKILL_IMPROVEMENT_OPTIONS = [
-    'Confidence',
-    'First Impressions',
-    'Better Questions',
-    'Conversation Flow',
-    'Active Listening',
-    'Emotional Connection',
-];
-
 export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     scenarios,
     isLoadingScenarios = false,
@@ -92,7 +83,6 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     });
 
     const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>('first-message');
-    const [selectedSkill, setSelectedSkill] = useState<string>('First Impressions');
 
     const activeFigmaScenario = FIGMA_SCENARIO_ITEMS.find((s) => s.id === selectedScenarioKey) || FIGMA_SCENARIO_ITEMS[0];
 
@@ -127,15 +117,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
         });
     };
 
-    const handleQuickStartBreakIce = () => {
-        setSelectedScenarioKey('first-message');
-        setSelectedSkill('First Impressions');
-    };
 
-    const handleQuickStartFollowUp = () => {
-        setSelectedScenarioKey('breaking-silence');
-        setSelectedSkill('Better Questions');
-    };
 
     return (
         <div className={styles.container}>
@@ -398,29 +380,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     </p>
                 </section>
 
-                {/* Section 4: What Would You Like To Improve? */}
-                <section aria-labelledby="skills-heading" className={styles.sectionBlock}>
-                    <h2 id="skills-heading" className={styles.sectionTitle}>
-                        What Would You Like To Improve?
-                    </h2>
-                    <div className={styles.skillsPillsGrid} role="group" aria-label="Skills to improve">
-                        {SKILL_IMPROVEMENT_OPTIONS.map((skill) => {
-                            const isSelected = selectedSkill === skill;
-                            return (
-                                <button
-                                    key={skill}
-                                    type="button"
-                                    className={`${styles.skillPill} ${isSelected ? styles.skillPillSelected : ''}`}
-                                    onClick={() => setSelectedSkill(skill)}
-                                >
-                                    {skill}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </section>
-
-                {/* Section 5: Ready Bar (Summary Strip) */}
+                {/* Section 4: Ready Bar (Summary Strip) */}
                 <div className={styles.readyBar} aria-label="Session configuration summary">
                     <span className={styles.readyLabel}>Ready:</span>
                     <span className={styles.readyPill}>
@@ -429,14 +389,6 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             <circle cx="12" cy="7" r="4" />
                         </svg>
                         <span>{selectedPartner.name}</span>
-                    </span>
-                    <span className={styles.readyPill}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <circle cx="12" cy="12" r="10" />
-                            <circle cx="12" cy="12" r="6" />
-                            <circle cx="12" cy="12" r="2" />
-                        </svg>
-                        <span>{selectedSkill}</span>
                     </span>
                     <span className={styles.readyPill}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -453,35 +405,6 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         </svg>
                         <span>5-10 mins</span>
                     </span>
-                </div>
-
-                {/* Section 6: RECOMMENDED FOR YOU */}
-                <div className={styles.recommendedSection}>
-                    <span className={styles.recommendedTitle}>RECOMMENDED FOR YOU</span>
-                    <div className={styles.recommendedButtonsRow}>
-                        <button
-                            type="button"
-                            className={styles.recommendedBtn}
-                            onClick={handleQuickStartBreakIce}
-                        >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                            </svg>
-                            <span>Practice Breaking The Ice With {selectedPartner.name.split(' ')[0]}</span>
-                        </button>
-                        <button
-                            type="button"
-                            className={styles.recommendedBtn}
-                            onClick={handleQuickStartFollowUp}
-                        >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                                <line x1="12" x2="12.01" y1="17" y2="17" />
-                            </svg>
-                            <span>Improve Follow-Up Questions</span>
-                        </button>
-                    </div>
                 </div>
 
                 {/* Primary Actions */}
