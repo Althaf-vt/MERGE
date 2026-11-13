@@ -46,6 +46,7 @@ import { PhotoVerificationPage } from './features/admin/photo-verification/pages
 import { KycEscalationPage } from './features/admin/kyc-escalation/pages/kyc-escalation.page';
 import { DiscoveryPage } from './features/discovery/pages/discovery.page';
 import { ConnectionsPage } from './features/connections/pages/connections.page';
+import { ScenePartnerPage } from './features/scene-partner/pages/scene-partner.page';
 
 
 export const App = () => {
@@ -103,6 +104,7 @@ export const App = () => {
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
                             <Route path='/discovery' element={<DiscoveryPage />} />
                             <Route path='/connections' element={<ConnectionsPage />} />
+                            <Route path='/scene-partner' element={<ScenePartnerPage />} />
 
                             {/* USER PROFILE MANAGEMENT ROUTES */}
                             <Route path="/profile" element={<ProfileLayout />}>
