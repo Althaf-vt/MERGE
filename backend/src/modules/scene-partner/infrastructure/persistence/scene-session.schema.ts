@@ -1,11 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import {
-    ScenarioCategory,
-    SceneSessionStatus,
-    SceneSpeakerRole,
-    SimulationType,
-} from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../domain/enums/scene-partner.enums";
 import { SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
 
 // Subdocument Schema: Coach Note
@@ -56,11 +51,11 @@ export class SceneSessionSummarySchemaClass {
     @Prop({ type: [String], default: [] })
     takeaways: string[];
 
-    @Prop({ type: [String], default: [] })
-    coachingNotes: string[];
-
     @Prop({ required: true })
-    communicationScore: number;
+    coachingNotes: string;
+
+    @Prop({ type: Number })
+    communicationScore?: number;
 }
 
 export const SceneSessionSummarySchema = SchemaFactory.createForClass(SceneSessionSummarySchemaClass);
