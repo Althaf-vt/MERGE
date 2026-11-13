@@ -1,0 +1,142 @@
+.toastContainer {
+    position: fixed;
+    top: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: calc(100% - 2rem);
+    max-width: 540px;
+    pointer-events: none;
+}
+
+.toastCard {
+    pointer-events: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    animation: toastSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-sizing: border-box;
+}
+
+@keyframes toastSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.contentWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.iconWrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin: 0;
+    word-break: break-word;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+    opacity: 0.7;
+}
+
+.closeButton:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Variant: Error */
+.toastError {
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    color: #991B1B;
+}
+
+.toastError .iconWrapper {
+    color: #DC2626;
+}
+
+.toastError .closeButton {
+    color: #991B1B;
+}
+
+/* Variant: Success */
+.toastSuccess {
+    background: #ECFDF5;
+    border: 1px solid #6EE7B7;
+    color: #065F46;
+}
+
+.toastSuccess .iconWrapper {
+    color: #059669;
+}
+
+.toastSuccess .closeButton {
+    color: #065F46;
+}
+
+/* Variant: Warning */
+.toastWarning {
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    color: #92400E;
+}
+
+.toastWarning .iconWrapper {
+    color: #D97706;
+}
+
+.toastWarning .closeButton {
+    color: #92400E;
+}
+
+/* Variant: Info */
+.toastInfo {
+    background: #EFF6FF;
+    border: 1px solid #93C5FD;
+    color: #1E40AF;
+}
+
+.toastInfo .iconWrapper {
+    color: #2563EB;
+}
+
+.toastInfo .closeButton {
+    color: #1E40AF;
+}
+
