@@ -1,0 +1,112 @@
+.coachCard {
+    background: #fffdf5;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 0.875rem 1rem;
+    margin: 0.5rem 0 0.75rem 0;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.08);
+    transition: all 0.2s ease;
+}
+
+.headerRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.badgeGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.coachBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #b45309;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.tipSnippet {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #92400e;
+    display: -webkit-box;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.toggleButton {
+    background: transparent;
+    border: none;
+    color: #b45309;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+}
+
+.toggleButton:hover {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.detailsBody {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #fde68a;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.metaRow {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.metaPill {
+    font-size: 0.75rem;
+    color: #78350f;
+    background: #fef3c7;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.metaPill strong {
+    font-weight: 700;
+    color: #92400e;
+}
+
+.observationText {
+    font-size: 0.8125rem;
+    color: #78350f;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.tipBox {
+    background: #fef3c7;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: #92400e;
+    line-height: 1.4;
+}
+
+.tipBox strong {
+    color: #78350f;
+}
+
