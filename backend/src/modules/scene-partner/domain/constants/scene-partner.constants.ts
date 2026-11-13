@@ -28,6 +28,7 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     MESSAGE_EMPTY: 'Message content cannot be empty.',
     MESSAGE_TOO_LONG: (max: number) => `Message content cannot exceed ${max} characters.`,
     SUBSCRIPTION_REQUIRED: 'Scene Partner is a premium capability. An active subscription is required to start a rehearsal session.',
+    ACTIVE_SESSION_EXISTS: 'You already have an active simulation session in progress. Please conclude or resume it before starting a new one.',
     SIMULATION_REPLY_EMPTY: 'AI simulation reply cannot be empty.',
     COACH_NOTE_REQUIRED: 'Coaching feedback note is required for the simulation turn.',
     COACH_OBSERVATION_REQUIRED: 'Coach observation cannot be empty.',
