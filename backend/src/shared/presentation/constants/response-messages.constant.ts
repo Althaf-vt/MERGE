@@ -50,6 +50,17 @@ export const RESPONSE_MESSAGES = {
         OTP_REQUESTED: 'Security verification code sent.',
         SESSIONS_FETCHED: 'Active sessions retrieved successfully.',
     },
+    SCENE_PARTNER: {
+        SESSION_STARTED: 'Scene rehearsal session started successfully.',
+        TURN_PROCESSED: 'Simulation turn processed successfully.',
+        SESSION_PAUSED: 'Scene rehearsal session paused.',
+        SESSION_RESUMED: 'Scene rehearsal session resumed.',
+        SESSION_ENDED: 'Scene rehearsal session concluded and performance evaluation generated.',
+        ACTIVE_SESSION_FETCHED: 'Active scene rehearsal session retrieved successfully.',
+        SESSION_FETCHED: 'Scene rehearsal session retrieved successfully.',
+        HISTORY_FETCHED: 'Scene rehearsal session history retrieved successfully.',
+        SCENARIOS_FETCHED: 'Rehearsal scenarios retrieved successfully.',
+    },
     CASTING_DIRECTOR: {
         SESSION_INITIALIZED: 'Casting session initialized.',
         MESSAGE_PROCESSED: 'Casting message processed.',

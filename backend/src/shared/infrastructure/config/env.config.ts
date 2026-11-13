@@ -157,6 +157,22 @@ export const EnvConfig = {
         },
     },
 
+    // Google Gemini AI
+    gemini: {
+        get apiKey(): string | undefined {
+            return process.env.GEMINI_API_KEY;
+        },
+        get model(): string {
+            return process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+        },
+        get personaTemperature(): number {
+            return Number(process.env.GEMINI_PERSONA_TEMPERATURE) || 0.7;
+        },
+        get coachTemperature(): number {
+            return Number(process.env.GEMINI_COACH_TEMPERATURE) || 0.3;
+        },
+    },
+
     // Biometric & External Services
     services: {
         get mlServiceUrl(): string {

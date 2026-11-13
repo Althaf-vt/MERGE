@@ -60,6 +60,18 @@ export const API_ENDPOINTS = {
         MESSAGE: 'message',
         FINALIZE: 'finalize',
     },
+    SCENE_PARTNER: {
+        BASE: 'scene-partner',
+        SESSIONS: 'sessions',
+        SESSION_BY_ID: 'sessions/:id',
+        ACTIVE_SESSION: 'sessions/active',
+        HISTORY: 'sessions/history',
+        MESSAGE: 'sessions/:id/message',
+        PAUSE: 'sessions/:id/pause',
+        RESUME: 'sessions/:id/resume',
+        END: 'sessions/:id/end',
+        SCENARIOS: 'scenarios',
+    },
     DISCOVERY: {
         BASE: 'discovery',
         RECOMMENDATIONS: 'recommendations',
