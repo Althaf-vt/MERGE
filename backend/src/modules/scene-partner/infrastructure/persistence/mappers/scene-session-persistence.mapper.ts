@@ -13,6 +13,7 @@ export class SceneSessionPersistenceMapper {
             scenarioTitle: raw.scenarioTitle,
             scenarioCategory: raw.scenarioCategory as ScenarioCategory,
             scenarioPromptContext: raw.scenarioPromptContext ?? null,
+            isCoachingEnabled: raw.isCoachingEnabled ?? true,
             targetUserId: raw.targetUserId ?? null,
             status: raw.status as SceneSessionStatus,
             transcript: (raw.transcript ?? []).map((entry) => ({
@@ -56,6 +57,7 @@ export class SceneSessionPersistenceMapper {
             scenarioTitle: data.scenarioTitle,
             scenarioCategory: data.scenarioCategory,
             scenarioPromptContext: data.scenarioPromptContext ?? null,
+            isCoachingEnabled: data.isCoachingEnabled,
             targetUserId: data.targetUserId ?? null,
             status: data.status,
             transcript: data.transcript.map((entry) => ({
