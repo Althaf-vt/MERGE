@@ -93,6 +93,14 @@ export const scenePartnerApi = createApi({
             }),
             invalidatesTags: ['ScenePartnerActive', 'ScenePartnerHistory'],
         }),
+
+        deleteSession: builder.mutation<ApiResponse<{ id: string }>, string>({
+            query: (sessionId) => ({
+                url: API_ENDPOINTS.SCENE_PARTNER.SESSION_BY_ID(sessionId),
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['ScenePartnerHistory', 'ScenePartnerActive'],
+        }),
     }),
 });
 
@@ -106,5 +114,6 @@ export const {
     usePauseSessionMutation,
     useResumeSessionMutation,
     useEndSessionMutation,
+    useDeleteSessionMutation,
 } = scenePartnerApi;
 
