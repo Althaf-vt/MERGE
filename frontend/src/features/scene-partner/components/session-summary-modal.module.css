@@ -13,6 +13,12 @@
     padding: 1rem;
     box-sizing: border-box;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.overlay::-webkit-scrollbar {
+    display: none;
 }
 
 .modalContainer {
@@ -27,6 +33,12 @@
     flex-direction: column;
     overflow-y: auto;
     box-sizing: border-box;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.modalContainer::-webkit-scrollbar {
+    display: none;
 }
 
 /* Modal Header */

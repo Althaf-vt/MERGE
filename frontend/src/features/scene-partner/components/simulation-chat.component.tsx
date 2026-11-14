@@ -88,9 +88,19 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
     const [inputValue, setInputValue] = useState('');
     const [savedNotice, setSavedNotice] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesStreamRef = useRef<HTMLDivElement>(null);
 
     const isPaused = session.status === 'PAUSED';
     const isCompleted = session.status === 'COMPLETED';
+
+    // Lock page-level scroll while chat simulation is active
+    useEffect(() => {
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, []);
 
     // Resolve active partner name
     const resolvedPartnerName =
@@ -99,9 +109,14 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 
     const partnerInitial = resolvedPartnerName.charAt(0).toUpperCase();
 
-    // Auto-scroll on new transcript entries or typing change
+    // Auto-scroll on new transcript entries or typing change strictly within the messages stream
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesStreamRef.current) {
+            messagesStreamRef.current.scrollTo({
+                top: messagesStreamRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
     }, [session.transcript.length, isSendingTurn]);
 
     const handleSend = async () => {
@@ -278,7 +293,12 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                 </header>
 
                 {/* Messages Stream */}
-                <div className={styles.messagesStream} role="log" aria-live="polite">
+                <div
+                    ref={messagesStreamRef}
+                    className={styles.messagesStream}
+                    role="log"
+                    aria-live="polite"
+                >
                     {/* Centered Scenario Start Divider */}
                     <div className={styles.scenarioDividerPill}>
                         Scenario Started: {session.scenarioTitle}

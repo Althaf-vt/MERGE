@@ -9,10 +9,39 @@
     color: #111827;
 }
 
+.chatPageContainer {
+    height: 100vh;
+    max-height: 100vh;
+    min-height: 100vh;
+    padding-top: 5.5rem;
+    padding-bottom: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.chatPageContainer::-webkit-scrollbar {
+    display: none;
+}
+
 .contentWrapper {
     max-width: 1040px;
     width: 92%;
     margin: 0 auto;
+}
+
+.chatContentWrapper {
+    max-width: 1000px;
+    width: 92%;
+    margin: 0 auto;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .headerSection {

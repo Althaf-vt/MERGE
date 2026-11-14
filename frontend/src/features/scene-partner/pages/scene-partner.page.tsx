@@ -206,9 +206,9 @@ export const ScenePartnerPage: React.FC = () => {
     // If currently inside an active simulation chat session
     if (activeSessionId && currentSimSession) {
         return (
-            <main className={styles.pageContainer}>
+            <main className={`${styles.pageContainer} ${styles.chatPageContainer}`}>
                 <ScenePartnerToastContainer />
-                <div className={styles.contentWrapper} style={{ maxWidth: '1240px' }}>
+                <div className={styles.chatContentWrapper}>
                     <SimulationChat
                         session={currentSimSession}
                         onSendMessage={handleSendMessage}
