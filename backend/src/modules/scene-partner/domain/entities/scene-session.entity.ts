@@ -27,6 +27,7 @@ export class SceneSession extends AggregateRoot {
             scenarioId: props.scenarioId.trim(),
             scenarioTitle: props.scenarioTitle.trim(),
             scenarioCategory: props.scenarioCategory,
+            scenarioPromptContext: props.scenarioPromptContext?.trim() ?? null,
             targetUserId: props.targetUserId?.trim() ?? null,
             status: props.status ?? SceneSessionStatus.INITIALIZING,
             transcript: props.transcript ? [...props.transcript] : [],
@@ -80,6 +81,7 @@ export class SceneSession extends AggregateRoot {
     get scenarioId(): string { return this._props.scenarioId; }
     get scenarioTitle(): string { return this._props.scenarioTitle; }
     get scenarioCategory(): ScenarioCategory { return this._props.scenarioCategory; }
+    get scenarioPromptContext(): string | null { return this._props.scenarioPromptContext; }
     get targetUserId(): string | null { return this._props.targetUserId; }
     get status(): SceneSessionStatus { return this._props.status; }
     get transcript(): SceneTurn[] { return [...this._props.transcript]; }
@@ -266,6 +268,7 @@ export class SceneSession extends AggregateRoot {
             scenarioId: this._props.scenarioId,
             scenarioTitle: this._props.scenarioTitle,
             scenarioCategory: this._props.scenarioCategory,
+            scenarioPromptContext: this._props.scenarioPromptContext,
             targetUserId: this._props.targetUserId,
             status: this._props.status,
             transcript: this._props.transcript.map((t) => ({
