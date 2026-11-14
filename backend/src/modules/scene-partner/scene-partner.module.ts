@@ -11,7 +11,8 @@ import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scen
 import { MockSubscriptionFacade } from "./infrastructure/adapters/mock-subscription.facade";
 import { USER_CONTEXT_FACADE } from "./application/interfaces/user-context-facade.interface";
 import { UserContextAdapter } from "./infrastructure/adapters/user-context.adapter";
-import { END_SCENE_SESSION_USE_CASE, GET_ACTIVE_SCENE_SESSION_USE_CASE, GET_SCENARIOS_USE_CASE, GET_SCENE_SESSION_BY_ID_USE_CASE, GET_SCENE_SESSION_HISTORY_USE_CASE, PAUSE_SCENE_SESSION_USE_CASE, RESUME_SCENE_SESSION_USE_CASE, SEND_SCENE_TURN_USE_CASE, START_SCENE_SESSION_USE_CASE, } from "./application/interfaces/scene-partner.use-cases.interface";
+import { DELETE_SCENE_SESSION_USE_CASE, END_SCENE_SESSION_USE_CASE, GET_ACTIVE_SCENE_SESSION_USE_CASE, GET_SCENARIOS_USE_CASE, GET_SCENE_SESSION_BY_ID_USE_CASE, GET_SCENE_SESSION_HISTORY_USE_CASE, PAUSE_SCENE_SESSION_USE_CASE, RESUME_SCENE_SESSION_USE_CASE, SEND_SCENE_TURN_USE_CASE, START_SCENE_SESSION_USE_CASE, } from "./application/interfaces/scene-partner.use-cases.interface";
+import { DeleteSceneSessionUseCase } from "./application/use-cases/delete-scene-session.use-case";
 import { StartSceneSessionUseCase } from "./application/use-cases/start-scene-session.use-case";
 import { SendSceneTurnUseCase } from "./application/use-cases/send-scene-turn.use-case";
 import { PauseSceneSessionUseCase } from "./application/use-cases/pause-scene-session.use-case";
@@ -46,6 +47,7 @@ import { ScenePartnerFacade } from "./application/services/scene-partner.facade"
         { provide: GET_SCENE_SESSION_BY_ID_USE_CASE, useClass: GetSceneSessionByIdUseCase },
         { provide: GET_SCENE_SESSION_HISTORY_USE_CASE, useClass: GetSceneSessionHistoryUseCase },
         { provide: GET_SCENARIOS_USE_CASE, useClass: GetScenariosUseCase },
+        { provide: DELETE_SCENE_SESSION_USE_CASE, useClass: DeleteSceneSessionUseCase },
         // Public Facade
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
     ],
