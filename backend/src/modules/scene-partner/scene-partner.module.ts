@@ -6,7 +6,7 @@ import { ScenePartnerController } from "./presentation/controllers/scene-partner
 import { SCENE_SESSION_REPOSITORY } from "./domain/interfaces/scene-session-repository.interface";
 import { MongoSceneSessionRepository } from "./infrastructure/persistence/mongo-scene-session.repository";
 import { SCENE_PARTNER_AI_SERVICE } from "./domain/interfaces/scene-partner-ai.interface";
-import { GeminiScenePartnerAiService } from "./infrastructure/services/gemini-scene-partner-ai.service";
+import { OpenRouterScenePartnerAiService } from "./infrastructure/services/openrouter-scene-partner-ai.service";
 import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scene-partner-subscription-facade.interface";
 import { MockSubscriptionFacade } from "./infrastructure/adapters/mock-subscription.facade";
 import { USER_CONTEXT_FACADE } from "./application/interfaces/user-context-facade.interface";
@@ -34,7 +34,7 @@ import { ScenePartnerFacade } from "./application/services/scene-partner.facade"
     controllers: [ScenePartnerController],
     providers: [
         { provide: SCENE_SESSION_REPOSITORY, useClass: MongoSceneSessionRepository },
-        { provide: SCENE_PARTNER_AI_SERVICE, useClass: GeminiScenePartnerAiService },
+        { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
         { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useClass: MockSubscriptionFacade },
         { provide: USER_CONTEXT_FACADE, useClass: UserContextAdapter },
         { provide: START_SCENE_SESSION_USE_CASE, useClass: StartSceneSessionUseCase },

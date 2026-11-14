@@ -1,0 +1,1029 @@
+.simulationLayout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1rem;
+    max-width: 1000px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+@media (max-width: 860px) {
+    .simulationLayout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   Left Sidebar (Partner Context, Scenario & Coaching Panel)
+   ========================================================================== */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebarCard {
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    box-sizing: border-box;
+}
+
+/* Partner Profile Card */
+.partnerProfileHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.55rem;
+}
+
+.partnerAvatarRing {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, #7C3AED, #A78BFA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.partnerAvatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #4B5563;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.partnerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.partnerName {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.compatibilityBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: #F3E8FF;
+    color: #6D28D9;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    width: fit-content;
+}
+
+.sidebarSectionTitle {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #9CA3AF;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* Current Scenario Card */
+.cardHeaderRow {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #6B7280;
+    margin-bottom: 0.35rem;
+}
+
+.scenarioCardTitle {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Active Coaching Toggle Card */
+.activeCoachingRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.coachingIconBox {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #EDE9FE;
+    color: #7C3AED;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activeCoachingTexts {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5rem;
+    flex-grow: 1;
+}
+
+.activeCoachingTitle {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.activeCoachingSubtitle {
+    font-size: 0.68rem;
+    color: #6B7280;
+}
+
+.toggleSwitchLocked {
+    width: 30px;
+    height: 16px;
+    background: #7C3AED;
+    border-radius: 9999px;
+    padding: 2px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.toggleKnob {
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Session Controls */
+.sidebarActionsBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.actionRowGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+}
+
+.sidebarActionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 0.4rem 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sidebarActionBtn:hover:not(:disabled) {
+    border-color: #D1D5DB;
+    background: #F9FAFB;
+}
+
+.sidebarActionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.savedNotice {
+    font-size: 0.72rem;
+    color: #059669;
+    text-align: center;
+    font-weight: 600;
+}
+
+.endSessionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    background: #FFFFFF;
+    border: 1.5px solid #F87171;
+    color: #DC2626;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+}
+
+.endSessionBtn:hover:not(:disabled) {
+    background: #FEF2F2;
+    border-color: #DC2626;
+}
+
+.endSessionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Right Main Chat Pane
+   ========================================================================== */
+
+.chatPane {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+/* Chat Header */
+.chatHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 1.15rem;
+    border-bottom: 1.5px solid #F3F4F6;
+    background: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    width: fit-content;
+    transition: color 0.15s ease;
+}
+
+.backLink:hover {
+    color: #111827;
+}
+
+.roleplayTitleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.roleplayTitle {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.simulationActiveBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #059669;
+    letter-spacing: 0.03em;
+}
+
+.headerRightBadges {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.timerBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #4B5563;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+}
+
+.timerExpiredBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #DC2626;
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    animation: timerPulseRed 1.5s infinite;
+}
+
+@keyframes timerPulseRed {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.activeGreenDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    display: inline-block;
+}
+
+/* Messages Stream */
+.messagesStream {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background: #FAFAFA;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.messagesStream::-webkit-scrollbar {
+    display: none;
+}
+
+.scenarioDividerPill {
+    align-self: center;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    color: #4B5563;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.35rem;
+}
+
+.userRow {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.userBubble {
+    background: #6D28D9;
+    color: #FFFFFF;
+    border-radius: 12px 12px 3px 12px;
+    padding: 0.6rem 0.95rem;
+    max-width: 70%;
+    box-shadow: 0 1px 2px rgba(109, 40, 217, 0.12);
+}
+
+.partnerRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.chatPartnerAvatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #4B5563;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+.partnerBubble {
+    background: #F3F4F6;
+    color: #111827;
+    border-radius: 12px 12px 12px 3px;
+    padding: 0.6rem 0.95rem;
+    max-width: 70%;
+}
+
+.bubbleText {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* ==========================================================================
+   Inline Coach Feedback & Suggested Response
+   ========================================================================== */
+
+.inlineCoachContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0.35rem 0;
+    width: 100%;
+}
+
+/* Inline Praise Pill */
+.inlinePraisePill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #FFFFFF;
+    border: 1.5px solid #C4B5FD;
+    color: #6D28D9;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.22rem 0.65rem;
+    border-radius: 9999px;
+}
+
+/* Inline Coach Intervention Card */
+.coachInterventionCard {
+    width: 100%;
+    max-width: 460px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+/* Inline Suggested Response Card */
+.suggestedResponseCard {
+    width: 100%;
+    max-width: 460px;
+    background: #FAF5FF;
+    border: 1.5px solid #DDD6FE;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.cardExpanded {
+    padding: 0.65rem 0.85rem;
+}
+
+.cardCollapsed {
+    padding: 0.45rem 0.85rem;
+}
+
+.collapsibleHeaderBtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
+}
+
+.collapsibleTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.coachInterventionTitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    transition: color 0.15s ease;
+}
+
+.suggestedResponseTitle {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7C3AED;
+    transition: color 0.15s ease;
+}
+
+.collapsibleHeaderBtn:hover .coachInterventionTitle {
+    color: #111827;
+}
+
+.collapsibleHeaderBtn:hover .suggestedResponseTitle {
+    color: #6D28D9;
+}
+
+.chevronIcon {
+    color: #9CA3AF;
+    transition: transform 0.2s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.collapsibleHeaderBtn:hover .chevronIcon {
+    color: #4B5563;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.coachInterventionBody {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.75rem;
+    color: #4B5563;
+    line-height: 1.35;
+}
+
+.coachTipBody {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.76rem;
+    color: #1F2937;
+    line-height: 1.35;
+}
+
+/* Typing Indicator */
+.typingBubble {
+    background: #F3F4F6;
+    border-radius: 12px 12px 12px 3px;
+    padding: 0.55rem 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.typingDot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #9CA3AF;
+    animation: bounce 1.2s infinite ease-in-out;
+}
+
+.typingDot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-3px);
+    }
+}
+
+/* ==========================================================================
+   Bottom Input Bar
+   ========================================================================== */
+
+.inputArea {
+    padding: 0.75rem 1.15rem;
+    background: #FFFFFF;
+    border-top: 1.5px solid #F3F4F6;
+    flex-shrink: 0;
+}
+
+.inputBar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 9999px;
+    padding: 0.25rem 0.4rem 0.25rem 0.95rem;
+    transition: border-color 0.15s ease;
+}
+
+.inputBar:focus-within {
+    border-color: #7C3AED;
+    background: #FFFFFF;
+}
+
+.chatTextarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.85rem;
+    color: #111827;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    line-height: 1.3;
+    max-height: 70px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.chatTextarea::-webkit-scrollbar {
+    display: none;
+}
+
+.chatTextarea::placeholder {
+    color: #9CA3AF;
+}
+
+.chatTextarea:disabled {
+    cursor: not-allowed;
+}
+
+.sendButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #7C3AED;
+    color: #FFFFFF;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+    background: #6D28D9;
+    transform: scale(1.05);
+}
+
+.sendButton:disabled {
+    background: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================================
+   AI Evaluation Debrief Loading Overlay (Shown during End Session)
+   ========================================================================== */
+
+.endingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    animation: fadeInOverlay 0.25s ease-out;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.endingCard {
+    background: #FFFFFF;
+    border: 1.5px solid #EDE9FE;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    max-width: 480px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 20px 40px -15px rgba(109, 40, 217, 0.15), 0 0 0 1px rgba(124, 58, 237, 0.05);
+}
+
+.endingIconWrapper {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+}
+
+.pulseRing {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: #EDE9FE;
+    animation: pulseRing 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(0.85);
+        opacity: 0.9;
+    }
+}
+
+.endingIconCore {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #F5F3FF;
+    border: 2px solid #C4B5FD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7C3AED;
+    transition: transform 0.3s ease;
+}
+
+.endingBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #F3E8FF;
+    color: #6D28D9;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.endingTitle {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.015em;
+    min-height: 1.45rem;
+    animation: textFadeIn 0.35s ease;
+}
+
+.endingSubtitle {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.4;
+    min-height: 2.25rem;
+    animation: textFadeIn 0.35s ease;
+}
+
+@keyframes textFadeIn {
+    from {
+        opacity: 0.3;
+        transform: translateY(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.endingStepsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+    margin-bottom: 1.15rem;
+    text-align: left;
+    background: #FAF5FF;
+    border: 1px solid #E9D5FF;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    box-sizing: border-box;
+}
+
+.endingStepItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.77rem;
+    color: #6B7280;
+    transition: all 0.25s ease;
+}
+
+.stepLeftRow {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.stepItemActive {
+    color: #111827;
+    font-weight: 700;
+}
+
+.stepItemCompleted {
+    color: #065F46;
+}
+
+.stepLabelText {
+    line-height: 1.25;
+}
+
+.stepStatusTag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.stepItemCompleted .stepStatusTag {
+    color: #059669;
+}
+
+.stepItemActive .stepStatusTag {
+    color: #7C3AED;
+}
+
+.stepCheckIcon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #D1FAE5;
+    color: #059669;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stepDotActive {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7C3AED;
+    box-shadow: 0 0 0 3px #DDD6FE;
+    flex-shrink: 0;
+    animation: stepGlow 1.5s infinite alternate;
+}
+
+.stepDotWaiting {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #D1D5DB;
+    flex-shrink: 0;
+}
+
+@keyframes stepGlow {
+    from {
+        box-shadow: 0 0 0 2px #DDD6FE;
+    }
+    to {
+        box-shadow: 0 0 0 5px #C4B5FD;
+    }
+}
+
+.endingProgressMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.35rem;
+}
+
+.progressPercentText {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6D28D9;
+}
+
+.progressEstimatedText {
+    font-size: 0.68rem;
+    color: #9CA3AF;
+}
+
+.endingProgressBar {
+    width: 100%;
+    height: 6px;
+    background: #EDE9FE;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.endingProgressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #7C3AED, #A855F7);
+    border-radius: 9999px;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.endingTipBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.72rem;
+    color: #475569;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 1rem;
+    line-height: 1.35;
+    animation: textFadeIn 0.35s ease;
+}
+
+.endingTipIcon {
+    color: #7C3AED;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.endingTipHeading {
+    font-weight: 700;
+    color: #1E293B;
+}
+
+.spinnerIcon {
+    animation: spinIcon 1s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spinIcon {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

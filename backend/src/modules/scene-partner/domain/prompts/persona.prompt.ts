@@ -50,11 +50,22 @@ Keep it concise, friendly, and natural (1 to 2 sentences). Output only the messa
 `.trim();
     },
 
-    formatTranscript(transcript: SceneTurnSnapshot[]): Array<{ role: 'user' | 'model'; parts: [{ text: string }] }> {
-        return transcript.map((turn) => ({
-            role: turn.role === SceneSpeakerRole.USER ? 'user' : 'model',
+    formatTranscript(transcript: SceneTurnSnapshot[]): Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> {
+        const history: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = transcript.map((turn) => ({
+            role: turn.role === SceneSpeakerRole.USER ? ('user' as const) : ('model' as const),
             parts: [{ text: turn.content }],
         }));
+
+        // Google Generative AI requires the first message in history to have role: 'user'.
+        // If the session starts with the partner's greeting, prepend a user start indicator.
+        if (history.length > 0 && history[0].role === 'model') {
+            history.unshift({
+                role: 'user',
+                parts: [{ text: '[Starts the conversation]' }],
+            });
+        }
+
+        return history;
     },
 };
 

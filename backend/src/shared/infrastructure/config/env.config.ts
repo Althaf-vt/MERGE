@@ -163,7 +163,7 @@ export const EnvConfig = {
             return process.env.GEMINI_API_KEY;
         },
         get model(): string {
-            return process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+            return process.env.GEMINI_MODEL || 'gemini-3.8-flash';
         },
         get personaTemperature(): number {
             return Number(process.env.GEMINI_PERSONA_TEMPERATURE) || 0.7;
