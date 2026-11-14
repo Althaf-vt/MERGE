@@ -56,9 +56,23 @@ export const useSceneSession = (sessionId?: string) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }, [remainingSeconds]);
 
+    const handleEnd = useCallback(async () => {
+        if (!sessionId || isEnding) return;
+        try {
+            const result = await endSession({ sessionId }).unwrap();
+            toast.success('Session ended.');
+            return result;
+        } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to end session.');
+            toast.error(errorMsg);
+            console.error('Failed to end session:', err);
+            throw err;
+        }
+    }, [sessionId, isEnding, endSession]);
+
     const handleSendMessage = useCallback(async (content?: string): Promise<boolean> => {
         const contentToSend = (content ?? '').trim();
-        if (!sessionId || !contentToSend || isSendingTurn || session?.status !== 'IN_PROGRESS') {
+        if (!sessionId || !contentToSend || isSendingTurn || session?.status !== 'IN_PROGRESS' || isTimerExpired) {
             return false;
         }
 
@@ -70,11 +84,25 @@ export const useSceneSession = (sessionId?: string) => {
             return true;
         } catch (err) {
             const errorMsg = getErrorMessage(err, 'Failed to send message. Please try again.');
-            toast.error(errorMsg);
+            const isDurationLimit =
+                errorMsg.toLowerCase().includes('duration') ||
+                errorMsg.toLowerCase().includes('exceeded') ||
+                errorMsg.toLowerCase().includes('conclude');
+
+            if (isDurationLimit) {
+                toast.info('Session duration reached. Concluding your rehearsal and generating debrief...');
+                try {
+                    await handleEnd();
+                } catch {
+                    // Suppress if already concluding
+                }
+            } else {
+                toast.error(errorMsg);
+            }
             console.error('Failed to send turn:', err);
             return false;
         }
-    }, [sessionId, isSendingTurn, session?.status, sendTurn]);
+    }, [sessionId, isSendingTurn, session?.status, isTimerExpired, sendTurn, handleEnd]);
 
     const handlePause = useCallback(async () => {
         if (!sessionId || isPausing || session?.status !== 'IN_PROGRESS') return;
@@ -99,20 +127,6 @@ export const useSceneSession = (sessionId?: string) => {
             console.error('Failed to resume session:', err);
         }
     }, [sessionId, isResuming, session?.status, resumeSession]);
-
-    const handleEnd = useCallback(async () => {
-        if (!sessionId || isEnding) return;
-        try {
-            const result = await endSession({ sessionId }).unwrap();
-            toast.success('Session ended.');
-            return result;
-        } catch (err) {
-            const errorMsg = getErrorMessage(err, 'Failed to end session.');
-            toast.error(errorMsg);
-            console.error('Failed to end session:', err);
-            throw err;
-        }
-    }, [sessionId, isEnding, endSession]);
 
     return {
         session,

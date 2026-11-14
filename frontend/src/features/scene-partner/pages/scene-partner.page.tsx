@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetActiveSessionQuery, useStartSessionMutation, useEndSessionMutation } from '../api/scene-partner.api';
 import { useSceneScenarios } from '../hooks/use-scene-scenarios.hook';
@@ -68,9 +68,44 @@ export const ScenePartnerPage: React.FC = () => {
         handleEnd,
         isEnding,
         formattedTime,
+        isTimerExpired,
         isError: isSimSessionError,
         error: simSessionError,
     } = useSceneSession(activeSessionId || undefined);
+
+    const hasAutoEndedRef = useRef(false);
+
+    useEffect(() => {
+        hasAutoEndedRef.current = false;
+    }, [activeSessionId]);
+
+    // Automatically conclude practice session and debrief when time expires
+    useEffect(() => {
+        if (
+            isTimerExpired &&
+            activeSessionId &&
+            currentSimSession?.status === 'IN_PROGRESS' &&
+            !isEnding &&
+            !hasAutoEndedRef.current
+        ) {
+            hasAutoEndedRef.current = true;
+            toast.info('Session duration reached. Concluding your rehearsal and generating debrief...');
+            handleEndCurrentSimulation();
+        }
+    }, [isTimerExpired, activeSessionId, currentSimSession?.status, isEnding]);
+
+    // Automatically open summary debrief if active session arrives with COMPLETED status
+    useEffect(() => {
+        if (
+            currentSimSession?.status === 'COMPLETED' &&
+            currentSimSession.summary &&
+            !isSummaryModalOpen
+        ) {
+            setSummaryModalSession(currentSimSession);
+            setIsSummaryModalOpen(true);
+            setActiveSessionId(null);
+        }
+    }, [currentSimSession, isSummaryModalOpen]);
 
     const handleStartPracticeFromHome = async (payload: {
         scenarioId: string;
@@ -222,6 +257,7 @@ export const ScenePartnerPage: React.FC = () => {
                         isResuming={isResuming}
                         isEnding={isEnding}
                         formattedTime={formattedTime}
+                        isTimerExpired={isTimerExpired}
                     />
                 </div>
 

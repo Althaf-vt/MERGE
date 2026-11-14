@@ -16,6 +16,7 @@ export interface SimulationChatProps {
     isEnding?: boolean;
     formattedTime?: string;
     partnerName?: string;
+    isTimerExpired?: boolean;
 }
 
 interface InlineCoachCardProps {
@@ -172,7 +173,9 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
     isPausing = false,
     isResuming = false,
     isEnding = false,
+    formattedTime,
     partnerName,
+    isTimerExpired = false,
 }) => {
     const [inputValue, setInputValue] = useState('');
     const [savedNotice, setSavedNotice] = useState(false);
@@ -242,7 +245,7 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 
     const handleSend = async () => {
         const text = inputValue.trim();
-        if (!text || isSendingTurn || isPaused || isCompleted) return;
+        if (!text || isSendingTurn || isPaused || isCompleted || isTimerExpired || isEnding) return;
         setInputValue('');
         setPendingUserMessage(text);
         const success = await onSendMessage(text);
@@ -506,10 +509,24 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                     )}
                     <div className={styles.roleplayTitleRow}>
                         <h2 className={styles.roleplayTitle}>Roleplaying With: {resolvedPartnerName}</h2>
-                        <span className={styles.simulationActiveBadge}>
-                            <span className={styles.activeGreenDot} />
-                            SIMULATION ACTIVE
-                        </span>
+                        <div className={styles.headerRightBadges}>
+                            {formattedTime && (
+                                <span
+                                    className={isTimerExpired ? styles.timerExpiredBadge : styles.timerBadge}
+                                    title={isTimerExpired ? 'Practice time reached' : 'Remaining practice time'}
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span>{formattedTime}</span>
+                                </span>
+                            )}
+                            <span className={styles.simulationActiveBadge}>
+                                <span className={styles.activeGreenDot} />
+                                {isTimerExpired ? 'DURATION REACHED' : 'SIMULATION ACTIVE'}
+                            </span>
+                        </div>
                     </div>
                 </header>
 
@@ -622,15 +639,23 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="Type your response..."
-                            disabled={isSendingTurn || isPaused || isCompleted}
+                            placeholder={
+                                isTimerExpired
+                                    ? "Practice duration reached. Concluding session..."
+                                    : isPaused
+                                    ? "Simulation paused. Click Resume to continue..."
+                                    : isCompleted
+                                    ? "Rehearsal concluded."
+                                    : "Type your response..."
+                            }
+                            disabled={isSendingTurn || isPaused || isCompleted || isTimerExpired || isEnding}
                             rows={1}
                         />
                         <button
                             type="button"
                             className={styles.sendButton}
                             onClick={handleSend}
-                            disabled={!inputValue.trim() || isSendingTurn || isPaused || isCompleted}
+                            disabled={!inputValue.trim() || isSendingTurn || isPaused || isCompleted || isTimerExpired || isEnding}
                             aria-label="Send response"
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

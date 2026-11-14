@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ISendSceneTurnUseCase } from "../interfaces/scene-partner.use-cases.interface";
+import { END_SCENE_SESSION_USE_CASE, IEndSceneSessionUseCase, ISendSceneTurnUseCase } from "../interfaces/scene-partner.use-cases.interface";
 import { SendSceneTurnDto } from "../dtos/send-scene-turn.dto";
 import { SceneSessionResponseDto } from "../dtos/scene-session-response.dto";
 import { ISceneSessionRepository, SCENE_SESSION_REPOSITORY } from "../../domain/interfaces/scene-session-repository.interface";
@@ -19,12 +19,18 @@ export class SendSceneTurnUseCase implements ISendSceneTurnUseCase {
         @Inject(SCENE_SESSION_REPOSITORY) private readonly _sessionRepository: ISceneSessionRepository,
         @Inject(SCENE_PARTNER_AI_SERVICE) private readonly _aiService: IScenePartnerAiService,
         @Inject(USER_CONTEXT_FACADE) private readonly _userContextFacade: IUserContextFacade,
+        @Inject(END_SCENE_SESSION_USE_CASE) private readonly _endSceneSessionUseCase: IEndSceneSessionUseCase,
     ) { }
 
     async execute(userId: string, sessionId: string, dto: SendSceneTurnDto): Promise<SceneSessionResponseDto> {
         const session = await this._sessionRepository.findById(sessionId);
         if (!session) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, SCENE_PARTNER_ERROR_MESSAGES.SESSION_NOT_FOUND);
+        }
+
+        // Automatic Conclusion Guard: If session duration has exceeded its limit, automatically end and debrief
+        if (session.isDurationExceeded()) {
+            return await this._endSceneSessionUseCase.execute(userId, sessionId);
         }
 
         // Snapshot prior conversation history before appending new user turn
