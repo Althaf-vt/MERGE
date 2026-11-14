@@ -11,4 +11,5 @@ export interface PaginatedSceneSessionsResult {
 export interface ISceneSessionRepository extends IBaseRepository<SceneSession> {
     findActiveByUserId(userId: string): Promise<SceneSession | null>;
     findAllByUserId(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResult>;
+    deleteById(id: string, userId: string): Promise<boolean>;
 }

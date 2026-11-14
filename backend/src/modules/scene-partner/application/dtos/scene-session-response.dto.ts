@@ -29,7 +29,9 @@ export interface SceneSessionResponseDto {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext?: string | null;
     targetUserId: string | null;
+    isCoachingEnabled: boolean;
     status: SceneSessionStatus;
     transcript: SceneTurnResponseDto[];
     turnCount: number;

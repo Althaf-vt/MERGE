@@ -10,6 +10,8 @@ export interface SimulationChatProps {
     onEnd: () => void;
     onRestart?: () => void;
     onBack?: () => void;
+    onToggleCoaching?: (enabled: boolean) => Promise<void> | void;
+    isUpdatingCoaching?: boolean;
     isSendingTurn?: boolean;
     isPausing?: boolean;
     isResuming?: boolean;
@@ -169,6 +171,8 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
     onEnd,
     onRestart,
     onBack,
+    onToggleCoaching,
+    isUpdatingCoaching = false,
     isSendingTurn = false,
     isPausing = false,
     isResuming = false,
@@ -302,7 +306,7 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                     <h4 className={styles.scenarioCardTitle}>{session.scenarioTitle}</h4>
                 </div>
 
-                {/* 3. Active Coaching Toggle Card (Locked ON) */}
+                {/* 3. Active Coaching Toggle Card */}
                 <div className={styles.sidebarCard}>
                     <div className={styles.activeCoachingRow}>
                         <div className={styles.coachingIconBox}>
@@ -318,9 +322,22 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                             <span className={styles.activeCoachingTitle}>Active Coaching</span>
                             <span className={styles.activeCoachingSubtitle}>Real-time feedback</span>
                         </div>
-                        <div className={styles.toggleSwitchLocked} title="Coaching mode is active">
-                            <div className={styles.toggleKnob} />
-                        </div>
+                        <button
+                            type="button"
+                            className={`${styles.toggleSwitch} ${session.isCoachingEnabled ? styles.toggleSwitchActive : ''}`}
+                            onClick={() => onToggleCoaching?.(!session.isCoachingEnabled)}
+                            disabled={isUpdatingCoaching || isCompleted}
+                            aria-label={`Toggle Coaching Mode. Currently ${session.isCoachingEnabled ? 'enabled' : 'disabled'}`}
+                            aria-checked={session.isCoachingEnabled}
+                            role="switch"
+                            title={isCompleted ? 'Session is completed' : isUpdatingCoaching ? 'Updating coaching mode...' : `Turn coaching ${session.isCoachingEnabled ? 'off' : 'on'}`}
+                        >
+                            {isUpdatingCoaching ? (
+                                <div className={styles.toggleSwitchSpinner} />
+                            ) : (
+                                <div className={styles.toggleKnob} />
+                            )}
+                        </button>
                     </div>
                 </div>
 

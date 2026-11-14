@@ -70,6 +70,7 @@ export const API_ENDPOINTS = {
         PAUSE: 'sessions/:id/pause',
         RESUME: 'sessions/:id/resume',
         END: 'sessions/:id/end',
+        COACHING_MODE: 'sessions/:id/coaching',
         SCENARIOS: 'scenarios',
     },
     DISCOVERY: {

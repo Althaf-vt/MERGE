@@ -11,6 +11,7 @@ import type {
     SendSceneTurnPayload,
     SessionActionPayload,
     StartSceneSessionPayload,
+    UpdateCoachingModePayload,
 } from "../types/scene-partner.types";
 
 export const scenePartnerApi = createApi({
@@ -93,6 +94,37 @@ export const scenePartnerApi = createApi({
             }),
             invalidatesTags: ['ScenePartnerActive', 'ScenePartnerHistory'],
         }),
+
+        deleteSession: builder.mutation<ApiResponse<{ id: string }>, string>({
+            query: (sessionId) => ({
+                url: API_ENDPOINTS.SCENE_PARTNER.SESSION_BY_ID(sessionId),
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['ScenePartnerHistory', 'ScenePartnerActive'],
+        }),
+
+        updateCoachingMode: builder.mutation<ApiResponse<SceneSessionDto>, UpdateCoachingModePayload>({
+            query: ({ sessionId, isCoachingEnabled }) => ({
+                url: API_ENDPOINTS.SCENE_PARTNER.COACHING_MODE(sessionId),
+                method: 'PATCH',
+                body: { isCoachingEnabled },
+            }),
+            async onQueryStarted({ sessionId, isCoachingEnabled }, { dispatch, queryFulfilled }) {
+                const patchResult = dispatch(
+                    scenePartnerApi.util.updateQueryData('getSessionById', sessionId, (draft) => {
+                        if (draft?.data) {
+                            draft.data.isCoachingEnabled = isCoachingEnabled;
+                        }
+                    })
+                );
+                try {
+                    await queryFulfilled;
+                } catch {
+                    patchResult.undo();
+                }
+            },
+            invalidatesTags: (_result, _error, { sessionId }) => [{ type: 'ScenePartnerActive', id: sessionId }],
+        }),
     }),
 });
 
@@ -106,5 +138,7 @@ export const {
     usePauseSessionMutation,
     useResumeSessionMutation,
     useEndSessionMutation,
+    useDeleteSessionMutation,
+    useUpdateCoachingModeMutation,
 } = scenePartnerApi;
 

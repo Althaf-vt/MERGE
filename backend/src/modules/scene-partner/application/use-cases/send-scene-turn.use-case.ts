@@ -8,6 +8,7 @@ import { IUserContextFacade, USER_CONTEXT_FACADE } from "../interfaces/user-cont
 import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { Scenario } from "../../domain/entities/scenario.entity";
+import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
 import { CoachNoteVO } from "../../domain/value-objects/coach-note.vo";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
@@ -41,13 +42,22 @@ export class SendSceneTurnUseCase implements ISendSceneTurnUseCase {
         // Resolve Scenario for Context
         let scenario = PREDEFINED_SCENARIOS.find((s) => s.id === session.scenarioId);
         if (!scenario) {
-            scenario = Scenario.createPredefined({
-                id: session.scenarioId,
-                title: session.scenarioTitle,
-                description: session.scenarioTitle,
-                category: session.scenarioCategory,
-                promptContext: session.scenarioTitle,
-            });
+            const promptContext = session.scenarioPromptContext || session.scenarioTitle;
+            scenario = session.scenarioCategory === ScenarioCategory.CUSTOM
+                ? Scenario.createCustom({
+                    id: session.scenarioId,
+                    title: session.scenarioTitle,
+                    description: promptContext,
+                    promptContext,
+                    creatorUserId: session.userId,
+                })
+                : Scenario.createPredefined({
+                    id: session.scenarioId,
+                    title: session.scenarioTitle,
+                    description: session.scenarioTitle,
+                    category: session.scenarioCategory,
+                    promptContext,
+                });
         }
 
         // Build Simulation Context
@@ -58,11 +68,12 @@ export class SendSceneTurnUseCase implements ISendSceneTurnUseCase {
             session.targetUserId,
         );
 
-        // Execute Concurrent Dual-Agent Turn 
+        // Execute AI Turn (Concurrent Dual-Agent if coaching enabled, persona-only if disabled)
         const { personaReply, coachNote } = await this._aiService.generateTurn(
             simulationContext,
             dto.content,
             priorTranscript,
+            session.isCoachingEnabled,
         );
 
         // Reconstitute CoachNote VO if intervention occurred 

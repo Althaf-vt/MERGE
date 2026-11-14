@@ -23,6 +23,8 @@ export interface CreateSceneSessionProps {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext?: string | null;
+    isCoachingEnabled?: boolean;
     targetUserId?: string | null;
     maxDurationMinutes?: number;
 }
@@ -46,6 +48,8 @@ export interface SceneSessionData {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext: string | null;
+    isCoachingEnabled: boolean;
     targetUserId: string | null;
     status: SceneSessionStatus;
     transcript: SceneTurn[];
@@ -66,6 +70,8 @@ export interface SceneSessionSnapshot {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext: string | null;
+    isCoachingEnabled: boolean;
     targetUserId: string | null;
     status: SceneSessionStatus;
     transcript: SceneTurnSnapshot[];

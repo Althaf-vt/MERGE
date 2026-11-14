@@ -38,6 +38,11 @@ export const SCENE_PARTNER_AI_SERVICE = 'SCENE_PARTNER_AI_SERVICE';
 
 export interface IScenePartnerAiService {
     generateInitialGreeting(context: SceneSimulationContext): Promise<string>;
-    generateTurn(context: SceneSimulationContext, userMessage: string, transcript: SceneTurnSnapshot[]): Promise<GenerateTurnResult>;
+    generateTurn(
+        context: SceneSimulationContext,
+        userMessage: string,
+        transcript: SceneTurnSnapshot[],
+        isCoachingEnabled?: boolean,
+    ): Promise<GenerateTurnResult>;
     generateSessionSummary(context: SceneSimulationContext, transcript: SceneTurnSnapshot[]): Promise<SceneSessionSummaryData>;
 }

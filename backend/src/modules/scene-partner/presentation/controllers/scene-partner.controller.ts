@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { UserSessionGuard } from "../../../../shared/infrastructure/security/guards/user-session.guard";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
@@ -8,16 +8,19 @@ import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-res
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { StartSceneSessionDto } from "../../application/dtos/start-scene-session.dto";
 import { SendSceneTurnDto } from "../../application/dtos/send-scene-turn.dto";
+import { UpdateCoachingModeDto } from "../../application/dtos/update-coaching-mode.dto";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto } from "../../application/dtos/scene-session-response.dto";
 import { ScenarioResponseDto } from "../../application/dtos/scenario-response.dto";
 import { GetScenariosQueryDto } from "../../application/dtos/get-scenarios-query.dto";
 import { GetSceneHistoryQueryDto } from "../../application/dtos/get-scene-history-query.dto";
 import {
+    DELETE_SCENE_SESSION_USE_CASE,
     END_SCENE_SESSION_USE_CASE,
     GET_ACTIVE_SCENE_SESSION_USE_CASE,
     GET_SCENARIOS_USE_CASE,
     GET_SCENE_SESSION_BY_ID_USE_CASE,
     GET_SCENE_SESSION_HISTORY_USE_CASE,
+    IDeleteSceneSessionUseCase,
     IEndSceneSessionUseCase,
     IGetActiveSceneSessionUseCase,
     IGetScenariosUseCase,
@@ -27,10 +30,12 @@ import {
     IResumeSceneSessionUseCase,
     ISendSceneTurnUseCase,
     IStartSceneSessionUseCase,
+    IUpdateCoachingModeUseCase,
     PAUSE_SCENE_SESSION_USE_CASE,
     RESUME_SCENE_SESSION_USE_CASE,
     SEND_SCENE_TURN_USE_CASE,
     START_SCENE_SESSION_USE_CASE,
+    UPDATE_COACHING_MODE_USE_CASE,
 } from "../../application/interfaces/scene-partner.use-cases.interface";
 
 @Controller(API_ENDPOINTS.SCENE_PARTNER.BASE)
@@ -46,6 +51,8 @@ export class ScenePartnerController {
         @Inject(GET_SCENE_SESSION_BY_ID_USE_CASE) private readonly _getSceneSessionByIdUseCase: IGetSceneSessionByIdUseCase,
         @Inject(GET_SCENE_SESSION_HISTORY_USE_CASE) private readonly _getSceneSessionHistoryUseCase: IGetSceneSessionHistoryUseCase,
         @Inject(GET_SCENARIOS_USE_CASE) private readonly _getScenariosUseCase: IGetScenariosUseCase,
+        @Inject(DELETE_SCENE_SESSION_USE_CASE) private readonly _deleteSceneSessionUseCase: IDeleteSceneSessionUseCase,
+        @Inject(UPDATE_COACHING_MODE_USE_CASE) private readonly _updateCoachingModeUseCase: IUpdateCoachingModeUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.SCENE_PARTNER.SESSIONS)
@@ -139,6 +146,27 @@ export class ScenePartnerController {
     ): Promise<ApiResponse<SceneSessionResponseDto>> {
         const session = await this._getSceneSessionByIdUseCase.execute(req.user.userId, id);
         return ApiResponseHelper.success(RESPONSE_MESSAGES.SCENE_PARTNER.SESSION_FETCHED, session);
+    }
+
+    @Delete(API_ENDPOINTS.SCENE_PARTNER.SESSION_BY_ID)
+    @HttpCode(HttpStatus.OK)
+    async deleteSession(
+        @Req() req: AuthenticatedRequest,
+        @Param("id") id: string,
+    ): Promise<ApiResponse<{ id: string }>> {
+        const result = await this._deleteSceneSessionUseCase.execute(req.user.userId, id);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SCENE_PARTNER.SESSION_DELETED, { id: result.id });
+    }
+
+    @Patch(API_ENDPOINTS.SCENE_PARTNER.COACHING_MODE)
+    @HttpCode(HttpStatus.OK)
+    async updateCoachingMode(
+        @Req() req: AuthenticatedRequest,
+        @Param("id") id: string,
+        @Body() dto: UpdateCoachingModeDto,
+    ): Promise<ApiResponse<SceneSessionResponseDto>> {
+        const session = await this._updateCoachingModeUseCase.execute(req.user.userId, id, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.SCENE_PARTNER.COACHING_MODE_UPDATED, session);
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetConnectionsQuery } from '../../../shared/api/connections.api';
 import type { ScenarioDto, SimulationType, SceneSessionDto } from '../types/scene-partner.types';
@@ -16,10 +16,13 @@ export interface ScenePartnerHomeProps {
     isLoadingScenarios?: boolean;
     isStarting?: boolean;
     onStartPractice: (payload: {
-        scenarioId: string;
+        scenarioId?: string;
         simulationType: SimulationType;
         targetUserId?: string;
         partnerName: string;
+        customPrompt?: string;
+        customTitle?: string;
+        isCoachingEnabled?: boolean;
     }) => Promise<void>;
     onViewHistory: () => void;
     activeSession?: SceneSessionDto | null;
@@ -30,26 +33,6 @@ export interface ScenePartnerHomeProps {
     scenariosErrorMessage?: string;
     onRetryScenarios?: () => void;
 }
-
-export interface FigmaScenarioItem {
-    id: string;
-    title: string;
-    categoryTag: string;
-    backendFallbackId: string;
-}
-
-const FIGMA_SCENARIO_ITEMS: FigmaScenarioItem[] = [
-    { id: 'first-message', title: 'First Message', categoryTag: 'FIRST_MESSAGE', backendFallbackId: 'scenario-first-message' },
-    { id: 'breaking-silence', title: 'Breaking Awkward Silence', categoryTag: 'FIRST_MESSAGE', backendFallbackId: 'scenario-first-message' },
-    { id: 'planning-date', title: 'Planning A First Date', categoryTag: 'ASKING_OUT', backendFallbackId: 'scenario-asking-out' },
-    { id: 'talking-religion', title: 'Talking About Religion', categoryTag: 'IMMIGRATION', backendFallbackId: 'scenario-immigration-relocation' },
-    { id: 'discussing-marriage', title: 'Discussing Marriage', categoryTag: 'RELATIONSHIP_GOALS', backendFallbackId: 'scenario-relationship-goals' },
-    { id: 'discussing-children', title: 'Discussing Children', categoryTag: 'ADOPTION', backendFallbackId: 'scenario-adoption-family' },
-    { id: 'career-vs-relationship', title: 'Career vs Relationship', categoryTag: 'LIFE_LOGISTICS', backendFallbackId: 'scenario-life-logistics' },
-    { id: 'conflict-resolution', title: 'Conflict Resolution', categoryTag: 'RELATIONSHIP_GOALS', backendFallbackId: 'scenario-relationship-goals' },
-    { id: 'meeting-family', title: 'Meeting Family', categoryTag: 'ADOPTION', backendFallbackId: 'scenario-adoption-family' },
-    { id: 'long-term-compatibility', title: 'Long-Term Compatibility', categoryTag: 'RELATIONSHIP_GOALS', backendFallbackId: 'scenario-relationship-goals' },
-];
 
 export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
     scenarios,
@@ -82,15 +65,23 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
         name: 'Generic Practice Partner',
     });
 
-    const [selectedScenarioKey, setSelectedScenarioKey] = useState<string>('first-message');
+    const [selectedScenarioId, setSelectedScenarioId] = useState<string>(
+        scenarios[0]?.id || ''
+    );
+    const [customPrompt, setCustomPrompt] = useState<string>('');
+    const [isCoachingEnabled, setIsCoachingEnabled] = useState<boolean>(true);
 
-    const activeFigmaScenario = FIGMA_SCENARIO_ITEMS.find((s) => s.id === selectedScenarioKey) || FIGMA_SCENARIO_ITEMS[0];
+    useEffect(() => {
+        if (!selectedScenarioId && scenarios.length > 0 && !customPrompt.trim()) {
+            setSelectedScenarioId(scenarios[0].id);
+        }
+    }, [scenarios, selectedScenarioId, customPrompt]);
 
-    const resolveBackendScenarioId = (): string => {
-        const directMatch = scenarios.find((s) => s.id === activeFigmaScenario.backendFallbackId);
-        if (directMatch) return directMatch.id;
-        return scenarios[0]?.id || 'scenario-first-message';
-    };
+    const isCustomScenarioActive = customPrompt.trim().length > 0;
+    const activeCatalogScenario = scenarios.find((s) => s.id === selectedScenarioId);
+    const activeScenarioTitle = isCustomScenarioActive
+        ? 'Custom Scenario'
+        : (activeCatalogScenario?.title || (isLoadingScenarios ? 'Loading...' : 'Select a Scenario'));
 
     const handleSelectGeneric = () => {
         setSelectedPartner({
@@ -107,13 +98,31 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
         });
     };
 
+    const handleSelectPredefinedScenario = (scenarioId: string) => {
+        setSelectedScenarioId(scenarioId);
+        setCustomPrompt('');
+    };
+
+    const handleCustomPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const val = e.target.value;
+        setCustomPrompt(val);
+        if (val.trim().length > 0) {
+            setSelectedScenarioId('');
+        }
+    };
+
     const handleStart = async () => {
-        const scenarioId = resolveBackendScenarioId();
+        const isCustom = customPrompt.trim().length > 0;
+        if (!isCustom && !selectedScenarioId) return;
+
         await onStartPractice({
-            scenarioId,
+            scenarioId: isCustom ? undefined : selectedScenarioId,
+            customPrompt: isCustom ? customPrompt.trim() : undefined,
+            customTitle: isCustom ? 'Custom Scenario' : undefined,
             simulationType: selectedPartner.type,
             targetUserId: selectedPartner.targetUserId,
             partnerName: selectedPartner.name,
+            isCoachingEnabled,
         });
     };
 
@@ -318,58 +327,71 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     )}
 
                     <div className={styles.scenariosGrid}>
-                        {FIGMA_SCENARIO_ITEMS.map((item) => {
-                            const isSelected = selectedScenarioKey === item.id;
+                        {isLoadingScenarios && scenarios.length === 0 ? (
+                            <div className={styles.loadingMatchesNotice}>Loading scenarios...</div>
+                        ) : scenarios.length > 0 ? (
+                            scenarios.map((scenario) => {
+                                const isSelected = !isCustomScenarioActive && selectedScenarioId === scenario.id;
 
-                            return (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    className={`${styles.scenarioButton} ${isSelected ? styles.scenarioButtonSelected : ''}`}
-                                    onClick={() => setSelectedScenarioKey(item.id)}
-                                >
-                                    {item.title}
-                                </button>
-                            );
-                        })}
+                                return (
+                                    <button
+                                        key={scenario.id}
+                                        type="button"
+                                        className={`${styles.scenarioButton} ${isSelected ? styles.scenarioButtonSelected : ''}`}
+                                        onClick={() => handleSelectPredefinedScenario(scenario.id)}
+                                    >
+                                        {scenario.title}
+                                    </button>
+                                );
+                            })
+                        ) : (
+                            <div className={styles.emptyNotice}>No scenarios available.</div>
+                        )}
                     </div>
 
-                    {/* Custom Scenario Textarea (Disabled / Backend Deferred) */}
-                    <div className={styles.customScenarioBox}>
+                    {/* Custom Scenario Textarea */}
+                    <div className={`${styles.customScenarioBox} ${isCustomScenarioActive ? styles.customScenarioBoxActive : ''}`}>
                         <div className={styles.customScenarioHeader}>
                             <span className={styles.customScenarioLabel}>Custom Scenario</span>
-                            <span className={styles.comingSoonTag}>Coming Soon</span>
+                            {isCustomScenarioActive && (
+                                <span className={styles.customActiveBadge}>Active</span>
+                            )}
                         </div>
                         <textarea
                             className={styles.customScenarioTextarea}
-                            placeholder="Describe the conversation you want to practice..."
-                            disabled
+                            placeholder="Describe any conversation or topic you want to practice (e.g. asking for space, discussing values)..."
+                            value={customPrompt}
+                            onChange={handleCustomPromptChange}
+                            maxLength={500}
                             rows={2}
+                            disabled={isStarting}
                             aria-label="Custom Scenario"
                         />
                     </div>
                 </section>
 
-                {/* Section 3: Coaching Mode Toggle (Locked ON) */}
+                {/* Section 3: Coaching Mode Toggle */}
                 <section aria-labelledby="coaching-heading" className={styles.sectionBlock}>
                     <h2 id="coaching-heading" className={styles.sectionTitle}>
                         Coaching Mode
                     </h2>
                     <div className={styles.coachingToggleRow}>
-                        <div className={styles.segmentedToggle} aria-disabled="true" role="group" aria-label="Coaching Mode">
+                        <div className={styles.segmentedToggle} role="group" aria-label="Coaching Mode">
                             <button
                                 type="button"
-                                className={`${styles.segmentedBtn} ${styles.segmentedBtnActive}`}
-                                disabled
-                                aria-pressed="true"
+                                className={`${styles.segmentedBtn} ${isCoachingEnabled ? styles.segmentedBtnActive : ''}`}
+                                onClick={() => setIsCoachingEnabled(true)}
+                                disabled={isStarting}
+                                aria-pressed={isCoachingEnabled}
                             >
                                 Coach ON
                             </button>
                             <button
                                 type="button"
-                                className={styles.segmentedBtn}
-                                disabled
-                                aria-pressed="false"
+                                className={`${styles.segmentedBtn} ${!isCoachingEnabled ? styles.segmentedBtnActive : ''}`}
+                                onClick={() => setIsCoachingEnabled(false)}
+                                disabled={isStarting}
+                                aria-pressed={!isCoachingEnabled}
                             >
                                 Coach OFF
                             </button>
@@ -392,13 +414,19 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     </span>
                     <span className={styles.readyPill}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        <span>{activeScenarioTitle}</span>
+                    </span>
+                    <span className={styles.readyPill}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                             <line x1="12" x2="12" y1="19" y2="22" />
                         </svg>
-                        <span>Coach: ON</span>
+                        <span>Coach: {isCoachingEnabled ? 'ON' : 'OFF'}</span>
                     </span>
-                    
                 </div>
 
                 {/* Primary Actions */}
@@ -407,7 +435,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                         type="button"
                         className={styles.startButton}
                         onClick={handleStart}
-                        disabled={isStarting || isLoadingScenarios}
+                        disabled={isStarting || isLoadingScenarios || (!isCustomScenarioActive && !selectedScenarioId)}
                     >
                         {isStarting ? (
                             <>

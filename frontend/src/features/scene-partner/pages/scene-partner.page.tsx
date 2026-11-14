@@ -54,6 +54,8 @@ export const ScenePartnerPage: React.FC = () => {
         isError: isHistoryError,
         error: historyError,
         refetch: refetchHistory,
+        handleDeleteSession,
+        deletingSessionId,
     } = useSceneHistory();
 
     // Active Simulation Hook (for when user is in simulation view)
@@ -67,6 +69,8 @@ export const ScenePartnerPage: React.FC = () => {
         isResuming,
         handleEnd,
         isEnding,
+        handleToggleCoaching,
+        isUpdatingCoaching,
         formattedTime,
         isTimerExpired,
         isError: isSimSessionError,
@@ -108,17 +112,23 @@ export const ScenePartnerPage: React.FC = () => {
     }, [currentSimSession, isSummaryModalOpen]);
 
     const handleStartPracticeFromHome = async (payload: {
-        scenarioId: string;
+        scenarioId?: string;
         simulationType: SimulationType;
         targetUserId?: string;
         partnerName: string;
+        customPrompt?: string;
+        customTitle?: string;
+        isCoachingEnabled?: boolean;
     }) => {
         try {
-            setStartingScenarioId(payload.scenarioId);
+            setStartingScenarioId(payload.scenarioId || 'custom');
             const res = await startSession({
                 scenarioId: payload.scenarioId,
                 simulationType: payload.simulationType,
                 targetUserId: payload.targetUserId,
+                customPrompt: payload.customPrompt,
+                customTitle: payload.customTitle,
+                isCoachingEnabled: payload.isCoachingEnabled,
             }).unwrap();
 
             if (res.data) {
@@ -252,6 +262,8 @@ export const ScenePartnerPage: React.FC = () => {
                         onEnd={handleEndCurrentSimulation}
                         onRestart={handleRestartCurrentSimulation}
                         onBack={() => setActiveSessionId(null)}
+                        onToggleCoaching={handleToggleCoaching}
+                        isUpdatingCoaching={isUpdatingCoaching}
                         isSendingTurn={isSendingTurn}
                         isPausing={isPausing}
                         isResuming={isResuming}
@@ -327,6 +339,8 @@ export const ScenePartnerPage: React.FC = () => {
                             onPracticeAgain={handlePracticeAgainFromSummary}
                             onContinueSession={(session) => setActiveSessionId(session.id)}
                             onStartNewSession={() => setMainTab('SCENARIOS')}
+                            onDeleteSession={handleDeleteSession}
+                            deletingSessionId={deletingSessionId}
                         />
                     </section>
                 )}

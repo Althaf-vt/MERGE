@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
         PAUSE: (id: string) => `/scene-partner/sessions/${id}/pause`,
         RESUME: (id: string) => `/scene-partner/sessions/${id}/resume`,
         END: (id: string) => `/scene-partner/sessions/${id}/end`,
+        COACHING_MODE: (id: string) => `/scene-partner/sessions/${id}/coaching`,
         SCENARIOS: '/scene-partner/scenarios',
     },
     CASTING_DIRECTOR: {

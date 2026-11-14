@@ -1,5 +1,6 @@
 import { StartSceneSessionDto } from "../dtos/start-scene-session.dto";
 import { SendSceneTurnDto } from "../dtos/send-scene-turn.dto";
+import { UpdateCoachingModeDto } from "../dtos/update-coaching-mode.dto";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto } from "../dtos/scene-session-response.dto";
 import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
 import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
@@ -13,6 +14,8 @@ export const GET_ACTIVE_SCENE_SESSION_USE_CASE = "GET_ACTIVE_SCENE_SESSION_USE_C
 export const GET_SCENE_SESSION_BY_ID_USE_CASE = "GET_SCENE_SESSION_BY_ID_USE_CASE";
 export const GET_SCENE_SESSION_HISTORY_USE_CASE = "GET_SCENE_SESSION_HISTORY_USE_CASE";
 export const GET_SCENARIOS_USE_CASE = "GET_SCENARIOS_USE_CASE";
+export const DELETE_SCENE_SESSION_USE_CASE = "DELETE_SCENE_SESSION_USE_CASE";
+export const UPDATE_COACHING_MODE_USE_CASE = "UPDATE_COACHING_MODE_USE_CASE";
 
 export interface IStartSceneSessionUseCase {
     execute(userId: string, dto: StartSceneSessionDto): Promise<SceneSessionResponseDto>;
@@ -48,4 +51,12 @@ export interface IGetSceneSessionHistoryUseCase {
 
 export interface IGetScenariosUseCase {
     execute(category?: ScenarioCategory): Promise<ScenarioResponseDto[]>;
+}
+
+export interface IDeleteSceneSessionUseCase {
+    execute(userId: string, sessionId: string): Promise<{ success: boolean; id: string }>;
+}
+
+export interface IUpdateCoachingModeUseCase {
+    execute(userId: string, sessionId: string, dto: UpdateCoachingModeDto): Promise<SceneSessionResponseDto>;
 }

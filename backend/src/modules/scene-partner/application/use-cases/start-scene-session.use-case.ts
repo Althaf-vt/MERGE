@@ -7,6 +7,7 @@ import { IScenePartnerAiService, SCENE_PARTNER_AI_SERVICE } from "../../domain/i
 import { IScenePartnerSubscriptionFacade, SCENE_PARTNER_SUBSCRIPTION_FACADE } from "../interfaces/scene-partner-subscription-facade.interface";
 import { IUserContextFacade, USER_CONTEXT_FACADE } from "../interfaces/user-context-facade.interface";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
+import { Scenario } from "../../domain/entities/scenario.entity";
 import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { SCENE_PARTNER_ERROR_MESSAGES, SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
@@ -42,12 +43,26 @@ export class StartSceneSessionUseCase implements IStartSceneSessionUseCase {
         }
 
         // 3. Resolve Scenario
-        const scenario = PREDEFINED_SCENARIOS.find((s) => s.id === dto.scenarioId);
-        if (!scenario) {
-            throw new DomainException(
-                ErrorCode.VALIDATION_FAILED,
-                SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_REQUIRED,
-            );
+        let scenario: Scenario;
+        if (dto.customPrompt && dto.customPrompt.trim().length > 0) {
+            const trimmedPrompt = dto.customPrompt.trim();
+            const trimmedTitle = dto.customTitle?.trim() || 'Custom Scenario';
+            scenario = Scenario.createCustom({
+                id: `scenario-custom-${Date.now()}`,
+                title: trimmedTitle,
+                description: trimmedPrompt,
+                promptContext: trimmedPrompt,
+                creatorUserId: userId,
+            });
+        } else {
+            const foundScenario = dto.scenarioId ? PREDEFINED_SCENARIOS.find((s) => s.id === dto.scenarioId) : undefined;
+            if (!foundScenario) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_REQUIRED,
+                );
+            }
+            scenario = foundScenario;
         }
 
         // 4. Resolve Simulation Context (User & Match Profiles)
@@ -68,7 +83,9 @@ export class StartSceneSessionUseCase implements IStartSceneSessionUseCase {
             scenarioId: scenario.id,
             scenarioTitle: scenario.title,
             scenarioCategory: scenario.category,
+            scenarioPromptContext: scenario.promptContext,
             targetUserId: dto.targetUserId,
+            isCoachingEnabled: dto.isCoachingEnabled ?? true,
             maxDurationMinutes: SCENE_PARTNER_POLICY.DEFAULT_MAX_DURATION_MINUTES,
         });
 

@@ -81,6 +81,12 @@ export class SceneSessionSchemaClass {
     scenarioCategory: ScenarioCategory;
 
     @Prop({ type: String, default: null })
+    scenarioPromptContext?: string | null;
+
+    @Prop({ type: Boolean, default: true })
+    isCoachingEnabled: boolean;
+
+    @Prop({ type: String, default: null })
     targetUserId?: string | null;
 
     @Prop({ type: String, enum: SceneSessionStatus, required: true, index: true })

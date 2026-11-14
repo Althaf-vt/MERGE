@@ -4,12 +4,7 @@ import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
-import {
-    GenerateTurnResult,
-    IScenePartnerAiService,
-    SceneSessionSummaryData,
-    SceneSimulationContext,
-} from "../../domain/interfaces/scene-partner-ai.interface";
+import { GenerateTurnResult, IScenePartnerAiService, SceneSessionSummaryData, SceneSimulationContext } from "../../domain/interfaces/scene-partner-ai.interface";
 import { SceneTurnSnapshot } from "../../domain/interfaces/scene-session.types";
 import { CoachNoteProps } from "../../domain/value-objects/coach-note.vo";
 import { PersonaPrompt } from "../../domain/prompts/persona.prompt";
@@ -60,9 +55,18 @@ export class OpenRouterScenePartnerAiService implements IScenePartnerAiService {
     public async generateTurn(
         context: SceneSimulationContext,
         userMessage: string,
-        transcript: SceneTurnSnapshot[]
+        transcript: SceneTurnSnapshot[],
+        isCoachingEnabled: boolean = true,
     ): Promise<GenerateTurnResult> {
         try {
+            if (!isCoachingEnabled) {
+                const personaReply = await this._generatePersonaReply(context, userMessage, transcript);
+                return {
+                    personaReply,
+                    coachNote: null,
+                };
+            }
+
             // Asynchronous Dual-Agent Architecture: Concurrent execution with Promise.all
             const [personaReply, coachNote] = await Promise.all([
                 this._generatePersonaReply(context, userMessage, transcript),

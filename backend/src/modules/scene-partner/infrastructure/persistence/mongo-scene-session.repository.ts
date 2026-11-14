@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { Model } from "mongoose";
+import { isValidObjectId, Model } from "mongoose";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { SceneSessionStatus } from "../../domain/enums/scene-partner.enums";
@@ -10,8 +10,7 @@ import { SceneSessionDocument, SceneSessionSchemaClass } from "./scene-session.s
 import { SceneSessionPersistenceMapper } from "./mappers/scene-session-persistence.mapper";
 
 @Injectable()
-export class MongoSceneSessionRepository
-    extends BaseRepository<SceneSession, SceneSessionDocument> implements ISceneSessionRepository {
+export class MongoSceneSessionRepository extends BaseRepository<SceneSession, SceneSessionDocument> implements ISceneSessionRepository {
     constructor(
         @InjectModel(SceneSessionSchemaClass.name)
         model: Model<SceneSessionDocument>,
@@ -64,5 +63,14 @@ export class MongoSceneSessionRepository
             data: documents.map((doc) => this.toDomain(doc as SceneSessionDocument)),
             total,
         };
+    }
+
+    async deleteById(id: string, userId: string): Promise<boolean> {
+        if (!isValidObjectId(id)) {
+            return false;
+        }
+
+        const result = await this._model.deleteOne({ _id: id, userId }).exec();
+        return (result.deletedCount ?? 0) > 0;
     }
 }

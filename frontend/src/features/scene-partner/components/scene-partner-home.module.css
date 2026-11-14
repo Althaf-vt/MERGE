@@ -400,6 +400,13 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    transition: all 0.15s ease;
+}
+
+.customScenarioBoxActive {
+    border-color: #7C3AED;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 1px #7C3AED;
 }
 
 .customScenarioHeader {
@@ -412,6 +419,17 @@
     font-size: 0.76rem;
     font-weight: 600;
     color: #4B5563;
+}
+
+.customActiveBadge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #7C3AED;
+    background: #EDE9FE;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .comingSoonTag {
@@ -429,13 +447,27 @@
     border-radius: 4px;
     padding: 0.45rem 0.6rem;
     font-size: 0.76rem;
-    color: #6B7280;
+    color: #1F2937;
     background: #FFFFFF;
     resize: none;
     box-sizing: border-box;
     font-family: inherit;
-    cursor: not-allowed;
-    opacity: 0.8;
+    transition: border-color 0.15s ease;
+}
+
+.customScenarioTextarea:focus {
+    outline: none;
+    border-color: #7C3AED;
+}
+
+.emptyNotice {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 1rem;
+    color: #6B7280;
+    font-size: 0.8rem;
+    background: #F9FAFB;
+    border-radius: 6px;
 }
 
 /* Coaching Mode Toggle */
@@ -462,8 +494,17 @@
     font-weight: 600;
     color: #6B7280;
     border-radius: 4px;
-    cursor: not-allowed;
+    cursor: pointer;
     transition: all 0.15s ease;
+}
+
+.segmentedBtn:hover:not(:disabled):not(.segmentedBtnActive) {
+    color: #111827;
+}
+
+.segmentedBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .segmentedBtnActive {
