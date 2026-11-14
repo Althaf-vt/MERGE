@@ -28,6 +28,7 @@ export class SceneSession extends AggregateRoot {
             scenarioTitle: props.scenarioTitle.trim(),
             scenarioCategory: props.scenarioCategory,
             scenarioPromptContext: props.scenarioPromptContext?.trim() ?? null,
+            isCoachingEnabled: props.isCoachingEnabled ?? true,
             targetUserId: props.targetUserId?.trim() ?? null,
             status: props.status ?? SceneSessionStatus.INITIALIZING,
             transcript: props.transcript ? [...props.transcript] : [],
@@ -45,6 +46,7 @@ export class SceneSession extends AggregateRoot {
     public static create(props: CreateSceneSessionProps): SceneSession {
         return new SceneSession({
             ...props,
+            isCoachingEnabled: props.isCoachingEnabled ?? true,
             status: SceneSessionStatus.INITIALIZING,
             transcript: [],
             turnCount: 0,
@@ -82,6 +84,7 @@ export class SceneSession extends AggregateRoot {
     get scenarioTitle(): string { return this._props.scenarioTitle; }
     get scenarioCategory(): ScenarioCategory { return this._props.scenarioCategory; }
     get scenarioPromptContext(): string | null { return this._props.scenarioPromptContext; }
+    get isCoachingEnabled(): boolean { return this._props.isCoachingEnabled; }
     get targetUserId(): string | null { return this._props.targetUserId; }
     get status(): SceneSessionStatus { return this._props.status; }
     get transcript(): SceneTurn[] { return [...this._props.transcript]; }
@@ -254,6 +257,14 @@ export class SceneSession extends AggregateRoot {
         this._props.updatedAt = now;
     }
 
+    public toggleCoaching(enabled: boolean): void {
+        if (this.isCompleted()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.INVALID_STATUS_FOR_COACHING_TOGGLE);
+        }
+        this._props.isCoachingEnabled = enabled;
+        this._props.updatedAt = new Date();
+    }
+
     private _assertOwnership(actionUserId: string): void {
         if (!this.isOwner(actionUserId)) {
             throw new DomainException(ErrorCode.FORBIDDEN, SCENE_PARTNER_ERROR_MESSAGES.NOT_SESSION_OWNER);
@@ -269,6 +280,7 @@ export class SceneSession extends AggregateRoot {
             scenarioTitle: this._props.scenarioTitle,
             scenarioCategory: this._props.scenarioCategory,
             scenarioPromptContext: this._props.scenarioPromptContext,
+            isCoachingEnabled: this._props.isCoachingEnabled,
             targetUserId: this._props.targetUserId,
             status: this._props.status,
             transcript: this._props.transcript.map((t) => ({
