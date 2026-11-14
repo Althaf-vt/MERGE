@@ -54,6 +54,8 @@ export const ScenePartnerPage: React.FC = () => {
         isError: isHistoryError,
         error: historyError,
         refetch: refetchHistory,
+        handleDeleteSession,
+        deletingSessionId,
     } = useSceneHistory();
 
     // Active Simulation Hook (for when user is in simulation view)
@@ -331,6 +333,8 @@ export const ScenePartnerPage: React.FC = () => {
                             onPracticeAgain={handlePracticeAgainFromSummary}
                             onContinueSession={(session) => setActiveSessionId(session.id)}
                             onStartNewSession={() => setMainTab('SCENARIOS')}
+                            onDeleteSession={handleDeleteSession}
+                            deletingSessionId={deletingSessionId}
                         />
                     </section>
                 )}

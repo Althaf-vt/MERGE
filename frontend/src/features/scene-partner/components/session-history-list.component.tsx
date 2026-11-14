@@ -15,6 +15,8 @@ export interface SessionHistoryListProps {
     onPracticeAgain?: (session: SceneSessionDto) => void;
     onContinueSession?: (session: SceneSessionDto) => void;
     onStartNewSession?: () => void;
+    onDeleteSession?: (sessionId: string) => Promise<void> | void;
+    deletingSessionId?: string | null;
     isError?: boolean;
     errorMessage?: string;
     onRetry?: () => void;
@@ -36,6 +38,8 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
     onPracticeAgain,
     onContinueSession,
     onStartNewSession,
+    onDeleteSession,
+    deletingSessionId,
     isError = false,
     errorMessage,
     onRetry,
@@ -43,7 +47,6 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
     const [filterTab, setFilterTab] = useState<FilterTab>('ALL');
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState<SortOrder>('NEWEST');
-    const [dismissedSessionIds, setDismissedSessionIds] = useState<Set<string>>(new Set());
 
     // 1. Calculate Aggregate Metrics
     const completedSessionsWithScore = useMemo(() => {
@@ -91,7 +94,6 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
     // 2. Filter & Sort Sessions
     const filteredSessions = useMemo(() => {
         return sessions
-            .filter((session) => !dismissedSessionIds.has(session.id))
             .filter((session) => {
                 // Search filter
                 if (searchTerm.trim()) {
@@ -124,10 +126,14 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
                 }
                 return 0;
             });
-    }, [sessions, dismissedSessionIds, searchTerm, filterTab, sortOrder]);
+    }, [sessions, searchTerm, filterTab, sortOrder]);
 
-    const handleDismissCard = (id: string) => {
-        setDismissedSessionIds((prev) => new Set([...prev, id]));
+    const handleDeleteCard = async (id: string) => {
+        if (!onDeleteSession) return;
+        const confirmed = window.confirm('Are you sure you want to delete this rehearsal session? This action cannot be undone.');
+        if (confirmed) {
+            await onDeleteSession(id);
+        }
     };
 
     const formatSessionDate = (isoString?: string) => {
@@ -395,14 +401,19 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
                                         <button
                                             type="button"
                                             className={styles.deleteBtn}
-                                            onClick={() => handleDismissCard(session.id)}
-                                            aria-label="Discard session card"
-                                            title="Discard from view"
+                                            onClick={() => handleDeleteCard(session.id)}
+                                            disabled={deletingSessionId === session.id}
+                                            aria-label="Delete rehearsal session"
+                                            title="Delete rehearsal session"
                                         >
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                            </svg>
+                                            {deletingSessionId === session.id ? (
+                                                <span className={styles.deleteSpinner} aria-hidden="true" />
+                                            ) : (
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            )}
                                         </button>
                                     </div>
                                 </div>
