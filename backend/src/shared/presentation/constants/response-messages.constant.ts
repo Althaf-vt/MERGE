@@ -60,6 +60,7 @@ export const RESPONSE_MESSAGES = {
         SESSION_FETCHED: 'Scene rehearsal session retrieved successfully.',
         HISTORY_FETCHED: 'Scene rehearsal session history retrieved successfully.',
         SCENARIOS_FETCHED: 'Rehearsal scenarios retrieved successfully.',
+        SESSION_DELETED: 'Rehearsal session deleted successfully.',
     },
     CASTING_DIRECTOR: {
         SESSION_INITIALIZED: 'Casting session initialized.',
