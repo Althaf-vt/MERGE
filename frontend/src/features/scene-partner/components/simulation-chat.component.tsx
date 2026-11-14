@@ -74,15 +74,9 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
         setTimeout(() => setSavedNotice(false), 2500);
     };
 
-    // Extract the latest turn with a coachNote for the sidebar insights
-    const latestTurnWithCoachNote = [...session.transcript]
-        .reverse()
-        .find((t) => t.coachNote !== null && t.coachNote !== undefined);
-    const latestCoachNote = latestTurnWithCoachNote?.coachNote;
-
     return (
         <div className={styles.simulationLayout}>
-            {/* Left Sidebar (Partner Profile, Scenario Context & Coaching Insights) */}
+            {/* Left Sidebar (Partner Profile, Scenario Context & Session Controls) */}
             <aside className={styles.sidebar} aria-label="Simulation Context and Controls">
                 {/* 1. Partner Profile Card */}
                 <div className={styles.sidebarCard}>
@@ -136,53 +130,7 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                     </div>
                 </div>
 
-                {/* 4. Coaching Insights Card */}
-                <div className={styles.sidebarCard}>
-                    <div className={styles.insightsHeaderRow}>
-                        <span className={styles.sidebarSectionTitle}>COACHING INSIGHTS</span>
-                        {latestCoachNote ? (
-                            <span className={styles.flowBadge}>
-                                Flow: {latestCoachNote.pacing || 'Active'}
-                            </span>
-                        ) : (
-                            <span className={styles.flowBadgeStandby}>
-                                Standby
-                            </span>
-                        )}
-                    </div>
-                    {latestCoachNote ? (
-                        <ul className={styles.coachingTipsList}>
-                            {latestCoachNote.nextTip && (
-                                <li className={styles.coachingTipItem}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <path d="M9 18h6"/>
-                                        <path d="M10 22h4"/>
-                                        <path d="M12 2v1"/>
-                                        <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
-                                    </svg>
-                                    <span>{latestCoachNote.nextTip}</span>
-                                </li>
-                            )}
-                            {latestCoachNote.observation && (
-                                <li className={styles.coachingTipItem}>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <path d="M9 18h6"/>
-                                        <path d="M10 22h4"/>
-                                        <path d="M12 2v1"/>
-                                        <path d="M12 7a5 5 0 0 0-5 5c0 2 1.5 3.5 2 4.5h6c.5-1 2-2.5 2-4.5a5 5 0 0 0-5-5z"/>
-                                    </svg>
-                                    <span>{latestCoachNote.observation}</span>
-                                </li>
-                            )}
-                        </ul>
-                    ) : (
-                        <p className={styles.coachingStandbyText}>
-                            Coaching feedback will update dynamically as you exchange messages.
-                        </p>
-                    )}
-                </div>
-
-                {/* 5. Session Actions */}
+                {/* 4. Session Actions */}
                 <div className={styles.sidebarActionsBlock}>
                     <div className={styles.actionRowGrid}>
                         <button

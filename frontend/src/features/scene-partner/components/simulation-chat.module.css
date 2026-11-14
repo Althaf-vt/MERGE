@@ -176,63 +176,6 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Coaching Insights Card */
-.insightsHeaderRow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.45rem;
-}
-
-.flowBadge {
-    background: #EDE9FE;
-    color: #6D28D9;
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 0.1rem 0.35rem;
-    border-radius: 3px;
-}
-
-.flowBadgeStandby {
-    background: #F3F4F6;
-    color: #6B7280;
-    font-size: 0.65rem;
-    font-weight: 600;
-    padding: 0.1rem 0.35rem;
-    border-radius: 3px;
-}
-
-.coachingStandbyText {
-    font-size: 0.74rem;
-    color: #6B7280;
-    line-height: 1.35;
-    margin: 0;
-    font-style: italic;
-}
-
-.coachingTipsList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
-
-.coachingTipItem {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.35rem;
-    font-size: 0.74rem;
-    color: #374151;
-    line-height: 1.3;
-}
-
-.coachingTipItem svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
 /* Session Controls */
 .sidebarActionsBlock {
     display: flex;
