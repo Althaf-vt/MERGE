@@ -22,6 +22,7 @@ export interface ScenePartnerHomeProps {
         partnerName: string;
         customPrompt?: string;
         customTitle?: string;
+        isCoachingEnabled?: boolean;
     }) => Promise<void>;
     onViewHistory: () => void;
     activeSession?: SceneSessionDto | null;
@@ -68,6 +69,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
         scenarios[0]?.id || ''
     );
     const [customPrompt, setCustomPrompt] = useState<string>('');
+    const [isCoachingEnabled, setIsCoachingEnabled] = useState<boolean>(true);
 
     useEffect(() => {
         if (!selectedScenarioId && scenarios.length > 0 && !customPrompt.trim()) {
@@ -120,6 +122,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
             simulationType: selectedPartner.type,
             targetUserId: selectedPartner.targetUserId,
             partnerName: selectedPartner.name,
+            isCoachingEnabled,
         });
     };
 
@@ -367,26 +370,28 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                     </div>
                 </section>
 
-                {/* Section 3: Coaching Mode Toggle (Locked ON) */}
+                {/* Section 3: Coaching Mode Toggle */}
                 <section aria-labelledby="coaching-heading" className={styles.sectionBlock}>
                     <h2 id="coaching-heading" className={styles.sectionTitle}>
                         Coaching Mode
                     </h2>
                     <div className={styles.coachingToggleRow}>
-                        <div className={styles.segmentedToggle} aria-disabled="true" role="group" aria-label="Coaching Mode">
+                        <div className={styles.segmentedToggle} role="group" aria-label="Coaching Mode">
                             <button
                                 type="button"
-                                className={`${styles.segmentedBtn} ${styles.segmentedBtnActive}`}
-                                disabled
-                                aria-pressed="true"
+                                className={`${styles.segmentedBtn} ${isCoachingEnabled ? styles.segmentedBtnActive : ''}`}
+                                onClick={() => setIsCoachingEnabled(true)}
+                                disabled={isStarting}
+                                aria-pressed={isCoachingEnabled}
                             >
                                 Coach ON
                             </button>
                             <button
                                 type="button"
-                                className={styles.segmentedBtn}
-                                disabled
-                                aria-pressed="false"
+                                className={`${styles.segmentedBtn} ${!isCoachingEnabled ? styles.segmentedBtnActive : ''}`}
+                                onClick={() => setIsCoachingEnabled(false)}
+                                disabled={isStarting}
+                                aria-pressed={!isCoachingEnabled}
                             >
                                 Coach OFF
                             </button>
@@ -420,7 +425,7 @@ export const ScenePartnerHome: React.FC<ScenePartnerHomeProps> = ({
                             <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
                             <line x1="12" x2="12" y1="19" y2="22" />
                         </svg>
-                        <span>Coach: ON</span>
+                        <span>Coach: {isCoachingEnabled ? 'ON' : 'OFF'}</span>
                     </span>
                 </div>
 
