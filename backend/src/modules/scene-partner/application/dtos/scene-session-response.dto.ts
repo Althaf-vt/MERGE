@@ -29,6 +29,7 @@ export interface SceneSessionResponseDto {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext?: string | null;
     targetUserId: string | null;
     status: SceneSessionStatus;
     transcript: SceneTurnResponseDto[];
