@@ -257,7 +257,10 @@ export class SceneSession extends AggregateRoot {
         this._props.updatedAt = now;
     }
 
-    public toggleCoaching(enabled: boolean): void {
+    public toggleCoaching(enabled: boolean, actionUserId?: string): void {
+        if (actionUserId) {
+            this._assertOwnership(actionUserId);
+        }
         if (this.isCompleted()) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.INVALID_STATUS_FOR_COACHING_TOGGLE);
         }

@@ -85,6 +85,7 @@ export class StartSceneSessionUseCase implements IStartSceneSessionUseCase {
             scenarioCategory: scenario.category,
             scenarioPromptContext: scenario.promptContext,
             targetUserId: dto.targetUserId,
+            isCoachingEnabled: dto.isCoachingEnabled ?? true,
             maxDurationMinutes: SCENE_PARTNER_POLICY.DEFAULT_MAX_DURATION_MINUTES,
         });
 

@@ -68,11 +68,12 @@ export class SendSceneTurnUseCase implements ISendSceneTurnUseCase {
             session.targetUserId,
         );
 
-        // Execute Concurrent Dual-Agent Turn 
+        // Execute AI Turn (Concurrent Dual-Agent if coaching enabled, persona-only if disabled)
         const { personaReply, coachNote } = await this._aiService.generateTurn(
             simulationContext,
             dto.content,
             priorTranscript,
+            session.isCoachingEnabled,
         );
 
         // Reconstitute CoachNote VO if intervention occurred 
