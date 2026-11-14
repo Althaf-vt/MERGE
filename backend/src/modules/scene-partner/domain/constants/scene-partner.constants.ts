@@ -24,6 +24,7 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     INVALID_STATUS_FOR_PAUSE: 'Only sessions that are currently in progress can be paused.',
     INVALID_STATUS_FOR_RESUME: 'Only paused sessions can be resumed.',
     INVALID_STATUS_FOR_COMPLETE: 'Session is already completed or cannot be concluded from its current status.',
+    INVALID_STATUS_FOR_COACHING_TOGGLE: 'Cannot alter coaching mode for a completed rehearsal session.',
     DURATION_EXCEEDED: 'Session has exceeded the maximum duration limit. Please conclude the session to view your summary.',
     MESSAGE_EMPTY: 'Message content cannot be empty.',
     MESSAGE_TOO_LONG: (max: number) => `Message content cannot exceed ${max} characters.`,
