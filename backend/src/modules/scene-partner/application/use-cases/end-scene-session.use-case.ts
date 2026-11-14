@@ -8,7 +8,7 @@ import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { Scenario } from "../../domain/entities/scenario.entity";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
-import { SceneSessionStatus } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus } from "../../domain/enums/scene-partner.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 
@@ -49,13 +49,22 @@ export class EndSceneSessionUseCase implements IEndSceneSessionUseCase {
         // 4. Resolve Scenario for Context Debrief
         let scenario = PREDEFINED_SCENARIOS.find((s) => s.id === session.scenarioId);
         if (!scenario) {
-            scenario = Scenario.createPredefined({
-                id: session.scenarioId,
-                title: session.scenarioTitle,
-                description: session.scenarioTitle,
-                category: session.scenarioCategory,
-                promptContext: session.scenarioTitle,
-            });
+            const promptContext = session.scenarioPromptContext || session.scenarioTitle;
+            scenario = session.scenarioCategory === ScenarioCategory.CUSTOM
+                ? Scenario.createCustom({
+                    id: session.scenarioId,
+                    title: session.scenarioTitle,
+                    description: promptContext,
+                    promptContext,
+                    creatorUserId: session.userId,
+                })
+                : Scenario.createPredefined({
+                    id: session.scenarioId,
+                    title: session.scenarioTitle,
+                    description: session.scenarioTitle,
+                    category: session.scenarioCategory,
+                    promptContext,
+                });
         }
 
         // 5. Build Simulation Context
