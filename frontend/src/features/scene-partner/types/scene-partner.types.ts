@@ -44,6 +44,7 @@ export interface SceneSessionDto {
     scenarioCategory: ScenarioCategory;
     scenarioPromptContext?: string | null;
     targetUserId: string | null;
+    isCoachingEnabled: boolean;
     status: SceneSessionStatus;
     transcript: SceneTurnDto[];
     turnCount: number;
@@ -78,6 +79,12 @@ export interface StartSceneSessionPayload {
     targetUserId?: string;
     customPrompt?: string;
     customTitle?: string;
+    isCoachingEnabled?: boolean;
+}
+
+export interface UpdateCoachingModePayload {
+    sessionId: string;
+    isCoachingEnabled: boolean;
 }
 
 export interface SendSceneTurnPayload {
