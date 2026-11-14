@@ -29,6 +29,7 @@ export class SceneSessionDtoMapper {
             scenarioId: snapshot.scenarioId,
             scenarioTitle: snapshot.scenarioTitle,
             scenarioCategory: snapshot.scenarioCategory,
+            scenarioPromptContext: snapshot.scenarioPromptContext,
             targetUserId: snapshot.targetUserId,
             status: snapshot.status,
             transcript,
