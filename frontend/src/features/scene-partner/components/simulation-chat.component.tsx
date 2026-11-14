@@ -18,6 +18,59 @@ export interface SimulationChatProps {
     partnerName?: string;
 }
 
+interface InlineCoachCardProps {
+    variant: 'observation' | 'recommendation';
+    title: string;
+    icon: React.ReactNode;
+    content: string;
+}
+
+const InlineCoachCard: React.FC<InlineCoachCardProps> = ({
+    variant,
+    title,
+    icon,
+    content,
+}) => {
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    const isObservation = variant === 'observation';
+    const cardClass = isObservation ? styles.coachInterventionCard : styles.suggestedResponseCard;
+    const titleClass = isObservation ? styles.coachInterventionTitle : styles.suggestedResponseTitle;
+    const bodyClass = isObservation ? styles.coachInterventionBody : styles.coachTipBody;
+
+    return (
+        <div className={`${cardClass} ${isExpanded ? styles.cardExpanded : styles.cardCollapsed}`}>
+            <button
+                type="button"
+                className={styles.collapsibleHeaderBtn}
+                onClick={() => setIsExpanded((prev) => !prev)}
+                aria-expanded={isExpanded}
+                title={isExpanded ? 'Click to collapse feedback' : 'Click to expand feedback'}
+            >
+                <div className={styles.collapsibleTitleRow}>
+                    {icon}
+                    <span className={titleClass}>{title}</span>
+                </div>
+                <svg
+                    className={`${styles.chevronIcon} ${isExpanded ? styles.chevronOpen : ''}`}
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                >
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+            {isExpanded && <p className={bodyClass}>{content}</p>}
+        </div>
+    );
+};
+
 export const SimulationChat: React.FC<SimulationChatProps> = ({
     session,
     onSendMessage,
@@ -263,38 +316,32 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 
                                         {/* Coach Observation Card */}
                                         {coachNote.observation && (
-                                            <div className={styles.coachInterventionCard}>
-                                                <div className={styles.coachInterventionHeader}>
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <InlineCoachCard
+                                                variant="observation"
+                                                title="Coach Observation"
+                                                icon={
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                                         <circle cx="12" cy="12" r="10"></circle>
                                                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                                                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                                                     </svg>
-                                                    <span className={styles.coachInterventionTitle}>
-                                                        Coach Observation
-                                                    </span>
-                                                </div>
-                                                <p className={styles.coachInterventionBody}>
-                                                    {coachNote.observation}
-                                                </p>
-                                            </div>
+                                                }
+                                                content={coachNote.observation}
+                                            />
                                         )}
 
                                         {/* Coach Recommendation Card */}
                                         {coachNote.nextTip && (
-                                            <div className={styles.suggestedResponseCard}>
-                                                <div className={styles.suggestedResponseHeader}>
-                                                    <div className={styles.suggestedResponseTitleRow}>
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                                                        </svg>
-                                                        <span className={styles.suggestedResponseTitle}>Coach Recommendation</span>
-                                                    </div>
-                                                </div>
-                                                <p className={styles.coachTipBody}>
-                                                    {coachNote.nextTip}
-                                                </p>
-                                            </div>
+                                            <InlineCoachCard
+                                                variant="recommendation"
+                                                title="Coach Recommendation"
+                                                icon={
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                                    </svg>
+                                                }
+                                                content={coachNote.nextTip}
+                                            />
                                         )}
                                     </div>
                                 )}

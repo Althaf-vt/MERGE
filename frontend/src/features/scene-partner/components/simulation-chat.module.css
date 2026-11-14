@@ -436,28 +436,8 @@
     background: #F3F4F6;
     border: 1px solid #E5E7EB;
     border-radius: 8px;
-    padding: 0.75rem 0.95rem;
     box-sizing: border-box;
-}
-
-.coachInterventionHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-bottom: 0.25rem;
-}
-
-.coachInterventionTitle {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #1F2937;
-}
-
-.coachInterventionBody {
-    margin: 0;
-    font-size: 0.75rem;
-    color: #4B5563;
-    line-height: 1.35;
+    transition: all 0.2s ease;
 }
 
 /* Inline Suggested Response Card */
@@ -467,32 +447,84 @@
     background: #FAF5FF;
     border: 1.5px solid #DDD6FE;
     border-radius: 8px;
-    padding: 0.75rem 0.95rem;
     box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
-.suggestedResponseHeader {
+.cardExpanded {
+    padding: 0.65rem 0.85rem;
+}
+
+.cardCollapsed {
+    padding: 0.45rem 0.85rem;
+}
+
+.collapsibleHeaderBtn {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.35rem;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
+    color: inherit;
 }
 
-.suggestedResponseTitleRow {
+.collapsibleTitleRow {
     display: flex;
     align-items: center;
     gap: 0.35rem;
+}
+
+.coachInterventionTitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    transition: color 0.15s ease;
 }
 
 .suggestedResponseTitle {
     font-size: 0.78rem;
     font-weight: 700;
     color: #7C3AED;
+    transition: color 0.15s ease;
+}
+
+.collapsibleHeaderBtn:hover .coachInterventionTitle {
+    color: #111827;
+}
+
+.collapsibleHeaderBtn:hover .suggestedResponseTitle {
+    color: #6D28D9;
+}
+
+.chevronIcon {
+    color: #9CA3AF;
+    transition: transform 0.2s ease, color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.collapsibleHeaderBtn:hover .chevronIcon {
+    color: #4B5563;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.coachInterventionBody {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.75rem;
+    color: #4B5563;
+    line-height: 1.35;
 }
 
 .coachTipBody {
-    margin: 0;
-    font-size: 0.78rem;
+    margin: 0.35rem 0 0 0;
+    font-size: 0.76rem;
     color: #1F2937;
     line-height: 1.35;
 }
