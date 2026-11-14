@@ -108,17 +108,21 @@ export const ScenePartnerPage: React.FC = () => {
     }, [currentSimSession, isSummaryModalOpen]);
 
     const handleStartPracticeFromHome = async (payload: {
-        scenarioId: string;
+        scenarioId?: string;
         simulationType: SimulationType;
         targetUserId?: string;
         partnerName: string;
+        customPrompt?: string;
+        customTitle?: string;
     }) => {
         try {
-            setStartingScenarioId(payload.scenarioId);
+            setStartingScenarioId(payload.scenarioId || 'custom');
             const res = await startSession({
                 scenarioId: payload.scenarioId,
                 simulationType: payload.simulationType,
                 targetUserId: payload.targetUserId,
+                customPrompt: payload.customPrompt,
+                customTitle: payload.customTitle,
             }).unwrap();
 
             if (res.data) {
