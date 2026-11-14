@@ -31,6 +31,7 @@ export class SceneSessionDtoMapper {
             scenarioCategory: snapshot.scenarioCategory,
             scenarioPromptContext: snapshot.scenarioPromptContext,
             targetUserId: snapshot.targetUserId,
+            isCoachingEnabled: snapshot.isCoachingEnabled,
             status: snapshot.status,
             transcript,
             turnCount: snapshot.turnCount,
