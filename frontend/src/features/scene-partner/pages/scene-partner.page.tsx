@@ -69,6 +69,8 @@ export const ScenePartnerPage: React.FC = () => {
         isResuming,
         handleEnd,
         isEnding,
+        handleToggleCoaching,
+        isUpdatingCoaching,
         formattedTime,
         isTimerExpired,
         isError: isSimSessionError,
@@ -116,6 +118,7 @@ export const ScenePartnerPage: React.FC = () => {
         partnerName: string;
         customPrompt?: string;
         customTitle?: string;
+        isCoachingEnabled?: boolean;
     }) => {
         try {
             setStartingScenarioId(payload.scenarioId || 'custom');
@@ -125,6 +128,7 @@ export const ScenePartnerPage: React.FC = () => {
                 targetUserId: payload.targetUserId,
                 customPrompt: payload.customPrompt,
                 customTitle: payload.customTitle,
+                isCoachingEnabled: payload.isCoachingEnabled,
             }).unwrap();
 
             if (res.data) {
@@ -258,6 +262,8 @@ export const ScenePartnerPage: React.FC = () => {
                         onEnd={handleEndCurrentSimulation}
                         onRestart={handleRestartCurrentSimulation}
                         onBack={() => setActiveSessionId(null)}
+                        onToggleCoaching={handleToggleCoaching}
+                        isUpdatingCoaching={isUpdatingCoaching}
                         isSendingTurn={isSendingTurn}
                         isPausing={isPausing}
                         isResuming={isResuming}
