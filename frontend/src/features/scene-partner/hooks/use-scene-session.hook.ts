@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useGetSessionByIdQuery, useSendTurnMutation, usePauseSessionMutation, useResumeSessionMutation, useEndSessionMutation } from '../api/scene-partner.api';
+import {
+    useGetSessionByIdQuery,
+    useSendTurnMutation,
+    usePauseSessionMutation,
+    useResumeSessionMutation,
+    useEndSessionMutation,
+    useUpdateCoachingModeMutation,
+} from '../api/scene-partner.api';
 import { getErrorMessage } from '../../../shared/utils/error.util';
 import { toast } from '../../../shared/utils/toast.util';
 
@@ -23,6 +30,7 @@ export const useSceneSession = (sessionId?: string) => {
     const [pauseSession, { isLoading: isPausing }] = usePauseSessionMutation();
     const [resumeSession, { isLoading: isResuming }] = useResumeSessionMutation();
     const [endSession, { isLoading: isEnding }] = useEndSessionMutation();
+    const [updateCoachingMode, { isLoading: isUpdatingCoaching }] = useUpdateCoachingModeMutation();
 
     // Timer logic: compute remaining duration
     const maxSeconds = useMemo(() => {
@@ -128,6 +136,18 @@ export const useSceneSession = (sessionId?: string) => {
         }
     }, [sessionId, isResuming, session?.status, resumeSession]);
 
+    const handleToggleCoaching = useCallback(async (enabled: boolean) => {
+        if (!sessionId || isUpdatingCoaching || !session || session.status === 'COMPLETED') return;
+        try {
+            await updateCoachingMode({ sessionId, isCoachingEnabled: enabled }).unwrap();
+            toast.success(`Coaching mode ${enabled ? 'enabled' : 'disabled'}.`);
+        } catch (err) {
+            const errorMsg = getErrorMessage(err, 'Failed to update coaching mode.');
+            toast.error(errorMsg);
+            console.error('Failed to toggle coaching mode:', err);
+        }
+    }, [sessionId, isUpdatingCoaching, session, updateCoachingMode]);
+
     return {
         session,
         isLoading,
@@ -142,6 +162,8 @@ export const useSceneSession = (sessionId?: string) => {
         isResuming,
         handleEnd,
         isEnding,
+        handleToggleCoaching,
+        isUpdatingCoaching,
         formattedTime,
         isTimerExpired,
         refetch,
