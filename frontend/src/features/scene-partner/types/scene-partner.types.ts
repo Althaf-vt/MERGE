@@ -42,6 +42,7 @@ export interface SceneSessionDto {
     scenarioId: string;
     scenarioTitle: string;
     scenarioCategory: ScenarioCategory;
+    scenarioPromptContext?: string | null;
     targetUserId: string | null;
     status: SceneSessionStatus;
     transcript: SceneTurnDto[];
@@ -72,9 +73,11 @@ export interface ScenarioDto {
 }
 
 export interface StartSceneSessionPayload {
-    scenarioId: string;
+    scenarioId?: string;
     simulationType: SimulationType;
     targetUserId?: string;
+    customPrompt?: string;
+    customTitle?: string;
 }
 
 export interface SendSceneTurnPayload {
