@@ -71,6 +71,95 @@ const InlineCoachCard: React.FC<InlineCoachCardProps> = ({
     );
 };
 
+interface EndingStageConfig {
+    stageLabel: string;
+    title: string;
+    subtitle: string;
+    progressPercent: number;
+    tip: string;
+    steps: {
+        label: string;
+        state: 'active' | 'completed' | 'waiting';
+    }[];
+    icon: React.ReactNode;
+}
+
+const ENDING_STAGES: EndingStageConfig[] = [
+    {
+        stageLabel: 'Stage 1 of 3: Transcript Analysis',
+        title: 'Analyzing Your Conversation...',
+        subtitle: 'Reviewing conversation turns, dialogue balance, and active listening across all exchanges.',
+        progressPercent: 30,
+        tip: 'Asking open-ended follow-up questions signals curiosity and keeps rapport flowing effortlessly.',
+        steps: [
+            { label: 'Reviewing conversation turns & active listening', state: 'active' },
+            { label: 'Evaluating communication score & tone metrics', state: 'waiting' },
+            { label: 'Synthesizing actionable coaching takeaways', state: 'waiting' },
+        ],
+        icon: (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path d="M8 10h.01" />
+                <path d="M12 10h.01" />
+                <path d="M16 10h.01" />
+            </svg>
+        ),
+    },
+    {
+        stageLabel: 'Stage 2 of 3: Score & Tone Assessment',
+        title: 'Evaluating Communication Score & Tone...',
+        subtitle: 'Measuring emotional tone, conversational reciprocity, and connection signals.',
+        progressPercent: 68,
+        tip: 'Balancing playful humor with specific personal details creates authentic rapport.',
+        steps: [
+            { label: 'Reviewing conversation turns & active listening', state: 'completed' },
+            { label: 'Evaluating communication score & tone metrics', state: 'active' },
+            { label: 'Synthesizing actionable coaching takeaways', state: 'waiting' },
+        ],
+        icon: (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m16 12-4-4-4 4" />
+                <path d="M12 16V8" />
+            </svg>
+        ),
+    },
+    {
+        stageLabel: 'Stage 3 of 3: Personalized Takeaways',
+        title: 'Synthesizing Your Coaching Notes...',
+        subtitle: 'Formulating tailored takeaways and high-impact recommendations for real-life conversations.',
+        progressPercent: 92,
+        tip: 'Suggesting a concrete venue or time signals authentic confidence and prevents stalling.',
+        steps: [
+            { label: 'Reviewing conversation turns & active listening', state: 'completed' },
+            { label: 'Evaluating communication score & tone metrics', state: 'completed' },
+            { label: 'Synthesizing actionable coaching takeaways', state: 'active' },
+        ],
+        icon: (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            </svg>
+        ),
+    },
+    {
+        stageLabel: 'Finalizing Debrief',
+        title: 'Finalizing Your Session Debrief...',
+        subtitle: 'Assembling your score breakdown, replay review, and actionable takeaways.',
+        progressPercent: 98,
+        tip: 'Reviewing practice debriefs helps you internalize high-connection conversation habits.',
+        steps: [
+            { label: 'Reviewing conversation turns & active listening', state: 'completed' },
+            { label: 'Evaluating communication score & tone metrics', state: 'completed' },
+            { label: 'Synthesizing actionable coaching takeaways', state: 'completed' },
+        ],
+        icon: (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+        ),
+    },
+];
+
 export const SimulationChat: React.FC<SimulationChatProps> = ({
     session,
     onSendMessage,
@@ -87,11 +176,43 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 }) => {
     const [inputValue, setInputValue] = useState('');
     const [savedNotice, setSavedNotice] = useState(false);
+    const [pendingUserMessage, setPendingUserMessage] = useState<string | null>(null);
+    const [endingStageIndex, setEndingStageIndex] = useState(0);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesStreamRef = useRef<HTMLDivElement>(null);
 
     const isPaused = session.status === 'PAUSED';
     const isCompleted = session.status === 'COMPLETED';
+
+    // Clear optimistic pending message once new transcript turns arrive from server
+    useEffect(() => {
+        setPendingUserMessage(null);
+    }, [session.transcript.length]);
+
+    // Progress through evaluation stages sequentially while ending rehearsal
+    useEffect(() => {
+        if (!isEnding) {
+            setEndingStageIndex(0);
+            return;
+        }
+
+        setEndingStageIndex(0);
+        const interval = setInterval(() => {
+            setEndingStageIndex((prev) => Math.min(prev + 1, ENDING_STAGES.length - 1));
+        }, 2200);
+
+        return () => clearInterval(interval);
+    }, [isEnding]);
+
+    const currentEndingStage = ENDING_STAGES[endingStageIndex];
+
+    // Check if the pending user message has already been recorded in the authoritative transcript
+    const isPendingAlreadyInTranscript =
+        pendingUserMessage !== null &&
+        session.transcript.some(
+            (turn) => turn.role === 'USER' && turn.content.trim() === pendingUserMessage.trim()
+        );
+    const shouldShowPendingUserMessage = pendingUserMessage !== null && !isPendingAlreadyInTranscript;
 
     // Lock page-level scroll while chat simulation is active
     useEffect(() => {
@@ -109,7 +230,7 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
 
     const partnerInitial = resolvedPartnerName.charAt(0).toUpperCase();
 
-    // Auto-scroll on new transcript entries or typing change strictly within the messages stream
+    // Auto-scroll on new transcript entries, typing change, or optimistic turn strictly within the messages stream
     useEffect(() => {
         if (messagesStreamRef.current) {
             messagesStreamRef.current.scrollTo({
@@ -117,15 +238,17 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                 behavior: 'smooth',
             });
         }
-    }, [session.transcript.length, isSendingTurn]);
+    }, [session.transcript.length, isSendingTurn, shouldShowPendingUserMessage]);
 
     const handleSend = async () => {
         const text = inputValue.trim();
         if (!text || isSendingTurn || isPaused || isCompleted) return;
         setInputValue('');
+        setPendingUserMessage(text);
         const success = await onSendMessage(text);
         if (success === false) {
             // Restore input text on failure so user does not lose message
+            setPendingUserMessage(null);
             setInputValue(text);
         }
     };
@@ -261,17 +384,115 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                         onClick={onEnd}
                         disabled={isEnding || isCompleted}
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                        <span>{isEnding ? 'Ending Rehearsal...' : 'End Session'}</span>
+                        {isEnding ? (
+                            <>
+                                <svg
+                                    className={styles.spinnerIcon}
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                                </svg>
+                                <span>Analyzing...</span>
+                            </>
+                        ) : (
+                            <>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                <span>End Session</span>
+                            </>
+                        )}
                     </button>
                 </div>
             </aside>
 
             {/* Right Main Chat Pane */}
             <main className={styles.chatPane} aria-label="Conversation Rehearsal Thread">
+                {/* AI Evaluation Debrief Loading Overlay (Dynamic multi-stage progression during End Session) */}
+                {isEnding && (
+                    <div className={styles.endingOverlay} role="status" aria-live="polite">
+                        <div className={styles.endingCard}>
+                            <div className={styles.endingIconWrapper}>
+                                <div className={styles.pulseRing} />
+                                <div className={styles.endingIconCore}>
+                                    {currentEndingStage.icon}
+                                </div>
+                            </div>
+
+                            <div className={styles.endingBadge}>
+                                {currentEndingStage.stageLabel}
+                            </div>
+
+                            <h3 className={styles.endingTitle}>{currentEndingStage.title}</h3>
+                            <p className={styles.endingSubtitle}>{currentEndingStage.subtitle}</p>
+
+                            <div className={styles.endingStepsList}>
+                                {currentEndingStage.steps.map((step) => {
+                                    const isDone = step.state === 'completed';
+                                    const isActive = step.state === 'active';
+
+                                    return (
+                                        <div
+                                            key={step.label}
+                                            className={`${styles.endingStepItem} ${
+                                                isActive ? styles.stepItemActive : isDone ? styles.stepItemCompleted : ''
+                                            }`}
+                                        >
+                                            <div className={styles.stepLeftRow}>
+                                                {isDone ? (
+                                                    <span className={styles.stepCheckIcon} aria-label="Completed">
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <polyline points="20 6 9 17 4 12" />
+                                                        </svg>
+                                                    </span>
+                                                ) : isActive ? (
+                                                    <span className={styles.stepDotActive} aria-label="In progress" />
+                                                ) : (
+                                                    <span className={styles.stepDotWaiting} aria-label="Queued" />
+                                                )}
+                                                <span className={styles.stepLabelText}>{step.label}</span>
+                                            </div>
+                                            <span className={styles.stepStatusTag}>
+                                                {isDone ? 'Done' : isActive ? 'Analyzing...' : 'Queued'}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className={styles.endingProgressMeta}>
+                                <span className={styles.progressPercentText}>{currentEndingStage.progressPercent}% analyzed</span>
+                                <span className={styles.progressEstimatedText}>AI evaluation running</span>
+                            </div>
+
+                            <div className={styles.endingProgressBar}>
+                                <div
+                                    className={styles.endingProgressFill}
+                                    style={{ width: `${currentEndingStage.progressPercent}%` }}
+                                />
+                            </div>
+
+                            <div className={styles.endingTipBox}>
+                                <svg className={styles.endingTipIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                </svg>
+                                <div className={styles.endingTipText}>
+                                    <span className={styles.endingTipHeading}>Coach Insight: </span>
+                                    <span>{currentEndingStage.tip}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {/* Chat Header Bar */}
                 <header className={styles.chatHeader}>
                     {onBack && (
@@ -368,6 +589,15 @@ export const SimulationChat: React.FC<SimulationChatProps> = ({
                             </React.Fragment>
                         );
                     })}
+
+                    {/* Optimistic User Turn (rendered immediately upon sending) */}
+                    {shouldShowPendingUserMessage && (
+                        <div className={styles.userRow}>
+                            <div className={styles.userBubble}>
+                                <p className={styles.bubbleText}>{pendingUserMessage}</p>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Simulation Typing Indicator */}
                     {isSendingTurn && (

@@ -268,6 +268,7 @@
    ========================================================================== */
 
 .chatPane {
+    position: relative;
     display: flex;
     flex-direction: column;
     background: #FFFFFF;
@@ -666,4 +667,319 @@
     color: #9CA3AF;
     cursor: not-allowed;
     transform: none;
+}
+
+/* ==========================================================================
+   AI Evaluation Debrief Loading Overlay (Shown during End Session)
+   ========================================================================== */
+
+.endingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    animation: fadeInOverlay 0.25s ease-out;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.endingCard {
+    background: #FFFFFF;
+    border: 1.5px solid #EDE9FE;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    max-width: 480px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 20px 40px -15px rgba(109, 40, 217, 0.15), 0 0 0 1px rgba(124, 58, 237, 0.05);
+}
+
+.endingIconWrapper {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+}
+
+.pulseRing {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: #EDE9FE;
+    animation: pulseRing 1.8s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.18);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(0.85);
+        opacity: 0.9;
+    }
+}
+
+.endingIconCore {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #F5F3FF;
+    border: 2px solid #C4B5FD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7C3AED;
+    transition: transform 0.3s ease;
+}
+
+.endingBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #F3E8FF;
+    color: #6D28D9;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.55rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.endingTitle {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.015em;
+    min-height: 1.45rem;
+    animation: textFadeIn 0.35s ease;
+}
+
+.endingSubtitle {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.4;
+    min-height: 2.25rem;
+    animation: textFadeIn 0.35s ease;
+}
+
+@keyframes textFadeIn {
+    from {
+        opacity: 0.3;
+        transform: translateY(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.endingStepsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+    margin-bottom: 1.15rem;
+    text-align: left;
+    background: #FAF5FF;
+    border: 1px solid #E9D5FF;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    box-sizing: border-box;
+}
+
+.endingStepItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.77rem;
+    color: #6B7280;
+    transition: all 0.25s ease;
+}
+
+.stepLeftRow {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.stepItemActive {
+    color: #111827;
+    font-weight: 700;
+}
+
+.stepItemCompleted {
+    color: #065F46;
+}
+
+.stepLabelText {
+    line-height: 1.25;
+}
+
+.stepStatusTag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.stepItemCompleted .stepStatusTag {
+    color: #059669;
+}
+
+.stepItemActive .stepStatusTag {
+    color: #7C3AED;
+}
+
+.stepCheckIcon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #D1FAE5;
+    color: #059669;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stepDotActive {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7C3AED;
+    box-shadow: 0 0 0 3px #DDD6FE;
+    flex-shrink: 0;
+    animation: stepGlow 1.5s infinite alternate;
+}
+
+.stepDotWaiting {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #D1D5DB;
+    flex-shrink: 0;
+}
+
+@keyframes stepGlow {
+    from {
+        box-shadow: 0 0 0 2px #DDD6FE;
+    }
+    to {
+        box-shadow: 0 0 0 5px #C4B5FD;
+    }
+}
+
+.endingProgressMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.35rem;
+}
+
+.progressPercentText {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6D28D9;
+}
+
+.progressEstimatedText {
+    font-size: 0.68rem;
+    color: #9CA3AF;
+}
+
+.endingProgressBar {
+    width: 100%;
+    height: 6px;
+    background: #EDE9FE;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.endingProgressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #7C3AED, #A855F7);
+    border-radius: 9999px;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.endingTipBox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.72rem;
+    color: #475569;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 1rem;
+    line-height: 1.35;
+    animation: textFadeIn 0.35s ease;
+}
+
+.endingTipIcon {
+    color: #7C3AED;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.endingTipHeading {
+    font-weight: 700;
+    color: #1E293B;
+}
+
+.spinnerIcon {
+    animation: spinIcon 1s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spinIcon {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
