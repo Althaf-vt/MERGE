@@ -192,7 +192,7 @@ export class OpenRouterScenePartnerAiService implements IScenePartnerAiService {
                         },
                         {
                             role: 'user',
-                            content: CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript),
+                            content: CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript, context),
                         },
                     ],
                     temperature: this._coachTemperature,

@@ -166,7 +166,7 @@ export class GeminiScenePartnerAiService implements IScenePartnerAiService {
                     safetySettings: this._safetySettings,
                 });
 
-                const prompt = CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript);
+                const prompt = CoachPrompt.getTurnEvaluationPrompt(userMessage, transcript, context);
                 const result = await model.generateContent(prompt);
                 const text = result.response.text();
 
