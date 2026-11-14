@@ -13,6 +13,7 @@ export const GET_ACTIVE_SCENE_SESSION_USE_CASE = "GET_ACTIVE_SCENE_SESSION_USE_C
 export const GET_SCENE_SESSION_BY_ID_USE_CASE = "GET_SCENE_SESSION_BY_ID_USE_CASE";
 export const GET_SCENE_SESSION_HISTORY_USE_CASE = "GET_SCENE_SESSION_HISTORY_USE_CASE";
 export const GET_SCENARIOS_USE_CASE = "GET_SCENARIOS_USE_CASE";
+export const DELETE_SCENE_SESSION_USE_CASE = "DELETE_SCENE_SESSION_USE_CASE";
 
 export interface IStartSceneSessionUseCase {
     execute(userId: string, dto: StartSceneSessionDto): Promise<SceneSessionResponseDto>;
@@ -48,4 +49,8 @@ export interface IGetSceneSessionHistoryUseCase {
 
 export interface IGetScenariosUseCase {
     execute(category?: ScenarioCategory): Promise<ScenarioResponseDto[]>;
+}
+
+export interface IDeleteSceneSessionUseCase {
+    execute(userId: string, sessionId: string): Promise<{ success: boolean; id: string }>;
 }
