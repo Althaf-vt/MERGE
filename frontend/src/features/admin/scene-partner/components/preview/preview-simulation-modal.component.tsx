@@ -29,6 +29,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
 }) => {
     const [session, setSession] = useState<AdminPreviewSessionDto | null>(null);
     const [inputMessage, setInputMessage] = useState('');
+    const [pendingUserMessage, setPendingUserMessage] = useState<string | null>(null);
     const [isCoachingEnabled, setIsCoachingEnabled] = useState(true);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
         if (!isOpen) {
             setSession(null);
             setInputMessage('');
+            setPendingUserMessage(null);
             setErrorMsg(null);
             return;
         }
@@ -69,8 +71,21 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
     }, [isOpen, scenarioId]);
 
     useEffect(() => {
+        setPendingUserMessage(null);
+    }, [session?.transcript?.length]);
+
+    const isPendingAlreadyInTranscript =
+        pendingUserMessage !== null &&
+        Boolean(
+            session?.transcript?.some(
+                (turn) => turn.role === 'USER' && turn.content.trim() === pendingUserMessage.trim()
+            )
+        );
+    const shouldShowPendingUserMessage = pendingUserMessage !== null && !isPendingAlreadyInTranscript;
+
+    useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [session?.transcript, isSending]);
+    }, [session?.transcript, isSending, shouldShowPendingUserMessage]);
 
     if (!isOpen) return null;
 
@@ -81,6 +96,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
 
         setErrorMsg(null);
         setInputMessage('');
+        setPendingUserMessage(trimmed);
 
         try {
             const response = await sendPreviewTurn({
@@ -90,9 +106,12 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
 
             if (response.data) {
                 setSession(response.data);
+                setPendingUserMessage(null);
             }
         } catch (err: unknown) {
             setErrorMsg(getErrorMessage(err, 'Failed to send preview turn.'));
+            setPendingUserMessage(null);
+            setInputMessage(trimmed);
         }
     };
 
@@ -164,52 +183,75 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
                             <span>INITIALIZING GEMINI AI PREVIEW INSTANCE...</span>
                             <span style={{ fontSize: '11px' }}>Loading scenario prompt context and personality baseline...</span>
                         </div>
-                    ) : !session || !session.transcript || session.transcript.length === 0 ? (
+                    ) : (!session || !session.transcript || session.transcript.length === 0) && !shouldShowPendingUserMessage ? (
                         <div className={styles.emptyState}>
                             <span>PREVIEW SANDBOX READY</span>
                             <span style={{ fontSize: '11px' }}>Send a message below to start the conversational simulation.</span>
                         </div>
                     ) : (
-                        session.transcript.map((turn, idx) => {
-                            const isUser = turn.role === 'USER';
-                            return (
-                                <div
-                                    key={`preview-turn-${idx}`}
-                                    className={`${styles.turnRow} ${isUser ? styles.userTurn : styles.simTurn}`}
-                                >
-                                    <div className={styles.speakerMeta}>
-                                        <span>{isUser ? 'ADMIN TESTER' : 'AI PARTNER'}</span>
-                                        <span>• {new Date(turn.timestamp).toLocaleTimeString()}</span>
-                                    </div>
-
-                                    <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.simBubble}`}>
-                                        {turn.content}
-                                    </div>
-
-                                    {isUser && turn.coachNote && (
-                                        <div className={styles.coachNoteCard}>
-                                            <div className={styles.coachHeader}>Coach Evaluation</div>
-                                            {turn.coachNote.observation && (
-                                                <div className={styles.coachText}>
-                                                    <strong>Observation:</strong> {turn.coachNote.observation}
-                                                </div>
-                                            )}
-                                            {turn.coachNote.nextTip && (
-                                                <div className={styles.coachText}>
-                                                    <strong>Next Tip:</strong> {turn.coachNote.nextTip}
-                                                </div>
-                                            )}
+                        <>
+                            {session?.transcript?.map((turn, idx) => {
+                                const isUser = turn.role === 'USER';
+                                return (
+                                    <div
+                                        key={`preview-turn-${idx}`}
+                                        className={`${styles.turnRow} ${isUser ? styles.userTurn : styles.simTurn}`}
+                                    >
+                                        <div className={styles.speakerMeta}>
+                                            <span>{isUser ? 'ADMIN TESTER' : 'AI PARTNER'}</span>
+                                            <span>• {new Date(turn.timestamp).toLocaleTimeString()}</span>
                                         </div>
-                                    )}
-                                </div>
-                            );
-                        })
-                    )}
 
-                    {isSending && (
-                        <div className={styles.typingIndicator}>
-                            <span>AI partner is thinking and formulating response...</span>
-                        </div>
+                                        <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.simBubble}`}>
+                                            {turn.content}
+                                        </div>
+
+                                        {isUser && turn.coachNote && (
+                                            <div className={styles.coachNoteCard}>
+                                                <div className={styles.coachHeader}>Coach Evaluation</div>
+                                                {turn.coachNote.observation && (
+                                                    <div className={styles.coachText}>
+                                                        <strong>Observation:</strong> {turn.coachNote.observation}
+                                                    </div>
+                                                )}
+                                                {turn.coachNote.nextTip && (
+                                                    <div className={styles.coachText}>
+                                                        <strong>Next Tip:</strong> {turn.coachNote.nextTip}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+
+                            {shouldShowPendingUserMessage && (
+                                <div className={`${styles.turnRow} ${styles.userTurn}`}>
+                                    <div className={styles.speakerMeta}>
+                                        <span>ADMIN TESTER</span>
+                                        <span>• Sending...</span>
+                                    </div>
+                                    <div className={`${styles.bubble} ${styles.userBubble} ${styles.optimisticBubble}`}>
+                                        {pendingUserMessage}
+                                    </div>
+                                </div>
+                            )}
+
+                            {isSending && (
+                                <div className={`${styles.turnRow} ${styles.simTurn}`}>
+                                    <div className={styles.speakerMeta}>
+                                        <span>AI PARTNER</span>
+                                        <span>• Thinking...</span>
+                                    </div>
+                                    <div className={styles.typingIndicator}>
+                                        <span className={styles.typingDot} />
+                                        <span className={styles.typingDot} />
+                                        <span className={styles.typingDot} />
+                                        <span className={styles.typingText}>Formulating response...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <div ref={chatEndRef} />
