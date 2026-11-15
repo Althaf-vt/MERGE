@@ -20,5 +20,6 @@ export interface PaginatedAdminScenariosResult {
 export interface IScenarioRepository extends IBaseRepository<Scenario> {
     findActive(category?: ScenarioCategory): Promise<Scenario[]>;
     findAllAdmin(filter: AdminScenariosFilter): Promise<PaginatedAdminScenariosResult>;
+    findForExport(filter?: { category?: ScenarioCategory; isActive?: boolean }): Promise<Scenario[]>;
     count(): Promise<number>;
 }

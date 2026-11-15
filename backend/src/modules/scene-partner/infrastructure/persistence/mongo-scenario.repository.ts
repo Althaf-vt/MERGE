@@ -80,6 +80,27 @@ export class MongoScenarioRepository implements IScenarioRepository {
         };
     }
 
+    async findForExport(filter?: { category?: ScenarioCategory; isActive?: boolean }): Promise<Scenario[]> {
+        const query: Record<string, unknown> = {
+            isCustom: false,
+        };
+
+        if (filter?.category) {
+            query.category = filter.category;
+        }
+
+        if (filter?.isActive !== undefined) {
+            query.isActive = filter.isActive;
+        }
+
+        const documents = await this._model
+            .find(query)
+            .sort({ category: 1, title: 1 })
+            .exec();
+
+        return documents.map((doc) => ScenarioPersistenceMapper.toDomain(doc));
+    }
+
     async create(scenario: Scenario): Promise<Scenario> {
         const persistenceData = ScenarioPersistenceMapper.toPersistence(scenario);
         const created = new this._model(persistenceData);
