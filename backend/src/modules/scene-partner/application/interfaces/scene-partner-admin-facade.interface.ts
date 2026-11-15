@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SessionTimelineEventType, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface AdminCreateScenarioParams {
     title: string;
@@ -78,7 +78,7 @@ export interface AdminSessionListItemFacadeDto {
     simulationType: SimulationType;
     status: SceneSessionStatus;
     turnCount: number;
-    communicationScore?: number | null;
+    durationMinutes: number;
     isCoachingEnabled: boolean;
     createdAt: Date;
     completedAt?: Date | null;
@@ -89,6 +89,44 @@ export interface PaginatedAdminSessionsFacadeResult {
     total: number;
     page: number;
     limit: number;
+}
+
+export interface SessionTimelineEventFacadeDto {
+    id: string;
+    eventType: SessionTimelineEventType;
+    timestamp: Date;
+    metadata?: Record<string, unknown> | null;
+}
+
+export interface SessionTelemetryFacadeDto {
+    durationMinutes: number;
+    turnCount: number;
+    coachingInterventionCount: number;
+    isCoachingEnabled: boolean;
+    completedAt?: Date | null;
+    totalPausedMs: number;
+}
+
+export interface AdminSessionDetailFacadeDto {
+    id: string;
+    userId: string;
+    simulationType: SimulationType;
+    scenarioId: string;
+    scenarioTitle: string;
+    scenarioCategory: ScenarioCategory;
+    scenarioPromptContext: string | null;
+    targetUserId: string | null;
+    isCoachingEnabled: boolean;
+    status: SceneSessionStatus;
+    turnCount: number;
+    timeline: SessionTimelineEventFacadeDto[];
+    telemetry: SessionTelemetryFacadeDto;
+    maxDurationMinutes: number;
+    pausedAt: Date | null;
+    totalPausedMs: number;
+    completedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface CoachNoteFacadeDto {
@@ -103,36 +141,6 @@ export interface AdminSessionTurnFacadeDto {
     content: string;
     coachNote: CoachNoteFacadeDto | null;
     timestamp: Date;
-}
-
-export interface AdminSessionSummaryFacadeDto {
-    summary: string;
-    thingsToNote: string[];
-    takeaways: string[];
-    coachingNotes: string;
-    communicationScore?: number;
-}
-
-export interface AdminSessionDetailFacadeDto {
-    id: string;
-    userId: string;
-    simulationType: SimulationType;
-    scenarioId: string;
-    scenarioTitle: string;
-    scenarioCategory: ScenarioCategory;
-    scenarioPromptContext: string | null;
-    targetUserId: string | null;
-    isCoachingEnabled: boolean;
-    status: SceneSessionStatus;
-    transcript: AdminSessionTurnFacadeDto[];
-    turnCount: number;
-    summary: AdminSessionSummaryFacadeDto | null;
-    maxDurationMinutes: number;
-    pausedAt: Date | null;
-    totalPausedMs: number;
-    completedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
 }
 
 export interface AdminPreviewSessionFacadeDto {
