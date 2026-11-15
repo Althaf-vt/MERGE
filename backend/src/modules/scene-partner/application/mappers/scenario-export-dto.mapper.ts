@@ -1,11 +1,9 @@
 import { Scenario } from '../../domain/entities/scenario.entity';
+import { ScenarioMetricsRawData } from '../../domain/interfaces/scene-session-repository.interface';
 import { ScenarioExportItemDto } from '../dtos/scenario-export.dto';
 
 export class ScenarioExportDtoMapper {
-    public static toExportItemDto(
-        scenario: Scenario,
-        metrics?: { totalSessions: number; completedSessions: number },
-    ): ScenarioExportItemDto {
+    public static toExportItemDto(scenario: Scenario, metrics?: ScenarioMetricsRawData): ScenarioExportItemDto {
         const totalSessions = metrics?.totalSessions ?? 0;
         const completedSessions = metrics?.completedSessions ?? 0;
         const completionRate =
@@ -30,10 +28,7 @@ export class ScenarioExportDtoMapper {
         };
     }
 
-    public static toExportItemDtoList(
-        scenarios: Scenario[],
-        metricsMap?: Record<string, { totalSessions: number; completedSessions: number }>,
-    ): ScenarioExportItemDto[] {
+    public static toExportItemDtoList(scenarios: Scenario[], metricsMap?: Record<string, ScenarioMetricsRawData>): ScenarioExportItemDto[] {
         return scenarios.map((scenario) =>
             ScenarioExportDtoMapper.toExportItemDto(
                 scenario,
