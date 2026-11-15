@@ -30,6 +30,7 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
         const document = await this._model
             .findOne({
                 userId,
+                isPreview: { $ne: true },
                 status: {
                     $in: [
                         SceneSessionStatus.INITIALIZING,
@@ -47,15 +48,16 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
     async findAllByUserId(userId: string, limit: number = 20, skip: number = 0): Promise<PaginatedSceneSessionsResult> {
         const safeLimit = Math.max(1, limit);
         const safeSkip = Math.max(0, skip);
+        const query = { userId, isPreview: { $ne: true } };
 
         const [documents, total] = await Promise.all([
             this._model
-                .find({ userId })
+                .find(query)
                 .sort({ createdAt: -1 })
                 .skip(safeSkip)
                 .limit(safeLimit)
                 .exec(),
-            this._model.countDocuments({ userId }).exec(),
+            this._model.countDocuments(query).exec(),
         ]);
 
         return {
@@ -65,7 +67,9 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
     }
 
     async findAdminSessions(filter: AdminSessionsFilter): Promise<PaginatedSceneSessionsResult> {
-        const query: Record<string, unknown> = {};
+        const query: Record<string, unknown> = {
+            isPreview: { $ne: true },
+        };
 
         if (filter.userId && filter.userId.trim().length > 0) {
             query.userId = filter.userId.trim();
@@ -115,6 +119,11 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
 
     async getAnalytics(): Promise<ScenePartnerAnalyticsRawData> {
         const [facetResult] = await this._model.aggregate([
+            {
+                $match: {
+                    isPreview: { $ne: true },
+                },
+            },
             {
                 $facet: {
                     overview: [

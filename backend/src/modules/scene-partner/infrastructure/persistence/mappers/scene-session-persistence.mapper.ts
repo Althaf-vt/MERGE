@@ -1,7 +1,7 @@
-import { SceneSession } from "../../../domain/entities/scene-session.entity";
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../../shared/domain/enums/scene-partner.enums";
-import { CoachNoteVO } from "../../../domain/value-objects/coach-note.vo";
-import { SceneSessionDocument } from "../scene-session.schema";
+import { SceneSession } from '../../../domain/entities/scene-session.entity';
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from '../../../../../shared/domain/enums/scene-partner.enums';
+import { CoachNoteVO } from '../../../domain/value-objects/coach-note.vo';
+import { SceneSessionDocument } from '../scene-session.schema';
 
 export class SceneSessionPersistenceMapper {
     public static toDomain(raw: SceneSessionDocument): SceneSession {
@@ -45,6 +45,7 @@ export class SceneSessionPersistenceMapper {
             completedAt: raw.completedAt ?? null,
             createdAt: raw['createdAt'],
             updatedAt: raw['updatedAt'],
+            isPreview: raw.isPreview ?? false,
         });
     }
 
@@ -87,6 +88,7 @@ export class SceneSessionPersistenceMapper {
             pausedAt: data.pausedAt ?? null,
             totalPausedMs: data.totalPausedMs,
             completedAt: data.completedAt ?? null,
+            isPreview: data.isPreview ?? false,
         };
     }
 }

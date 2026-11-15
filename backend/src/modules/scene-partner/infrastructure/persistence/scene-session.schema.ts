@@ -113,6 +113,9 @@ export class SceneSessionSchemaClass {
     @Prop({ type: Date, default: null })
     completedAt?: Date | null;
 
+    @Prop({ type: Boolean, default: false, index: true })
+    isPreview: boolean;
+
     createdAt: Date;
     updatedAt: Date;
 }
@@ -124,3 +127,4 @@ SceneSessionSchema.index({ userId: 1, status: 1 });
 SceneSessionSchema.index({ userId: 1, createdAt: -1 });
 SceneSessionSchema.index({ scenarioId: 1, createdAt: -1 });
 SceneSessionSchema.index({ status: 1, createdAt: -1 });
+SceneSessionSchema.index({ isPreview: 1, createdAt: -1 });
