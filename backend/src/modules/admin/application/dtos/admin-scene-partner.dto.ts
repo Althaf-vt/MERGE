@@ -1,7 +1,7 @@
 import { Transform, Type } from "class-transformer";
 import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
 import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
-import { AdminCreateScenarioParams, AdminGetScenariosFilters, AdminGetSessionsFilters, AdminToggleScenarioStatusParams, AdminUpdateScenarioParams } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import { AdminCreateScenarioParams, AdminGetScenariosFilters, AdminGetSessionsFilters, AdminSendPreviewTurnParams, AdminStartPreviewSessionParams, AdminToggleScenarioStatusParams, AdminUpdateScenarioParams } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
 
 export class AdminCreateScenarioDto implements AdminCreateScenarioParams {
     @IsString()
@@ -129,4 +129,37 @@ export class AdminGetSessionsQueryDto implements AdminGetSessionsFilters {
     @IsNumber()
     @Min(1)
     limit?: number = 20;
+}
+
+export class AdminStartPreviewDto implements AdminStartPreviewSessionParams {
+    @IsOptional()
+    @IsString()
+    scenarioId?: string;
+
+    @IsOptional()
+    @IsString()
+    @MinLength(3)
+    @MaxLength(100)
+    title?: string;
+
+    @IsOptional()
+    @IsEnum(ScenarioCategory)
+    category?: ScenarioCategory;
+
+    @IsOptional()
+    @IsString()
+    @MinLength(5)
+    @MaxLength(1000)
+    promptContext?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    isCoachingEnabled?: boolean;
+}
+
+export class AdminSendPreviewTurnDto implements AdminSendPreviewTurnParams {
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(1000)
+    content: string;
 }
