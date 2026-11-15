@@ -52,5 +52,6 @@ export interface ISceneSessionRepository extends IBaseRepository<SceneSession> {
     findAllByUserId(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResult>;
     findAdminSessions(filter: AdminSessionsFilter): Promise<PaginatedSceneSessionsResult>;
     getAnalytics(): Promise<ScenePartnerAnalyticsRawData>;
+    getScenarioMetricsMap(): Promise<Record<string, { totalSessions: number; completedSessions: number }>>;
     deleteById(id: string, userId: string): Promise<boolean>;
 }

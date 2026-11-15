@@ -230,6 +230,38 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
         };
     }
 
+    async getScenarioMetricsMap(): Promise<Record<string, { totalSessions: number; completedSessions: number }>> {
+        const results = await this._model.aggregate([
+            {
+                $match: {
+                    isPreview: { $ne: true },
+                },
+            },
+            {
+                $group: {
+                    _id: "$scenarioId",
+                    totalSessions: { $sum: 1 },
+                    completedSessions: {
+                        $sum: {
+                            $cond: [{ $eq: ["$status", SceneSessionStatus.COMPLETED] }, 1, 0],
+                        },
+                    },
+                },
+            },
+        ]).exec();
+
+        const metricsMap: Record<string, { totalSessions: number; completedSessions: number }> = {};
+        for (const item of results) {
+            if (item._id) {
+                metricsMap[item._id.toString()] = {
+                    totalSessions: item.totalSessions ?? 0,
+                    completedSessions: item.completedSessions ?? 0,
+                };
+            }
+        }
+        return metricsMap;
+    }
+
     async deleteById(id: string, userId: string): Promise<boolean> {
         if (!isValidObjectId(id)) {
             return false;
