@@ -124,12 +124,10 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
     imports: [
         MongooseModule.forFeature([
             { name: User.name, schema: UserSchema },
-            { name: BlockedRelationshipSchemaClass.name, schema: BlockedRelationshipSchema }
+            { name: BlockedRelationshipSchemaClass.name, schema: BlockedRelationshipSchema },
         ]),
-
         HttpModule,
     ],
-
     controllers: [
         AuthController,
         KycController,
@@ -138,7 +136,6 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
         SecurityController,
         BlockedUsersController,
     ],
-
     providers: [
         // Shared Services & Guards
         JwtAuthGuard,
@@ -170,244 +167,67 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
                 });
             },
         },
-
-        {
-            provide: USER_REPOSITORY,
-            useClass: UserRepository,
-        },
-        {
-            provide: OTP_SERVICE,
-            useClass: RedisOtpService,
-        },
-        {
-            provide: USER_SESSION_SERVICE,
-            useClass: UserRedisSessionService,
-        },
-        {
-            provide: GENERATE_HANDOFF_SESSION_USE_CASE,
-            useClass: GenerateHandoffSessionUseCase,
-        },
-        {
-            provide: COMPLETE_HANDOFF_SESSION_USE_CASE,
-            useClass: CompleteHandoffSessionUseCase,
-        },
-        {
-            provide: CANCEL_HANDOFF_SESSION_USE_CASE,
-            useClass: CancelHandoffSessionUseCase,
-        },
-        {
-            provide: LOGIN_USER_USE_CASE,
-            useClass: LoginUserUseCase,
-        },
-        {
-            provide: REFRESH_TOKEN_USE_CASE,
-            useClass: RefreshTokenUseCase,
-        },
-        {
-            provide: LOGOUT_USE_CASE,
-            useClass: LogoutUseCase,
-        },
-        {
-            provide: REGISTER_USER_USE_CASE,
-            useClass: RegisterUserUseCase,
-        },
-        {
-            provide: GOOGLE_AUTH_SERVICE,
-            useClass: GoogleAuthService,
-        },
-        {
-            provide: SUBMIT_KYC_DOCUMENT_USE_CASE,
-            useClass: SubmitKycDocumentUseCase,
-        },
-        {
-            provide: SUBMIT_LIVE_SELFIE_USE_CASE,
-            useClass: SubmitLiveSelfieUseCase,
-        },
-        {
-            provide: VALIDATE_HANDOFF_USE_CASE,
-            useClass: ValidateHandoffUseCase,
-        },
-        {
-            provide: VERIFY_OTP_USE_CASE,
-            useClass: VerifyOtpUseCase,
-        },
-        {
-            provide: RESEND_OTP_USE_CASE,
-            useClass: ResendOtpUseCase,
-        },
-        {
-            provide: FORGOT_PASSWORD_USE_CASE,
-            useClass: ForgotPasswordUseCase,
-        },
-        {
-            provide: RESET_PASSWORD_USE_CASE,
-            useClass: ResetPasswordUseCase,
-        },
-        {
-            provide: GOOGLE_LOGIN_USE_CASE,
-            useClass: GoogleLoginUseCase,
-        },
-        {
-            provide: KYC_HASH_SERVICE,
-            useClass: KycHashService,
-        },
-        {
-            provide: PKI_VERIFICATION_SERVICE,
-            useClass: AadhaarPkiService,
-        },
-        {
-            provide: HANDOFF_SERVICE,
-            useClass: RedisHandoffService,
-        },
-        {
-            provide: HANDOFF_NOTIFICATION_SERVICE,
-            useExisting: HandoffGateway,
-        },
-        {
-            provide: BIOMETRIC_SERVICE,
-            useClass: HttpBiometricService,
-        },
-        {
-            provide: STORAGE_SERVICE,
-            useClass: S3StorageService,
-        },
-        {
-            provide: SUBMIT_LIVENESS_CHECK_USE_CASE,
-            useClass: SubmitLivenessCheckUseCase,
-        },
-        {
-            provide: SUBMIT_FINAL_VERIFICATION_USE_CASE,
-            useClass: SubmitFinalVerificationUseCase,
-        },
-        {
-            provide: UPDATE_PERSONA_USE_CASE,
-            useClass: UpdatePersonaUseCase,
-        },
-        {
-            provide: UPDATE_LIFESTYLE_USE_CASE,
-            useClass: UpdateLifeStyleUseCase,
-        },
-        {
-            provide: UPDATE_PREFERENCES_USE_CASE,
-            useClass: UpdatePreferencesUseCase,
-        },
-        {
-            provide: AI_SERVICE,
-            useClass: OpenRouterAiService,
-        },
-        {
-            provide: GENERATE_BIO_USE_CASE,
-            useClass: GenerateBioUseCase,
-        },
-        {
-            provide: SAVE_BIO_USE_CASE,
-            useClass: SaveBioUseCase,
-        },
-        {
-            provide: UPDATE_FULL_PROFILE_USE_CASE,
-            useClass: UpdateFullProfileUseCase,
-        },
-        {
-            provide: UPDATE_MEDICAL_RECORD_USE_CASE,
-            useClass: UpdateMedicalRecordUseCase,
-        },
-        {
-            provide: UPDATE_PRIVACY_SETTINGS_USE_CASE,
-            useClass: UpdatePrivacySettingsUseCase,
-        },
-        {
-            provide: UPLOAD_PROFILE_PHOTO_USE_CASE,
-            useClass: UploadProfilePhotoUseCase,
-        },
-        {
-            provide: SET_PRIMARY_PHOTO_USE_CASE,
-            useClass: SetPrimaryPhotoUseCase,
-        },
-        {
-            provide: REMOVE_PROFILE_PHOTO_USE_CASE,
-            useClass: RemoveProfilePhotoUseCase,
-        },
-        {
-            provide: UPDATE_FULL_PREFERENCES_USE_CASE,
-            useClass: UpdateFullPreferencesUseCase,
-        },
-        {
-            provide: USER_MANAGEMENT_FACADE,
-            useClass: UserManagementFacade,
-        },
-        {
-            provide: CASTING_USER_FACADE,
-            useClass: CastingUserFacade,
-        },
-        {
-            provide: MEDIA_FACADE,
-            useClass: MediaFacade,
-        },
-        {
-            provide: GET_PROFILE_USE_CASE,
-            useClass: GetProfileUseCase,
-        },
-        {
-            provide: REQUEST_SECURITY_OTP_USE_CASE,
-            useClass: RequestSecurityOtpUseCase
-        },
-        {
-            provide: UPDATE_SECURITY_PASSWORD_USE_CASE,
-            useClass: UpdateSecurityPasswordUseCase,
-        },
-        {
-            provide: INITIATE_EMAIL_CHANGE_USE_CASE,
-            useClass: InitiateEmailChangeUseCase
-        },
-        {
-            provide: CONFIRM_EMAIL_CHANGE_USE_CASE,
-            useClass: ConfirmEmailChangeUseCase
-        },
-        {
-            provide: DEACTIVATE_ACCOUNT_USE_CASE,
-            useClass: DeactivateAccountUseCase
-        },
-        {
-            provide: DELETE_ACCOUNT_USE_CASE,
-            useClass: DeleteAccountUseCase
-        },
-        {
-            provide: GET_ACTIVE_SESSIONS_USE_CASE,
-            useClass: GetActiveSessionsUseCase
-        },
-        {
-            provide: REVOKE_SESSION_USE_CASE,
-            useClass: RevokeSessionUseCase
-        },
-        {
-            provide: REVOKE_OTHER_SESSIONS_USE_CASE,
-            useClass: RevokeOtherSessionsUseCase
-        },
-        {
-            provide: BLOCKED_RELATIONSHIP_REPOSITORY,
-            useClass: BlockedRelationshipRepository,
-        },
-        {
-            provide: BLOCK_USER_USE_CASE,
-            useClass: BlockUserUseCase,
-        },
-        {
-            provide: UNBLOCK_USER_USE_CASE,
-            useClass: UnblockUserUseCase,
-        },
-        {
-            provide: GET_BLOCKED_USERS_USE_CASE,
-            useClass: GetBlockedUsersUseCase,
-        },
-        {
-            provide: PUBLIC_PROFILE_FACADE,
-            useClass: PublicProfileFacade,
-        },
+        { provide: USER_REPOSITORY, useClass: UserRepository },
+        { provide: OTP_SERVICE, useClass: RedisOtpService },
+        { provide: USER_SESSION_SERVICE, useClass: UserRedisSessionService },
+        { provide: GENERATE_HANDOFF_SESSION_USE_CASE, useClass: GenerateHandoffSessionUseCase },
+        { provide: COMPLETE_HANDOFF_SESSION_USE_CASE, useClass: CompleteHandoffSessionUseCase },
+        { provide: CANCEL_HANDOFF_SESSION_USE_CASE, useClass: CancelHandoffSessionUseCase },
+        { provide: LOGIN_USER_USE_CASE, useClass: LoginUserUseCase },
+        { provide: REFRESH_TOKEN_USE_CASE, useClass: RefreshTokenUseCase },
+        { provide: LOGOUT_USE_CASE, useClass: LogoutUseCase },
+        { provide: REGISTER_USER_USE_CASE, useClass: RegisterUserUseCase },
+        { provide: GOOGLE_AUTH_SERVICE, useClass: GoogleAuthService },
+        { provide: SUBMIT_KYC_DOCUMENT_USE_CASE, useClass: SubmitKycDocumentUseCase },
+        { provide: SUBMIT_LIVE_SELFIE_USE_CASE, useClass: SubmitLiveSelfieUseCase },
+        { provide: VALIDATE_HANDOFF_USE_CASE, useClass: ValidateHandoffUseCase },
+        { provide: VERIFY_OTP_USE_CASE, useClass: VerifyOtpUseCase },
+        { provide: RESEND_OTP_USE_CASE, useClass: ResendOtpUseCase },
+        { provide: FORGOT_PASSWORD_USE_CASE, useClass: ForgotPasswordUseCase },
+        { provide: RESET_PASSWORD_USE_CASE, useClass: ResetPasswordUseCase },
+        { provide: GOOGLE_LOGIN_USE_CASE, useClass: GoogleLoginUseCase },
+        { provide: KYC_HASH_SERVICE, useClass: KycHashService },
+        { provide: PKI_VERIFICATION_SERVICE, useClass: AadhaarPkiService },
+        { provide: HANDOFF_SERVICE, useClass: RedisHandoffService },
+        { provide: HANDOFF_NOTIFICATION_SERVICE, useExisting: HandoffGateway },
+        { provide: BIOMETRIC_SERVICE, useClass: HttpBiometricService },
+        { provide: STORAGE_SERVICE, useClass: S3StorageService },
+        { provide: SUBMIT_LIVENESS_CHECK_USE_CASE, useClass: SubmitLivenessCheckUseCase },
+        { provide: SUBMIT_FINAL_VERIFICATION_USE_CASE, useClass: SubmitFinalVerificationUseCase },
+        { provide: UPDATE_PERSONA_USE_CASE, useClass: UpdatePersonaUseCase },
+        { provide: UPDATE_LIFESTYLE_USE_CASE, useClass: UpdateLifeStyleUseCase },
+        { provide: UPDATE_PREFERENCES_USE_CASE, useClass: UpdatePreferencesUseCase },
+        { provide: AI_SERVICE, useClass: OpenRouterAiService },
+        { provide: GENERATE_BIO_USE_CASE, useClass: GenerateBioUseCase },
+        { provide: SAVE_BIO_USE_CASE, useClass: SaveBioUseCase },
+        { provide: UPDATE_FULL_PROFILE_USE_CASE, useClass: UpdateFullProfileUseCase },
+        { provide: UPDATE_MEDICAL_RECORD_USE_CASE, useClass: UpdateMedicalRecordUseCase },
+        { provide: UPDATE_PRIVACY_SETTINGS_USE_CASE, useClass: UpdatePrivacySettingsUseCase },
+        { provide: UPLOAD_PROFILE_PHOTO_USE_CASE, useClass: UploadProfilePhotoUseCase },
+        { provide: SET_PRIMARY_PHOTO_USE_CASE, useClass: SetPrimaryPhotoUseCase },
+        { provide: REMOVE_PROFILE_PHOTO_USE_CASE, useClass: RemoveProfilePhotoUseCase },
+        { provide: UPDATE_FULL_PREFERENCES_USE_CASE, useClass: UpdateFullPreferencesUseCase },
+        { provide: USER_MANAGEMENT_FACADE, useClass: UserManagementFacade },
+        { provide: CASTING_USER_FACADE, useClass: CastingUserFacade },
+        { provide: MEDIA_FACADE, useClass: MediaFacade },
+        { provide: GET_PROFILE_USE_CASE, useClass: GetProfileUseCase },
+        { provide: REQUEST_SECURITY_OTP_USE_CASE, useClass: RequestSecurityOtpUseCase },
+        { provide: UPDATE_SECURITY_PASSWORD_USE_CASE, useClass: UpdateSecurityPasswordUseCase },
+        { provide: INITIATE_EMAIL_CHANGE_USE_CASE, useClass: InitiateEmailChangeUseCase },
+        { provide: CONFIRM_EMAIL_CHANGE_USE_CASE, useClass: ConfirmEmailChangeUseCase },
+        { provide: DEACTIVATE_ACCOUNT_USE_CASE, useClass: DeactivateAccountUseCase },
+        { provide: DELETE_ACCOUNT_USE_CASE, useClass: DeleteAccountUseCase },
+        { provide: GET_ACTIVE_SESSIONS_USE_CASE, useClass: GetActiveSessionsUseCase },
+        { provide: REVOKE_SESSION_USE_CASE, useClass: RevokeSessionUseCase },
+        { provide: REVOKE_OTHER_SESSIONS_USE_CASE, useClass: RevokeOtherSessionsUseCase },
+        { provide: BLOCKED_RELATIONSHIP_REPOSITORY, useClass: BlockedRelationshipRepository },
+        { provide: BLOCK_USER_USE_CASE, useClass: BlockUserUseCase },
+        { provide: UNBLOCK_USER_USE_CASE, useClass: UnblockUserUseCase },
+        { provide: GET_BLOCKED_USERS_USE_CASE, useClass: GetBlockedUsersUseCase },
+        { provide: PUBLIC_PROFILE_FACADE, useClass: PublicProfileFacade },
         AdminPhotoReviewListener,
         AdminKycReviewListener,
     ],
-
-    // Makes these repository and token service providers available to other modules.
     exports: [
         USER_MANAGEMENT_FACADE,
         CASTING_USER_FACADE,
@@ -416,5 +236,4 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
         USER_SESSION_SERVICE,
     ],
 })
-
 export class UserModule { }
