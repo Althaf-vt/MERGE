@@ -147,6 +147,7 @@ export const API_ENDPOINTS = {
             BASE: 'admin/scene-partner',
             SCENARIOS: 'scenarios',
             SCENARIO_BY_ID: 'scenarios/:id',
+            SCENARIO_IN_DEPTH: 'scenarios/:id/in-depth',
             SCENARIO_STATUS: 'scenarios/:id/status',
             SCENARIOS_EXPORT: 'scenarios/export',
             PREVIEW_START: 'scenarios/preview/start',

@@ -123,6 +123,7 @@ export const RESPONSE_MESSAGES = {
             SCENARIO_UPDATED: 'Scenario updated successfully.',
             SCENARIO_STATUS_UPDATED: 'Scenario status updated successfully.',
             SCENARIO_FETCHED: 'Scenario fetched successfully.',
+            SCENARIO_IN_DEPTH_FETCHED: 'Scenario in-depth details retrieved successfully.',
             SCENARIO_ACTIVITY_HISTORY_FETCHED: 'Scenario activity history retrieved successfully.',
             SCENARIOS_FETCHED: 'Admin scenarios fetched successfully.',
             SCENARIOS_EXPORTED: 'Scenarios exported successfully.',
