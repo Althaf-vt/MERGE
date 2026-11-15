@@ -37,6 +37,18 @@ export interface AdminGetSessionsFilters {
     limit?: number;
 }
 
+export interface AdminStartPreviewSessionParams {
+    scenarioId?: string;
+    title?: string;
+    category?: ScenarioCategory;
+    promptContext?: string;
+    isCoachingEnabled?: boolean;
+}
+
+export interface AdminSendPreviewTurnParams {
+    content: string;
+}
+
 export interface AdminScenarioFacadeDto {
     id: string;
     title: string;
@@ -123,6 +135,21 @@ export interface AdminSessionDetailFacadeDto {
     updatedAt: Date;
 }
 
+export interface AdminPreviewSessionFacadeDto {
+    id: string;
+    scenarioId: string;
+    scenarioTitle: string;
+    scenarioCategory: ScenarioCategory;
+    scenarioPromptContext: string | null;
+    isCoachingEnabled: boolean;
+    status: SceneSessionStatus;
+    transcript: AdminSessionTurnFacadeDto[];
+    turnCount: number;
+    isPreview: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface ScenarioPopularityFacadeDto {
     scenarioId: string;
     scenarioTitle: string;
@@ -168,4 +195,8 @@ export interface IScenePartnerAdminFacade {
 
     // Platform Analytics
     getAnalytics(): Promise<ScenePartnerAnalyticsFacadeDto>;
+
+    // Scenario Live Preview Sandbox
+    startPreviewSession(adminId: string, params: AdminStartPreviewSessionParams): Promise<AdminPreviewSessionFacadeDto>;
+    sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto>;
 }
