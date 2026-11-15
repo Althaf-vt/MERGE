@@ -29,6 +29,8 @@ import { GetSceneSessionHistoryUseCase } from "./application/use-cases/get-scene
 import { GetScenariosUseCase } from "./application/use-cases/get-scenarios.use-case";
 import { SCENE_PARTNER_FACADE } from "./application/interfaces/scene-partner-facade.interface";
 import { ScenePartnerFacade } from "./application/services/scene-partner.facade";
+import { SCENE_PARTNER_ADMIN_FACADE } from "./application/interfaces/scene-partner-admin-facade.interface";
+import { ScenePartnerAdminFacade } from "./application/services/scene-partner-admin.facade";
 import {
     CREATE_SCENARIO_USE_CASE,
     GET_ADMIN_SCENARIO_BY_ID_USE_CASE,
@@ -85,12 +87,13 @@ import { GetScenePartnerAnalyticsUseCase } from "./application/use-cases/get-sce
         { provide: GET_ADMIN_SESSIONS_USE_CASE, useClass: GetAdminSessionsUseCase },
         { provide: GET_ADMIN_SESSION_DETAILS_USE_CASE, useClass: GetAdminSessionDetailsUseCase },
         { provide: GET_SCENE_PARTNER_ANALYTICS_USE_CASE, useClass: GetScenePartnerAnalyticsUseCase },
-        // Public Facade
+        // Public Facades
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
+        { provide: SCENE_PARTNER_ADMIN_FACADE, useClass: ScenePartnerAdminFacade },
     ],
     exports: [
-        // Rule 1 & Rule 5: Modules only export their public facade
         SCENE_PARTNER_FACADE,
+        SCENE_PARTNER_ADMIN_FACADE,
     ],
 })
 export class ScenePartnerModule { }
