@@ -35,3 +35,10 @@ export enum SessionTimelineEventType {
     SESSION_COMPLETED = 'SESSION_COMPLETED',
 }
 
+export enum ScenarioTimeframe {
+    SEVEN_DAYS = '7D',
+    THIRTY_DAYS = '30D',
+    NINETY_DAYS = '90D',
+}
+
+

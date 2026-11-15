@@ -1,3 +1,5 @@
+import { ScenarioTimeframe } from "../../../../shared/domain/enums/scene-partner.enums";
+
 export const SCENE_PARTNER_POLICY = {
     DEFAULT_MAX_DURATION_MINUTES: 20,
     MIN_MESSAGE_LENGTH: 1,
@@ -6,6 +8,16 @@ export const SCENE_PARTNER_POLICY = {
     MAX_SCENARIO_TITLE_LENGTH: 100,
     MIN_SCENARIO_PROMPT_LENGTH: 5,
     MAX_SCENARIO_PROMPT_LENGTH: 500,
+} as const;
+
+export const SCENE_PARTNER_ANALYTICS_POLICY = {
+    DEFAULT_TIMEFRAME: ScenarioTimeframe.THIRTY_DAYS,
+    RECENT_SESSIONS_LIMIT: 5,
+    TIMEFRAME_DAYS_MAP: {
+        [ScenarioTimeframe.SEVEN_DAYS]: 7,
+        [ScenarioTimeframe.THIRTY_DAYS]: 30,
+        [ScenarioTimeframe.NINETY_DAYS]: 90,
+    },
 } as const;
 
 export const SCENE_PARTNER_SAFETY = {
