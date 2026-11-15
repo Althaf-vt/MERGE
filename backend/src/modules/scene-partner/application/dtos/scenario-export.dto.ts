@@ -1,12 +1,9 @@
 import { ScenarioCategory } from '../../../../shared/domain/enums/scene-partner.enums';
+import {AdminExportScenariosFilters,AdminScenarioExportItemFacadeDto} from '../interfaces/scene-partner-admin-facade.interface';
 
-export interface ExportScenariosFilters {
-    category?: ScenarioCategory;
-    isActive?: boolean;
-    includeMetrics?: boolean;
-}
+export interface ExportScenariosFilters extends AdminExportScenariosFilters { }
 
-export class ScenarioExportItemDto {
+export class ScenarioExportItemDto implements AdminScenarioExportItemFacadeDto {
     id: string;
     title: string;
     category: ScenarioCategory;

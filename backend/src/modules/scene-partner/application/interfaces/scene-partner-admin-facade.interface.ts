@@ -49,6 +49,12 @@ export interface AdminSendPreviewTurnParams {
     content: string;
 }
 
+export interface AdminExportScenariosFilters {
+    category?: ScenarioCategory;
+    isActive?: boolean;
+    includeMetrics?: boolean;
+}
+
 export interface AdminScenarioFacadeDto {
     id: string;
     title: string;
@@ -187,6 +193,22 @@ export interface ScenePartnerAnalyticsFacadeDto {
     categoryDistribution: CategoryDistributionFacadeDto[];
 }
 
+export interface AdminScenarioExportItemFacadeDto {
+    id: string;
+    title: string;
+    category: ScenarioCategory;
+    description: string;
+    promptContext: string;
+    isActive: boolean;
+    isCustom: boolean;
+    creatorUserId: string | null;
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export const SCENE_PARTNER_ADMIN_FACADE = "SCENE_PARTNER_ADMIN_FACADE";
 
 export interface IScenePartnerAdminFacade {
@@ -207,4 +229,7 @@ export interface IScenePartnerAdminFacade {
     // Scenario Live Preview Sandbox
     startPreviewSession(adminId: string, params: AdminStartPreviewSessionParams): Promise<AdminPreviewSessionFacadeDto>;
     sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto>;
+
+    // Scenario Export
+    exportScenarios(filters?: AdminExportScenariosFilters): Promise<AdminScenarioExportItemFacadeDto[]>;
 }
