@@ -160,7 +160,7 @@ export const ScenarioFormModal: React.FC<ScenarioFormModalProps> = ({
                     ? `ID: ${scenario.id} • UPDATED: ${new Date(scenario.updatedAt).toLocaleDateString()}`
                     : 'DEFINE A NEW CONVERSATION REHEARSAL SCENARIO'
             }
-            size="lg"
+            maxWidth="640px"
         >
             <form onSubmit={handleSubmit} className={styles.form} noValidate>
                 {serverError && <div className={styles.errorBanner}>{serverError}</div>}

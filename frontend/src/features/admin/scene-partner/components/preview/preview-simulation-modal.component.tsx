@@ -105,7 +105,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
             onClose={onClose}
             title="AI PREVIEW SIMULATION SANDBOX"
             subtitle="TEST-DRIVE CONVERSATIONAL PROMPTS & LIVE COACH EVALUATION"
-            size="lg"
+            maxWidth="780px"
         >
             <div className={styles.sandboxContainer}>
                 <div className={styles.topBar}>

@@ -49,7 +49,8 @@ export const ScenarioStatusModal: React.FC<ScenarioStatusModalProps> = ({
             onClose={onClose}
             title={willActivate ? 'ENABLE SCENARIO' : 'DISABLE SCENARIO'}
             subtitle={`ID: ${scenario.id}`}
-            size="md"
+            size="sm"
+            maxWidth="460px"
         >
             <div className={styles.content}>
                 {serverError && <div className={styles.errorBanner}>{serverError}</div>}
