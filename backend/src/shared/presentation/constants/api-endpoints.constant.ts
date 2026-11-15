@@ -143,5 +143,23 @@ export const API_ENDPOINTS = {
             REJECT: ':id/reject',
             REQUEST_RESUBMISSION: ':id/resubmit',
         },
+        SCENE_PARTNER: {
+            BASE: 'admin/scene-partner',
+            SCENARIOS: 'scenarios',
+            SCENARIO_BY_ID: 'scenarios/:id',
+            SCENARIO_IN_DEPTH: 'scenarios/:id/in-depth',
+            SCENARIO_STATUS: 'scenarios/:id/status',
+            SCENARIOS_EXPORT: 'scenarios/export',
+            PREVIEW_START: 'scenarios/preview/start',
+            SCENARIO_PREVIEW_START: 'scenarios/:id/preview/start',
+            PREVIEW_MESSAGE: 'scenarios/preview/:id/message',
+            SCENARIO_ACTIVITY_HISTORY: 'scenarios/:id/activity-history',
+            SESSIONS: 'sessions',
+            SESSION_BY_ID: 'sessions/:id',
+            ANALYTICS: 'analytics',
+        },
+        AUDIT_LOGS: {
+            BASE: 'admin/audit-logs',
+        },
     }
 } as const;

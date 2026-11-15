@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteProps, CoachNoteVO } from "../value-objects/coach-note.vo";
 import { SceneSessionSummaryData } from "./scene-partner-ai.interface";
 
@@ -27,6 +27,7 @@ export interface CreateSceneSessionProps {
     isCoachingEnabled?: boolean;
     targetUserId?: string | null;
     maxDurationMinutes?: number;
+    isPreview?: boolean;
 }
 
 export interface SceneSessionProps extends CreateSceneSessionProps {
@@ -61,6 +62,7 @@ export interface SceneSessionData {
     completedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    isPreview: boolean;
 }
 
 export interface SceneSessionSnapshot {
@@ -83,5 +85,6 @@ export interface SceneSessionSnapshot {
     completedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    isPreview: boolean;
 }
 

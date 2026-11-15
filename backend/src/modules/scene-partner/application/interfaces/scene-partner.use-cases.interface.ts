@@ -3,7 +3,7 @@ import { SendSceneTurnDto } from "../dtos/send-scene-turn.dto";
 import { UpdateCoachingModeDto } from "../dtos/update-coaching-mode.dto";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto } from "../dtos/scene-session-response.dto";
 import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export const START_SCENE_SESSION_USE_CASE = "START_SCENE_SESSION_USE_CASE";
 export const PAUSE_SCENE_SESSION_USE_CASE = "PAUSE_SCENE_SESSION_USE_CASE";

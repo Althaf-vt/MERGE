@@ -1,3 +1,5 @@
+import { ScenarioTimeframe } from "../../../../shared/domain/enums/scene-partner.enums";
+
 export const SCENE_PARTNER_POLICY = {
     DEFAULT_MAX_DURATION_MINUTES: 20,
     MIN_MESSAGE_LENGTH: 1,
@@ -6,6 +8,16 @@ export const SCENE_PARTNER_POLICY = {
     MAX_SCENARIO_TITLE_LENGTH: 100,
     MIN_SCENARIO_PROMPT_LENGTH: 5,
     MAX_SCENARIO_PROMPT_LENGTH: 500,
+} as const;
+
+export const SCENE_PARTNER_ANALYTICS_POLICY = {
+    DEFAULT_TIMEFRAME: ScenarioTimeframe.THIRTY_DAYS,
+    RECENT_SESSIONS_LIMIT: 5,
+    TIMEFRAME_DAYS_MAP: {
+        [ScenarioTimeframe.SEVEN_DAYS]: 7,
+        [ScenarioTimeframe.THIRTY_DAYS]: 30,
+        [ScenarioTimeframe.NINETY_DAYS]: 90,
+    },
 } as const;
 
 export const SCENE_PARTNER_SAFETY = {
@@ -37,13 +49,18 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     COACH_PACING_REQUIRED: 'Coach pacing assessment cannot be empty.',
     COACH_NEXT_TIP_REQUIRED: 'Coach next tip cannot be empty.',
     SCENARIO_ID_REQUIRED: 'Scenario ID is required.',
+    SCENARIO_NOT_FOUND: 'Scenario not found.',
     INVALID_SCENARIO_TITLE_LENGTH: (min: number, max: number) => `Scenario title must be between ${min} and ${max} characters.`,
     INVALID_SCENARIO_PROMPT_LENGTH: (min: number, max: number) => `Scenario prompt context must be between ${min} and ${max} characters.`,
     CREATOR_USER_ID_REQUIRED: 'Custom scenario requires a creator user ID.',
     TARGET_PROFILE_UNAVAILABLE: 'Target match profile is unavailable or no longer interactable.',
     INAPPROPRIATE_CONTENT: 'The scenario or message contains inappropriate language and violates MERGE community safety standards.',
     AI_CONFIG_ERROR: 'Gemini AI API key is missing or invalid in server configuration.',
+    OPENROUTER_CONFIG_ERROR: 'OpenRouter AI API key is missing or invalid in server configuration.',
     AI_SERVICE_UNAVAILABLE: 'AI coaching service is currently unavailable. Please try again shortly.',
     AI_SAFETY_BLOCKED: 'Message was blocked by AI safety guardrails.',
+    PREVIEW_SESSION_NOT_FOUND: 'Preview session not found.',
+    NOT_PREVIEW_SESSION: 'The requested session is not an isolated preview session.',
+    INVALID_PREVIEW_CONFIG: 'Either scenarioId or title and promptContext must be provided to start a preview.',
 } as const;
 

@@ -1,4 +1,4 @@
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface ScenarioResponseDto {
     id: string;

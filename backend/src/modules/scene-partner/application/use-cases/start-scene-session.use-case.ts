@@ -3,13 +3,13 @@ import { IStartSceneSessionUseCase } from "../interfaces/scene-partner.use-cases
 import { StartSceneSessionDto } from "../dtos/start-scene-session.dto";
 import { SceneSessionResponseDto } from "../dtos/scene-session-response.dto";
 import { ISceneSessionRepository, SCENE_SESSION_REPOSITORY } from "../../domain/interfaces/scene-session-repository.interface";
+import { IScenarioRepository, SCENARIO_REPOSITORY } from "../../domain/interfaces/scenario-repository.interface";
 import { IScenePartnerAiService, SCENE_PARTNER_AI_SERVICE } from "../../domain/interfaces/scene-partner-ai.interface";
 import { IScenePartnerSubscriptionFacade, SCENE_PARTNER_SUBSCRIPTION_FACADE } from "../interfaces/scene-partner-subscription-facade.interface";
 import { IUserContextFacade, USER_CONTEXT_FACADE } from "../interfaces/user-context-facade.interface";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { Scenario } from "../../domain/entities/scenario.entity";
 import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
-import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { SCENE_PARTNER_ERROR_MESSAGES, SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
@@ -18,6 +18,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 export class StartSceneSessionUseCase implements IStartSceneSessionUseCase {
     constructor(
         @Inject(SCENE_SESSION_REPOSITORY) private readonly _sessionRepository: ISceneSessionRepository,
+        @Inject(SCENARIO_REPOSITORY) private readonly _scenarioRepository: IScenarioRepository,
         @Inject(SCENE_PARTNER_AI_SERVICE) private readonly _aiService: IScenePartnerAiService,
         @Inject(SCENE_PARTNER_SUBSCRIPTION_FACADE) private readonly _subscriptionFacade: IScenePartnerSubscriptionFacade,
         @Inject(USER_CONTEXT_FACADE) private readonly _userContextFacade: IUserContextFacade,
@@ -55,8 +56,14 @@ export class StartSceneSessionUseCase implements IStartSceneSessionUseCase {
                 creatorUserId: userId,
             });
         } else {
-            const foundScenario = dto.scenarioId ? PREDEFINED_SCENARIOS.find((s) => s.id === dto.scenarioId) : undefined;
-            if (!foundScenario) {
+            if (!dto.scenarioId) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_REQUIRED,
+                );
+            }
+            const foundScenario = await this._scenarioRepository.findById(dto.scenarioId);
+            if (!foundScenario || !foundScenario.isActive) {
                 throw new DomainException(
                     ErrorCode.VALIDATION_FAILED,
                     SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_REQUIRED,

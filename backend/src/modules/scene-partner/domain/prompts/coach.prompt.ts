@@ -1,6 +1,6 @@
 import { SceneSimulationContext } from "../interfaces/scene-partner-ai.interface";
 import { SceneTurnSnapshot } from "../interfaces/scene-session.types";
-import { SceneSpeakerRole } from "../enums/scene-partner.enums";
+import { SceneSpeakerRole } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface CoachEvaluationRawResult {
     shouldIntervene: boolean;

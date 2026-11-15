@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
 
 // Subdocument Schema: Coach Note
@@ -113,6 +113,9 @@ export class SceneSessionSchemaClass {
     @Prop({ type: Date, default: null })
     completedAt?: Date | null;
 
+    @Prop({ type: Boolean, default: false, index: true })
+    isPreview: boolean;
+
     createdAt: Date;
     updatedAt: Date;
 }
@@ -122,3 +125,6 @@ export const SceneSessionSchema = SchemaFactory.createForClass(SceneSessionSchem
 // Compound indexes for active session query and chronological history retrieval
 SceneSessionSchema.index({ userId: 1, status: 1 });
 SceneSessionSchema.index({ userId: 1, createdAt: -1 });
+SceneSessionSchema.index({ scenarioId: 1, createdAt: -1 });
+SceneSessionSchema.index({ status: 1, createdAt: -1 });
+SceneSessionSchema.index({ isPreview: 1, createdAt: -1 });

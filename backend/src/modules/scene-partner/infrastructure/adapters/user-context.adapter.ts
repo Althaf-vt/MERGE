@@ -2,7 +2,7 @@ import { Inject, Injectable, Optional } from "@nestjs/common";
 import { IUserContextFacade } from "../../application/interfaces/user-context-facade.interface";
 import { SceneSimulationContext } from "../../domain/interfaces/scene-partner-ai.interface";
 import { Scenario } from "../../domain/entities/scenario.entity";
-import { SimulationType } from "../../domain/enums/scene-partner.enums";
+import { SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { IPublicProfileFacade, PUBLIC_PROFILE_FACADE } from "../../../users/application/interfaces/public-profile-facade.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";

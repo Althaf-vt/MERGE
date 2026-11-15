@@ -1,6 +1,6 @@
 import { SceneSimulationContext } from "../../domain/interfaces/scene-partner-ai.interface";
 import { Scenario } from "../../domain/entities/scenario.entity";
-import { SimulationType } from "../../domain/enums/scene-partner.enums";
+import { SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export const USER_CONTEXT_FACADE = "USER_CONTEXT_FACADE";
 

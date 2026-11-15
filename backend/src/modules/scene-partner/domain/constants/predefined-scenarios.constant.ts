@@ -1,4 +1,4 @@
-import { ScenarioCategory } from "../enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { Scenario } from "../entities/scenario.entity";
 
 export const PREDEFINED_SCENARIOS: readonly Scenario[] = [

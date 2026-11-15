@@ -10,7 +10,7 @@ import { CoachNoteProps } from "../../domain/value-objects/coach-note.vo";
 import { PersonaPrompt } from "../../domain/prompts/persona.prompt";
 import { CoachEvaluationRawResult, CoachPrompt } from "../../domain/prompts/coach.prompt";
 import { SessionSummaryPrompt } from "../../domain/prompts/session-summary.prompt";
-import { SceneSpeakerRole } from "../../domain/enums/scene-partner.enums";
+import { SceneSpeakerRole } from "../../../../shared/domain/enums/scene-partner.enums";
 import { OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()
@@ -24,7 +24,7 @@ export class OpenRouterScenePartnerAiService implements IScenePartnerAiService {
     constructor() {
         const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENROUTER_API_KEY is missing from environment variables.");
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, SCENE_PARTNER_ERROR_MESSAGES.OPENROUTER_CONFIG_ERROR);
         }
 
         this._chatModel = EnvConfig.ai.chatModel;

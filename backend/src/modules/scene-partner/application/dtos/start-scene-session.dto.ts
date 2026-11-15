@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateIf } from "class-validator";
 import { Transform } from "class-transformer";
-import { SimulationType } from "../../domain/enums/scene-partner.enums";
+import { SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
 
 export class StartSceneSessionDto {
