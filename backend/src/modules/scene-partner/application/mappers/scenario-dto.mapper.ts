@@ -1,9 +1,10 @@
 import { Scenario } from "../../domain/entities/scenario.entity";
+import { ScenarioSummaryStatsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { AdminScenarioResponseDto } from "../dtos/admin-scenario-response.dto";
 import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
 
 export class ScenarioDtoMapper {
-    public static toAdminResponseDto(entity: Scenario): AdminScenarioResponseDto {
+    public static toAdminResponseDto(entity: Scenario, summaryStats?: ScenarioSummaryStatsRawData | null): AdminScenarioResponseDto {
         const snapshot = entity.toJSON();
         return {
             id: snapshot.id,
@@ -16,6 +17,16 @@ export class ScenarioDtoMapper {
             creatorUserId: snapshot.creatorUserId,
             createdAt: snapshot.createdAt,
             updatedAt: snapshot.updatedAt,
+            summary: summaryStats
+                ? {
+                    totalSessions: summaryStats.totalSessions,
+                    completedSessions: summaryStats.completedSessions,
+                    completionRate: summaryStats.completionRate,
+                    averageDurationMinutes: summaryStats.averageDurationMinutes,
+                    averageTurnCount: summaryStats.averageTurnCount,
+                    coachingAdoptionRate: summaryStats.coachingAdoptionRate,
+                }
+                : undefined,
         };
     }
 

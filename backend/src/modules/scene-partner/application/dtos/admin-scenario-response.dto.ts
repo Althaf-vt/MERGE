@@ -1,5 +1,14 @@
 import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 
+export interface ScenarioSummaryStatsDto {
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+    averageDurationMinutes: number;
+    averageTurnCount: number;
+    coachingAdoptionRate: number;
+}
+
 export interface AdminScenarioResponseDto {
     id: string;
     title: string;
@@ -11,6 +20,7 @@ export interface AdminScenarioResponseDto {
     creatorUserId: string | null;
     createdAt: Date;
     updatedAt: Date;
+    summary?: ScenarioSummaryStatsDto | null;
 }
 
 export interface PaginatedAdminScenariosResponseDto {
