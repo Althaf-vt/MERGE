@@ -1,0 +1,116 @@
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
+import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
+import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
+import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
+import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
+import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
+import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
+import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
+import { AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto } from "../../application/dtos/admin-scene-partner.dto";
+
+@Controller(API_ENDPOINTS.ADMIN.SCENE_PARTNER.BASE)
+@UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
+export class AdminScenePartnerController {
+    constructor(
+        @Inject(SCENE_PARTNER_ADMIN_FACADE) private readonly _scenePartnerAdminFacade: IScenePartnerAdminFacade,
+    ) { }
+
+    @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS)
+    @HttpCode(HttpStatus.CREATED)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async createScenario(
+        @Body() dto: AdminCreateScenarioDto,
+    ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.createScenario(dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_CREATED, result);
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getScenarios(
+        @Query() query: AdminGetScenariosQueryDto,
+    ): Promise<ApiResponse<AdminScenarioFacadeDto[]>> {
+        const result = await this._scenePartnerAdminFacade.getScenarios(query);
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIOS_FETCHED,
+            result.data,
+            {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+            },
+        );
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.ANALYTICS)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getAnalytics(): Promise<ApiResponse<ScenePartnerAnalyticsFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.getAnalytics();
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.ANALYTICS_FETCHED, result);
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SESSIONS)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getSessions(
+        @Query() query: AdminGetSessionsQueryDto,
+    ): Promise<ApiResponse<AdminSessionListItemFacadeDto[]>> {
+        const result = await this._scenePartnerAdminFacade.getSessions(query);
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SESSIONS_FETCHED,
+            result.data,
+            {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+            },
+        );
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SESSION_BY_ID)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getSessionDetails(
+        @Param("id") id: string,
+    ): Promise<ApiResponse<AdminSessionDetailFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.getSessionDetails(id);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SESSION_DETAILS_FETCHED, result);
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_BY_ID)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getScenarioById(
+        @Param("id") id: string,
+    ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.getScenarioById(id);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_FETCHED, result);
+    }
+
+    @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_STATUS)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async toggleScenarioStatus(
+        @Param("id") id: string,
+        @Body() dto: AdminToggleScenarioStatusDto,
+    ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.toggleScenarioStatus(id, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_STATUS_UPDATED, result);
+    }
+
+    @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_BY_ID)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async updateScenario(
+        @Param("id") id: string,
+        @Body() dto: AdminUpdateScenarioDto,
+    ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.updateScenario(id, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_UPDATED, result);
+    }
+}
