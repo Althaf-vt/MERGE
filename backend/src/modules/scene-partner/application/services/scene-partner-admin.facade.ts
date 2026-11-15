@@ -3,8 +3,11 @@ import {
     AdminCreateScenarioParams,
     AdminGetScenariosFilters,
     AdminGetSessionsFilters,
+    AdminPreviewSessionFacadeDto,
     AdminScenarioFacadeDto,
+    AdminSendPreviewTurnParams,
     AdminSessionDetailFacadeDto,
+    AdminStartPreviewSessionParams,
     AdminToggleScenarioStatusParams,
     AdminUpdateScenarioParams,
     IScenePartnerAdminFacade,
@@ -30,6 +33,12 @@ import {
     TOGGLE_SCENARIO_STATUS_USE_CASE,
     UPDATE_SCENARIO_USE_CASE,
 } from "../interfaces/scene-partner-admin.use-cases.interface";
+import {
+    ISendPreviewTurnUseCase,
+    IStartPreviewSessionUseCase,
+    SEND_PREVIEW_TURN_USE_CASE,
+    START_PREVIEW_SESSION_USE_CASE,
+} from "../interfaces/scene-partner-preview.use-cases.interface";
 
 @Injectable()
 export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
@@ -42,6 +51,8 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
         @Inject(GET_ADMIN_SESSIONS_USE_CASE) private readonly _getAdminSessionsUseCase: IGetAdminSessionsUseCase,
         @Inject(GET_ADMIN_SESSION_DETAILS_USE_CASE) private readonly _getAdminSessionDetailsUseCase: IGetAdminSessionDetailsUseCase,
         @Inject(GET_SCENE_PARTNER_ANALYTICS_USE_CASE) private readonly _getScenePartnerAnalyticsUseCase: IGetScenePartnerAnalyticsUseCase,
+        @Inject(START_PREVIEW_SESSION_USE_CASE) private readonly _startPreviewSessionUseCase: IStartPreviewSessionUseCase,
+        @Inject(SEND_PREVIEW_TURN_USE_CASE) private readonly _sendPreviewTurnUseCase: ISendPreviewTurnUseCase,
     ) { }
 
     async createScenario(params: AdminCreateScenarioParams): Promise<AdminScenarioFacadeDto> {
@@ -74,5 +85,13 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
 
     async getAnalytics(): Promise<ScenePartnerAnalyticsFacadeDto> {
         return this._getScenePartnerAnalyticsUseCase.execute();
+    }
+
+    async startPreviewSession(adminId: string, params: AdminStartPreviewSessionParams): Promise<AdminPreviewSessionFacadeDto> {
+        return this._startPreviewSessionUseCase.execute(adminId, params);
+    }
+
+    async sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto> {
+        return this._sendPreviewTurnUseCase.execute(adminId, sessionId, params);
     }
 }
