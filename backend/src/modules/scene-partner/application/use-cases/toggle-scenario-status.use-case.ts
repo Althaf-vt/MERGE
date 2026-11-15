@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IToggleScenarioStatusUseCase } from "../interfaces/scene-partner-admin.use-cases.interface";
-import { ToggleScenarioStatusDto } from "../dtos/toggle-scenario-status.dto";
+import { AdminToggleScenarioStatusParams } from "../interfaces/scene-partner-admin-facade.interface";
 import { AdminScenarioResponseDto } from "../dtos/admin-scenario-response.dto";
 import { IScenarioRepository, SCENARIO_REPOSITORY } from "../../domain/interfaces/scenario-repository.interface";
 import { ScenarioDtoMapper } from "../mappers/scenario-dto.mapper";
@@ -14,13 +14,13 @@ export class ToggleScenarioStatusUseCase implements IToggleScenarioStatusUseCase
         @Inject(SCENARIO_REPOSITORY) private readonly _scenarioRepository: IScenarioRepository,
     ) { }
 
-    async execute(id: string, dto: ToggleScenarioStatusDto): Promise<AdminScenarioResponseDto> {
+    async execute(id: string, params: AdminToggleScenarioStatusParams): Promise<AdminScenarioResponseDto> {
         const scenario = await this._scenarioRepository.findById(id);
         if (!scenario) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_NOT_FOUND);
         }
 
-        if (dto.isActive) {
+        if (params.isActive) {
             scenario.relist();
         } else {
             scenario.unlist();

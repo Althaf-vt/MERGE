@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IUpdateScenarioUseCase } from "../interfaces/scene-partner-admin.use-cases.interface";
-import { UpdateScenarioDto } from "../dtos/update-scenario.dto";
+import { AdminUpdateScenarioParams } from "../interfaces/scene-partner-admin-facade.interface";
 import { AdminScenarioResponseDto } from "../dtos/admin-scenario-response.dto";
 import { IScenarioRepository, SCENARIO_REPOSITORY } from "../../domain/interfaces/scenario-repository.interface";
 import { ScenarioDtoMapper } from "../mappers/scenario-dto.mapper";
@@ -14,17 +14,17 @@ export class UpdateScenarioUseCase implements IUpdateScenarioUseCase {
         @Inject(SCENARIO_REPOSITORY) private readonly _scenarioRepository: IScenarioRepository,
     ) { }
 
-    async execute(id: string, dto: UpdateScenarioDto): Promise<AdminScenarioResponseDto> {
+    async execute(id: string, params: AdminUpdateScenarioParams): Promise<AdminScenarioResponseDto> {
         const scenario = await this._scenarioRepository.findById(id);
         if (!scenario) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, SCENE_PARTNER_ERROR_MESSAGES.SCENARIO_NOT_FOUND);
         }
 
         scenario.updateDetails({
-            title: dto.title ?? scenario.title,
-            description: dto.description ?? scenario.description,
-            category: dto.category ?? scenario.category,
-            promptContext: dto.promptContext ?? scenario.promptContext,
+            title: params.title ?? scenario.title,
+            description: params.description ?? scenario.description,
+            category: params.category ?? scenario.category,
+            promptContext: params.promptContext ?? scenario.promptContext,
         });
 
         const updated = await this._scenarioRepository.update(scenario);

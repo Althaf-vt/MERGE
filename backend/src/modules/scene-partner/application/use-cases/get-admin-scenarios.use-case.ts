@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IGetAdminScenariosUseCase } from "../interfaces/scene-partner-admin.use-cases.interface";
-import { GetAdminScenariosQueryDto } from "../dtos/get-admin-scenarios-query.dto";
+import { AdminGetScenariosFilters } from "../interfaces/scene-partner-admin-facade.interface";
 import { PaginatedAdminScenariosResponseDto } from "../dtos/admin-scenario-response.dto";
 import { IScenarioRepository, SCENARIO_REPOSITORY } from "../../domain/interfaces/scenario-repository.interface";
 import { ScenarioDtoMapper } from "../mappers/scenario-dto.mapper";
@@ -11,7 +11,7 @@ export class GetAdminScenariosUseCase implements IGetAdminScenariosUseCase {
         @Inject(SCENARIO_REPOSITORY) private readonly _scenarioRepository: IScenarioRepository,
     ) { }
 
-    async execute(query: GetAdminScenariosQueryDto): Promise<PaginatedAdminScenariosResponseDto> {
+    async execute(query: AdminGetScenariosFilters): Promise<PaginatedAdminScenariosResponseDto> {
         const page = Math.max(1, query.page ?? 1);
         const limit = Math.max(1, query.limit ?? 20);
         const skip = (page - 1) * limit;
