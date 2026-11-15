@@ -1,3 +1,4 @@
+import { StreamableFile } from '@nestjs/common';
 import { AdminScenarioExportItemFacadeDto } from '../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface';
 
 export interface CsvColumn<T> {
@@ -6,6 +7,8 @@ export interface CsvColumn<T> {
 }
 
 export class CsvSerializer {
+    public static readonly MIME_TYPE = 'text/csv; charset=utf-8';
+
     private static readonly UTF8_BOM = '\uFEFF';
     private static readonly CRLF = '\r\n';
 
@@ -76,5 +79,28 @@ export class CsvSerializer {
         );
 
         return `${this.UTF8_BOM}${headerRow}${this.CRLF}${dataRows.join(this.CRLF)}${this.CRLF}`;
+    }
+
+    /**
+     * Generates a standardized, date-stamped filename for scenario exports.
+     * E.g. "merge-scenarios-export-2026-11-15.csv"
+     */
+    public static generateFilename(date: Date = new Date()): string {
+        const dateStr = date.toISOString().split('T')[0];
+        return `merge-scenarios-export-${dateStr}.csv`;
+    }
+
+    /**
+     * Converts an array of scenario export DTOs directly into a NestJS StreamableFile
+     * configured with RFC 4180 CSV headers, UTF-8 BOM, and standard Content-Disposition.
+     */
+    public static toStreamableFile(items: AdminScenarioExportItemFacadeDto[], date?: Date): StreamableFile {
+        const csv = this.serializeScenarios(items);
+        const filename = this.generateFilename(date);
+
+        return new StreamableFile(Buffer.from(csv, 'utf-8'), {
+            type: this.MIME_TYPE,
+            disposition: `attachment; filename="${filename}"`,
+        });
     }
 }
