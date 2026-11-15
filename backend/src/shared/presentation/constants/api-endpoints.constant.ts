@@ -148,6 +148,7 @@ export const API_ENDPOINTS = {
             SCENARIOS: 'scenarios',
             SCENARIO_BY_ID: 'scenarios/:id',
             SCENARIO_STATUS: 'scenarios/:id/status',
+            SCENARIOS_EXPORT: 'scenarios/export',
             PREVIEW_START: 'scenarios/preview/start',
             SCENARIO_PREVIEW_START: 'scenarios/:id/preview/start',
             PREVIEW_MESSAGE: 'scenarios/preview/:id/message',

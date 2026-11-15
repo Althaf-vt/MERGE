@@ -125,6 +125,7 @@ export const RESPONSE_MESSAGES = {
             SCENARIO_FETCHED: 'Scenario fetched successfully.',
             SCENARIO_ACTIVITY_HISTORY_FETCHED: 'Scenario activity history retrieved successfully.',
             SCENARIOS_FETCHED: 'Admin scenarios fetched successfully.',
+            SCENARIOS_EXPORTED: 'Scenarios exported successfully.',
             SESSIONS_FETCHED: 'Admin rehearsal sessions fetched successfully.',
             SESSION_DETAILS_FETCHED: 'Session inspection details fetched successfully.',
             ANALYTICS_FETCHED: 'Scene Partner analytics fetched successfully.',
