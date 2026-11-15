@@ -122,3 +122,5 @@ export const SceneSessionSchema = SchemaFactory.createForClass(SceneSessionSchem
 // Compound indexes for active session query and chronological history retrieval
 SceneSessionSchema.index({ userId: 1, status: 1 });
 SceneSessionSchema.index({ userId: 1, createdAt: -1 });
+SceneSessionSchema.index({ scenarioId: 1, createdAt: -1 });
+SceneSessionSchema.index({ status: 1, createdAt: -1 });
