@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SessionTimelineEventType, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
+import { ScenarioCategory, ScenarioTimeframe, SceneSessionStatus, SceneSpeakerRole, SessionTimelineEventType, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface AdminCreateScenarioParams {
     title: string;
@@ -55,6 +55,15 @@ export interface AdminExportScenariosFilters {
     includeMetrics?: boolean;
 }
 
+export interface ScenarioSummaryStatsFacadeDto {
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+    averageDurationMinutes: number;
+    averageTurnCount: number;
+    coachingAdoptionRate: number;
+}
+
 export interface AdminScenarioFacadeDto {
     id: string;
     title: string;
@@ -64,6 +73,7 @@ export interface AdminScenarioFacadeDto {
     isCustom: boolean;
     isActive: boolean;
     creatorUserId: string | null;
+    summary?: ScenarioSummaryStatsFacadeDto | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -209,6 +219,21 @@ export interface AdminScenarioExportItemFacadeDto {
     updatedAt: Date;
 }
 
+export interface ScenarioTrendPointFacadeDto {
+    date: string;
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+}
+
+export interface AdminScenarioInDepthFacadeDto {
+    scenario: AdminScenarioFacadeDto;
+    summary: ScenarioSummaryStatsFacadeDto;
+    timeframe: ScenarioTimeframe;
+    trends: ScenarioTrendPointFacadeDto[];
+    recentSessions: AdminSessionListItemFacadeDto[];
+}
+
 export const SCENE_PARTNER_ADMIN_FACADE = "SCENE_PARTNER_ADMIN_FACADE";
 
 export interface IScenePartnerAdminFacade {
@@ -218,6 +243,7 @@ export interface IScenePartnerAdminFacade {
     toggleScenarioStatus(id: string, params: AdminToggleScenarioStatusParams): Promise<AdminScenarioFacadeDto>;
     getScenarios(filters: AdminGetScenariosFilters): Promise<PaginatedAdminScenariosFacadeResult>;
     getScenarioById(id: string): Promise<AdminScenarioFacadeDto>;
+    getScenarioInDepth(id: string, timeframe?: ScenarioTimeframe): Promise<AdminScenarioInDepthFacadeDto>;
 
     // Session Inspection & Audit Logs
     getSessions(filters: AdminGetSessionsFilters): Promise<PaginatedAdminSessionsFacadeResult>;
