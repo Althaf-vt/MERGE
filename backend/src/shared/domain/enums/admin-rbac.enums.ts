@@ -24,6 +24,8 @@ export const AdminPermission = {
     SCENE_PARTNER_MANAGE: 'scene_partner:manage',
     LUMEN_MANAGE: 'lumen:manage',
 
+    AUDIT_LOGS_VIEW: 'audit_logs:view',
+
     SETTINGS_VIEW: 'settings:view',
     SETTINGS_EDIT: 'settings:edit',
     BILLING_VIEW: 'billing:view',

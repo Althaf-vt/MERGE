@@ -151,9 +151,13 @@ export const API_ENDPOINTS = {
             PREVIEW_START: 'scenarios/preview/start',
             SCENARIO_PREVIEW_START: 'scenarios/:id/preview/start',
             PREVIEW_MESSAGE: 'scenarios/preview/:id/message',
+            SCENARIO_ACTIVITY_HISTORY: 'scenarios/:id/activity-history',
             SESSIONS: 'sessions',
             SESSION_BY_ID: 'sessions/:id',
             ANALYTICS: 'analytics',
+        },
+        AUDIT_LOGS: {
+            BASE: 'admin/audit-logs',
         },
     }
 } as const;
