@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
@@ -8,8 +8,9 @@ import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-end
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
-import { AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
-import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto } from "../../application/dtos/admin-scene-partner.dto";
+import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
+import { AdminPreviewSessionFacadeDto, AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto } from "../../application/dtos/admin-scene-partner.dto";
 
 @Controller(API_ENDPOINTS.ADMIN.SCENE_PARTNER.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -112,5 +113,46 @@ export class AdminScenePartnerController {
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.updateScenario(id, dto);
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_UPDATED, result);
+    }
+
+    @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.PREVIEW_START)
+    @HttpCode(HttpStatus.CREATED)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async startDraftPreview(
+        @Body() dto: AdminStartPreviewDto,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<ApiResponse<AdminPreviewSessionFacadeDto>> {
+        const adminId = req.user.userId;
+        const result = await this._scenePartnerAdminFacade.startPreviewSession(adminId, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.PREVIEW_STARTED, result);
+    }
+
+    @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_PREVIEW_START)
+    @HttpCode(HttpStatus.CREATED)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async startScenarioPreview(
+        @Param("id") scenarioId: string,
+        @Body() dto: AdminStartPreviewDto,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<ApiResponse<AdminPreviewSessionFacadeDto>> {
+        const adminId = req.user.userId;
+        const result = await this._scenePartnerAdminFacade.startPreviewSession(adminId, {
+            ...dto,
+            scenarioId,
+        });
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.PREVIEW_STARTED, result);
+    }
+
+    @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.PREVIEW_MESSAGE)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async sendPreviewTurn(
+        @Param("id") sessionId: string,
+        @Body() dto: AdminSendPreviewTurnDto,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<ApiResponse<AdminPreviewSessionFacadeDto>> {
+        const adminId = req.user.userId;
+        const result = await this._scenePartnerAdminFacade.sendPreviewTurn(adminId, sessionId, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.PREVIEW_TURN_PROCESSED, result);
     }
 }
