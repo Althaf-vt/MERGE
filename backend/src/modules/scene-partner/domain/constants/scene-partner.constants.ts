@@ -46,5 +46,8 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     AI_CONFIG_ERROR: 'Gemini AI API key is missing or invalid in server configuration.',
     AI_SERVICE_UNAVAILABLE: 'AI coaching service is currently unavailable. Please try again shortly.',
     AI_SAFETY_BLOCKED: 'Message was blocked by AI safety guardrails.',
+    PREVIEW_SESSION_NOT_FOUND: 'Preview session not found.',
+    NOT_PREVIEW_SESSION: 'The requested session is not an isolated preview session.',
+    INVALID_PREVIEW_CONFIG: 'Either scenarioId or title and promptContext must be provided to start a preview.',
 } as const;
 
