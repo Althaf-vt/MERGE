@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuthenticatedRequest } from '../../../../shared/infrastructure/security/interfaces/authenticated-request.interface';
+import { ApiResponse } from '../../../../shared/presentation/interfaces/api-response.interface';
 import { IRecordAdminAuditLogUseCase, RECORD_ADMIN_AUDIT_LOG_USE_CASE } from '../../application/interfaces/admin-audit.use-cases.interface';
 import { AUDIT_LOG_METADATA_KEY, AuditLogMetadataOptions } from '../decorators/audit-log.decorator';
 
@@ -15,8 +16,8 @@ export class AdminAuditInterceptor implements NestInterceptor {
         @Inject(RECORD_ADMIN_AUDIT_LOG_USE_CASE) private readonly _recordAdminAuditLogUseCase: IRecordAdminAuditLogUseCase,
     ) { }
 
-    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-        const metadata = this._reflector.get<AuditLogMetadataOptions>(
+    intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+        const metadata = this._reflector.get<AuditLogMetadataOptions<Record<string, unknown>>>(
             AUDIT_LOG_METADATA_KEY,
             context.getHandler(),
         );
@@ -29,25 +30,27 @@ export class AdminAuditInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap({
-                next: async (response) => {
+                next: async (response: unknown) => {
                     try {
                         const adminId = request.user?.userId;
                         if (!adminId) {
                             return;
                         }
 
+                        const typedResponse = (response ?? {}) as ApiResponse<Record<string, unknown>>;
+
                         const action =
                             typeof metadata.action === 'function'
-                                ? metadata.action(request, response)
+                                ? metadata.action(request, typedResponse)
                                 : metadata.action;
 
-                        const resourceId = metadata.extractResourceId(request, response);
+                        const resourceId = metadata.extractResourceId(request, typedResponse);
                         if (!resourceId) {
                             return;
                         }
 
                         const details = metadata.extractDetails
-                            ? metadata.extractDetails(request, response)
+                            ? metadata.extractDetails(request, typedResponse)
                             : undefined;
 
                         const ipAddress =
