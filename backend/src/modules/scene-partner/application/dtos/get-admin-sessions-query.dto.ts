@@ -1,8 +1,9 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
+import { AdminGetSessionsFilters } from "../interfaces/scene-partner-admin-facade.interface";
 
-export class GetAdminSessionsQueryDto {
+export class GetAdminSessionsQueryDto implements AdminGetSessionsFilters {
     @IsOptional()
     @IsString()
     userId?: string;

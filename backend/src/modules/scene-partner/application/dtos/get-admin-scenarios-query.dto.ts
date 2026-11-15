@@ -1,8 +1,9 @@
 import { Transform, Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
+import { AdminGetScenariosFilters } from "../interfaces/scene-partner-admin-facade.interface";
 
-export class GetAdminScenariosQueryDto {
+export class GetAdminScenariosQueryDto implements AdminGetScenariosFilters {
     @IsOptional()
     @IsEnum(ScenarioCategory)
     category?: ScenarioCategory;

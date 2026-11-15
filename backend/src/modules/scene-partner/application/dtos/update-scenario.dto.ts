@@ -1,8 +1,9 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
+import { AdminUpdateScenarioParams } from "../interfaces/scene-partner-admin-facade.interface";
 
-export class UpdateScenarioDto {
+export class UpdateScenarioDto implements AdminUpdateScenarioParams {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
