@@ -29,6 +29,12 @@ import { GetSceneSessionHistoryUseCase } from "./application/use-cases/get-scene
 import { GetScenariosUseCase } from "./application/use-cases/get-scenarios.use-case";
 import { SCENE_PARTNER_FACADE } from "./application/interfaces/scene-partner-facade.interface";
 import { ScenePartnerFacade } from "./application/services/scene-partner.facade";
+import { CREATE_SCENARIO_USE_CASE, GET_ADMIN_SCENARIO_BY_ID_USE_CASE, GET_ADMIN_SCENARIOS_USE_CASE, TOGGLE_SCENARIO_STATUS_USE_CASE, UPDATE_SCENARIO_USE_CASE } from "./application/interfaces/scene-partner-admin.use-cases.interface";
+import { CreateScenarioUseCase } from "./application/use-cases/create-scenario.use-case";
+import { UpdateScenarioUseCase } from "./application/use-cases/update-scenario.use-case";
+import { ToggleScenarioStatusUseCase } from "./application/use-cases/toggle-scenario-status.use-case";
+import { GetAdminScenariosUseCase } from "./application/use-cases/get-admin-scenarios.use-case";
+import { GetAdminScenarioByIdUseCase } from "./application/use-cases/get-admin-scenario-by-id.use-case";
 
 @Module({
     imports: [
@@ -57,6 +63,12 @@ import { ScenePartnerFacade } from "./application/services/scene-partner.facade"
         { provide: GET_SCENARIOS_USE_CASE, useClass: GetScenariosUseCase },
         { provide: DELETE_SCENE_SESSION_USE_CASE, useClass: DeleteSceneSessionUseCase },
         { provide: UPDATE_COACHING_MODE_USE_CASE, useClass: UpdateCoachingModeUseCase },
+        // Scenario Admin Use Cases
+        { provide: CREATE_SCENARIO_USE_CASE, useClass: CreateScenarioUseCase },
+        { provide: UPDATE_SCENARIO_USE_CASE, useClass: UpdateScenarioUseCase },
+        { provide: TOGGLE_SCENARIO_STATUS_USE_CASE, useClass: ToggleScenarioStatusUseCase },
+        { provide: GET_ADMIN_SCENARIOS_USE_CASE, useClass: GetAdminScenariosUseCase },
+        { provide: GET_ADMIN_SCENARIO_BY_ID_USE_CASE, useClass: GetAdminScenarioByIdUseCase },
         // Public Facade
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
     ],
