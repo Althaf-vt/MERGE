@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
+import { ADMIN_AUDIT_ERROR_MESSAGES } from '../../domain/constants/admin-audit.constants';
 import { AdminAuditResourceType } from '../../domain/enums/admin-audit.enums';
 import { ADMIN_AUDIT_LOG_REPOSITORY, IAdminAuditLogRepository } from '../../domain/interfaces/admin-audit-log-repository.interface';
 import { GetScenarioActivityHistoryQueryDto, PaginatedAdminAuditLogsResponseDto } from '../dtos/admin-audit-log.dto';
@@ -13,12 +14,9 @@ export class GetScenarioActivityHistoryUseCase implements IGetScenarioActivityHi
         @Inject(ADMIN_AUDIT_LOG_REPOSITORY) private readonly _auditLogRepository: IAdminAuditLogRepository,
     ) { }
 
-    async execute(
-        scenarioId: string,
-        query?: GetScenarioActivityHistoryQueryDto,
-    ): Promise<PaginatedAdminAuditLogsResponseDto> {
+    async execute(scenarioId: string, query?: GetScenarioActivityHistoryQueryDto): Promise<PaginatedAdminAuditLogsResponseDto> {
         if (!scenarioId || typeof scenarioId !== 'string' || scenarioId.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Scenario ID is required to fetch activity history.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_AUDIT_ERROR_MESSAGES.SCENARIO_ID_REQUIRED);
         }
 
         const result = await this._auditLogRepository.findByResource(
