@@ -30,7 +30,7 @@ export class AdminScenePartnerController {
     @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS)
     @HttpCode(HttpStatus.CREATED)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
-    @AuditLog({
+    @AuditLog<AdminScenarioFacadeDto>({
         action: AdminAuditAction.SCENARIO_CREATED,
         resourceType: AdminAuditResourceType.SCENARIO,
         extractResourceId: (_req, res) => res.data?.id,
@@ -159,7 +159,7 @@ export class AdminScenePartnerController {
     @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_STATUS)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
-    @AuditLog({
+    @AuditLog<AdminScenarioFacadeDto>({
         action: (_req, res) => (res.data?.isActive ? AdminAuditAction.STATUS_ACTIVATED : AdminAuditAction.STATUS_DEACTIVATED),
         resourceType: AdminAuditResourceType.SCENARIO,
         extractResourceId: (_req, res) => res.data?.id,
@@ -179,7 +179,7 @@ export class AdminScenePartnerController {
     @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_BY_ID)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
-    @AuditLog({
+    @AuditLog<AdminScenarioFacadeDto>({
         action: AdminAuditAction.SCENARIO_UPDATED,
         resourceType: AdminAuditResourceType.SCENARIO,
         extractResourceId: (_req, res) => res.data?.id,
