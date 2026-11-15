@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import * as jwt from 'jsonwebtoken';
 import { ITokenPayload, ITokenservice } from "../../../domain/interfaces/token-service.interface";
 import { EnvConfig } from "../../config/env.config";
+import { CONFIG_ERROR_MESSAGES } from "../../constants/config-errors.constant";
 
 @Injectable()
 export class JwtTokenService implements ITokenservice {
@@ -16,7 +17,7 @@ export class JwtTokenService implements ITokenservice {
         const refreshSecret = EnvConfig.jwt.refreshSecret;
 
         if (!accessSecret || !refreshSecret) {
-            throw new Error('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be defined in environment configuration.');
+            throw new Error(CONFIG_ERROR_MESSAGES.JWT_SECRETS_REQUIRED);
         }
 
         this._accessSecret = accessSecret;

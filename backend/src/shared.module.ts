@@ -11,6 +11,7 @@ import { JwtAuthGuard } from "./shared/infrastructure/security/guards/jwt-auth.g
 import { USER_SESSION_SERVICE } from "./shared/domain/interfaces/user-session.interface";
 import { UserRedisSessionService } from "./shared/infrastructure/security/services/user-redis-session.service";
 import { EnvConfig } from "./shared/infrastructure/config/env.config";
+import { CONFIG_ERROR_MESSAGES } from "./shared/infrastructure/constants/config-errors.constant";
 
 @Global()
 @Module({
@@ -20,7 +21,7 @@ import { EnvConfig } from "./shared/infrastructure/config/env.config";
             useFactory: () => {
                 const secret = EnvConfig.jwt.accessSecret;
                 if (!secret) {
-                    throw new Error('JWT_ACCESS_SECRET must be defined in environment configuration.');
+                    throw new Error(CONFIG_ERROR_MESSAGES.JWT_ACCESS_SECRET_REQUIRED);
                 }
                 return { secret };
             },
