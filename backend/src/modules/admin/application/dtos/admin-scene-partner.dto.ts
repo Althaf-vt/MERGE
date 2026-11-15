@@ -1,7 +1,16 @@
 import { Transform, Type } from "class-transformer";
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
+import { IsBoolean, IsDate, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
 import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
-import { AdminCreateScenarioParams, AdminGetScenariosFilters, AdminGetSessionsFilters, AdminSendPreviewTurnParams, AdminStartPreviewSessionParams, AdminToggleScenarioStatusParams, AdminUpdateScenarioParams } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import {
+    AdminCreateScenarioParams,
+    AdminExportScenariosFilters,
+    AdminGetScenariosFilters,
+    AdminGetSessionsFilters,
+    AdminSendPreviewTurnParams,
+    AdminStartPreviewSessionParams,
+    AdminToggleScenarioStatusParams,
+    AdminUpdateScenarioParams,
+} from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
 
 export class AdminCreateScenarioDto implements AdminCreateScenarioParams {
     @IsString()
@@ -163,3 +172,37 @@ export class AdminSendPreviewTurnDto implements AdminSendPreviewTurnParams {
     @MaxLength(1000)
     content: string;
 }
+
+export enum ScenarioExportFormat {
+    JSON = 'json',
+    CSV = 'csv',
+}
+
+export class AdminExportScenariosQueryDto implements AdminExportScenariosFilters {
+    @IsOptional()
+    @IsEnum(ScenarioExportFormat)
+    format?: ScenarioExportFormat = ScenarioExportFormat.JSON;
+
+    @IsOptional()
+    @IsEnum(ScenarioCategory)
+    category?: ScenarioCategory;
+
+    @IsOptional()
+    @Transform(({ value }) => {
+        if (value === "true" || value === true) return true;
+        if (value === "false" || value === false) return false;
+        return undefined;
+    })
+    @IsBoolean()
+    isActive?: boolean;
+
+    @IsOptional()
+    @Transform(({ value }) => {
+        if (value === "false" || value === false) return false;
+        if (value === "true" || value === true) return true;
+        return undefined;
+    })
+    @IsBoolean()
+    includeMetrics?: boolean = true;
+}
+
