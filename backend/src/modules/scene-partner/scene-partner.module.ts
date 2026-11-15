@@ -46,6 +46,8 @@ import { GetAdminSessionDetailsUseCase } from "./application/use-cases/get-admin
 import { GetScenePartnerAnalyticsUseCase } from "./application/use-cases/get-scene-partner-analytics.use-case";
 import { EXPORT_SCENARIOS_USE_CASE } from "./application/interfaces/scene-partner-export.use-cases.interface";
 import { ExportScenariosUseCase } from "./application/use-cases/export-scenarios.use-case";
+import { GET_SCENARIO_IN_DEPTH_USE_CASE } from "./application/interfaces/scene-partner-in-depth.use-cases.interface";
+import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-in-depth.use-case";
 
 @Module({
     imports: [
@@ -89,6 +91,7 @@ import { ExportScenariosUseCase } from "./application/use-cases/export-scenarios
         { provide: START_PREVIEW_SESSION_USE_CASE, useClass: StartPreviewSessionUseCase },
         { provide: SEND_PREVIEW_TURN_USE_CASE, useClass: SendPreviewTurnUseCase },
         { provide: EXPORT_SCENARIOS_USE_CASE, useClass: ExportScenariosUseCase },
+        { provide: GET_SCENARIO_IN_DEPTH_USE_CASE, useClass: GetScenarioInDepthUseCase },
         // Public Facades
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
         { provide: SCENE_PARTNER_ADMIN_FACADE, useClass: ScenePartnerAdminFacade },
