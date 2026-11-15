@@ -116,44 +116,40 @@ export const ScenePartnerManagementPage: React.FC = () => {
     const handleExport = async (format: 'csv' | 'json') => {
         try {
             const response = await triggerExport({ format }).unwrap();
-            const exportData = response.data || [];
 
-            if (format === 'json') {
-                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `scene-partner-scenarios-${new Date().toISOString().slice(0, 10)}.json`;
-                link.click();
-                URL.revokeObjectURL(url);
-            } else {
-                const headers = [
-                    'id',
-                    'title',
-                    'category',
-                    'isActive',
-                    'totalSessions',
-                    'completedSessions',
-                    'completionRate',
-                    'createdAt',
-                ];
-                const rows = exportData.map((item) => [
-                    item.id,
-                    `"${(item.title || '').replace(/"/g, '""')}"`,
-                    item.category,
-                    item.isActive,
-                    item.totalSessions,
-                    item.completedSessions,
-                    item.completionRate,
-                    item.createdAt,
-                ]);
-                const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+            if (format === 'csv') {
+                const csvContent =
+                    typeof response === 'string'
+                        ? response
+                        : typeof (response as unknown as { data?: unknown }).data === 'string'
+                          ? ((response as unknown as { data: string }).data)
+                          : '';
+
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `scene-partner-scenarios-${new Date().toISOString().slice(0, 10)}.csv`;
+                link.download = `merge-scenarios-export-${new Date().toISOString().slice(0, 10)}.csv`;
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else {
+                const exportData =
+                    typeof response === 'object' && response !== null && 'data' in response
+                        ? (response as { data?: unknown[] }).data || []
+                        : Array.isArray(response)
+                          ? response
+                          : [];
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `merge-scenarios-export-${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             }
         } catch (err) {

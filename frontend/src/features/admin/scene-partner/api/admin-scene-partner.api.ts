@@ -112,12 +112,22 @@ export const adminScenePartnerApi = adminRootApi.injectEndpoints({
             providesTags: [{ type: 'AdminAnalytics' as const, id: 'GLOBAL' }],
         }),
 
-        // Query to export scenario catalog in JSON format.
-        exportScenarios: builder.query<ApiResponse<AdminScenarioExportItemDto[]>, ExportScenariosQuery | void>({
+        // Query to export scenario catalog in JSON or CSV format.
+        exportScenarios: builder.query<
+            ApiResponse<AdminScenarioExportItemDto[]> | string,
+            ExportScenariosQuery | void
+        >({
             query: (params) => ({
                 url: API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS_EXPORT,
                 method: 'GET',
                 params: params ? params : undefined,
+                responseHandler: async (response: Response) => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('text/csv')) {
+                        return response.text();
+                    }
+                    return response.json();
+                },
             }),
         }),
 
