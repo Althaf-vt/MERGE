@@ -2,8 +2,9 @@ import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto, SceneTurnResponseDto } from "../dtos/scene-session-response.dto";
 import { AdminSessionListItemDto } from "../dtos/admin-session-list-item.dto";
-import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
+import { AdminSessionDetailDto, SessionTelemetryDto, SessionTimelineEventDto } from "../dtos/admin-session-detail.dto";
 import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
+import { SceneSessionStatus, SceneSpeakerRole, SessionTimelineEventType, } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export class SceneSessionDtoMapper {
     public static toResponseDto(entity: SceneSession): SceneSessionResponseDto {
@@ -72,7 +73,8 @@ export class SceneSessionDtoMapper {
             simulationType: snapshot.simulationType,
             status: snapshot.status,
             turnCount: snapshot.turnCount,
-            communicationScore: snapshot.summary?.communicationScore ?? null,
+            durationMinutes: entity.getActiveDurationMinutes(),
+            communicationScore: null,
             isCoachingEnabled: snapshot.isCoachingEnabled,
             createdAt: snapshot.createdAt,
             completedAt: snapshot.completedAt,
@@ -85,19 +87,97 @@ export class SceneSessionDtoMapper {
 
     public static toAdminDetailDto(entity: SceneSession): AdminSessionDetailDto {
         const snapshot = entity.toJSON();
-        const transcript: SceneTurnResponseDto[] = snapshot.transcript.map((turn) => ({
-            role: turn.role,
-            content: turn.content,
-            coachNote: turn.coachNote
-                ? {
-                    observation: turn.coachNote.observation,
-                    tone: turn.coachNote.tone,
-                    pacing: turn.coachNote.pacing,
-                    nextTip: turn.coachNote.nextTip,
+
+        // Synthesize privacy-preserving operational timeline events (zero raw text leakage)
+        const timeline: SessionTimelineEventDto[] = [];
+
+        // 1. Session Initialized Event
+        timeline.push({
+            id: `evt-${snapshot.id}-init`,
+            eventType: SessionTimelineEventType.SESSION_INITIALIZED,
+            timestamp: snapshot.createdAt,
+            metadata: {
+                simulationType: snapshot.simulationType,
+                isCoachingEnabled: snapshot.isCoachingEnabled,
+                maxDurationMinutes: snapshot.maxDurationMinutes,
+            },
+        });
+
+        // 2. Transcript Turn Events (Operational telemetry, zero raw text)
+        snapshot.transcript.forEach((turn, index) => {
+            if (turn.role === SceneSpeakerRole.SIMULATION) {
+                if (index === 0) {
+                    timeline.push({
+                        id: `evt-${snapshot.id}-greeting`,
+                        eventType: SessionTimelineEventType.PARTNER_GREETING_DELIVERED,
+                        timestamp: turn.timestamp,
+                        metadata: {
+                            characterCount: turn.content.length,
+                        },
+                    });
+                } else if (turn.coachNote) {
+                    timeline.push({
+                        id: `evt-${snapshot.id}-coach-${index}`,
+                        eventType: SessionTimelineEventType.COACHING_TIP_GENERATED,
+                        timestamp: turn.timestamp,
+                        metadata: {
+                            turnIndex: index,
+                            tone: turn.coachNote.tone,
+                            pacing: turn.coachNote.pacing,
+                        },
+                    });
                 }
-                : null,
-            timestamp: turn.timestamp,
-        }));
+            } else if (turn.role === SceneSpeakerRole.USER) {
+                timeline.push({
+                    id: `evt-${snapshot.id}-user-${index}`,
+                    eventType: SessionTimelineEventType.USER_MESSAGE_SENT,
+                    timestamp: turn.timestamp,
+                    metadata: {
+                        turnIndex: index,
+                        characterCount: turn.content.length,
+                    },
+                });
+            }
+        });
+
+        // 3. Pause Event
+        if (snapshot.pausedAt && snapshot.status === SceneSessionStatus.PAUSED) {
+            timeline.push({
+                id: `evt-${snapshot.id}-paused`,
+                eventType: SessionTimelineEventType.SESSION_PAUSED,
+                timestamp: snapshot.pausedAt,
+                metadata: {
+                    totalPausedMs: snapshot.totalPausedMs,
+                },
+            });
+        }
+
+        // 4. Completed Event
+        if (snapshot.completedAt) {
+            timeline.push({
+                id: `evt-${snapshot.id}-completed`,
+                eventType: SessionTimelineEventType.SESSION_COMPLETED,
+                timestamp: snapshot.completedAt,
+                metadata: {
+                    totalTurns: snapshot.turnCount,
+                    durationMinutes: entity.getActiveDurationMinutes(),
+                    status: snapshot.status,
+                },
+            });
+        }
+
+        const coachingInterventionCount = snapshot.transcript.filter(
+            (t) => t.coachNote !== null && t.coachNote !== undefined,
+        ).length;
+
+        const telemetry: SessionTelemetryDto = {
+            durationMinutes: entity.getActiveDurationMinutes(),
+            turnCount: snapshot.turnCount,
+            coachingInterventionCount,
+            isCoachingEnabled: snapshot.isCoachingEnabled,
+            completedAt: snapshot.completedAt,
+            totalPausedMs: snapshot.totalPausedMs,
+        };
 
         return {
             id: snapshot.id,
@@ -110,17 +190,12 @@ export class SceneSessionDtoMapper {
             targetUserId: snapshot.targetUserId,
             isCoachingEnabled: snapshot.isCoachingEnabled,
             status: snapshot.status,
-            transcript,
             turnCount: snapshot.turnCount,
-            summary: snapshot.summary
-                ? {
-                    summary: snapshot.summary.summary,
-                    thingsToNote: [...snapshot.summary.thingsToNote],
-                    takeaways: [...snapshot.summary.takeaways],
-                    coachingNotes: snapshot.summary.coachingNotes,
-                    communicationScore: snapshot.summary.communicationScore,
-                }
-                : null,
+            timeline,
+            telemetry,
+            // Privacy-redacted: raw conversation text and private scores are zero-leaked
+            transcript: [],
+            summary: null,
             maxDurationMinutes: snapshot.maxDurationMinutes,
             pausedAt: snapshot.pausedAt,
             totalPausedMs: snapshot.totalPausedMs,
