@@ -67,6 +67,7 @@ import { PhotoVerificationController } from "./presentation/controllers/photo-ve
 import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from "./infrastructure/persistence/photo-verification-task.schema";
 import { ScenePartnerModule } from "../scene-partner/scene-partner.module";
 import { AdminScenePartnerController } from "./presentation/controllers/admin-scene-partner.controller";
+import { AdminAuditLogController } from "./presentation/controllers/admin-audit-log.controller";
 
 @Module({
     imports: [
@@ -85,6 +86,7 @@ import { AdminScenePartnerController } from "./presentation/controllers/admin-sc
         AdminManagementController,
         PhotoVerificationController,
         AdminScenePartnerController,
+        AdminAuditLogController,
     ],
     providers: [
         AdminSeederService,
