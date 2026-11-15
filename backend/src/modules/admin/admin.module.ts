@@ -24,6 +24,10 @@ import { ModerationLogRepository } from "./infrastructure/persistence/mongo-mode
 import { AdminAuditLogSchema, AdminAuditLogSchemaClass } from "./infrastructure/persistence/admin-audit-log.schema";
 import { ADMIN_AUDIT_LOG_REPOSITORY } from "./domain/interfaces/admin-audit-log-repository.interface";
 import { MongoAdminAuditLogRepository } from "./infrastructure/persistence/mongo-admin-audit-log.repository";
+import { GET_ADMIN_AUDIT_LOGS_USE_CASE, GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, RECORD_ADMIN_AUDIT_LOG_USE_CASE } from "./application/interfaces/admin-audit.use-cases.interface";
+import { RecordAdminAuditLogUseCase } from "./application/use-cases/record-admin-audit-log.use-case";
+import { GetAdminAuditLogsUseCase } from "./application/use-cases/get-admin-audit-logs.use-case";
+import { GetScenarioActivityHistoryUseCase } from "./application/use-cases/get-scenario-activity-history.use-case";
 import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
@@ -117,11 +121,12 @@ import { AdminScenePartnerController } from "./presentation/controllers/admin-sc
         { provide: REJECT_PHOTO_VERIFICATION_USE_CASE, useClass: RejectPhotoVerificationUseCase },
         { provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, useClass: CreatePhotoVerificationTaskUseCase },
         { provide: ADMIN_AUDIT_LOG_REPOSITORY, useClass: MongoAdminAuditLogRepository },
+        { provide: RECORD_ADMIN_AUDIT_LOG_USE_CASE, useClass: RecordAdminAuditLogUseCase },
+        { provide: GET_ADMIN_AUDIT_LOGS_USE_CASE, useClass: GetAdminAuditLogsUseCase },
+        { provide: GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, useClass: GetScenarioActivityHistoryUseCase },
         // Register Event Listener
         UserPhotoFlaggedListener,
     ],
-    exports: [
-        ADMIN_AUDIT_LOG_REPOSITORY,
-    ],
+    exports: [],
 })
 export class AdminModule { }
