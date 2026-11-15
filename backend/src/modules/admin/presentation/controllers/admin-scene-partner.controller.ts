@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
@@ -12,40 +12,34 @@ import { AuthenticatedRequest } from "../../../../shared/infrastructure/security
 import { AdminPreviewSessionFacadeDto, AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
 import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto } from "../../application/dtos/admin-scene-partner.dto";
 import { AdminAuditAction, AdminAuditResourceType } from "../../domain/enums/admin-audit.enums";
-import { IRecordAdminAuditLogUseCase, RECORD_ADMIN_AUDIT_LOG_USE_CASE } from "../../application/interfaces/admin-audit.use-cases.interface";
+import { AuditLog } from "../decorators/audit-log.decorator";
+import { AdminAuditInterceptor } from "../interceptors/admin-audit.interceptor";
 
 @Controller(API_ENDPOINTS.ADMIN.SCENE_PARTNER.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
+@UseInterceptors(AdminAuditInterceptor)
 export class AdminScenePartnerController {
     constructor(
         @Inject(SCENE_PARTNER_ADMIN_FACADE) private readonly _scenePartnerAdminFacade: IScenePartnerAdminFacade,
-        @Inject(RECORD_ADMIN_AUDIT_LOG_USE_CASE) private readonly _recordAdminAuditLogUseCase: IRecordAdminAuditLogUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS)
     @HttpCode(HttpStatus.CREATED)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    @AuditLog({
+        action: AdminAuditAction.SCENARIO_CREATED,
+        resourceType: AdminAuditResourceType.SCENARIO,
+        extractResourceId: (_req, res) => res.data?.id,
+        extractDetails: (_req, res) => ({
+            title: res.data?.title,
+            category: res.data?.category,
+            isActive: res.data?.isActive,
+        }),
+    })
     async createScenario(
         @Body() dto: AdminCreateScenarioDto,
-        @Req() req: AuthenticatedRequest,
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.createScenario(dto);
-
-        await this._recordAdminAuditLogUseCase.execute({
-            adminId: req.user.userId,
-            adminEmail: req.user.email,
-            action: AdminAuditAction.SCENARIO_CREATED,
-            resourceType: AdminAuditResourceType.SCENARIO,
-            resourceId: result.id,
-            details: {
-                title: result.title,
-                category: result.category,
-                isActive: result.isActive,
-            },
-            ipAddress: req.ip,
-            userAgent: req.headers['user-agent'] as string | undefined,
-        });
-
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_CREATED, result);
     }
 
@@ -116,55 +110,41 @@ export class AdminScenePartnerController {
     @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_STATUS)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    @AuditLog({
+        action: (_req, res) => (res.data?.isActive ? AdminAuditAction.STATUS_ACTIVATED : AdminAuditAction.STATUS_DEACTIVATED),
+        resourceType: AdminAuditResourceType.SCENARIO,
+        extractResourceId: (_req, res) => res.data?.id,
+        extractDetails: (_req, res) => ({
+            title: res.data?.title,
+            isActive: res.data?.isActive,
+        }),
+    })
     async toggleScenarioStatus(
         @Param("id") id: string,
         @Body() dto: AdminToggleScenarioStatusDto,
-        @Req() req: AuthenticatedRequest,
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.toggleScenarioStatus(id, dto);
-
-        await this._recordAdminAuditLogUseCase.execute({
-            adminId: req.user.userId,
-            adminEmail: req.user.email,
-            action: result.isActive ? AdminAuditAction.STATUS_ACTIVATED : AdminAuditAction.STATUS_DEACTIVATED,
-            resourceType: AdminAuditResourceType.SCENARIO,
-            resourceId: result.id,
-            details: {
-                title: result.title,
-                isActive: result.isActive,
-            },
-            ipAddress: req.ip,
-            userAgent: req.headers['user-agent'] as string | undefined,
-        });
-
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_STATUS_UPDATED, result);
     }
 
     @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_BY_ID)
     @HttpCode(HttpStatus.OK)
     @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    @AuditLog({
+        action: AdminAuditAction.SCENARIO_UPDATED,
+        resourceType: AdminAuditResourceType.SCENARIO,
+        extractResourceId: (_req, res) => res.data?.id,
+        extractDetails: (req, res) => ({
+            title: res.data?.title,
+            category: res.data?.category,
+            updatedFields: Object.keys(req.body ?? {}),
+        }),
+    })
     async updateScenario(
         @Param("id") id: string,
         @Body() dto: AdminUpdateScenarioDto,
-        @Req() req: AuthenticatedRequest,
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.updateScenario(id, dto);
-
-        await this._recordAdminAuditLogUseCase.execute({
-            adminId: req.user.userId,
-            adminEmail: req.user.email,
-            action: AdminAuditAction.SCENARIO_UPDATED,
-            resourceType: AdminAuditResourceType.SCENARIO,
-            resourceId: result.id,
-            details: {
-                title: result.title,
-                category: result.category,
-                updatedFields: Object.keys(dto),
-            },
-            ipAddress: req.ip,
-            userAgent: req.headers['user-agent'] as string | undefined,
-        });
-
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_UPDATED, result);
     }
 
