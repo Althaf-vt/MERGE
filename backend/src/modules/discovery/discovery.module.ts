@@ -21,19 +21,10 @@ import { DiscoveryPassSchema, DiscoveryPassSchemaClass } from "./infrastructure/
     ],
     controllers: [DiscoveryController],
     providers: [
-        {
-            provide: DISCOVERY_REPOSITORY,
-            useClass: DiscoveryRepository,
-        },
-        {
-            provide: GET_RECOMMENDATIONS_USE_CASE,
-            useClass: GetRecommendationsUseCase,
-        },
-        {
-            provide: PASS_CANDIDATE_USE_CASE,
-            useClass: PassCandidateUseCase,
-        },
+        { provide: DISCOVERY_REPOSITORY, useClass: DiscoveryRepository },
+        { provide: GET_RECOMMENDATIONS_USE_CASE, useClass: GetRecommendationsUseCase },
+        { provide: PASS_CANDIDATE_USE_CASE, useClass: PassCandidateUseCase },
     ],
-    exports: []
+    exports: [],
 })
 export class DiscoveryModule { }
