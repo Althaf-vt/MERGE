@@ -71,6 +71,7 @@ import { STORAGE_SERVICE } from "./application/interfaces/storage-service.interf
 import Redis from "ioredis";
 import { ErrorCode } from "../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../shared/domain/exceptions/domain.exception";
+import { USER_ERROR_MESSAGES } from "./domain/constants/user-error-messages.constant";
 import { USER_MANAGEMENT_FACADE } from "./application/interfaces/user-management-facade.interface";
 import { UserManagementFacade } from "./application/services/user-management.facade";
 import { UserBannedListener } from "./application/listeners/user-banned.listener";
@@ -157,7 +158,7 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
                 const secretAccessKey = EnvConfig.aws.secretAccessKey;
 
                 if (!region || !accessKeyId || !secretAccessKey) {
-                    throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Missing AWS credentials.');
+                    throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.MISSING_AWS_CREDENTIALS);
                 }
 
                 return new S3Client({
