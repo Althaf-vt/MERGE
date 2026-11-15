@@ -5,7 +5,7 @@ import { isValidObjectId, Model } from "mongoose";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
-import { AdminSessionsFilter, ISceneSessionRepository, PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData, ScenarioMetricsRawData } from "../../domain/interfaces/scene-session-repository.interface";
+import { AdminSessionsFilter, ISceneSessionRepository, PaginatedSceneSessionsResult, ScenarioDailyTrendRawData, ScenarioMetricsRawData, ScenarioSummaryStatsRawData, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { SceneSessionDocument, SceneSessionSchemaClass } from "./scene-session.schema";
 import { SceneSessionPersistenceMapper } from "./mappers/scene-session-persistence.mapper";
 
@@ -260,6 +260,168 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
             }
         }
         return metricsMap;
+    }
+
+    async getScenarioSummaryStats(scenarioId: string): Promise<ScenarioSummaryStatsRawData | null> {
+        const [result] = await this._model.aggregate([
+            {
+                $match: {
+                    scenarioId,
+                    isPreview: { $ne: true },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalSessions: { $sum: 1 },
+                    completedSessions: {
+                        $sum: { $cond: [{ $eq: ["$status", SceneSessionStatus.COMPLETED] }, 1, 0] },
+                    },
+                    coachingEnabledCount: {
+                        $sum: { $cond: [{ $eq: ["$isCoachingEnabled", true] }, 1, 0] },
+                    },
+                    averageTurnCount: { $avg: "$turnCount" },
+                    averageDurationMinutes: {
+                        $avg: {
+                            $cond: [
+                                { $ne: ["$completedAt", null] },
+                                {
+                                    $max: [
+                                        0,
+                                        {
+                                            $divide: [
+                                                {
+                                                    $subtract: [
+                                                        { $subtract: ["$completedAt", "$createdAt"] },
+                                                        { $ifNull: ["$totalPausedMs", 0] },
+                                                    ],
+                                                },
+                                                60000,
+                                            ],
+                                        },
+                                    ],
+                                },
+                                null,
+                            ],
+                        },
+                    },
+                },
+            },
+        ]).exec();
+
+        if (!result) {
+            return {
+                totalSessions: 0,
+                completedSessions: 0,
+                completionRate: 0,
+                averageDurationMinutes: 0,
+                averageTurnCount: 0,
+                coachingAdoptionRate: 0,
+            };
+        }
+
+        const totalSessions = result.totalSessions ?? 0;
+        const completedSessions = result.completedSessions ?? 0;
+        const coachingEnabledCount = result.coachingEnabledCount ?? 0;
+        const completionRate = totalSessions > 0
+            ? Math.round((completedSessions / totalSessions) * 1000) / 10
+            : 0;
+        const coachingAdoptionRate = totalSessions > 0
+            ? Math.round((coachingEnabledCount / totalSessions) * 1000) / 10
+            : 0;
+        const averageTurnCount = result.averageTurnCount !== undefined && result.averageTurnCount !== null
+            ? Math.round(result.averageTurnCount * 10) / 10
+            : 0;
+        const averageDurationMinutes = result.averageDurationMinutes !== undefined && result.averageDurationMinutes !== null
+            ? Math.round(result.averageDurationMinutes * 10) / 10
+            : 0;
+
+        return {
+            totalSessions,
+            completedSessions,
+            completionRate,
+            averageDurationMinutes,
+            averageTurnCount,
+            coachingAdoptionRate,
+        };
+    }
+
+    async getScenarioDailyTrends(scenarioId: string, days: number): Promise<ScenarioDailyTrendRawData[]> {
+        const safeDays = Math.max(1, days);
+        const startDate = new Date();
+        startDate.setUTCDate(startDate.getUTCDate() - (safeDays - 1));
+        startDate.setUTCHours(0, 0, 0, 0);
+
+        const results = await this._model.aggregate([
+            {
+                $match: {
+                    scenarioId,
+                    isPreview: { $ne: true },
+                    createdAt: { $gte: startDate },
+                },
+            },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+                    },
+                    totalSessions: { $sum: 1 },
+                    completedSessions: {
+                        $sum: { $cond: [{ $eq: ["$status", SceneSessionStatus.COMPLETED] }, 1, 0] },
+                    },
+                },
+            },
+            {
+                $sort: { _id: 1 },
+            },
+        ]).exec();
+
+        const resultMap = new Map<string, { totalSessions: number; completedSessions: number }>();
+        for (const item of results) {
+            if (item._id) {
+                resultMap.set(item._id, {
+                    totalSessions: item.totalSessions || 0,
+                    completedSessions: item.completedSessions || 0,
+                });
+            }
+        }
+
+        const dailyTrends: ScenarioDailyTrendRawData[] = [];
+        const currentDate = new Date(startDate);
+        const now = new Date();
+
+        while (currentDate <= now) {
+            const dateStr = currentDate.toISOString().split("T")[0];
+            const metrics = resultMap.get(dateStr) ?? { totalSessions: 0, completedSessions: 0 };
+            const completionRate = metrics.totalSessions > 0
+                ? Math.round((metrics.completedSessions / metrics.totalSessions) * 1000) / 10
+                : 0;
+
+            dailyTrends.push({
+                date: dateStr,
+                totalSessions: metrics.totalSessions,
+                completedSessions: metrics.completedSessions,
+                completionRate,
+            });
+
+            currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        }
+
+        return dailyTrends;
+    }
+
+    async findRecentByScenarioId(scenarioId: string, limit: number = 5): Promise<SceneSession[]> {
+        const safeLimit = Math.max(1, limit);
+        const documents = await this._model
+            .find({
+                scenarioId,
+                isPreview: { $ne: true },
+            })
+            .sort({ createdAt: -1 })
+            .limit(safeLimit)
+            .exec();
+
+        return documents.map((doc) => this.toDomain(doc as SceneSessionDocument));
     }
 
     async deleteById(id: string, userId: string): Promise<boolean> {
