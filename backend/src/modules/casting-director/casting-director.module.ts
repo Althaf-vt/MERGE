@@ -16,31 +16,18 @@ import { FinalizeCastingSessionUseCase } from "./application/use-cases/finalize-
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: CastingSessionSchemaClass.name, schema: CastingSessionSchema }]),
+        MongooseModule.forFeature([
+            { name: CastingSessionSchemaClass.name, schema: CastingSessionSchema },
+        ]),
         UserModule,
     ],
     controllers: [CastingDirectorController],
     providers: [
-        {
-            provide: CASTING_SESSION_REPOSITORY,
-            useClass: CastingSessionRepository,
-        },
-        {
-            provide: CASTING_AI_SERVICE,
-            useClass: OpenRouterCastingAiService,
-        },
-        {
-            provide: INITIALIZE_CASTING_SESSION_USE_CASE,
-            useClass: InitializeCastingSessionUseCase,
-        },
-        {
-            provide: PROCESS_CASTING_MESSAGE_USE_CASE,
-            useClass: ProcessCastingMessageUseCase,
-        },
-        {
-            provide: FINALIZE_CASTING_SESSION_USE_CASE,
-            useClass: FinalizeCastingSessionUseCase
-        }
-    ]
+        { provide: CASTING_SESSION_REPOSITORY, useClass: CastingSessionRepository },
+        { provide: CASTING_AI_SERVICE, useClass: OpenRouterCastingAiService },
+        { provide: INITIALIZE_CASTING_SESSION_USE_CASE, useClass: InitializeCastingSessionUseCase },
+        { provide: PROCESS_CASTING_MESSAGE_USE_CASE, useClass: ProcessCastingMessageUseCase },
+        { provide: FINALIZE_CASTING_SESSION_USE_CASE, useClass: FinalizeCastingSessionUseCase },
+    ],
 })
 export class CastingDirectorModule { }
