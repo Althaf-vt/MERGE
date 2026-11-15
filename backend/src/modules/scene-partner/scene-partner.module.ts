@@ -15,6 +15,8 @@ import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scen
 import { MockSubscriptionFacade } from "./infrastructure/adapters/mock-subscription.facade";
 import { USER_CONTEXT_FACADE } from "./application/interfaces/user-context-facade.interface";
 import { UserContextAdapter } from "./infrastructure/adapters/user-context.adapter";
+import { PREVIEW_CONTEXT_BUILDER } from "./application/interfaces/scene-partner-preview.use-cases.interface";
+import { PreviewContextBuilder } from "./infrastructure/adapters/preview-context.builder";
 import { DELETE_SCENE_SESSION_USE_CASE, END_SCENE_SESSION_USE_CASE, GET_ACTIVE_SCENE_SESSION_USE_CASE, GET_SCENARIOS_USE_CASE, GET_SCENE_SESSION_BY_ID_USE_CASE, GET_SCENE_SESSION_HISTORY_USE_CASE, PAUSE_SCENE_SESSION_USE_CASE, RESUME_SCENE_SESSION_USE_CASE, SEND_SCENE_TURN_USE_CASE, START_SCENE_SESSION_USE_CASE, UPDATE_COACHING_MODE_USE_CASE, } from "./application/interfaces/scene-partner.use-cases.interface";
 import { DeleteSceneSessionUseCase } from "./application/use-cases/delete-scene-session.use-case";
 import { UpdateCoachingModeUseCase } from "./application/use-cases/update-coaching-mode.use-case";
@@ -66,6 +68,7 @@ import { GetScenePartnerAnalyticsUseCase } from "./application/use-cases/get-sce
         { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
         { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useClass: MockSubscriptionFacade },
         { provide: USER_CONTEXT_FACADE, useClass: UserContextAdapter },
+        { provide: PREVIEW_CONTEXT_BUILDER, useClass: PreviewContextBuilder },
         { provide: START_SCENE_SESSION_USE_CASE, useClass: StartSceneSessionUseCase },
         { provide: SEND_SCENE_TURN_USE_CASE, useClass: SendSceneTurnUseCase },
         { provide: PAUSE_SCENE_SESSION_USE_CASE, useClass: PauseSceneSessionUseCase },
