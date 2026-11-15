@@ -1,5 +1,6 @@
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
+import { ADMIN_AUDIT_ERROR_MESSAGES } from '../constants/admin-audit.constants';
 import { AdminAuditAction, AdminAuditResourceType } from '../enums/admin-audit.enums';
 import {AdminAuditLogData,AdminAuditLogProps,AdminAuditLogSnapshot,CreateAdminAuditLogProps} from '../interfaces/admin-audit-log.types';
 
@@ -26,19 +27,19 @@ export class AdminAuditLog {
 
     private _validateInvariants(props: AdminAuditLogProps): void {
         if (!props.adminId || typeof props.adminId !== 'string' || props.adminId.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Admin ID is required to create an audit log.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_AUDIT_ERROR_MESSAGES.ADMIN_ID_REQUIRED);
         }
 
         if (!props.action || !Object.values(AdminAuditAction).includes(props.action)) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid audit action: ${props.action}`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_AUDIT_ERROR_MESSAGES.INVALID_ACTION(String(props.action)));
         }
 
         if (!props.resourceType || !Object.values(AdminAuditResourceType).includes(props.resourceType)) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid audit resource type: ${props.resourceType}`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_AUDIT_ERROR_MESSAGES.INVALID_RESOURCE_TYPE(String(props.resourceType)));
         }
 
         if (!props.resourceId || typeof props.resourceId !== 'string' || props.resourceId.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Resource ID is required to create an audit log.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_AUDIT_ERROR_MESSAGES.RESOURCE_ID_REQUIRED);
         }
     }
 
