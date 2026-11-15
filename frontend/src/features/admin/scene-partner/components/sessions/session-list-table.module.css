@@ -1,0 +1,207 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.searchInput {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-primary);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-radius: 4px;
+    min-width: 240px;
+    flex: 1;
+    max-width: 360px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    border-color: var(--admin-border-focus);
+}
+
+.select {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.select:focus {
+    border-color: var(--admin-border-focus);
+    color: var(--admin-text-primary);
+}
+
+.resetBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-subtle);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.resetBtn:hover {
+    border-color: var(--admin-border-hover);
+    color: var(--admin-text-primary);
+}
+
+.sessionIdCell {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--admin-accent-text, #d8b4fe);
+    cursor: pointer;
+    transition: text-decoration 0.15s ease;
+}
+
+.sessionIdCell:hover {
+    text-decoration: underline;
+}
+
+.userIdCell {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--admin-text-primary);
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scenarioTitle {
+    color: var(--admin-text-primary);
+    font-weight: 500;
+}
+
+.typeBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.typeGeneric {
+    background-color: rgba(161, 161, 170, 0.1);
+    color: var(--admin-text-secondary);
+    border: 1px solid var(--admin-border);
+}
+
+.typeMatch {
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.25);
+}
+
+.coachingBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.coachingEnabled {
+    background-color: rgba(74, 222, 128, 0.1);
+    color: var(--badge-active-text, #4ade80);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.coachingDisabled {
+    background-color: rgba(113, 113, 122, 0.1);
+    color: var(--admin-text-subtle);
+    border: 1px solid var(--admin-border);
+}
+
+.statusWrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.statusCompleted {
+    background-color: var(--badge-active-text, #4ade80);
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+.statusInProgress {
+    background-color: #60a5fa;
+    box-shadow: 0 0 6px rgba(96, 165, 250, 0.4);
+}
+
+.statusPaused {
+    background-color: var(--badge-suspend-text, #fb923c);
+    box-shadow: 0 0 6px rgba(251, 146, 60, 0.4);
+}
+
+.statusInit {
+    background-color: var(--admin-text-subtle);
+}
+
+.inspectBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.inspectBtn:hover {
+    border-color: var(--admin-border-hover);
+    color: var(--admin-text-primary);
+    background-color: var(--admin-hover);
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+}

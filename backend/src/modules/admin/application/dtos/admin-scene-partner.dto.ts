@@ -177,6 +177,15 @@ export class AdminSendPreviewTurnDto implements AdminSendPreviewTurnParams {
     @IsNotEmpty()
     @MaxLength(1000)
     content: string;
+
+    @IsOptional()
+    @IsBoolean()
+    isCoachingEnabled?: boolean;
+}
+
+export class AdminUpdatePreviewCoachingDto {
+    @IsBoolean()
+    isCoachingEnabled!: boolean;
 }
 
 export enum ScenarioExportFormat {

@@ -135,6 +135,22 @@ export const API_ENDPOINTS = {
             APPROVE: (id: string) => `/admin/kyc-escalation/${id}/approve`,
             REJECT: (id: string) => `/admin/kyc-escalation/${id}/reject`,
             REQUEST_RESUBMISSION: (id: string) => `/admin/kyc-escalation/${id}/resubmit`,
-        }
+        },
+        SCENE_PARTNER: {
+            BASE: '/admin/scene-partner',
+            SCENARIOS: '/admin/scene-partner/scenarios',
+            SCENARIOS_EXPORT: '/admin/scene-partner/scenarios/export',
+            SCENARIO_BY_ID: (id: string) => `/admin/scene-partner/scenarios/${id}`,
+            SCENARIO_IN_DEPTH: (id: string) => `/admin/scene-partner/scenarios/${id}/in-depth`,
+            SCENARIO_STATUS: (id: string) => `/admin/scene-partner/scenarios/${id}/status`,
+            SCENARIO_ACTIVITY_HISTORY: (id: string) => `/admin/scene-partner/scenarios/${id}/activity-history`,
+            SESSIONS: '/admin/scene-partner/sessions',
+            SESSION_BY_ID: (id: string) => `/admin/scene-partner/sessions/${id}`,
+            ANALYTICS: '/admin/scene-partner/analytics',
+            PREVIEW_START: '/admin/scene-partner/scenarios/preview/start',
+            SCENARIO_PREVIEW_START: (id: string) => `/admin/scene-partner/scenarios/${id}/preview/start`,
+            PREVIEW_MESSAGE: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/message`,
+            PREVIEW_COACHING: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/coaching`,
+        },
     }
 } as const;

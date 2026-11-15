@@ -1,0 +1,108 @@
+.card {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 104px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    border-color: var(--admin-border-hover);
+    background-color: var(--admin-hover);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--admin-text-subtle);
+    margin: 0;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    color: var(--admin-text-subtle);
+    font-size: 14px;
+}
+
+.body {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.value {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--admin-text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.trendPositive {
+    color: var(--badge-active-text, #4ade80);
+}
+
+.trendNegative {
+    color: var(--admin-danger-text, #f87171);
+}
+
+.trendNeutral {
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--admin-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.skeletonValue {
+    width: 60%;
+    height: 28px;
+    background-color: var(--admin-border);
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}

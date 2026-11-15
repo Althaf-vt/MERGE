@@ -47,6 +47,7 @@ export interface AdminStartPreviewSessionParams {
 
 export interface AdminSendPreviewTurnParams {
     content: string;
+    isCoachingEnabled?: boolean;
 }
 
 export interface AdminExportScenariosFilters {
@@ -255,6 +256,7 @@ export interface IScenePartnerAdminFacade {
     // Scenario Live Preview Sandbox
     startPreviewSession(adminId: string, params: AdminStartPreviewSessionParams): Promise<AdminPreviewSessionFacadeDto>;
     sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto>;
+    updatePreviewCoachingMode(adminId: string, sessionId: string, params: { isCoachingEnabled: boolean }): Promise<AdminPreviewSessionFacadeDto>;
 
     // Scenario Export
     exportScenarios(filters?: AdminExportScenariosFilters): Promise<AdminScenarioExportItemFacadeDto[]>;

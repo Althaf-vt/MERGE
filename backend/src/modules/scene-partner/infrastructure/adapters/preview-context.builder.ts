@@ -17,7 +17,7 @@ export class PreviewContextBuilder implements IPreviewContextBuilder {
                 selectedTraits: ["Observant", "Conversational"],
             },
             partnerProfile: {
-                displayName: "Simulated Partner",
+                displayName: "Alex",
                 bio: "Interactive simulation partner for scenario testing.",
                 relationshipGoals: "Meaningful Connection",
                 selectedTraits: ["Engaging", "Attentive", "Expressive"],

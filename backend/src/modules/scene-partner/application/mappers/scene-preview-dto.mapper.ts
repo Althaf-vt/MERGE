@@ -1,6 +1,6 @@
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { ScenePreviewResponseDto } from "../dtos/preview-session.dto";
-import { SceneTurnResponseDto } from "../dtos/scene-session-response.dto";
+import { SceneSessionResponseDto, SceneTurnResponseDto } from "../dtos/scene-session-response.dto";
 
 export class ScenePreviewDtoMapper {
     public static toResponseDto(entity: SceneSession): ScenePreviewResponseDto {
@@ -33,6 +33,23 @@ export class ScenePreviewDtoMapper {
             isPreview: snapshot.isPreview,
             createdAt: snapshot.createdAt,
             updatedAt: snapshot.updatedAt,
+        };
+    }
+
+    public static fromSessionResponseDto(dto: SceneSessionResponseDto): ScenePreviewResponseDto {
+        return {
+            id: dto.id,
+            scenarioId: dto.scenarioId,
+            scenarioTitle: dto.scenarioTitle,
+            scenarioCategory: dto.scenarioCategory,
+            scenarioPromptContext: dto.scenarioPromptContext ?? null,
+            isCoachingEnabled: dto.isCoachingEnabled,
+            status: dto.status,
+            transcript: dto.transcript,
+            turnCount: dto.turnCount,
+            isPreview: dto.isPreview ?? false,
+            createdAt: dto.createdAt,
+            updatedAt: dto.updatedAt,
         };
     }
 }

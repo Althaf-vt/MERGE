@@ -38,8 +38,10 @@ import {
     UPDATE_SCENARIO_USE_CASE,
 } from "../interfaces/scene-partner-admin.use-cases.interface";
 import { ISendPreviewTurnUseCase, IStartPreviewSessionUseCase, SEND_PREVIEW_TURN_USE_CASE, START_PREVIEW_SESSION_USE_CASE } from "../interfaces/scene-partner-preview.use-cases.interface";
+import { IUpdateCoachingModeUseCase, UPDATE_COACHING_MODE_USE_CASE } from "../interfaces/scene-partner.use-cases.interface";
 import { EXPORT_SCENARIOS_USE_CASE, IExportScenariosUseCase } from "../interfaces/scene-partner-export.use-cases.interface";
 import { GET_SCENARIO_IN_DEPTH_USE_CASE, IGetScenarioInDepthUseCase } from "../interfaces/scene-partner-in-depth.use-cases.interface";
+import { ScenePreviewDtoMapper } from "../mappers/scene-preview-dto.mapper";
 
 @Injectable()
 export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
@@ -54,6 +56,7 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
         @Inject(GET_SCENE_PARTNER_ANALYTICS_USE_CASE) private readonly _getScenePartnerAnalyticsUseCase: IGetScenePartnerAnalyticsUseCase,
         @Inject(START_PREVIEW_SESSION_USE_CASE) private readonly _startPreviewSessionUseCase: IStartPreviewSessionUseCase,
         @Inject(SEND_PREVIEW_TURN_USE_CASE) private readonly _sendPreviewTurnUseCase: ISendPreviewTurnUseCase,
+        @Inject(UPDATE_COACHING_MODE_USE_CASE) private readonly _updateCoachingModeUseCase: IUpdateCoachingModeUseCase,
         @Inject(EXPORT_SCENARIOS_USE_CASE) private readonly _exportScenariosUseCase: IExportScenariosUseCase,
         @Inject(GET_SCENARIO_IN_DEPTH_USE_CASE) private readonly _getScenarioInDepthUseCase: IGetScenarioInDepthUseCase,
     ) { }
@@ -100,6 +103,11 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
 
     async sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto> {
         return this._sendPreviewTurnUseCase.execute(adminId, sessionId, params);
+    }
+
+    async updatePreviewCoachingMode(adminId: string, sessionId: string, params: { isCoachingEnabled: boolean }): Promise<AdminPreviewSessionFacadeDto> {
+        const session = await this._updateCoachingModeUseCase.execute(adminId, sessionId, params);
+        return ScenePreviewDtoMapper.fromSessionResponseDto(session);
     }
 
     async exportScenarios(filters?: AdminExportScenariosFilters): Promise<AdminScenarioExportItemFacadeDto[]> {

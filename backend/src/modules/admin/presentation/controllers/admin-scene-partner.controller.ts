@@ -10,7 +10,7 @@ import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/res
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { AdminPreviewSessionFacadeDto, AdminScenarioExportItemFacadeDto, AdminScenarioFacadeDto, AdminScenarioInDepthFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
-import { AdminCreateScenarioDto, AdminExportScenariosQueryDto, AdminGetScenarioInDepthQueryDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto, ScenarioExportFormat } from "../../application/dtos/admin-scene-partner.dto";
+import { AdminCreateScenarioDto, AdminExportScenariosQueryDto, AdminGetScenarioInDepthQueryDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdatePreviewCoachingDto, AdminUpdateScenarioDto, ScenarioExportFormat } from "../../application/dtos/admin-scene-partner.dto";
 import { CsvSerializer } from "../../application/utils/csv-serializer.util";
 import { AdminAuditAction, AdminAuditResourceType } from "../../domain/enums/admin-audit.enums";
 import { AuditLog } from "../decorators/audit-log.decorator";
@@ -236,5 +236,18 @@ export class AdminScenePartnerController {
         const adminId = req.user.userId;
         const result = await this._scenePartnerAdminFacade.sendPreviewTurn(adminId, sessionId, dto);
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.PREVIEW_TURN_PROCESSED, result);
+    }
+
+    @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.PREVIEW_COACHING)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async updatePreviewCoachingMode(
+        @Param("id") sessionId: string,
+        @Body() dto: AdminUpdatePreviewCoachingDto,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<ApiResponse<AdminPreviewSessionFacadeDto>> {
+        const adminId = req.user.userId;
+        const result = await this._scenePartnerAdminFacade.updatePreviewCoachingMode(adminId, sessionId, dto);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.PREVIEW_COACHING_UPDATED, result);
     }
 }

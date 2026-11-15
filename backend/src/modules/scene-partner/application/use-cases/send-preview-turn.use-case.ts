@@ -27,6 +27,10 @@ export class SendPreviewTurnUseCase implements ISendPreviewTurnUseCase {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, SCENE_PARTNER_ERROR_MESSAGES.NOT_PREVIEW_SESSION);
         }
 
+        if (session.isCoachingEnabled !== dto.isCoachingEnabled && dto.isCoachingEnabled !== undefined) {
+            session.toggleCoaching(dto.isCoachingEnabled, adminId);
+        }
+
         const priorTranscript = session.toJSON().transcript;
 
         // Append Admin Test Message to Aggregate
