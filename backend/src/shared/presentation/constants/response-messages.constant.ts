@@ -126,6 +126,8 @@ export const RESPONSE_MESSAGES = {
             SESSIONS_FETCHED: 'Admin rehearsal sessions fetched successfully.',
             SESSION_DETAILS_FETCHED: 'Session inspection details fetched successfully.',
             ANALYTICS_FETCHED: 'Scene Partner analytics fetched successfully.',
+            PREVIEW_STARTED: 'Live preview simulation session started successfully.',
+            PREVIEW_TURN_PROCESSED: 'Live preview simulation turn processed successfully.',
         },
     }
 } as const;
