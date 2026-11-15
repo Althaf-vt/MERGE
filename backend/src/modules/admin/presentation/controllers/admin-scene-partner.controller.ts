@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Req, StreamableFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-session.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
@@ -9,8 +9,9 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { AdminPreviewSessionFacadeDto, AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
-import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto } from "../../application/dtos/admin-scene-partner.dto";
+import { AdminPreviewSessionFacadeDto, AdminScenarioExportItemFacadeDto, AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import { AdminCreateScenarioDto, AdminExportScenariosQueryDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto, ScenarioExportFormat } from "../../application/dtos/admin-scene-partner.dto";
+import { CsvSerializer } from "../../application/utils/csv-serializer.util";
 import { AdminAuditAction, AdminAuditResourceType } from "../../domain/enums/admin-audit.enums";
 import { AuditLog } from "../decorators/audit-log.decorator";
 import { AdminAuditInterceptor } from "../interceptors/admin-audit.interceptor";
@@ -62,6 +63,21 @@ export class AdminScenePartnerController {
                 limit: result.limit,
             },
         );
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS_EXPORT)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async exportScenarios(
+        @Query() query: AdminExportScenariosQueryDto,
+    ): Promise<ApiResponse<AdminScenarioExportItemFacadeDto[]> | StreamableFile> {
+        const result = await this._scenePartnerAdminFacade.exportScenarios(query);
+
+        if (query.format === ScenarioExportFormat.CSV) {
+            return CsvSerializer.toStreamableFile(result);
+        }
+
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIOS_EXPORTED, result);
     }
 
     @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.ANALYTICS)
