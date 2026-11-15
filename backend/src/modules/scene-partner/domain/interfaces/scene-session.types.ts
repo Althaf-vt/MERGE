@@ -27,6 +27,7 @@ export interface CreateSceneSessionProps {
     isCoachingEnabled?: boolean;
     targetUserId?: string | null;
     maxDurationMinutes?: number;
+    isPreview?: boolean;
 }
 
 export interface SceneSessionProps extends CreateSceneSessionProps {
@@ -61,6 +62,7 @@ export interface SceneSessionData {
     completedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    isPreview: boolean;
 }
 
 export interface SceneSessionSnapshot {
@@ -83,5 +85,6 @@ export interface SceneSessionSnapshot {
     completedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
+    isPreview: boolean;
 }
 

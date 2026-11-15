@@ -5,13 +5,7 @@ import { SCENE_PARTNER_ERROR_MESSAGES, SCENE_PARTNER_POLICY, SCENE_PARTNER_SAFET
 import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteVO } from "../value-objects/coach-note.vo";
 import { SceneSessionSummaryData } from "../interfaces/scene-partner-ai.interface";
-import {
-    CreateSceneSessionProps,
-    SceneSessionData,
-    SceneSessionProps,
-    SceneSessionSnapshot,
-    SceneTurn,
-} from "../interfaces/scene-session.types";
+import { CreateSceneSessionProps, SceneSessionData, SceneSessionProps, SceneSessionSnapshot, SceneTurn } from "../interfaces/scene-session.types";
 
 export class SceneSession extends AggregateRoot {
     private readonly _props: SceneSessionData;
@@ -40,12 +34,29 @@ export class SceneSession extends AggregateRoot {
             completedAt: props.completedAt ?? null,
             createdAt: props.createdAt ?? new Date(),
             updatedAt: props.updatedAt ?? new Date(),
+            isPreview: props.isPreview ?? false,
         };
     }
 
     public static create(props: CreateSceneSessionProps): SceneSession {
         return new SceneSession({
             ...props,
+            isPreview: false,
+            isCoachingEnabled: props.isCoachingEnabled ?? true,
+            status: SceneSessionStatus.INITIALIZING,
+            transcript: [],
+            turnCount: 0,
+            summary: null,
+            pausedAt: null,
+            totalPausedMs: 0,
+            completedAt: null,
+        });
+    }
+
+    public static createPreview(props: CreateSceneSessionProps): SceneSession {
+        return new SceneSession({
+            ...props,
+            isPreview: true,
             isCoachingEnabled: props.isCoachingEnabled ?? true,
             status: SceneSessionStatus.INITIALIZING,
             transcript: [],
@@ -96,6 +107,7 @@ export class SceneSession extends AggregateRoot {
     get completedAt(): Date | null { return this._props.completedAt; }
     get createdAt(): Date { return this._props.createdAt; }
     get updatedAt(): Date { return this._props.updatedAt; }
+    get isPreview(): boolean { return this._props.isPreview; }
 
     // Queries
     public isOwner(actionUserId: string): boolean {
@@ -300,6 +312,7 @@ export class SceneSession extends AggregateRoot {
             completedAt: this._props.completedAt,
             createdAt: this._props.createdAt,
             updatedAt: this._props.updatedAt,
+            isPreview: this._props.isPreview,
         };
     }
 }
