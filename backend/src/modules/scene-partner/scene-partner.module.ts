@@ -15,8 +15,10 @@ import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scen
 import { MockSubscriptionFacade } from "./infrastructure/adapters/mock-subscription.facade";
 import { USER_CONTEXT_FACADE } from "./application/interfaces/user-context-facade.interface";
 import { UserContextAdapter } from "./infrastructure/adapters/user-context.adapter";
-import { PREVIEW_CONTEXT_BUILDER } from "./application/interfaces/scene-partner-preview.use-cases.interface";
+import { PREVIEW_CONTEXT_BUILDER, SEND_PREVIEW_TURN_USE_CASE, START_PREVIEW_SESSION_USE_CASE } from "./application/interfaces/scene-partner-preview.use-cases.interface";
 import { PreviewContextBuilder } from "./infrastructure/adapters/preview-context.builder";
+import { StartPreviewSessionUseCase } from "./application/use-cases/start-preview-session.use-case";
+import { SendPreviewTurnUseCase } from "./application/use-cases/send-preview-turn.use-case";
 import { DELETE_SCENE_SESSION_USE_CASE, END_SCENE_SESSION_USE_CASE, GET_ACTIVE_SCENE_SESSION_USE_CASE, GET_SCENARIOS_USE_CASE, GET_SCENE_SESSION_BY_ID_USE_CASE, GET_SCENE_SESSION_HISTORY_USE_CASE, PAUSE_SCENE_SESSION_USE_CASE, RESUME_SCENE_SESSION_USE_CASE, SEND_SCENE_TURN_USE_CASE, START_SCENE_SESSION_USE_CASE, UPDATE_COACHING_MODE_USE_CASE, } from "./application/interfaces/scene-partner.use-cases.interface";
 import { DeleteSceneSessionUseCase } from "./application/use-cases/delete-scene-session.use-case";
 import { UpdateCoachingModeUseCase } from "./application/use-cases/update-coaching-mode.use-case";
@@ -33,16 +35,7 @@ import { SCENE_PARTNER_FACADE } from "./application/interfaces/scene-partner-fac
 import { ScenePartnerFacade } from "./application/services/scene-partner.facade";
 import { SCENE_PARTNER_ADMIN_FACADE } from "./application/interfaces/scene-partner-admin-facade.interface";
 import { ScenePartnerAdminFacade } from "./application/services/scene-partner-admin.facade";
-import {
-    CREATE_SCENARIO_USE_CASE,
-    GET_ADMIN_SCENARIO_BY_ID_USE_CASE,
-    GET_ADMIN_SCENARIOS_USE_CASE,
-    GET_ADMIN_SESSION_DETAILS_USE_CASE,
-    GET_ADMIN_SESSIONS_USE_CASE,
-    GET_SCENE_PARTNER_ANALYTICS_USE_CASE,
-    TOGGLE_SCENARIO_STATUS_USE_CASE,
-    UPDATE_SCENARIO_USE_CASE,
-} from "./application/interfaces/scene-partner-admin.use-cases.interface";
+import { CREATE_SCENARIO_USE_CASE, GET_ADMIN_SCENARIO_BY_ID_USE_CASE, GET_ADMIN_SCENARIOS_USE_CASE, GET_ADMIN_SESSION_DETAILS_USE_CASE, GET_ADMIN_SESSIONS_USE_CASE, GET_SCENE_PARTNER_ANALYTICS_USE_CASE, TOGGLE_SCENARIO_STATUS_USE_CASE, UPDATE_SCENARIO_USE_CASE } from "./application/interfaces/scene-partner-admin.use-cases.interface";
 import { CreateScenarioUseCase } from "./application/use-cases/create-scenario.use-case";
 import { UpdateScenarioUseCase } from "./application/use-cases/update-scenario.use-case";
 import { ToggleScenarioStatusUseCase } from "./application/use-cases/toggle-scenario-status.use-case";
@@ -90,6 +83,9 @@ import { GetScenePartnerAnalyticsUseCase } from "./application/use-cases/get-sce
         { provide: GET_ADMIN_SESSIONS_USE_CASE, useClass: GetAdminSessionsUseCase },
         { provide: GET_ADMIN_SESSION_DETAILS_USE_CASE, useClass: GetAdminSessionDetailsUseCase },
         { provide: GET_SCENE_PARTNER_ANALYTICS_USE_CASE, useClass: GetScenePartnerAnalyticsUseCase },
+        // Scenario Live Preview Sandbox Use Cases
+        { provide: START_PREVIEW_SESSION_USE_CASE, useClass: StartPreviewSessionUseCase },
+        { provide: SEND_PREVIEW_TURN_USE_CASE, useClass: SendPreviewTurnUseCase },
         // Public Facades
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
         { provide: SCENE_PARTNER_ADMIN_FACADE, useClass: ScenePartnerAdminFacade },
