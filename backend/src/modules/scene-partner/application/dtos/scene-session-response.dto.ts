@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface CoachNoteResponseDto {
     observation: string;

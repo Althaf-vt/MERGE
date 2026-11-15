@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { SCENE_PARTNER_POLICY } from "../../domain/constants/scene-partner.constants";
 
 export class CreateScenarioDto {

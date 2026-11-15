@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface AdminSessionListItemDto {
     id: string;

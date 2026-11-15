@@ -8,7 +8,7 @@ import { IUserContextFacade, USER_CONTEXT_FACADE } from "../interfaces/user-cont
 import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { Scenario } from "../../domain/entities/scenario.entity";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteVO } from "../../domain/value-objects/coach-note.vo";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";

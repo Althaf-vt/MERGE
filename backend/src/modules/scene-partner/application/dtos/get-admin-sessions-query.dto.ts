@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { SceneSessionStatus, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export class GetAdminSessionsQueryDto {
     @IsOptional()

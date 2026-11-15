@@ -8,7 +8,7 @@ import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { Scenario } from "../../domain/entities/scenario.entity";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
-import { ScenarioCategory, SceneSessionStatus } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus } from "../../../../shared/domain/enums/scene-partner.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 

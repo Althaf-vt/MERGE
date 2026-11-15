@@ -1,4 +1,4 @@
-import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { SceneSessionSummaryResponseDto, SceneTurnResponseDto } from "./scene-session-response.dto";
 
 export interface AdminSessionDetailDto {

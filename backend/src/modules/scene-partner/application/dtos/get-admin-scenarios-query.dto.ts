@@ -1,6 +1,6 @@
 import { Transform, Type } from "class-transformer";
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export class GetAdminScenariosQueryDto {
     @IsOptional()

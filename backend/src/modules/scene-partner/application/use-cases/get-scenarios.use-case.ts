@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IGetScenariosUseCase } from "../interfaces/scene-partner.use-cases.interface";
 import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { PREDEFINED_SCENARIOS } from "../../domain/constants/predefined-scenarios.constant";
 import { SceneSessionDtoMapper } from "../mappers/scene-session-dto.mapper";
 
