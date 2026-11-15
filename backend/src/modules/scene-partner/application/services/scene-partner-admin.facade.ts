@@ -1,14 +1,17 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { IScenePartnerAdminFacade } from "../interfaces/scene-partner-admin-facade.interface";
-import { CreateScenarioDto } from "../dtos/create-scenario.dto";
-import { UpdateScenarioDto } from "../dtos/update-scenario.dto";
-import { ToggleScenarioStatusDto } from "../dtos/toggle-scenario-status.dto";
-import { GetAdminScenariosQueryDto } from "../dtos/get-admin-scenarios-query.dto";
-import { AdminScenarioResponseDto, PaginatedAdminScenariosResponseDto } from "../dtos/admin-scenario-response.dto";
-import { GetAdminSessionsQueryDto } from "../dtos/get-admin-sessions-query.dto";
-import { PaginatedAdminSessionsResponseDto } from "../dtos/admin-session-list-item.dto";
-import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
-import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
+import {
+    AdminCreateScenarioParams,
+    AdminGetScenariosFilters,
+    AdminGetSessionsFilters,
+    AdminScenarioFacadeDto,
+    AdminSessionDetailFacadeDto,
+    AdminToggleScenarioStatusParams,
+    AdminUpdateScenarioParams,
+    IScenePartnerAdminFacade,
+    PaginatedAdminScenariosFacadeResult,
+    PaginatedAdminSessionsFacadeResult,
+    ScenePartnerAnalyticsFacadeDto,
+} from "../interfaces/scene-partner-admin-facade.interface";
 import {
     CREATE_SCENARIO_USE_CASE,
     GET_ADMIN_SCENARIO_BY_ID_USE_CASE,
@@ -41,35 +44,35 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
         @Inject(GET_SCENE_PARTNER_ANALYTICS_USE_CASE) private readonly _getScenePartnerAnalyticsUseCase: IGetScenePartnerAnalyticsUseCase,
     ) { }
 
-    async createScenario(dto: CreateScenarioDto): Promise<AdminScenarioResponseDto> {
-        return this._createScenarioUseCase.execute(dto);
+    async createScenario(params: AdminCreateScenarioParams): Promise<AdminScenarioFacadeDto> {
+        return this._createScenarioUseCase.execute(params);
     }
 
-    async updateScenario(id: string, dto: UpdateScenarioDto): Promise<AdminScenarioResponseDto> {
-        return this._updateScenarioUseCase.execute(id, dto);
+    async updateScenario(id: string, params: AdminUpdateScenarioParams): Promise<AdminScenarioFacadeDto> {
+        return this._updateScenarioUseCase.execute(id, params);
     }
 
-    async toggleScenarioStatus(id: string, dto: ToggleScenarioStatusDto): Promise<AdminScenarioResponseDto> {
-        return this._toggleScenarioStatusUseCase.execute(id, dto);
+    async toggleScenarioStatus(id: string, params: AdminToggleScenarioStatusParams): Promise<AdminScenarioFacadeDto> {
+        return this._toggleScenarioStatusUseCase.execute(id, params);
     }
 
-    async getScenarios(query: GetAdminScenariosQueryDto): Promise<PaginatedAdminScenariosResponseDto> {
-        return this._getAdminScenariosUseCase.execute(query);
+    async getScenarios(filters: AdminGetScenariosFilters): Promise<PaginatedAdminScenariosFacadeResult> {
+        return this._getAdminScenariosUseCase.execute(filters);
     }
 
-    async getScenarioById(id: string): Promise<AdminScenarioResponseDto> {
+    async getScenarioById(id: string): Promise<AdminScenarioFacadeDto> {
         return this._getAdminScenarioByIdUseCase.execute(id);
     }
 
-    async getSessions(query: GetAdminSessionsQueryDto): Promise<PaginatedAdminSessionsResponseDto> {
-        return this._getAdminSessionsUseCase.execute(query);
+    async getSessions(filters: AdminGetSessionsFilters): Promise<PaginatedAdminSessionsFacadeResult> {
+        return this._getAdminSessionsUseCase.execute(filters);
     }
 
-    async getSessionDetails(sessionId: string): Promise<AdminSessionDetailDto> {
+    async getSessionDetails(sessionId: string): Promise<AdminSessionDetailFacadeDto> {
         return this._getAdminSessionDetailsUseCase.execute(sessionId);
     }
 
-    async getAnalytics(): Promise<ScenePartnerAnalyticsDto> {
+    async getAnalytics(): Promise<ScenePartnerAnalyticsFacadeDto> {
         return this._getScenePartnerAnalyticsUseCase.execute();
     }
 }
