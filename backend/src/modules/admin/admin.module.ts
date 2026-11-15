@@ -57,10 +57,13 @@ import { ApprovePhotoVerificationUseCase, ClaimPhotoTaskUseCase, CreatePhotoVeri
 import { UserPhotoFlaggedListener } from "./application/listeners/user-photo-flagged.listener";
 import { PhotoVerificationController } from "./presentation/controllers/photo-verification.controller";
 import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from "./infrastructure/persistence/photo-verification-task.schema";
+import { ScenePartnerModule } from "../scene-partner/scene-partner.module";
+import { AdminScenePartnerController } from "./presentation/controllers/admin-scene-partner.controller";
 
 @Module({
     imports: [
         UserModule,
+        ScenePartnerModule,
         MongooseModule.forFeature([
             { name: Admin.name, schema: AdminSchema },
             { name: ModerationLogSchemaClass.name, schema: ModerationLogSchema },
@@ -73,6 +76,7 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
         AdminUsersController,
         AdminManagementController,
         PhotoVerificationController,
+        AdminScenePartnerController,
     ],
 
     providers: [
