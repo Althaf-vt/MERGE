@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import { ScenarioTimeframe } from "../../../../shared/domain/enums/scene-partner.enums";
 import {
     AdminCreateScenarioParams,
     AdminExportScenariosFilters,
@@ -7,6 +8,7 @@ import {
     AdminPreviewSessionFacadeDto,
     AdminScenarioExportItemFacadeDto,
     AdminScenarioFacadeDto,
+    AdminScenarioInDepthFacadeDto,
     AdminSendPreviewTurnParams,
     AdminSessionDetailFacadeDto,
     AdminStartPreviewSessionParams,
@@ -35,13 +37,9 @@ import {
     TOGGLE_SCENARIO_STATUS_USE_CASE,
     UPDATE_SCENARIO_USE_CASE,
 } from "../interfaces/scene-partner-admin.use-cases.interface";
-import {
-    ISendPreviewTurnUseCase,
-    IStartPreviewSessionUseCase,
-    SEND_PREVIEW_TURN_USE_CASE,
-    START_PREVIEW_SESSION_USE_CASE,
-} from "../interfaces/scene-partner-preview.use-cases.interface";
+import { ISendPreviewTurnUseCase, IStartPreviewSessionUseCase, SEND_PREVIEW_TURN_USE_CASE, START_PREVIEW_SESSION_USE_CASE } from "../interfaces/scene-partner-preview.use-cases.interface";
 import { EXPORT_SCENARIOS_USE_CASE, IExportScenariosUseCase } from "../interfaces/scene-partner-export.use-cases.interface";
+import { GET_SCENARIO_IN_DEPTH_USE_CASE, IGetScenarioInDepthUseCase } from "../interfaces/scene-partner-in-depth.use-cases.interface";
 
 @Injectable()
 export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
@@ -57,6 +55,7 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
         @Inject(START_PREVIEW_SESSION_USE_CASE) private readonly _startPreviewSessionUseCase: IStartPreviewSessionUseCase,
         @Inject(SEND_PREVIEW_TURN_USE_CASE) private readonly _sendPreviewTurnUseCase: ISendPreviewTurnUseCase,
         @Inject(EXPORT_SCENARIOS_USE_CASE) private readonly _exportScenariosUseCase: IExportScenariosUseCase,
+        @Inject(GET_SCENARIO_IN_DEPTH_USE_CASE) private readonly _getScenarioInDepthUseCase: IGetScenarioInDepthUseCase,
     ) { }
 
     async createScenario(params: AdminCreateScenarioParams): Promise<AdminScenarioFacadeDto> {
@@ -77,6 +76,10 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
 
     async getScenarioById(id: string): Promise<AdminScenarioFacadeDto> {
         return this._getAdminScenarioByIdUseCase.execute(id);
+    }
+
+    async getScenarioInDepth(id: string, timeframe?: ScenarioTimeframe): Promise<AdminScenarioInDepthFacadeDto> {
+        return this._getScenarioInDepthUseCase.execute(id, timeframe);
     }
 
     async getSessions(filters: AdminGetSessionsFilters): Promise<PaginatedAdminSessionsFacadeResult> {
