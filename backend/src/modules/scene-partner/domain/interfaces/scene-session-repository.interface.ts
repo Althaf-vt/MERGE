@@ -1,5 +1,6 @@
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { SceneSession } from "../entities/scene-session.entity";
+import { SceneSessionStatus, SimulationType } from "../enums/scene-partner.enums";
 
 export const SCENE_SESSION_REPOSITORY = 'SCENE_SESSION_REPOSITORY';
 
@@ -8,8 +9,20 @@ export interface PaginatedSceneSessionsResult {
     total: number;
 }
 
+export interface AdminSessionsFilter {
+    userId?: string;
+    scenarioId?: string;
+    simulationType?: SimulationType;
+    status?: SceneSessionStatus;
+    startDate?: Date;
+    endDate?: Date;
+    limit?: number;
+    skip?: number;
+}
+
 export interface ISceneSessionRepository extends IBaseRepository<SceneSession> {
     findActiveByUserId(userId: string): Promise<SceneSession | null>;
     findAllByUserId(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResult>;
+    findAdminSessions(filter: AdminSessionsFilter): Promise<PaginatedSceneSessionsResult>;
     deleteById(id: string, userId: string): Promise<boolean>;
 }
