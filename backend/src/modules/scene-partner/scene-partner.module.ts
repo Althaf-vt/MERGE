@@ -2,9 +2,13 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "../users/users.module";
 import { SceneSessionSchema, SceneSessionSchemaClass } from "./infrastructure/persistence/scene-session.schema";
+import { ScenarioSchema, ScenarioSchemaClass } from "./infrastructure/persistence/scenario.schema";
 import { ScenePartnerController } from "./presentation/controllers/scene-partner.controller";
 import { SCENE_SESSION_REPOSITORY } from "./domain/interfaces/scene-session-repository.interface";
 import { MongoSceneSessionRepository } from "./infrastructure/persistence/mongo-scene-session.repository";
+import { SCENARIO_REPOSITORY } from "./domain/interfaces/scenario-repository.interface";
+import { MongoScenarioRepository } from "./infrastructure/persistence/mongo-scenario.repository";
+import { ScenarioSeederService } from "./infrastructure/services/scenario-seeder.service";
 import { SCENE_PARTNER_AI_SERVICE } from "./domain/interfaces/scene-partner-ai.interface";
 import { OpenRouterScenePartnerAiService } from "./infrastructure/services/openrouter-scene-partner-ai.service";
 import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scene-partner-subscription-facade.interface";
@@ -30,12 +34,15 @@ import { ScenePartnerFacade } from "./application/services/scene-partner.facade"
     imports: [
         MongooseModule.forFeature([
             { name: SceneSessionSchemaClass.name, schema: SceneSessionSchema },
+            { name: ScenarioSchemaClass.name, schema: ScenarioSchema },
         ]),
         UserModule,
     ],
     controllers: [ScenePartnerController],
     providers: [
         { provide: SCENE_SESSION_REPOSITORY, useClass: MongoSceneSessionRepository },
+        { provide: SCENARIO_REPOSITORY, useClass: MongoScenarioRepository },
+        ScenarioSeederService,
         { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
         { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useClass: MockSubscriptionFacade },
         { provide: USER_CONTEXT_FACADE, useClass: UserContextAdapter },
