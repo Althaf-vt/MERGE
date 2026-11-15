@@ -1,9 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import {
     AdminCreateScenarioParams,
+    AdminExportScenariosFilters,
     AdminGetScenariosFilters,
     AdminGetSessionsFilters,
     AdminPreviewSessionFacadeDto,
+    AdminScenarioExportItemFacadeDto,
     AdminScenarioFacadeDto,
     AdminSendPreviewTurnParams,
     AdminSessionDetailFacadeDto,
@@ -39,6 +41,7 @@ import {
     SEND_PREVIEW_TURN_USE_CASE,
     START_PREVIEW_SESSION_USE_CASE,
 } from "../interfaces/scene-partner-preview.use-cases.interface";
+import { EXPORT_SCENARIOS_USE_CASE, IExportScenariosUseCase } from "../interfaces/scene-partner-export.use-cases.interface";
 
 @Injectable()
 export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
@@ -53,6 +56,7 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
         @Inject(GET_SCENE_PARTNER_ANALYTICS_USE_CASE) private readonly _getScenePartnerAnalyticsUseCase: IGetScenePartnerAnalyticsUseCase,
         @Inject(START_PREVIEW_SESSION_USE_CASE) private readonly _startPreviewSessionUseCase: IStartPreviewSessionUseCase,
         @Inject(SEND_PREVIEW_TURN_USE_CASE) private readonly _sendPreviewTurnUseCase: ISendPreviewTurnUseCase,
+        @Inject(EXPORT_SCENARIOS_USE_CASE) private readonly _exportScenariosUseCase: IExportScenariosUseCase,
     ) { }
 
     async createScenario(params: AdminCreateScenarioParams): Promise<AdminScenarioFacadeDto> {
@@ -93,5 +97,9 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
 
     async sendPreviewTurn(adminId: string, sessionId: string, params: AdminSendPreviewTurnParams): Promise<AdminPreviewSessionFacadeDto> {
         return this._sendPreviewTurnUseCase.execute(adminId, sessionId, params);
+    }
+
+    async exportScenarios(filters?: AdminExportScenariosFilters): Promise<AdminScenarioExportItemFacadeDto[]> {
+        return this._exportScenariosUseCase.execute(filters);
     }
 }
