@@ -39,6 +39,10 @@ export class SendScenePreviewTurnDto {
     @MaxLength(SCENE_PARTNER_POLICY.MAX_MESSAGE_LENGTH)
     @Transform(({ value }) => (typeof value === "string" ? value.trim() : value))
     content!: string;
+
+    @IsOptional()
+    @IsBoolean()
+    isCoachingEnabled?: boolean;
 }
 
 export interface ScenePreviewResponseDto {

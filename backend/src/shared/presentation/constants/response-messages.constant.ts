@@ -132,6 +132,7 @@ export const RESPONSE_MESSAGES = {
             ANALYTICS_FETCHED: 'Scene Partner analytics fetched successfully.',
             PREVIEW_STARTED: 'Live preview simulation session started successfully.',
             PREVIEW_TURN_PROCESSED: 'Live preview simulation turn processed successfully.',
+            PREVIEW_COACHING_UPDATED: 'Live preview simulation coaching mode updated successfully.',
         },
     }
 } as const;

@@ -153,6 +153,7 @@ export const API_ENDPOINTS = {
             PREVIEW_START: 'scenarios/preview/start',
             SCENARIO_PREVIEW_START: 'scenarios/:id/preview/start',
             PREVIEW_MESSAGE: 'scenarios/preview/:id/message',
+            PREVIEW_COACHING: 'scenarios/preview/:id/coaching',
             SCENARIO_ACTIVITY_HISTORY: 'scenarios/:id/activity-history',
             SESSIONS: 'sessions',
             SESSION_BY_ID: 'sessions/:id',
