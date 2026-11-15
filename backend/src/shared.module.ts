@@ -14,54 +14,34 @@ import { EnvConfig } from "./shared/infrastructure/config/env.config";
 
 @Global()
 @Module({
-  imports: [
-
-    // Configures JWT support for token generation and verification.
-    JwtModule.registerAsync({
-        useFactory: () => {
-            const secret = EnvConfig.jwt.accessSecret;
-            if (!secret) {
-                throw new Error('JWT_ACCESS_SECRET must be defined in environment configuration.');
-            }
-            return { secret };
-        },
-    }),
-  ],
-  providers: [
-    {
-      provide: PASSWORD_HASHER,
-      useClass: BcryptService
-    },
-    {
-      provide: TOKEN_SERVICE,
-      useClass: JwtTokenService
-    },
-    {
-      provide: EMAIL_SERVICE,
-      useClass: NodeMailerEmailService,
-    },
-    {
-      provide: USER_SESSION_SERVICE,
-      useClass: UserRedisSessionService,
-    },
-    {
-      provide: UserSessionGuard,
-      useClass: UserSessionGuard
-    },
-    {
-      provide: JwtAuthGuard,
-      useClass: JwtAuthGuard
-    }
-  ],
-  exports: [
-    PASSWORD_HASHER, 
-    EMAIL_SERVICE, 
-    TOKEN_SERVICE, 
-    USER_SESSION_SERVICE,
-    UserSessionGuard,
-    JwtAuthGuard,
-    JwtModule
-  ],
+    imports: [
+        // Configures JWT support for token generation and verification.
+        JwtModule.registerAsync({
+            useFactory: () => {
+                const secret = EnvConfig.jwt.accessSecret;
+                if (!secret) {
+                    throw new Error('JWT_ACCESS_SECRET must be defined in environment configuration.');
+                }
+                return { secret };
+            },
+        }),
+    ],
+    providers: [
+        { provide: PASSWORD_HASHER, useClass: BcryptService },
+        { provide: TOKEN_SERVICE, useClass: JwtTokenService },
+        { provide: EMAIL_SERVICE, useClass: NodeMailerEmailService },
+        { provide: USER_SESSION_SERVICE, useClass: UserRedisSessionService },
+        { provide: UserSessionGuard, useClass: UserSessionGuard },
+        { provide: JwtAuthGuard, useClass: JwtAuthGuard },
+    ],
+    exports: [
+        PASSWORD_HASHER,
+        EMAIL_SERVICE,
+        TOKEN_SERVICE,
+        USER_SESSION_SERVICE,
+        UserSessionGuard,
+        JwtAuthGuard,
+        JwtModule,
+    ],
 })
-
-export class SharedModule {}
+export class SharedModule { }
