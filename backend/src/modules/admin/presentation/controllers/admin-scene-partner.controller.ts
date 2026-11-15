@@ -14,6 +14,8 @@ import { AdminCreateScenarioDto, AdminGetScenariosQueryDto, AdminGetSessionsQuer
 import { AdminAuditAction, AdminAuditResourceType } from "../../domain/enums/admin-audit.enums";
 import { AuditLog } from "../decorators/audit-log.decorator";
 import { AdminAuditInterceptor } from "../interceptors/admin-audit.interceptor";
+import { GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, IGetScenarioActivityHistoryUseCase } from "../../application/interfaces/admin-audit.use-cases.interface";
+import { AdminAuditLogResponseDto, GetScenarioActivityHistoryQueryDto } from "../../application/dtos/admin-audit-log.dto";
 
 @Controller(API_ENDPOINTS.ADMIN.SCENE_PARTNER.BASE)
 @UseGuards(JwtAuthGuard, AdminSessionGuard, AdminPermissionsGuard)
@@ -21,6 +23,7 @@ import { AdminAuditInterceptor } from "../interceptors/admin-audit.interceptor";
 export class AdminScenePartnerController {
     constructor(
         @Inject(SCENE_PARTNER_ADMIN_FACADE) private readonly _scenePartnerAdminFacade: IScenePartnerAdminFacade,
+        @Inject(GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE) private readonly _getScenarioActivityHistoryUseCase: IGetScenarioActivityHistoryUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIOS)
@@ -105,6 +108,25 @@ export class AdminScenePartnerController {
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.getScenarioById(id);
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_FETCHED, result);
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_ACTIVITY_HISTORY)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getScenarioActivityHistory(
+        @Param("id") id: string,
+        @Query() query: GetScenarioActivityHistoryQueryDto,
+    ): Promise<ApiResponse<AdminAuditLogResponseDto[]>> {
+        const result = await this._getScenarioActivityHistoryUseCase.execute(id, query);
+        return ApiResponseHelper.success(
+            RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_ACTIVITY_HISTORY_FETCHED,
+            result.data,
+            {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+            },
+        );
     }
 
     @Patch(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_STATUS)
