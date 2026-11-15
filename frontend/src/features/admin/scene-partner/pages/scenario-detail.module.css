@@ -308,13 +308,13 @@
 }
 
 .promptBlock {
-    background-color: #050507;
+    background-color: var(--admin-bg);
     border: 1px solid var(--admin-border);
     border-radius: 4px;
     padding: 12px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: #e4e4e7;
+    color: var(--admin-text-primary);
     line-height: 1.6;
     max-height: 240px;
     overflow-y: auto;
@@ -434,7 +434,7 @@
     flex-direction: column;
     gap: 6px;
     padding: 12px;
-    background-color: #060608;
+    background-color: var(--admin-bg);
     border: 1px solid var(--admin-border);
     border-radius: 4px;
 }
@@ -478,12 +478,12 @@
 }
 
 .auditDetails {
-    background-color: #09090b;
+    background-color: var(--admin-surface);
     border: 1px solid var(--admin-border);
     border-radius: 3px;
     padding: 8px 10px;
     font-size: 10px;
-    color: #a1a1aa;
+    color: var(--admin-text-secondary);
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-all;
