@@ -21,6 +21,9 @@ import { UserModule } from "../users/users.module";
 import { ModerationLogSchema, ModerationLogSchemaClass } from "./infrastructure/persistence/moderation-log.schema";
 import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-repository.interface";
 import { ModerationLogRepository } from "./infrastructure/persistence/mongo-moderation-log.repository";
+import { AdminAuditLogSchema, AdminAuditLogSchemaClass } from "./infrastructure/persistence/admin-audit-log.schema";
+import { ADMIN_AUDIT_LOG_REPOSITORY } from "./domain/interfaces/admin-audit-log-repository.interface";
+import { MongoAdminAuditLogRepository } from "./infrastructure/persistence/mongo-admin-audit-log.repository";
 import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
@@ -67,10 +70,10 @@ import { AdminScenePartnerController } from "./presentation/controllers/admin-sc
         MongooseModule.forFeature([
             { name: Admin.name, schema: AdminSchema },
             { name: ModerationLogSchemaClass.name, schema: ModerationLogSchema },
-            { name: PhotoVerificationTaskSchemaClass.name, schema: PhotoVerificationTaskSchema }
+            { name: PhotoVerificationTaskSchemaClass.name, schema: PhotoVerificationTaskSchema },
+            { name: AdminAuditLogSchemaClass.name, schema: AdminAuditLogSchema },
         ]),
     ],
-
     controllers: [
         AdminAuthController,
         AdminUsersController,
@@ -78,148 +81,47 @@ import { AdminScenePartnerController } from "./presentation/controllers/admin-sc
         PhotoVerificationController,
         AdminScenePartnerController,
     ],
-
     providers: [
         AdminSeederService,
-
-        {
-            provide: ADMIN_REPOSITORY,
-            useClass: AdminRepository,
-        },
-        {
-            provide: ADMIN_LOGIN_USE_CASE,
-            useClass: AdminLoginUseCase,
-        },
-        {
-            provide: ADMIN_OTP_SERVICE,
-            useClass: AdminRedisOtpService,
-        },
-        {
-            provide: ADMIN_FORGOT_PASSWORD_USE_CASE,
-            useClass: AdminForgotPasswordUseCase,
-        },
-        {
-            provide: ADMIN_VERIFY_RESET_OTP_USE_CASE,
-            useClass: AdminVerifyResetOtpUseCase,
-        },
-        {
-            provide: ADMIN_RESET_PASSWORD_USE_CASE,
-            useClass: AdminResetPasswordUseCase,
-        },
-        {
-            provide: ADMIN_REFRESH_TOKEN_USE_CASE,
-            useClass: AdminRefreshTokenUsecase,
-        },
-        {
-            provide: ADMIN_LOGOUT_USE_CASE,
-            useClass: AdminLogoutUseCase,
-        },
-        {
-            provide: MODERATION_LOG_REPOSITORY,
-            useClass: ModerationLogRepository,
-        },
-        {
-            provide: MANAGE_USER_STATUS_USE_CASE,
-            useClass: ManageUserStatusUseCase,
-        },
-        {
-            provide: GET_ADMIN_USERS_USE_CASE,
-            useClass: GetAdminUsersUserCase,
-        },
-        {
-            provide: GET_ADMIN_USER_DETAILS_USE_CASE,
-            useClass: GetAdminUserDetailsUseCase,
-        },
-        {
-            provide: ADMIN_INVITE_SERVICE,
-            useClass: AdminRedisInviteService,
-        },
-        {
-            provide: INVITE_ADMIN_USE_CASE,
-            useClass: InviteAdminUseCase,
-        },
-        {
-            provide: ACCEPT_ADMIN_INVITE_USE_CASE,
-            useClass: AcceptAdminInviteUseCase,
-        },
-        {
-            provide: REINVITE_ADMIN_USE_CASE,
-            useClass: ReinviteAdminUseCase,
-        },
-        {
-            provide: CANCEL_ADMIN_INVITE_USE_CASE,
-            useClass: CancelAdminInviteUseCase,
-        },
-        {
-            provide: UPDATE_ADMIN_USE_CASE,
-            useClass: UpdateAdminUseCase,
-        },
-        {
-            provide: GET_ADMINS_USE_CASE,
-            useClass: GetAdminsUseCase,
-        },
-        {
-            provide: SUSPEND_ADMIN_USE_CASE,
-            useClass: SuspendAdminUseCase,
-        },
-        {
-            provide: DEACTIVATE_ADMIN_USE_CASE,
-            useClass: DeactivateAdminUseCase,
-        },
-        {
-            provide: REACTIVATE_ADMIN_USE_CASE,
-            useClass: ReactivateAdminUseCase,
-        },
-        {
-            provide: FORCE_LOGOUT_ADMIN_USE_CASE,
-            useClass: ForceLogoutAdminUseCase,
-        },
-        {
-            provide: GET_ADMIN_DETAILS_USE_CASE,
-            useClass: GetAdminDetailsUseCase,
-        },
-        {
-            provide: ADMIN_SESSION_SERVICE,
-            useClass: AdminRedisSessionService,
-        },
-
-        {
-            provide: PHOTO_VERIFICATION_TASK_REPOSITORY,
-            useClass: PhotoVerificationTaskRepository
-        },
-        {
-            provide: GET_PHOTO_TASKS_USE_CASE,
-            useClass: GetPhotoTasksUseCase
-        },
-        {
-            provide: CLAIM_PHOTO_TASK_USE_CASE,
-            useClass: ClaimPhotoTaskUseCase
-        },
-        {
-            provide: RELEASE_PHOTO_TASK_CLAIM_USE_CASE,
-            useClass: ReleasePhotoTaskClaimUseCase
-        },
-        {
-            provide: TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE,
-            useClass: TakeoverPhotoTaskClaimUseCase
-        },
-        {
-            provide: APPROVE_PHOTO_VERIFICATION_USE_CASE,
-            useClass: ApprovePhotoVerificationUseCase
-        },
-        {
-            provide: REJECT_PHOTO_VERIFICATION_USE_CASE,
-            useClass: RejectPhotoVerificationUseCase
-        },
-        {
-            provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE,
-            useClass: CreatePhotoVerificationTaskUseCase
-        },
-
+        { provide: ADMIN_REPOSITORY, useClass: AdminRepository },
+        { provide: ADMIN_LOGIN_USE_CASE, useClass: AdminLoginUseCase },
+        { provide: ADMIN_OTP_SERVICE, useClass: AdminRedisOtpService },
+        { provide: ADMIN_FORGOT_PASSWORD_USE_CASE, useClass: AdminForgotPasswordUseCase },
+        { provide: ADMIN_VERIFY_RESET_OTP_USE_CASE, useClass: AdminVerifyResetOtpUseCase },
+        { provide: ADMIN_RESET_PASSWORD_USE_CASE, useClass: AdminResetPasswordUseCase },
+        { provide: ADMIN_REFRESH_TOKEN_USE_CASE, useClass: AdminRefreshTokenUsecase },
+        { provide: ADMIN_LOGOUT_USE_CASE, useClass: AdminLogoutUseCase },
+        { provide: MODERATION_LOG_REPOSITORY, useClass: ModerationLogRepository },
+        { provide: MANAGE_USER_STATUS_USE_CASE, useClass: ManageUserStatusUseCase },
+        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUserCase },
+        { provide: GET_ADMIN_USER_DETAILS_USE_CASE, useClass: GetAdminUserDetailsUseCase },
+        { provide: ADMIN_INVITE_SERVICE, useClass: AdminRedisInviteService },
+        { provide: INVITE_ADMIN_USE_CASE, useClass: InviteAdminUseCase },
+        { provide: ACCEPT_ADMIN_INVITE_USE_CASE, useClass: AcceptAdminInviteUseCase },
+        { provide: REINVITE_ADMIN_USE_CASE, useClass: ReinviteAdminUseCase },
+        { provide: CANCEL_ADMIN_INVITE_USE_CASE, useClass: CancelAdminInviteUseCase },
+        { provide: UPDATE_ADMIN_USE_CASE, useClass: UpdateAdminUseCase },
+        { provide: GET_ADMINS_USE_CASE, useClass: GetAdminsUseCase },
+        { provide: SUSPEND_ADMIN_USE_CASE, useClass: SuspendAdminUseCase },
+        { provide: DEACTIVATE_ADMIN_USE_CASE, useClass: DeactivateAdminUseCase },
+        { provide: REACTIVATE_ADMIN_USE_CASE, useClass: ReactivateAdminUseCase },
+        { provide: FORCE_LOGOUT_ADMIN_USE_CASE, useClass: ForceLogoutAdminUseCase },
+        { provide: GET_ADMIN_DETAILS_USE_CASE, useClass: GetAdminDetailsUseCase },
+        { provide: ADMIN_SESSION_SERVICE, useClass: AdminRedisSessionService },
+        { provide: PHOTO_VERIFICATION_TASK_REPOSITORY, useClass: PhotoVerificationTaskRepository },
+        { provide: GET_PHOTO_TASKS_USE_CASE, useClass: GetPhotoTasksUseCase },
+        { provide: CLAIM_PHOTO_TASK_USE_CASE, useClass: ClaimPhotoTaskUseCase },
+        { provide: RELEASE_PHOTO_TASK_CLAIM_USE_CASE, useClass: ReleasePhotoTaskClaimUseCase },
+        { provide: TAKEOVER_PHOTO_TASK_CLAIM_USE_CASE, useClass: TakeoverPhotoTaskClaimUseCase },
+        { provide: APPROVE_PHOTO_VERIFICATION_USE_CASE, useClass: ApprovePhotoVerificationUseCase },
+        { provide: REJECT_PHOTO_VERIFICATION_USE_CASE, useClass: RejectPhotoVerificationUseCase },
+        { provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, useClass: CreatePhotoVerificationTaskUseCase },
+        { provide: ADMIN_AUDIT_LOG_REPOSITORY, useClass: MongoAdminAuditLogRepository },
         // Register Event Listener
         UserPhotoFlaggedListener,
     ],
-    exports: [],
-
+    exports: [
+        ADMIN_AUDIT_LOG_REPOSITORY,
+    ],
 })
 export class AdminModule { }
