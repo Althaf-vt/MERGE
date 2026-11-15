@@ -21,6 +21,58 @@ export interface PreviewSimulationModalProps {
     onClose: () => void;
 }
 
+interface AdminInlineCoachCardProps {
+    variant: 'observation' | 'recommendation';
+    title: string;
+    icon: React.ReactNode;
+    content: string;
+}
+
+const AdminInlineCoachCard: React.FC<AdminInlineCoachCardProps> = ({
+    variant,
+    title,
+    icon,
+    content,
+}) => {
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    const isObservation = variant === 'observation';
+    const cardClass = isObservation ? styles.coachObservationCard : styles.coachRecommendationCard;
+    const titleClass = isObservation ? styles.coachObservationTitle : styles.coachRecommendationTitle;
+
+    return (
+        <div className={`${cardClass} ${isExpanded ? styles.cardExpanded : styles.cardCollapsed}`}>
+            <button
+                type="button"
+                className={styles.collapsibleHeaderBtn}
+                onClick={() => setIsExpanded((prev) => !prev)}
+                aria-expanded={isExpanded}
+                title={isExpanded ? 'Click to collapse feedback' : 'Click to expand feedback'}
+            >
+                <div className={styles.collapsibleTitleRow}>
+                    {icon}
+                    <span className={titleClass}>{title}</span>
+                </div>
+                <svg
+                    className={`${styles.chevronIcon} ${isExpanded ? styles.chevronOpen : ''}`}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                >
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+            {isExpanded && <p className={styles.coachCardBody}>{content}</p>}
+        </div>
+    );
+};
+
 export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
     isOpen,
     scenarioId,
@@ -192,36 +244,68 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
                         <>
                             {session?.transcript?.map((turn, idx) => {
                                 const isUser = turn.role === 'USER';
+                                const coachNote = turn.coachNote;
                                 return (
-                                    <div
-                                        key={`preview-turn-${idx}`}
-                                        className={`${styles.turnRow} ${isUser ? styles.userTurn : styles.simTurn}`}
-                                    >
-                                        <div className={styles.speakerMeta}>
-                                            <span>{isUser ? 'ADMIN TESTER' : 'AI PARTNER'}</span>
-                                            <span>• {new Date(turn.timestamp).toLocaleTimeString()}</span>
+                                    <React.Fragment key={`preview-turn-${idx}`}>
+                                        <div className={`${styles.turnRow} ${isUser ? styles.userTurn : styles.simTurn}`}>
+                                            <div className={styles.speakerMeta}>
+                                                <span>{isUser ? 'ADMIN TESTER' : 'AI PARTNER'}</span>
+                                                <span>• {new Date(turn.timestamp).toLocaleTimeString()}</span>
+                                            </div>
+
+                                            <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.simBubble}`}>
+                                                {turn.content}
+                                            </div>
                                         </div>
 
-                                        <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.simBubble}`}>
-                                            {turn.content}
-                                        </div>
+                                        {coachNote && (
+                                            <div className={styles.inlineCoachContainer}>
+                                                <div className={styles.coachMetaRow}>
+                                                    {coachNote.tone && (
+                                                        <span className={styles.tonePill}>
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            </svg>
+                                                            <span>Tone: {coachNote.tone}</span>
+                                                        </span>
+                                                    )}
+                                                    {coachNote.pacing && (
+                                                        <span className={styles.pacingPill}>
+                                                            <span>Pacing: {coachNote.pacing}</span>
+                                                        </span>
+                                                    )}
+                                                </div>
 
-                                        {isUser && turn.coachNote && (
-                                            <div className={styles.coachNoteCard}>
-                                                <div className={styles.coachHeader}>Coach Evaluation</div>
-                                                {turn.coachNote.observation && (
-                                                    <div className={styles.coachText}>
-                                                        <strong>Observation:</strong> {turn.coachNote.observation}
-                                                    </div>
+                                                {coachNote.observation && (
+                                                    <AdminInlineCoachCard
+                                                        variant="observation"
+                                                        title="Coach Observation"
+                                                        icon={
+                                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                                <circle cx="12" cy="12" r="10" />
+                                                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                                                            </svg>
+                                                        }
+                                                        content={coachNote.observation}
+                                                    />
                                                 )}
-                                                {turn.coachNote.nextTip && (
-                                                    <div className={styles.coachText}>
-                                                        <strong>Next Tip:</strong> {turn.coachNote.nextTip}
-                                                    </div>
+
+                                                {coachNote.nextTip && (
+                                                    <AdminInlineCoachCard
+                                                        variant="recommendation"
+                                                        title="Coach Recommendation"
+                                                        icon={
+                                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                                            </svg>
+                                                        }
+                                                        content={coachNote.nextTip}
+                                                    />
                                                 )}
                                             </div>
                                         )}
-                                    </div>
+                                    </React.Fragment>
                                 );
                             })}
 
