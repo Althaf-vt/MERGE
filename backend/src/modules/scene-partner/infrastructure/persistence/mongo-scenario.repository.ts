@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Scenario } from "../../domain/entities/scenario.entity";
-import { ScenarioCategory } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { AdminScenariosFilter, IScenarioRepository, PaginatedAdminScenariosResult } from "../../domain/interfaces/scenario-repository.interface";
 import { ScenarioDocument, ScenarioSchemaClass } from "./scenario.schema";
 import { ScenarioPersistenceMapper } from "./mappers/scenario-persistence.mapper";

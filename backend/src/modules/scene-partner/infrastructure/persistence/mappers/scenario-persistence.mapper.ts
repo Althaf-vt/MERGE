@@ -1,5 +1,5 @@
 import { Scenario } from "../../../domain/entities/scenario.entity";
-import { ScenarioCategory } from "../../../domain/enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../../shared/domain/enums/scene-partner.enums";
 import { ScenarioDocument } from "../scenario.schema";
 
 export class ScenarioPersistenceMapper {

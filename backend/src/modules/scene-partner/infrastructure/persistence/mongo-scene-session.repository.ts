@@ -4,7 +4,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { isValidObjectId, Model } from "mongoose";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
-import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { AdminSessionsFilter, ISceneSessionRepository, PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { SceneSessionDocument, SceneSessionSchemaClass } from "./scene-session.schema";
 import { SceneSessionPersistenceMapper } from "./mappers/scene-session-persistence.mapper";

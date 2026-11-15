@@ -10,7 +10,7 @@ import { CoachNoteProps } from "../../domain/value-objects/coach-note.vo";
 import { PersonaPrompt } from "../../domain/prompts/persona.prompt";
 import { CoachEvaluationRawResult, CoachPrompt } from "../../domain/prompts/coach.prompt";
 import { SessionSummaryPrompt } from "../../domain/prompts/session-summary.prompt";
-import { SceneSpeakerRole } from "../../domain/enums/scene-partner.enums";
+import { SceneSpeakerRole } from "../../../../shared/domain/enums/scene-partner.enums";
 import { OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
 @Injectable()

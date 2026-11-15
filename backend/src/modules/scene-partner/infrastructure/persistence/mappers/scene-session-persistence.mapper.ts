@@ -1,5 +1,5 @@
 import { SceneSession } from "../../../domain/entities/scene-session.entity";
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../domain/enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteVO } from "../../../domain/value-objects/coach-note.vo";
 import { SceneSessionDocument } from "../scene-session.schema";
 
