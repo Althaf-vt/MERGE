@@ -24,7 +24,7 @@ export class OpenRouterScenePartnerAiService implements IScenePartnerAiService {
     constructor() {
         const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENROUTER_API_KEY is missing from environment variables.");
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, SCENE_PARTNER_ERROR_MESSAGES.OPENROUTER_CONFIG_ERROR);
         }
 
         this._chatModel = EnvConfig.ai.chatModel;
