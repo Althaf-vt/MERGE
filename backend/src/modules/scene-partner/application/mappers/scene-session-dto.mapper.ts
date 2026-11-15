@@ -74,7 +74,6 @@ export class SceneSessionDtoMapper {
             status: snapshot.status,
             turnCount: snapshot.turnCount,
             durationMinutes: entity.getActiveDurationMinutes(),
-            communicationScore: null,
             isCoachingEnabled: snapshot.isCoachingEnabled,
             createdAt: snapshot.createdAt,
             completedAt: snapshot.completedAt,
@@ -193,9 +192,6 @@ export class SceneSessionDtoMapper {
             turnCount: snapshot.turnCount,
             timeline,
             telemetry,
-            // Privacy-redacted: raw conversation text and private scores are zero-leaked
-            transcript: [],
-            summary: null,
             maxDurationMinutes: snapshot.maxDurationMinutes,
             pausedAt: snapshot.pausedAt,
             totalPausedMs: snapshot.totalPausedMs,

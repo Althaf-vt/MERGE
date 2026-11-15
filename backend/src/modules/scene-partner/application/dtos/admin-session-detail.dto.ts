@@ -1,5 +1,9 @@
-import {ScenarioCategory,SceneSessionStatus,SessionTimelineEventType,SimulationType} from "../../../../shared/domain/enums/scene-partner.enums";
-import { SceneSessionSummaryResponseDto, SceneTurnResponseDto } from "./scene-session-response.dto";
+import {
+    ScenarioCategory,
+    SceneSessionStatus,
+    SessionTimelineEventType,
+    SimulationType,
+} from "../../../../shared/domain/enums/scene-partner.enums";
 
 export interface SessionTimelineEventDto {
     id: string;
@@ -31,9 +35,6 @@ export interface AdminSessionDetailDto {
     turnCount: number;
     timeline: SessionTimelineEventDto[];
     telemetry: SessionTelemetryDto;
-    // Transitional compatibility for facade in Batch 15.2 (removed in Batch 15.3)
-    transcript: SceneTurnResponseDto[];
-    summary: SceneSessionSummaryResponseDto | null;
     maxDurationMinutes: number;
     pausedAt: Date | null;
     totalPausedMs: number;

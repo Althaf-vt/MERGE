@@ -10,8 +10,6 @@ export interface AdminSessionListItemDto {
     status: SceneSessionStatus;
     turnCount: number;
     durationMinutes: number;
-    // Transitional compatibility for facade in Batch 15.2 (removed in Batch 15.3)
-    communicationScore?: number | null;
     isCoachingEnabled: boolean;
     createdAt: Date;
     completedAt?: Date | null;
