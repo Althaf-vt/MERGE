@@ -1,0 +1,518 @@
+.container {
+    padding: 24px;
+    background-color: var(--admin-bg);
+    width: 100%;
+    color: var(--admin-text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: calc(100vh - 60px);
+    box-sizing: border-box;
+}
+
+.breadcrumbRow {
+    margin-bottom: 16px;
+}
+
+.backBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.backBtn:hover {
+    border-color: var(--admin-border-hover);
+    color: var(--admin-text-primary);
+    background-color: var(--admin-hover);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.titleArea {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+.badgesRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.categoryBadge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.25);
+}
+
+.statusActive {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: var(--badge-active-bg, rgba(22, 163, 74, 0.1));
+    color: var(--badge-active-text, #4ade80);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.statusInactive {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: var(--badge-suspend-bg, rgba(234, 88, 12, 0.1));
+    color: var(--badge-suspend-text, #fb923c);
+    border: 1px solid rgba(251, 146, 60, 0.25);
+}
+
+.customBadge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: var(--admin-surface);
+    color: var(--admin-text-secondary);
+    border: 1px solid var(--admin-border);
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btnSecondary {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    border-color: var(--admin-border-hover);
+    color: var(--admin-text-primary);
+    background-color: var(--admin-hover);
+}
+
+.btnPrimary {
+    background-color: var(--admin-accent-text, #d8b4fe);
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.15s ease;
+}
+
+.btnPrimary:hover {
+    opacity: 0.9;
+}
+
+.btnWarning {
+    background-color: rgba(234, 88, 12, 0.15);
+    border: 1px solid rgba(251, 146, 60, 0.4);
+    color: var(--badge-suspend-text, #fb923c);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnWarning:hover {
+    background-color: rgba(234, 88, 12, 0.25);
+    border-color: rgba(251, 146, 60, 0.6);
+}
+
+.btnSuccess {
+    background-color: rgba(22, 163, 74, 0.15);
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    color: var(--badge-active-text, #4ade80);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnSuccess:hover {
+    background-color: rgba(22, 163, 74, 0.25);
+    border-color: rgba(74, 222, 128, 0.6);
+}
+
+.mainGrid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.cardTitle {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--admin-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.descriptionText {
+    font-size: 13px;
+    color: var(--admin-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 16px 0;
+}
+
+.promptContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.promptHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.promptLabel {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--admin-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.copyBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-subtle);
+    padding: 3px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.copyBtn:hover {
+    color: var(--admin-text-primary);
+    border-color: var(--admin-border-hover);
+}
+
+.promptBlock {
+    background-color: #050507;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #e4e4e7;
+    line-height: 1.6;
+    max-height: 240px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.promptBlock::-webkit-scrollbar {
+    display: none;
+}
+
+.metaGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--admin-border);
+}
+
+.metaItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metaLabel {
+    font-size: 10px;
+    color: var(--admin-text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.metaValue {
+    font-size: 11px;
+    color: var(--admin-text-primary);
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.bottomSection {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.bottomNav {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid var(--admin-border);
+    margin-bottom: 16px;
+}
+
+.bottomTabBtn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--admin-text-subtle);
+    padding: 10px 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-bottom: -1px;
+}
+
+.bottomTabBtn:hover {
+    color: var(--admin-text-primary);
+}
+
+.bottomTabBtnActive {
+    color: var(--admin-accent-text, #d8b4fe);
+    border-bottom-color: var(--admin-accent-text, #d8b4fe);
+}
+
+.actionCellBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-secondary);
+    padding: 4px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.actionCellBtn:hover {
+    color: var(--admin-text-primary);
+    border-color: var(--admin-border-hover);
+    background-color: var(--admin-hover);
+}
+
+.auditList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auditEntry {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    background-color: #060608;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+}
+
+.auditHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.auditAction {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: rgba(216, 180, 254, 0.12);
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.25);
+}
+
+.auditTimestamp {
+    font-size: 10px;
+    color: var(--admin-text-subtle);
+}
+
+.auditMeta {
+    font-size: 11px;
+    color: var(--admin-text-secondary);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.auditAdmin {
+    color: var(--admin-text-primary);
+    font-weight: 500;
+}
+
+.auditDetails {
+    background-color: #09090b;
+    border: 1px solid var(--admin-border);
+    border-radius: 3px;
+    padding: 8px 10px;
+    font-size: 10px;
+    color: #a1a1aa;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.auditDetails::-webkit-scrollbar {
+    display: none;
+}
+
+.emptyState {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--admin-text-subtle);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    color: var(--admin-text-subtle);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
