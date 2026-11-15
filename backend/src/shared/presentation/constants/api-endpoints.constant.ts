@@ -143,5 +143,14 @@ export const API_ENDPOINTS = {
             REJECT: ':id/reject',
             REQUEST_RESUBMISSION: ':id/resubmit',
         },
+        SCENE_PARTNER: {
+            BASE: 'admin/scene-partner',
+            SCENARIOS: 'scenarios',
+            SCENARIO_BY_ID: 'scenarios/:id',
+            SCENARIO_STATUS: 'scenarios/:id/status',
+            SESSIONS: 'sessions',
+            SESSION_BY_ID: 'sessions/:id',
+            ANALYTICS: 'analytics',
+        },
     }
 } as const;
