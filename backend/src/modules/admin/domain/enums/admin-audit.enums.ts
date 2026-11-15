@@ -1,0 +1,29 @@
+export enum AdminAuditResourceType {
+    SCENARIO = 'SCENARIO',
+    USER = 'USER',
+    PHOTO = 'PHOTO',
+    ADMIN = 'ADMIN',
+    SYSTEM = 'SYSTEM',
+}
+
+export enum AdminAuditAction {
+    // Scenario Lifecycle & Configuration
+    SCENARIO_CREATED = 'SCENARIO_CREATED',
+    SCENARIO_UPDATED = 'SCENARIO_UPDATED',
+    STATUS_ACTIVATED = 'STATUS_ACTIVATED',
+    STATUS_DEACTIVATED = 'STATUS_DEACTIVATED',
+
+    // User Moderation
+    USER_SUSPENDED = 'USER_SUSPENDED',
+    USER_UNSUSPENDED = 'USER_UNSUSPENDED',
+    USER_BANNED = 'USER_BANNED',
+    USER_UNBANNED = 'USER_UNBANNED',
+
+    // Photo Verification
+    PHOTO_APPROVED = 'PHOTO_APPROVED',
+    PHOTO_REJECTED = 'PHOTO_REJECTED',
+
+    // Admin Governance & System
+    ADMIN_ROLE_UPDATED = 'ADMIN_ROLE_UPDATED',
+    ADMIN_CREATED = 'ADMIN_CREATED',
+}
