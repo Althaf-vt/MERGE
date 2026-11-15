@@ -37,6 +37,7 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     COACH_PACING_REQUIRED: 'Coach pacing assessment cannot be empty.',
     COACH_NEXT_TIP_REQUIRED: 'Coach next tip cannot be empty.',
     SCENARIO_ID_REQUIRED: 'Scenario ID is required.',
+    SCENARIO_NOT_FOUND: 'Scenario not found.',
     INVALID_SCENARIO_TITLE_LENGTH: (min: number, max: number) => `Scenario title must be between ${min} and ${max} characters.`,
     INVALID_SCENARIO_PROMPT_LENGTH: (min: number, max: number) => `Scenario prompt context must be between ${min} and ${max} characters.`,
     CREATOR_USER_ID_REQUIRED: 'Custom scenario requires a creator user ID.',
