@@ -29,12 +29,22 @@ import { GetSceneSessionHistoryUseCase } from "./application/use-cases/get-scene
 import { GetScenariosUseCase } from "./application/use-cases/get-scenarios.use-case";
 import { SCENE_PARTNER_FACADE } from "./application/interfaces/scene-partner-facade.interface";
 import { ScenePartnerFacade } from "./application/services/scene-partner.facade";
-import { CREATE_SCENARIO_USE_CASE, GET_ADMIN_SCENARIO_BY_ID_USE_CASE, GET_ADMIN_SCENARIOS_USE_CASE, TOGGLE_SCENARIO_STATUS_USE_CASE, UPDATE_SCENARIO_USE_CASE } from "./application/interfaces/scene-partner-admin.use-cases.interface";
+import {
+    CREATE_SCENARIO_USE_CASE,
+    GET_ADMIN_SCENARIO_BY_ID_USE_CASE,
+    GET_ADMIN_SCENARIOS_USE_CASE,
+    GET_ADMIN_SESSION_DETAILS_USE_CASE,
+    GET_ADMIN_SESSIONS_USE_CASE,
+    TOGGLE_SCENARIO_STATUS_USE_CASE,
+    UPDATE_SCENARIO_USE_CASE,
+} from "./application/interfaces/scene-partner-admin.use-cases.interface";
 import { CreateScenarioUseCase } from "./application/use-cases/create-scenario.use-case";
 import { UpdateScenarioUseCase } from "./application/use-cases/update-scenario.use-case";
 import { ToggleScenarioStatusUseCase } from "./application/use-cases/toggle-scenario-status.use-case";
 import { GetAdminScenariosUseCase } from "./application/use-cases/get-admin-scenarios.use-case";
 import { GetAdminScenarioByIdUseCase } from "./application/use-cases/get-admin-scenario-by-id.use-case";
+import { GetAdminSessionsUseCase } from "./application/use-cases/get-admin-sessions.use-case";
+import { GetAdminSessionDetailsUseCase } from "./application/use-cases/get-admin-session-details.use-case";
 
 @Module({
     imports: [
@@ -69,6 +79,9 @@ import { GetAdminScenarioByIdUseCase } from "./application/use-cases/get-admin-s
         { provide: TOGGLE_SCENARIO_STATUS_USE_CASE, useClass: ToggleScenarioStatusUseCase },
         { provide: GET_ADMIN_SCENARIOS_USE_CASE, useClass: GetAdminScenariosUseCase },
         { provide: GET_ADMIN_SCENARIO_BY_ID_USE_CASE, useClass: GetAdminScenarioByIdUseCase },
+        // Session Admin Use Cases
+        { provide: GET_ADMIN_SESSIONS_USE_CASE, useClass: GetAdminSessionsUseCase },
+        { provide: GET_ADMIN_SESSION_DETAILS_USE_CASE, useClass: GetAdminSessionDetailsUseCase },
         // Public Facade
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
     ],
