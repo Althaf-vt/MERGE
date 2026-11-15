@@ -1,7 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { SCENE_PARTNER_ERROR_MESSAGES, SCENE_PARTNER_POLICY, SCENE_PARTNER_SAFETY } from "../constants/scene-partner.constants";
-import { ScenarioCategory } from "../enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CreateCustomScenarioProps, CreatePredefinedScenarioProps, ScenarioData, ScenarioProps, ScenarioSnapshot, UpdateScenarioDetailsProps } from "../interfaces/scenario.types";
 
 export class Scenario {

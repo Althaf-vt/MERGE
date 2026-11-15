@@ -2,7 +2,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { SCENE_PARTNER_ERROR_MESSAGES, SCENE_PARTNER_POLICY, SCENE_PARTNER_SAFETY } from "../constants/scene-partner.constants";
-import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteVO } from "../value-objects/coach-note.vo";
 import { SceneSessionSummaryData } from "../interfaces/scene-partner-ai.interface";
 import {

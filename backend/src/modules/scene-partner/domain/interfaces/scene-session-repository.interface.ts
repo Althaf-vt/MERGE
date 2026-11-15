@@ -1,6 +1,6 @@
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { SceneSession } from "../entities/scene-session.entity";
-import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../enums/scene-partner.enums";
+import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export const SCENE_SESSION_REPOSITORY = 'SCENE_SESSION_REPOSITORY';
 

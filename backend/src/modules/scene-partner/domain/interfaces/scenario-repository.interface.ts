@@ -1,6 +1,6 @@
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { Scenario } from "../entities/scenario.entity";
-import { ScenarioCategory } from "../enums/scene-partner.enums";
+import { ScenarioCategory } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export const SCENARIO_REPOSITORY = 'SCENARIO_REPOSITORY';
 

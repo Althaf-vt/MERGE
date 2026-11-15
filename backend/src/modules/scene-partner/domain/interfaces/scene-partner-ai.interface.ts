@@ -1,4 +1,4 @@
-import { ScenarioCategory, SimulationType } from "../enums/scene-partner.enums";
+import { ScenarioCategory, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import { CoachNoteProps } from "../value-objects/coach-note.vo";
 import { SceneTurnSnapshot } from "./scene-session.types";
 

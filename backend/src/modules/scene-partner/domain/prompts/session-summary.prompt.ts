@@ -1,6 +1,6 @@
 import { SceneSimulationContext } from "../interfaces/scene-partner-ai.interface";
 import { SceneTurnSnapshot } from "../interfaces/scene-session.types";
-import { SceneSpeakerRole, SimulationType } from "../enums/scene-partner.enums";
+import { SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 
 export const SessionSummaryPrompt = {
   getPrompt(context: SceneSimulationContext, transcript: SceneTurnSnapshot[]): string {
