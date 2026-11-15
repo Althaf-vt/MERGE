@@ -1,10 +1,11 @@
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { Scenario } from "../../domain/entities/scenario.entity";
-import { PaginatedSceneSessionsResult } from "../../domain/interfaces/scene-session-repository.interface";
+import { PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto, SceneTurnResponseDto } from "../dtos/scene-session-response.dto";
 import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
 import { AdminSessionListItemDto } from "../dtos/admin-session-list-item.dto";
 import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
+import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
 
 export class SceneSessionDtoMapper {
     public static toResponseDto(entity: SceneSession): SceneSessionResponseDto {
@@ -143,6 +144,31 @@ export class SceneSessionDtoMapper {
             createdAt: snapshot.createdAt,
             updatedAt: snapshot.updatedAt,
         };
+    }
+
+    public static toAnalyticsDto(raw: ScenePartnerAnalyticsRawData): ScenePartnerAnalyticsDto {
+        return {
+            totalSessions: raw.totalSessions,
+            completedSessions: raw.completedSessions,
+            inProgressSessions: raw.inProgressSessions,
+            pausedSessions: raw.pausedSessions,
+            completionRate: this._calculatePercentage(raw.completedSessions, raw.totalSessions),
+            coachingEnabledCount: raw.coachingEnabledCount,
+            coachingDisabledCount: raw.coachingDisabledCount,
+            coachingAdoptionRate: this._calculatePercentage(raw.coachingEnabledCount, raw.totalSessions),
+            genericCount: raw.genericCount,
+            matchBasedCount: raw.matchBasedCount,
+            averageScore: raw.averageScore,
+            averageTurnCount: raw.averageTurnCount,
+            topScenarios: raw.topScenarios,
+            categoryDistribution: raw.categoryDistribution,
+        };
+    }
+
+    private static _calculatePercentage(count: number, total: number): number {
+        if (total <= 0) return 0;
+        const percentage = (count / total) * 100;
+        return Math.round(percentage * 10) / 10;
     }
 }
 

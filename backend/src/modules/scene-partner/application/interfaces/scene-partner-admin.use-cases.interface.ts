@@ -6,6 +6,7 @@ import { AdminScenarioResponseDto, PaginatedAdminScenariosResponseDto } from "..
 import { GetAdminSessionsQueryDto } from "../dtos/get-admin-sessions-query.dto";
 import { PaginatedAdminSessionsResponseDto } from "../dtos/admin-session-list-item.dto";
 import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
+import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
 
 export const CREATE_SCENARIO_USE_CASE = "CREATE_SCENARIO_USE_CASE";
 export const UPDATE_SCENARIO_USE_CASE = "UPDATE_SCENARIO_USE_CASE";
@@ -14,6 +15,7 @@ export const GET_ADMIN_SCENARIOS_USE_CASE = "GET_ADMIN_SCENARIOS_USE_CASE";
 export const GET_ADMIN_SCENARIO_BY_ID_USE_CASE = "GET_ADMIN_SCENARIO_BY_ID_USE_CASE";
 export const GET_ADMIN_SESSIONS_USE_CASE = "GET_ADMIN_SESSIONS_USE_CASE";
 export const GET_ADMIN_SESSION_DETAILS_USE_CASE = "GET_ADMIN_SESSION_DETAILS_USE_CASE";
+export const GET_SCENE_PARTNER_ANALYTICS_USE_CASE = "GET_SCENE_PARTNER_ANALYTICS_USE_CASE";
 
 export interface ICreateScenarioUseCase {
     execute(dto: CreateScenarioDto): Promise<AdminScenarioResponseDto>;
@@ -42,4 +44,9 @@ export interface IGetAdminSessionsUseCase {
 export interface IGetAdminSessionDetailsUseCase {
     execute(sessionId: string): Promise<AdminSessionDetailDto>;
 }
+
+export interface IGetScenePartnerAnalyticsUseCase {
+    execute(): Promise<ScenePartnerAnalyticsDto>;
+}
+
 
