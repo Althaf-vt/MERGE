@@ -5,7 +5,7 @@ import { isValidObjectId, Model } from "mongoose";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
-import { AdminSessionsFilter, ISceneSessionRepository, PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
+import { AdminSessionsFilter, ISceneSessionRepository, PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData, ScenarioMetricsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { SceneSessionDocument, SceneSessionSchemaClass } from "./scene-session.schema";
 import { SceneSessionPersistenceMapper } from "./mappers/scene-session-persistence.mapper";
 
@@ -230,7 +230,7 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
         };
     }
 
-    async getScenarioMetricsMap(): Promise<Record<string, { totalSessions: number; completedSessions: number }>> {
+    async getScenarioMetricsMap(): Promise<Record<string, ScenarioMetricsRawData>> {
         const results = await this._model.aggregate([
             {
                 $match: {
@@ -250,7 +250,7 @@ export class MongoSceneSessionRepository extends BaseRepository<SceneSession, Sc
             },
         ]).exec();
 
-        const metricsMap: Record<string, { totalSessions: number; completedSessions: number }> = {};
+        const metricsMap: Record<string, ScenarioMetricsRawData> = {};
         for (const item of results) {
             if (item._id) {
                 metricsMap[item._id.toString()] = {

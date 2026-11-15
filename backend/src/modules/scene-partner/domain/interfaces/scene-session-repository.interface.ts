@@ -47,11 +47,18 @@ export interface ScenePartnerAnalyticsRawData {
     categoryDistribution: CategoryDistributionRawData[];
 }
 
+export interface ScenarioMetricsRawData {
+    totalSessions: number;
+    completedSessions: number;
+}
+
+export type ScenarioMetricsMap = Record<string, ScenarioMetricsRawData>;
+
 export interface ISceneSessionRepository extends IBaseRepository<SceneSession> {
     findActiveByUserId(userId: string): Promise<SceneSession | null>;
     findAllByUserId(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResult>;
     findAdminSessions(filter: AdminSessionsFilter): Promise<PaginatedSceneSessionsResult>;
     getAnalytics(): Promise<ScenePartnerAnalyticsRawData>;
-    getScenarioMetricsMap(): Promise<Record<string, { totalSessions: number; completedSessions: number }>>;
+    getScenarioMetricsMap(): Promise<Record<string, ScenarioMetricsRawData>>;
     deleteById(id: string, userId: string): Promise<boolean>;
 }
