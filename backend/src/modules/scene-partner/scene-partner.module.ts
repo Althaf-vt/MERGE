@@ -35,6 +35,7 @@ import {
     GET_ADMIN_SCENARIOS_USE_CASE,
     GET_ADMIN_SESSION_DETAILS_USE_CASE,
     GET_ADMIN_SESSIONS_USE_CASE,
+    GET_SCENE_PARTNER_ANALYTICS_USE_CASE,
     TOGGLE_SCENARIO_STATUS_USE_CASE,
     UPDATE_SCENARIO_USE_CASE,
 } from "./application/interfaces/scene-partner-admin.use-cases.interface";
@@ -45,6 +46,7 @@ import { GetAdminScenariosUseCase } from "./application/use-cases/get-admin-scen
 import { GetAdminScenarioByIdUseCase } from "./application/use-cases/get-admin-scenario-by-id.use-case";
 import { GetAdminSessionsUseCase } from "./application/use-cases/get-admin-sessions.use-case";
 import { GetAdminSessionDetailsUseCase } from "./application/use-cases/get-admin-session-details.use-case";
+import { GetScenePartnerAnalyticsUseCase } from "./application/use-cases/get-scene-partner-analytics.use-case";
 
 @Module({
     imports: [
@@ -82,6 +84,7 @@ import { GetAdminSessionDetailsUseCase } from "./application/use-cases/get-admin
         // Session Admin Use Cases
         { provide: GET_ADMIN_SESSIONS_USE_CASE, useClass: GetAdminSessionsUseCase },
         { provide: GET_ADMIN_SESSION_DETAILS_USE_CASE, useClass: GetAdminSessionDetailsUseCase },
+        { provide: GET_SCENE_PARTNER_ANALYTICS_USE_CASE, useClass: GetScenePartnerAnalyticsUseCase },
         // Public Facade
         { provide: SCENE_PARTNER_FACADE, useClass: ScenePartnerFacade },
     ],
