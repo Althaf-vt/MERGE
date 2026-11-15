@@ -56,6 +56,7 @@ export const SCENE_PARTNER_ERROR_MESSAGES = {
     TARGET_PROFILE_UNAVAILABLE: 'Target match profile is unavailable or no longer interactable.',
     INAPPROPRIATE_CONTENT: 'The scenario or message contains inappropriate language and violates MERGE community safety standards.',
     AI_CONFIG_ERROR: 'Gemini AI API key is missing or invalid in server configuration.',
+    OPENROUTER_CONFIG_ERROR: 'OpenRouter AI API key is missing or invalid in server configuration.',
     AI_SERVICE_UNAVAILABLE: 'AI coaching service is currently unavailable. Please try again shortly.',
     AI_SAFETY_BLOCKED: 'Message was blocked by AI safety guardrails.',
     PREVIEW_SESSION_NOT_FOUND: 'Preview session not found.',
