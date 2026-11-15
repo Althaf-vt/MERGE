@@ -3,7 +3,8 @@ import { SceneSession } from "../../domain/entities/scene-session.entity";
 import { ScenarioDailyTrendRawData, ScenarioSummaryStatsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { ScenarioDtoMapper } from "./scenario-dto.mapper";
 import { SceneSessionDtoMapper } from "./scene-session-dto.mapper";
-import { ScenarioInDepthDto, ScenarioTimeframe, ScenarioTrendPointDto } from "../dtos/scenario-in-depth.dto";
+import { ScenarioTimeframe } from "../../../../shared/domain/enums/scene-partner.enums";
+import { ScenarioInDepthDto, ScenarioTrendPointDto } from "../dtos/scenario-in-depth.dto";
 
 export class ScenarioInDepthDtoMapper {
     public static toTrendPointDto(raw: ScenarioDailyTrendRawData): ScenarioTrendPointDto {

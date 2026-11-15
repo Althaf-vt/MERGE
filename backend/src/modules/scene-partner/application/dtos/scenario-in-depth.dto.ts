@@ -1,7 +1,8 @@
+import { ScenarioTimeframe } from "../../../../shared/domain/enums/scene-partner.enums";
 import { AdminScenarioResponseDto, ScenarioSummaryStatsDto } from "./admin-scenario-response.dto";
 import { AdminSessionListItemDto } from "./admin-session-list-item.dto";
 
-export type ScenarioTimeframe = '7D' | '30D' | '90D';
+export { ScenarioTimeframe };
 
 export interface ScenarioTrendPointDto {
     date: string;
