@@ -40,6 +40,7 @@ export interface SceneSessionResponseDto {
     pausedAt: Date | null;
     totalPausedMs: number;
     completedAt: Date | null;
+    isPreview?: boolean;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -50,6 +50,7 @@ export class SceneSessionDtoMapper {
             pausedAt: snapshot.pausedAt,
             totalPausedMs: snapshot.totalPausedMs,
             completedAt: snapshot.completedAt,
+            isPreview: snapshot.isPreview,
             createdAt: snapshot.createdAt,
             updatedAt: snapshot.updatedAt,
         };

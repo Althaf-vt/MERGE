@@ -41,6 +41,7 @@ import { ISendPreviewTurnUseCase, IStartPreviewSessionUseCase, SEND_PREVIEW_TURN
 import { IUpdateCoachingModeUseCase, UPDATE_COACHING_MODE_USE_CASE } from "../interfaces/scene-partner.use-cases.interface";
 import { EXPORT_SCENARIOS_USE_CASE, IExportScenariosUseCase } from "../interfaces/scene-partner-export.use-cases.interface";
 import { GET_SCENARIO_IN_DEPTH_USE_CASE, IGetScenarioInDepthUseCase } from "../interfaces/scene-partner-in-depth.use-cases.interface";
+import { ScenePreviewDtoMapper } from "../mappers/scene-preview-dto.mapper";
 
 @Injectable()
 export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
@@ -106,20 +107,7 @@ export class ScenePartnerAdminFacade implements IScenePartnerAdminFacade {
 
     async updatePreviewCoachingMode(adminId: string, sessionId: string, params: { isCoachingEnabled: boolean }): Promise<AdminPreviewSessionFacadeDto> {
         const session = await this._updateCoachingModeUseCase.execute(adminId, sessionId, params);
-        return {
-            id: session.id,
-            scenarioId: session.scenarioId,
-            scenarioTitle: session.scenarioTitle,
-            scenarioCategory: session.scenarioCategory,
-            scenarioPromptContext: session.scenarioPromptContext ?? null,
-            isCoachingEnabled: session.isCoachingEnabled,
-            status: session.status,
-            transcript: session.transcript,
-            turnCount: session.turnCount,
-            isPreview: true,
-            createdAt: session.createdAt,
-            updatedAt: session.updatedAt,
-        };
+        return ScenePreviewDtoMapper.fromSessionResponseDto(session);
     }
 
     async exportScenarios(filters?: AdminExportScenariosFilters): Promise<AdminScenarioExportItemFacadeDto[]> {
