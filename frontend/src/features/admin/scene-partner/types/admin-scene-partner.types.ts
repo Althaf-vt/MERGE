@@ -297,6 +297,11 @@ export interface StartPreviewSessionPayload {
 
 export interface SendPreviewTurnPayload {
     content: string;
+    isCoachingEnabled?: boolean;
+}
+
+export interface UpdatePreviewCoachingPayload {
+    isCoachingEnabled: boolean;
 }
 
 export interface ExportScenariosQuery {

@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { AdminPreviewSessionDto, ScenarioCategory } from '../../types/admin-scene-partner.types';
 import { SCENARIO_CATEGORY_LABELS } from '../../constants/admin-scene-partner.constants';
-import { useStartPreviewSessionMutation, useSendPreviewTurnMutation } from '../../api/admin-scene-partner.api';
+import {
+    useStartPreviewSessionMutation,
+    useSendPreviewTurnMutation,
+    useUpdatePreviewCoachingModeMutation,
+} from '../../api/admin-scene-partner.api';
 import { AdminModal } from '../../../../../shared/admin/components/admin-modal.component';
 import { getErrorMessage } from '../../../../../shared/utils/error.util';
 import styles from './preview-simulation-modal.module.css';
@@ -32,6 +36,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
 
     const [startPreviewSession, { isLoading: isStarting }] = useStartPreviewSessionMutation();
     const [sendPreviewTurn, { isLoading: isSending }] = useSendPreviewTurnMutation();
+    const [updatePreviewCoachingMode, { isLoading: isUpdatingCoaching }] = useUpdatePreviewCoachingModeMutation();
 
     const initSession = async (coaching: boolean) => {
         setErrorMsg(null);
@@ -80,7 +85,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
         try {
             const response = await sendPreviewTurn({
                 sessionId: session.id,
-                body: { content: trimmed },
+                body: { content: trimmed, isCoachingEnabled },
             }).unwrap();
 
             if (response.data) {
@@ -91,9 +96,19 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
         }
     };
 
-    const handleToggleCoaching = (checked: boolean) => {
+    const handleToggleCoaching = async (checked: boolean) => {
         setIsCoachingEnabled(checked);
-        initSession(checked);
+        if (session) {
+            setSession((prev) => (prev ? { ...prev, isCoachingEnabled: checked } : null));
+            try {
+                await updatePreviewCoachingMode({
+                    sessionId: session.id,
+                    body: { isCoachingEnabled: checked },
+                }).unwrap();
+            } catch (err: unknown) {
+                console.error('Failed to toggle coaching mode mid-session:', err);
+            }
+        }
     };
 
     const scenarioTitle = draftScenario?.title || session?.scenarioTitle || 'Scenario Preview Sandbox';
@@ -125,7 +140,7 @@ export const PreviewSimulationModal: React.FC<PreviewSimulationModalProps> = ({
                                 className={styles.coachingCheckbox}
                                 checked={isCoachingEnabled}
                                 onChange={(e) => handleToggleCoaching(e.target.checked)}
-                                disabled={isStarting || isSending}
+                                disabled={isStarting || isSending || isUpdatingCoaching}
                             />
                             <span>Coaching Tips</span>
                         </label>

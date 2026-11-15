@@ -21,6 +21,7 @@ import type {
     SendPreviewTurnPayload,
     StartPreviewSessionPayload,
     ToggleScenarioStatusPayload,
+    UpdatePreviewCoachingPayload,
     UpdateScenarioPayload,
 } from '../types/admin-scene-partner.types';
 
@@ -198,6 +199,18 @@ export const adminScenePartnerApi = adminRootApi.injectEndpoints({
                 body,
             }),
         }),
+
+        // Mutation to toggle coaching mode mid-session in an active preview simulation.
+        updatePreviewCoachingMode: builder.mutation<
+            ApiResponse<AdminPreviewSessionDto>,
+            { sessionId: string; body: UpdatePreviewCoachingPayload }
+        >({
+            query: ({ sessionId, body }) => ({
+                url: API_ENDPOINTS.ADMIN.SCENE_PARTNER.PREVIEW_COACHING(sessionId),
+                method: 'PATCH',
+                body,
+            }),
+        }),
     }),
     overrideExisting: false,
 });
@@ -217,4 +230,5 @@ export const {
     useToggleScenarioStatusMutation,
     useStartPreviewSessionMutation,
     useSendPreviewTurnMutation,
+    useUpdatePreviewCoachingModeMutation,
 } = adminScenePartnerApi;

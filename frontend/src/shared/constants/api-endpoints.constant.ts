@@ -150,6 +150,7 @@ export const API_ENDPOINTS = {
             PREVIEW_START: '/admin/scene-partner/scenarios/preview/start',
             SCENARIO_PREVIEW_START: (id: string) => `/admin/scene-partner/scenarios/${id}/preview/start`,
             PREVIEW_MESSAGE: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/message`,
+            PREVIEW_COACHING: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/coaching`,
         },
     }
 } as const;
