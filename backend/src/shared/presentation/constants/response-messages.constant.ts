@@ -117,5 +117,15 @@ export const RESPONSE_MESSAGES = {
         USER_DETAILS_FETCHED: 'User details retrieved successfully.',
         KYC_TASKS_FETCHED: 'KYC escalation tasks retrieved successfully.',
         PHOTO_TASKS_FETCHED: 'Photo verification tasks retrieved successfully.',
+        SCENE_PARTNER: {
+            SCENARIO_CREATED: 'Scenario created successfully.',
+            SCENARIO_UPDATED: 'Scenario updated successfully.',
+            SCENARIO_STATUS_UPDATED: 'Scenario status updated successfully.',
+            SCENARIO_FETCHED: 'Scenario fetched successfully.',
+            SCENARIOS_FETCHED: 'Admin scenarios fetched successfully.',
+            SESSIONS_FETCHED: 'Admin rehearsal sessions fetched successfully.',
+            SESSION_DETAILS_FETCHED: 'Session inspection details fetched successfully.',
+            ANALYTICS_FETCHED: 'Scene Partner analytics fetched successfully.',
+        },
     }
 } as const;
