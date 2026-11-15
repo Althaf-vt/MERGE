@@ -9,8 +9,8 @@ import { ApiResponse } from "../../../../shared/presentation/interfaces/api-resp
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
-import { AdminPreviewSessionFacadeDto, AdminScenarioExportItemFacadeDto, AdminScenarioFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
-import { AdminCreateScenarioDto, AdminExportScenariosQueryDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto, ScenarioExportFormat } from "../../application/dtos/admin-scene-partner.dto";
+import { AdminPreviewSessionFacadeDto, AdminScenarioExportItemFacadeDto, AdminScenarioFacadeDto, AdminScenarioInDepthFacadeDto, AdminSessionDetailFacadeDto, AdminSessionListItemFacadeDto, IScenePartnerAdminFacade, SCENE_PARTNER_ADMIN_FACADE, ScenePartnerAnalyticsFacadeDto } from "../../../scene-partner/application/interfaces/scene-partner-admin-facade.interface";
+import { AdminCreateScenarioDto, AdminExportScenariosQueryDto, AdminGetScenarioInDepthQueryDto, AdminGetScenariosQueryDto, AdminGetSessionsQueryDto, AdminSendPreviewTurnDto, AdminStartPreviewDto, AdminToggleScenarioStatusDto, AdminUpdateScenarioDto, ScenarioExportFormat } from "../../application/dtos/admin-scene-partner.dto";
 import { CsvSerializer } from "../../application/utils/csv-serializer.util";
 import { AdminAuditAction, AdminAuditResourceType } from "../../domain/enums/admin-audit.enums";
 import { AuditLog } from "../decorators/audit-log.decorator";
@@ -124,6 +124,17 @@ export class AdminScenePartnerController {
     ): Promise<ApiResponse<AdminScenarioFacadeDto>> {
         const result = await this._scenePartnerAdminFacade.getScenarioById(id);
         return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_FETCHED, result);
+    }
+
+    @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_IN_DEPTH)
+    @HttpCode(HttpStatus.OK)
+    @RequirePermissions(AdminPermission.SCENE_PARTNER_MANAGE)
+    async getScenarioInDepth(
+        @Param("id") id: string,
+        @Query() query: AdminGetScenarioInDepthQueryDto,
+    ): Promise<ApiResponse<AdminScenarioInDepthFacadeDto>> {
+        const result = await this._scenePartnerAdminFacade.getScenarioInDepth(id, query.timeframe);
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.ADMIN.SCENE_PARTNER.SCENARIO_IN_DEPTH_FETCHED, result);
     }
 
     @Get(API_ENDPOINTS.ADMIN.SCENE_PARTNER.SCENARIO_ACTIVITY_HISTORY)
