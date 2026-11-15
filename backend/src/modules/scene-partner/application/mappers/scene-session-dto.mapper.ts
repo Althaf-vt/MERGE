@@ -1,8 +1,6 @@
 import { SceneSession } from "../../domain/entities/scene-session.entity";
-import { Scenario } from "../../domain/entities/scenario.entity";
 import { PaginatedSceneSessionsResult, ScenePartnerAnalyticsRawData } from "../../domain/interfaces/scene-session-repository.interface";
 import { PaginatedSceneSessionsResponseDto, SceneSessionResponseDto, SceneTurnResponseDto } from "../dtos/scene-session-response.dto";
-import { ScenarioResponseDto } from "../dtos/scenario-response.dto";
 import { AdminSessionListItemDto } from "../dtos/admin-session-list-item.dto";
 import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
 import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
@@ -60,20 +58,6 @@ export class SceneSessionDtoMapper {
         return {
             data: result.data.map((session) => SceneSessionDtoMapper.toResponseDto(session)),
             total: result.total,
-        };
-    }
-
-    public static toScenarioResponseDto(scenario: Scenario): ScenarioResponseDto {
-        const data = scenario.toJSON();
-        return {
-            id: data.id,
-            title: data.title,
-            description: data.description,
-            category: data.category,
-            promptContext: data.promptContext,
-            isCustom: data.isCustom,
-            creatorUserId: data.creatorUserId ?? null,
-            createdAt: data.createdAt,
         };
     }
 

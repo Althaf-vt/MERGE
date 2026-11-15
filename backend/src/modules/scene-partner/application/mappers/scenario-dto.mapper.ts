@@ -36,4 +36,8 @@ export class ScenarioDtoMapper {
             createdAt: snapshot.createdAt,
         };
     }
+
+    public static toScenarioResponseDtoList(entities: Scenario[]): ScenarioResponseDto[] {
+        return entities.map((entity) => ScenarioDtoMapper.toScenarioResponseDto(entity));
+    }
 }
