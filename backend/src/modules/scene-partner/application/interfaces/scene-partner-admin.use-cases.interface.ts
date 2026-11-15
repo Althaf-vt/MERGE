@@ -1,9 +1,5 @@
-import { CreateScenarioDto } from "../dtos/create-scenario.dto";
-import { UpdateScenarioDto } from "../dtos/update-scenario.dto";
-import { ToggleScenarioStatusDto } from "../dtos/toggle-scenario-status.dto";
-import { GetAdminScenariosQueryDto } from "../dtos/get-admin-scenarios-query.dto";
+import { AdminCreateScenarioParams, AdminGetScenariosFilters, AdminGetSessionsFilters, AdminToggleScenarioStatusParams, AdminUpdateScenarioParams } from "./scene-partner-admin-facade.interface";
 import { AdminScenarioResponseDto, PaginatedAdminScenariosResponseDto } from "../dtos/admin-scenario-response.dto";
-import { GetAdminSessionsQueryDto } from "../dtos/get-admin-sessions-query.dto";
 import { PaginatedAdminSessionsResponseDto } from "../dtos/admin-session-list-item.dto";
 import { AdminSessionDetailDto } from "../dtos/admin-session-detail.dto";
 import { ScenePartnerAnalyticsDto } from "../dtos/scene-partner-analytics.dto";
@@ -18,19 +14,19 @@ export const GET_ADMIN_SESSION_DETAILS_USE_CASE = "GET_ADMIN_SESSION_DETAILS_USE
 export const GET_SCENE_PARTNER_ANALYTICS_USE_CASE = "GET_SCENE_PARTNER_ANALYTICS_USE_CASE";
 
 export interface ICreateScenarioUseCase {
-    execute(dto: CreateScenarioDto): Promise<AdminScenarioResponseDto>;
+    execute(params: AdminCreateScenarioParams): Promise<AdminScenarioResponseDto>;
 }
 
 export interface IUpdateScenarioUseCase {
-    execute(id: string, dto: UpdateScenarioDto): Promise<AdminScenarioResponseDto>;
+    execute(id: string, params: AdminUpdateScenarioParams): Promise<AdminScenarioResponseDto>;
 }
 
 export interface IToggleScenarioStatusUseCase {
-    execute(id: string, dto: ToggleScenarioStatusDto): Promise<AdminScenarioResponseDto>;
+    execute(id: string, params: AdminToggleScenarioStatusParams): Promise<AdminScenarioResponseDto>;
 }
 
 export interface IGetAdminScenariosUseCase {
-    execute(query: GetAdminScenariosQueryDto): Promise<PaginatedAdminScenariosResponseDto>;
+    execute(query: AdminGetScenariosFilters): Promise<PaginatedAdminScenariosResponseDto>;
 }
 
 export interface IGetAdminScenarioByIdUseCase {
@@ -38,7 +34,7 @@ export interface IGetAdminScenarioByIdUseCase {
 }
 
 export interface IGetAdminSessionsUseCase {
-    execute(query: GetAdminSessionsQueryDto): Promise<PaginatedAdminSessionsResponseDto>;
+    execute(query: AdminGetSessionsFilters): Promise<PaginatedAdminSessionsResponseDto>;
 }
 
 export interface IGetAdminSessionDetailsUseCase {
