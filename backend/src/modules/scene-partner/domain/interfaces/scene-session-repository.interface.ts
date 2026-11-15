@@ -54,11 +54,30 @@ export interface ScenarioMetricsRawData {
 
 export type ScenarioMetricsMap = Record<string, ScenarioMetricsRawData>;
 
+export interface ScenarioSummaryStatsRawData {
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+    averageDurationMinutes: number;
+    averageTurnCount: number;
+    coachingAdoptionRate: number;
+}
+
+export interface ScenarioDailyTrendRawData {
+    date: string;
+    totalSessions: number;
+    completedSessions: number;
+    completionRate: number;
+}
+
 export interface ISceneSessionRepository extends IBaseRepository<SceneSession> {
     findActiveByUserId(userId: string): Promise<SceneSession | null>;
     findAllByUserId(userId: string, limit?: number, skip?: number): Promise<PaginatedSceneSessionsResult>;
     findAdminSessions(filter: AdminSessionsFilter): Promise<PaginatedSceneSessionsResult>;
     getAnalytics(): Promise<ScenePartnerAnalyticsRawData>;
     getScenarioMetricsMap(): Promise<Record<string, ScenarioMetricsRawData>>;
+    getScenarioSummaryStats(scenarioId: string): Promise<ScenarioSummaryStatsRawData | null>;
+    getScenarioDailyTrends(scenarioId: string, days: number): Promise<ScenarioDailyTrendRawData[]>;
+    findRecentByScenarioId(scenarioId: string, limit?: number): Promise<SceneSession[]>;
     deleteById(id: string, userId: string): Promise<boolean>;
 }
