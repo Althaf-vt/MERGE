@@ -1,6 +1,6 @@
 import { Transform, Type } from "class-transformer";
 import { IsBoolean, IsDate, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
-import { ScenarioCategory, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
+import { ScenarioCategory, ScenarioTimeframe, SceneSessionStatus, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
 import {
     AdminCreateScenarioParams,
     AdminExportScenariosFilters,
@@ -98,6 +98,12 @@ export class AdminGetScenariosQueryDto implements AdminGetScenariosFilters {
     @IsNumber()
     @Min(1)
     limit?: number = 20;
+}
+
+export class AdminGetScenarioInDepthQueryDto {
+    @IsOptional()
+    @IsEnum(ScenarioTimeframe)
+    timeframe?: ScenarioTimeframe = ScenarioTimeframe.THIRTY_DAYS;
 }
 
 export class AdminGetSessionsQueryDto implements AdminGetSessionsFilters {
