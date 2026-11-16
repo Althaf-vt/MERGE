@@ -10,6 +10,7 @@ import { EnvConfig } from "./shared/infrastructure/config/env.config";
 import { DiscoveryModule } from "./modules/discovery/discovery.module";
 import { ConnectionsModule } from "./modules/connections/connections.module";
 import { ScenePartnerModule } from "./modules/scene-partner/scene-partner.module";
+import { BillingModule } from "./modules/billing/billing.module";
 
 @Module({
     imports: [
@@ -29,6 +30,7 @@ import { ScenePartnerModule } from "./modules/scene-partner/scene-partner.module
         DiscoveryModule,
         ConnectionsModule,
         ScenePartnerModule,
+        BillingModule,
     ]
 })
 
