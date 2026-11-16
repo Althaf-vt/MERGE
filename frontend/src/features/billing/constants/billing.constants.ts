@@ -60,6 +60,11 @@ export const ENTITLEMENT_DETAILS: Record<string, { title: string; description: s
         description: 'Unlimited AI dating rehearsal simulations with adaptive behavioral coaching.',
         icon: 'theater-masks',
     },
+    LUMEN_HIGH_QUOTA: {
+        title: '5 Daily Recommendations',
+        description: 'Receive up to 5 curated, high-compatibility profile recommendations each day.',
+        icon: 'sparkles',
+    },
     LUMEN_RECOMMENDATIONS_HIGH_QUOTA: {
         title: '5 Daily Recommendations',
         description: 'Receive up to 5 curated, high-compatibility profile recommendations each day.',
