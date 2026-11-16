@@ -303,7 +303,6 @@ export const ScenePartnerPage: React.FC = () => {
         <main className={styles.pageContainer}>
             <ScenePartnerToastContainer />
             <div className={styles.contentWrapper}>
-                // Tab: Scenarios / Scene Partner Home
                 {mainTab === 'SCENARIOS' && (
                     <ScenePartnerHome
                         scenarios={scenarios}
@@ -321,7 +320,6 @@ export const ScenePartnerPage: React.FC = () => {
                     />
                 )}
 
-                // Tab: Past Debriefs / History
                 {mainTab === 'HISTORY' && (
                     <section aria-label="Practice History">
                         <div style={{ marginBottom: '1.5rem' }}>
@@ -360,7 +358,6 @@ export const ScenePartnerPage: React.FC = () => {
                 )}
             </div>
 
-            // Debrief Modal
             <SessionSummaryModal
                 isOpen={isSummaryModalOpen}
                 onClose={() => setIsSummaryModalOpen(false)}

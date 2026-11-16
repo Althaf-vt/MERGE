@@ -194,7 +194,6 @@ export const DiscoveryPage: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.reelsWrapper} onWheel={handleWheel}>
-                // Header Bar
                 <header className={styles.headerBar}>
                     <h1 className={styles.title}>Discover</h1>
                     <button
@@ -227,7 +226,6 @@ export const DiscoveryPage: React.FC = () => {
                     </button>
                 </header>
 
-                // Action Feedback Banner
                 {actionError && (
                     <div className={styles.actionErrorBanner} role="alert">
                         <span className={styles.actionErrorText}>{actionError}</span>
@@ -242,7 +240,6 @@ export const DiscoveryPage: React.FC = () => {
                     </div>
                 )}
 
-                // Reels Stage
                 <main className={styles.stage}>
                     <div className={styles.cardFrame}>
                         {isLoading ? (
@@ -336,7 +333,6 @@ export const DiscoveryPage: React.FC = () => {
                         )}
                     </div>
 
-                    // Desktop Floating Up/Down Navigation Controls
                     <aside className={styles.sideControls} aria-label="Reels navigation">
                         <button
                             type="button"
@@ -382,7 +378,6 @@ export const DiscoveryPage: React.FC = () => {
                 </main>
             </div>
 
-            // Priority Introduction Modal
             {activeProfile && (
                 <PriorityIntroModal
                     isOpen={isPriorityIntroOpen}
@@ -400,7 +395,6 @@ export const DiscoveryPage: React.FC = () => {
                 />
             )}
 
-            // Filter Slide-over Drawer
             <DiscoveryFilterDrawer
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}

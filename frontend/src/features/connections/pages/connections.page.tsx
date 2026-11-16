@@ -59,7 +59,6 @@ export const ConnectionsPage: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
-                // Header Section
                 <header className={styles.headerSection}>
                     <h1 className={styles.pageTitle}>Connections</h1>
                     <p className={styles.pageSubtitle}>
@@ -67,14 +66,12 @@ export const ConnectionsPage: React.FC = () => {
                     </p>
                 </header>
 
-                // Tabs Navigation
                 <ConnectionsTabsHeader
                     activeTab={activeTab}
                     onSelectTab={setActiveTab}
                     counts={counts}
                 />
 
-                // Main Content Area
                 <main className={styles.tabContentStage} id={`tabpanel-${activeTab.toLowerCase()}`} role="tabpanel">
                     {isActive && (
                         <ActiveTabSection hook={activeHook} />
