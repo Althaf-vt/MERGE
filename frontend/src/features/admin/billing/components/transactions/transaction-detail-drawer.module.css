@@ -243,13 +243,13 @@
 .userProfileLink {
     font-size: 11px;
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--admin-accent-text, #d8b4fe);
     text-decoration: none;
-    transition: color 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .userProfileLink:hover {
-    color: #93c5fd;
+    opacity: 0.85;
     text-decoration: underline;
 }
 
@@ -278,7 +278,7 @@
 }
 
 .metadataKey {
-    color: #93c5fd;
+    color: var(--admin-accent-text, #d8b4fe);
     font-weight: 600;
 }
 

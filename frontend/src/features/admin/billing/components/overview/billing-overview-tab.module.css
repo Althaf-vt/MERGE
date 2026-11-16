@@ -103,21 +103,20 @@
 }
 
 .actionBtnPrimary {
-    background: #60a5fa;
-    border: 1px solid #60a5fa;
-    color: #0b0f19;
+    background-color: var(--admin-accent-text, #d8b4fe);
+    color: #000;
+    border: none;
     font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
+    font-weight: 600;
+    padding: 5px 12px;
     border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.15s ease;
+    transition: opacity 0.15s ease;
 }
 
 .actionBtnPrimary:hover {
-    background: #93c5fd;
-    border-color: #93c5fd;
+    opacity: 0.9;
 }
 
 .itemList {
@@ -168,9 +167,9 @@
     text-transform: uppercase;
     padding: 1px 5px;
     border-radius: 3px;
-    background-color: rgba(96, 165, 250, 0.15);
-    color: #93c5fd;
-    border: 1px solid rgba(96, 165, 250, 0.3);
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.25);
 }
 
 .itemMeta {
