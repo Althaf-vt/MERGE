@@ -55,6 +55,8 @@ export interface AdminSubscriptionPlanDto {
     updatedAt: string;
 }
 
+export type SubscriptionPlanDto = AdminSubscriptionPlanDto;
+
 export interface AdminCreditPackDto {
     id: string;
     name: string;
@@ -68,6 +70,8 @@ export interface AdminCreditPackDto {
     createdAt: string;
     updatedAt: string;
 }
+
+export type CreditPackDto = AdminCreditPackDto;
 
 export interface AdminBillingTransactionAmountDto {
     amount: number;
