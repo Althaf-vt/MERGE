@@ -2,6 +2,7 @@ import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { AggregateRoot } from '../../../../shared/domain/events/aggregate-root';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
+import { BILLING_TRANSACTION_DESCRIPTIONS } from '../constants/billing.constants';
 import { BillingTransactionType, PaymentEnvironment, TransactionStatus } from '../enums/billing.enums';
 import { BillingTransactionData, BillingTransactionProps, BillingTransactionSnapshot, CreateBillingTransactionProps } from '../interfaces/billing-transaction.types';
 import { MoneyVO } from '../value-objects/money.vo';
@@ -61,7 +62,7 @@ export class BillingTransaction extends AggregateRoot {
             status: TransactionStatus.COMPLETED,
             amount: params.price.toJSON(),
             creditsDelta: 0,
-            description: `Subscription purchase: ${params.planName}`,
+            description: BILLING_TRANSACTION_DESCRIPTIONS.SUBSCRIPTION_PURCHASE(params.planName),
             referenceId: params.planId,
             gatewayOrderId: params.gatewayOrderId ?? null,
             gatewayPaymentId: params.gatewayPaymentId ?? null,
@@ -90,7 +91,7 @@ export class BillingTransaction extends AggregateRoot {
             status: TransactionStatus.COMPLETED,
             amount: params.price.toJSON(),
             creditsDelta: params.creditsCount,
-            description: `Purchased credit pack: ${params.packName} (+${params.creditsCount} credits)`,
+            description: BILLING_TRANSACTION_DESCRIPTIONS.CREDIT_PURCHASE(params.packName, params.creditsCount),
             referenceId: params.packId,
             gatewayOrderId: params.gatewayOrderId ?? null,
             gatewayPaymentId: params.gatewayPaymentId ?? null,
