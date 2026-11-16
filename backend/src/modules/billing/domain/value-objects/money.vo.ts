@@ -94,7 +94,8 @@ export class MoneyVO {
     }
 
     public format(): string {
-        return `${this._currency} ${this._amount.toFixed(2)}`;
+        const symbol = this._currency === Currency.INR ? '₹' : '$';
+        return `${symbol}${this._amount.toFixed(2)}`;
     }
 
     public toJSON(): MoneyProps {
