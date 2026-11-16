@@ -98,3 +98,68 @@ export interface AdminPaginatedTransactionsDto {
     page: number;
     limit: number;
 }
+
+export interface PlanPriceInput {
+    amount: number;
+    currency: Currency;
+}
+
+export interface PlanOfferInputPayload {
+    code: string;
+    discountPercentage: number;
+    validFrom: string;
+    validUntil: string;
+    isActive?: boolean;
+}
+
+export interface CreateSubscriptionPlanPayload {
+    name: string;
+    code: string;
+    billingPeriod: BillingPeriod;
+    price: PlanPriceInput;
+    entitlements: SubscriptionEntitlement[];
+    offers?: PlanOfferInputPayload[];
+    sortOrder?: number;
+    isActive?: boolean;
+}
+
+export interface UpdateSubscriptionPlanPayload {
+    name?: string;
+    price?: PlanPriceInput;
+    entitlements?: SubscriptionEntitlement[];
+    offers?: PlanOfferInputPayload[];
+    sortOrder?: number;
+    isActive?: boolean;
+}
+
+export interface CreateCreditPackPayload {
+    name: string;
+    code: string;
+    creditsCount: number;
+    price: PlanPriceInput;
+    badge?: string;
+    sortOrder?: number;
+    isListed?: boolean;
+    isActive?: boolean;
+}
+
+export interface UpdateCreditPackPayload {
+    name?: string;
+    creditsCount?: number;
+    price?: PlanPriceInput;
+    badge?: string;
+    sortOrder?: number;
+    isListed?: boolean;
+    isActive?: boolean;
+}
+
+export interface AdminBillingHistoryQuery {
+    userId?: string;
+    type?: BillingTransactionType;
+    status?: TransactionStatus;
+    fromDate?: string;
+    toDate?: string;
+    page?: number;
+    limit?: number;
+}
+
