@@ -84,7 +84,7 @@ export const PlanListTable: React.FC<PlanListTableProps> = ({
                 return (
                     <button
                         type="button"
-                        className={activeOffersCount > 0 ? styles.offersBadge : styles.noOffers}
+                        className={`${styles.offersBtn} ${activeOffersCount > 0 ? styles.offersActive : styles.noOffers}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             onManageOffers(plan);

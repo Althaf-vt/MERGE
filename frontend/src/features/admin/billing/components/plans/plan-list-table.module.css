@@ -78,29 +78,43 @@
     white-space: nowrap;
 }
 
-.offersBadge {
+.offersBtn {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 2px 7px;
+    padding: 3px 8px;
     border-radius: 4px;
     font-size: 10px;
     font-weight: 600;
-    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
-    color: var(--admin-accent-text, #d8b4fe);
-    border: 1px solid rgba(216, 180, 254, 0.25);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     cursor: pointer;
     transition: all 0.15s ease;
+    white-space: nowrap;
 }
 
-.offersBadge:hover {
+.offersActive {
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.3);
+}
+
+.offersActive:hover {
     border-color: var(--admin-accent-text, #d8b4fe);
-    background-color: rgba(216, 180, 254, 0.18);
+    background-color: rgba(216, 180, 254, 0.2);
 }
 
 .noOffers {
-    color: var(--admin-text-subtle);
-    font-size: 11px;
+    background-color: transparent;
+    color: var(--admin-text-subtle, #71717a);
+    border: 1px solid var(--admin-border, #27272a);
+}
+
+.noOffers:hover {
+    color: var(--admin-text-primary, #fafafa);
+    border-color: var(--admin-border-hover, #3f3f46);
+    background-color: var(--admin-hover, #18181b);
 }
 
 .statusToggleBtn {
