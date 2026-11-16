@@ -9,6 +9,9 @@ import { SimulationChat } from '../components/simulation-chat.component';
 import { SessionSummaryModal } from '../components/session-summary-modal.component';
 import { SessionHistoryList } from '../components/session-history-list.component';
 import { ScenePartnerToastContainer } from '../components/scene-partner-toast.component';
+import { UpgradePlanModal } from '../../billing/components/subscription/upgrade-plan-modal.component';
+import { useGetPlansQuery } from '../../billing/api/billing.api';
+import { BILLING_ROUTES } from '../../billing/constants/billing.constants';
 import { getErrorMessage } from '../../../shared/utils/error.util';
 import { toast } from '../../../shared/utils/toast.util';
 import type { SceneSessionDto, SimulationType } from '../types/scene-partner.types';
@@ -22,6 +25,10 @@ export const ScenePartnerPage: React.FC = () => {
     // Summary debrief modal state
     const [summaryModalSession, setSummaryModalSession] = useState<SceneSessionDto | null>(null);
     const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+    // Plans query for upgrade modal
+    const { data: plansResponse, isLoading: isPlansLoading } = useGetPlansQuery();
 
     // Starting session mutation state
     const [startingScenarioId, setStartingScenarioId] = useState<string | null>(null);
@@ -136,7 +143,15 @@ export const ScenePartnerPage: React.FC = () => {
             }
         } catch (err) {
             const errorMsg = getErrorMessage(err, 'Failed to start practice session.');
-            toast.error(errorMsg);
+            if (
+                errorMsg.toLowerCase().includes('subscription') ||
+                errorMsg.toLowerCase().includes('premium') ||
+                errorMsg.toLowerCase().includes('upgrade')
+            ) {
+                setIsUpgradeModalOpen(true);
+            } else {
+                toast.error(errorMsg);
+            }
             console.error('Failed to start scene session:', err);
         } finally {
             setStartingScenarioId(null);
@@ -289,7 +304,7 @@ export const ScenePartnerPage: React.FC = () => {
         <main className={styles.pageContainer}>
             <ScenePartnerToastContainer />
             <div className={styles.contentWrapper}>
-                {/* Tab: Scenarios / Scene Partner Home */}
+                // Tab: Scenarios / Scene Partner Home
                 {mainTab === 'SCENARIOS' && (
                     <ScenePartnerHome
                         scenarios={scenarios}
@@ -307,7 +322,7 @@ export const ScenePartnerPage: React.FC = () => {
                     />
                 )}
 
-                {/* Tab: Past Debriefs / History */}
+                // Tab: Past Debriefs / History
                 {mainTab === 'HISTORY' && (
                     <section aria-label="Practice History">
                         <div style={{ marginBottom: '1.5rem' }}>
@@ -346,7 +361,7 @@ export const ScenePartnerPage: React.FC = () => {
                 )}
             </div>
 
-            {/* Debrief Modal */}
+            // Debrief Modal
             <SessionSummaryModal
                 isOpen={isSummaryModalOpen}
                 onClose={() => setIsSummaryModalOpen(false)}
@@ -354,6 +369,17 @@ export const ScenePartnerPage: React.FC = () => {
                 onPracticeAgain={handlePracticeAgainFromSummary}
                 onTryNewScenario={handleTryNewScenarioFromSummary}
                 onReturnToMatches={handleReturnToMatchesFromSummary}
+            />
+
+            <UpgradePlanModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+                plans={plansResponse?.data ?? []}
+                isLoading={isPlansLoading}
+                onUpgrade={() => {
+                    setIsUpgradeModalOpen(false);
+                    navigate(BILLING_ROUTES.HUB);
+                }}
             />
         </main>
     );
