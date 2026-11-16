@@ -16,6 +16,9 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
     onSelect,
     disabled = false,
 }) => {
+    // Sanitize pack name if legacy brackets are present
+    const displayName = pack.name.replace(/\s*\(\d+\s*Credits\)/i, '').trim();
+
     const handleClick = () => {
         if (!disabled) {
             onSelect(pack);
@@ -39,7 +42,7 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
         >
             {pack.badge && <span className={styles.badge}>{pack.badge}</span>}
 
-            <span className={styles.packName}>{pack.name}</span>
+            <span className={styles.packName}>{displayName}</span>
 
             <div className={styles.creditsRow}>
                 <span className={styles.creditsCount}>{pack.creditsCount}</span>

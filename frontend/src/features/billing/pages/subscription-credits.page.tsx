@@ -90,7 +90,7 @@ export const SubscriptionCreditsPage: React.FC = () => {
         paymentHook.startCheckout({
             itemId: selectedPack.id,
             itemType: 'CREDIT_PACK',
-            itemName: selectedPack.name,
+            itemName: selectedPack.name.replace(/\s*\(\d+\s*Credits\)/i, '').trim(),
             amountFormatted: formatCurrencyDisplay(selectedPack.price.formatted),
         });
     };
