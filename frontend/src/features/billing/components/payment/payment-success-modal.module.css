@@ -1,0 +1,193 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(17, 24, 39, 0.45);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1rem;
+}
+
+.modal {
+    background-color: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15);
+    border: 1px solid #f3f4f6;
+    padding: 2.25rem 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    animation: scaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.closeButton {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.35rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.closeButton:hover {
+    color: #374151;
+    background-color: #f3f4f6;
+}
+
+.iconWrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #ecfdf5;
+    border: 8px solid #f0fdf4;
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+    font-size: 0.925rem;
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.45;
+}
+
+.summaryCard {
+    width: 100%;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summaryRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.summaryLabel {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.summaryPrice {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.referenceRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #e5e7eb;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.referenceCode {
+    font-family: monospace;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    color: #7c3aed;
+    font-size: 0.775rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.copyButton:hover {
+    background-color: #ede9fe;
+}
+
+.actionsContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.primaryButton {
+    width: 100%;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #ffffff;
+    border: none;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+    transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
+}
+
+.secondaryButton {
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.15s ease;
+}
+
+.secondaryButton:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
