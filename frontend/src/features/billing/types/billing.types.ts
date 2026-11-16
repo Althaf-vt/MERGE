@@ -192,6 +192,20 @@ export interface RazorpayPaymentSuccessResponse {
     razorpay_signature: string;
 }
 
+export interface RazorpayPaymentFailedResponse {
+    error: {
+        code: string;
+        description: string;
+        source?: string;
+        step?: string;
+        reason?: string;
+        metadata?: {
+            order_id?: string;
+            payment_id?: string;
+        };
+    };
+}
+
 export interface RazorpayCheckoutOptions {
     key: string;
     amount: number;

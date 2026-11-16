@@ -1,11 +1,16 @@
 import { RAZORPAY_CONFIG } from '../constants/billing.constants';
-import type { RazorpayCheckoutOptions, RazorpayPaymentSuccessResponse } from '../types/billing.types';
+import type {
+    RazorpayCheckoutOptions,
+    RazorpayPaymentSuccessResponse,
+    RazorpayPaymentFailedResponse,
+} from '../types/billing.types';
 
 declare global {
     interface Window {
         Razorpay?: new (options: RazorpayCheckoutOptions) => {
             open: () => void;
             close?: () => void;
+            on?: (event: 'payment.failed', callback: (response: RazorpayPaymentFailedResponse) => void) => void;
         };
     }
 }
@@ -25,6 +30,7 @@ export interface LaunchRazorpayCheckoutParams {
     onSuccess: (response: RazorpayPaymentSuccessResponse) => void;
     onDismiss?: () => void;
     onError?: (error: Error) => void;
+    onPaymentFailed?: (response: RazorpayPaymentFailedResponse) => void;
 }
 
 // Dynamically injects Razorpay standard checkout script
@@ -90,6 +96,13 @@ export const launchRazorpayCheckout = async (params: LaunchRazorpayCheckoutParam
         };
 
         const razorpayInstance = new window.Razorpay(options);
+
+        if (params.onPaymentFailed && typeof razorpayInstance.on === 'function') {
+            razorpayInstance.on('payment.failed', (response: RazorpayPaymentFailedResponse) => {
+                params.onPaymentFailed?.(response);
+            });
+        }
+
         razorpayInstance.open();
         return true;
     } catch (err) {

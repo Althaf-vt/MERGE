@@ -33,6 +33,8 @@ export const useBillingPayment = () => {
     const [successDetails, setSuccessDetails] = useState<PaymentSuccessDetails | null>(null);
 
     const lastAttemptRef = useRef<StartCheckoutParams | null>(null);
+    const paymentAttemptedRef = useRef(false);
+    const lastFailureReasonRef = useRef<string | null>(null);
 
     const closeSuccessModal = useCallback(() => {
         setIsSuccessModalOpen(false);
@@ -42,12 +44,16 @@ export const useBillingPayment = () => {
     const closeFailedModal = useCallback(() => {
         setIsFailedModalOpen(false);
         setPaymentError(null);
+        paymentAttemptedRef.current = false;
+        lastFailureReasonRef.current = null;
     }, []);
 
     const startCheckout = useCallback(
         async (params: StartCheckoutParams): Promise<boolean> => {
             setIsProcessing(true);
             setPaymentError(null);
+            paymentAttemptedRef.current = false;
+            lastFailureReasonRef.current = null;
             lastAttemptRef.current = params;
 
             try {
@@ -75,6 +81,8 @@ export const useBillingPayment = () => {
                         email: user?.email || '',
                     },
                     onSuccess: async (razorpayResponse) => {
+                        paymentAttemptedRef.current = false;
+                        lastFailureReasonRef.current = null;
                         try {
                             // Step 3: Cryptographically verify HMAC payment signature
                             const verifyResponse = await verifyPayment({
@@ -105,13 +113,30 @@ export const useBillingPayment = () => {
                             setIsProcessing(false);
                         }
                     },
+                    onPaymentFailed: (failedResponse) => {
+                        paymentAttemptedRef.current = true;
+                        lastFailureReasonRef.current =
+                            failedResponse.error?.description ||
+                            'Your bank or card issuer declined the transaction.';
+                    },
                     onDismiss: () => {
                         setIsProcessing(false);
+                        if (paymentAttemptedRef.current) {
+                            setPaymentError(
+                                lastFailureReasonRef.current ||
+                                'Payment could not be completed. Your bank declined the transaction.',
+                            );
+                            setIsFailedModalOpen(true);
+                            paymentAttemptedRef.current = false;
+                        } else {
+                            setPaymentError(null);
+                        }
                     },
                     onError: (err) => {
                         setPaymentError(err.message || 'Payment was cancelled or failed.');
                         setIsFailedModalOpen(true);
                         setIsProcessing(false);
+                        paymentAttemptedRef.current = false;
                     },
                 });
 
