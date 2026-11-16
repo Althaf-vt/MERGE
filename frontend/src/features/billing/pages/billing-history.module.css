@@ -1,21 +1,33 @@
 .pageContainer {
     width: 100%;
-    max-width: 960px;
-    padding: 1.5rem 0 3rem 0;
+    max-width: 900px;
+    padding: 0 0 3.5rem 0;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .backButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     background: transparent;
     border: none;
     color: #6d28d9;
-    font-size: 0.875rem;
+    font-size: 0.825rem;
     font-weight: 600;
     cursor: pointer;
-    margin-bottom: 1.25rem;
-    padding: 0.25rem 0;
+    margin-bottom: 1rem;
+    padding: 0.2rem 0;
     transition: color 0.15s ease;
 }
 
@@ -25,19 +37,19 @@
 }
 
 .pageHeader {
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
 }
 
 .pageTitle {
-    font-size: 1.85rem;
-    font-weight: 800;
+    font-size: 1.75rem;
+    font-weight: 700;
     color: #111827;
-    margin: 0 0 0.35rem 0;
-    letter-spacing: -0.02em;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.01em;
 }
 
 .pageSubtitle {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #6b7280;
     margin: 0;
     line-height: 1.45;
@@ -45,27 +57,27 @@
 
 .summaryBanner {
     background-color: #ffffff;
-    border: 1px solid #f3f4f6;
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1.25rem;
-    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .summaryLeft {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: 1rem;
 }
 
 .planIconContainer {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
     display: flex;
     align-items: center;
@@ -77,18 +89,18 @@
 .summaryDetails {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
 }
 
 .planHeaderRow {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
 }
 
 .planTitle {
-    font-size: 1.05rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: #111827;
     margin: 0;
 }
@@ -96,9 +108,9 @@
 .activeBadge {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem 0.55rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 9999px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     background-color: #ecfdf5;
     color: #059669;
@@ -108,9 +120,9 @@
 .inactiveBadge {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem 0.55rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 9999px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     background-color: #f3f4f6;
     color: #6b7280;
@@ -118,7 +130,7 @@
 }
 
 .summaryDate {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #6b7280;
     margin: 0;
 }
@@ -126,14 +138,14 @@
 .manageButton {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 1.1rem;
-    font-size: 0.85rem;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #6d28d9;
     background-color: #f5f3ff;
     border: 1px solid #ddd6fe;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
     white-space: nowrap;
