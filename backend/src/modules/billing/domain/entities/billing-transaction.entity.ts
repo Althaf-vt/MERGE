@@ -72,6 +72,34 @@ export class BillingTransaction extends AggregateRoot {
         });
     }
 
+    public static createSubscriptionRenewal(params: {
+        id: string;
+        userId: string;
+        planId: string;
+        planName: string;
+        price: MoneyVO;
+        gatewayOrderId?: string | null;
+        gatewayPaymentId?: string | null;
+        receiptNumber?: string | null;
+        environment?: PaymentEnvironment;
+    }): BillingTransaction {
+        return new BillingTransaction({
+            id: params.id,
+            userId: params.userId,
+            type: BillingTransactionType.SUBSCRIPTION_RENEWAL,
+            status: TransactionStatus.COMPLETED,
+            amount: params.price.toJSON(),
+            creditsDelta: 0,
+            description: BILLING_TRANSACTION_DESCRIPTIONS.SUBSCRIPTION_RENEWAL(params.planName),
+            referenceId: params.planId,
+            gatewayOrderId: params.gatewayOrderId ?? null,
+            gatewayPaymentId: params.gatewayPaymentId ?? null,
+            receiptNumber: params.receiptNumber ?? null,
+            environment: params.environment ?? PaymentEnvironment.TEST,
+            createdAt: new Date(),
+        });
+    }
+
     public static createCreditPurchase(params: {
         id: string;
         userId: string;
