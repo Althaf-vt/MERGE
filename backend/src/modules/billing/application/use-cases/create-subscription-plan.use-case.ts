@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../../domain/constants/billing-error-messages.constants';
@@ -22,8 +21,7 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_CODE_ALREADY_EXISTS);
         }
 
-        const id = dto.id?.trim() || `plan_${randomUUID()}`;
-        const createProps = SubscriptionPlanDtoMapper.toCreateProps(dto, id);
+        const createProps = SubscriptionPlanDtoMapper.toCreateProps(dto);
         const plan = SubscriptionPlan.create(createProps);
 
         const saved = await this._subscriptionPlanRepository.create(plan);
