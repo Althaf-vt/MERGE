@@ -2,12 +2,14 @@
     font-size: 0.8rem;
     color: #4b5563;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .activityWrapper {
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    white-space: nowrap;
 }
 
 .activityIcon {
@@ -44,7 +46,7 @@
 .descriptionText {
     font-size: 0.8rem;
     color: #6b7280;
-    max-width: 220px;
+    max-width: 360px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -58,6 +60,7 @@
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .deltaPositive {
@@ -87,6 +90,7 @@
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: capitalize;
+    white-space: nowrap;
 }
 
 .badgeSuccess {

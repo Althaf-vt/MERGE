@@ -71,74 +71,79 @@ export const CreditHistoryPage: React.FC = () => {
                 </p>
             </div>
 
-            <div className={styles.gridContainer}>
-                <div className={styles.statsPanel}>
-                    <h3 className={styles.statsTitle}>Credit Overview</h3>
-
-                    <div className={styles.balanceBox}>
-                        <div className={styles.balanceIcon}>
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
-                                <path d="M12 18V6"></path>
-                            </svg>
-                        </div>
-                        <span className={styles.balanceLabel}>Available Balance</span>
-                        <div className={styles.balanceValue}>
-                            {isBalanceLoading ? '...' : availableCredits}
-                        </div>
-                        <span className={styles.balanceSub}>Credits ready for Priority Intros</span>
-                    </div>
-
-                    <div className={styles.metricsList}>
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricLabel}>Recent Purchased</span>
-                            <span className={styles.metricValue}>
-                                {isHistoryLoading ? '...' : `+${totalPurchasedInView} Credits`}
-                            </span>
-                        </div>
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricLabel}>Recent Used</span>
-                            <span className={styles.metricValue}>
-                                {isHistoryLoading ? '...' : `-${totalUsedInView} Credits`}
-                            </span>
-                        </div>
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricLabel}>Last Updated</span>
-                            <span className={styles.metricValue}>
-                                {isBalanceLoading ? '...' : formatDate(creditBalance?.updatedAt)}
-                            </span>
-                        </div>
-                        <div className={styles.metricItem}>
-                            <span className={styles.metricLabel}>Status</span>
-                            <span className={styles.metricValue}>
-                                {availableCredits > 0 ? 'Active' : 'Zero Balance'}
-                            </span>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        className={styles.buyCreditsButton}
-                        onClick={() => navigate(BILLING_ROUTES.HUB)}
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <div className={styles.overviewCard}>
+                <div className={styles.overviewLeft}>
+                    <div className={styles.balanceIcon}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+                            <path d="M12 18V6"></path>
                         </svg>
-                        <span>Buy Credits</span>
-                    </button>
+                    </div>
+                    <div className={styles.balanceContent}>
+                        <span className={styles.balanceLabel}>Available Balance</span>
+                        <div className={styles.balanceValueRow}>
+                            <span className={styles.balanceValue}>
+                                {isBalanceLoading ? '...' : availableCredits}
+                            </span>
+                            <span className={styles.balanceUnit}>Credits</span>
+                        </div>
+                    </div>
                 </div>
 
-                <CreditHistoryTable
-                    transactions={historyResponse?.data ?? []}
-                    total={historyResponse?.meta?.total ?? 0}
-                    page={page}
-                    limit={limit}
-                    isLoading={isHistoryLoading}
-                    onPageChange={(newPage) => setPage(newPage)}
-                />
+                <div className={styles.divider} />
+
+                <div className={styles.metricsGroup}>
+                    <div className={styles.metricItem}>
+                        <span className={styles.metricLabel}>Recent Purchased</span>
+                        <span className={`${styles.metricValue} ${styles.metricPositive}`}>
+                            {isHistoryLoading ? '...' : `+${totalPurchasedInView} Credits`}
+                        </span>
+                    </div>
+
+                    <div className={styles.metricItem}>
+                        <span className={styles.metricLabel}>Recent Used</span>
+                        <span className={`${styles.metricValue} ${styles.metricNegative}`}>
+                            {isHistoryLoading ? '...' : `-${totalUsedInView} Credits`}
+                        </span>
+                    </div>
+
+                    <div className={styles.metricItem}>
+                        <span className={styles.metricLabel}>Last Updated</span>
+                        <span className={styles.metricValue}>
+                            {isBalanceLoading ? '...' : formatDate(creditBalance?.updatedAt)}
+                        </span>
+                    </div>
+
+                    <div className={styles.metricItem}>
+                        <span className={styles.metricLabel}>Status</span>
+                        <span className={availableCredits > 0 ? styles.statusBadgeActive : styles.statusBadgeZero}>
+                            {availableCredits > 0 ? 'Active' : 'Zero Balance'}
+                        </span>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    className={styles.buyCreditsButton}
+                    onClick={() => navigate(BILLING_ROUTES.HUB)}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Buy Credits</span>
+                </button>
             </div>
+
+            <CreditHistoryTable
+                transactions={historyResponse?.data ?? []}
+                total={historyResponse?.meta?.total ?? 0}
+                page={page}
+                limit={limit}
+                isLoading={isHistoryLoading}
+                onPageChange={(newPage) => setPage(newPage)}
+            />
         </div>
     );
 };
