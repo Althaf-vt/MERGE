@@ -123,7 +123,6 @@ export const ManageSubscriptionPage: React.FC = () => {
                 onUpgrade={() => setIsUpgradeModalOpen(true)}
             />
 
-            {/* Cancel Subscription Modal */}
             <CancelSubscriptionModal
                 isOpen={isCancelModalOpen}
                 onClose={() => setIsCancelModalOpen(false)}
@@ -132,7 +131,6 @@ export const ManageSubscriptionPage: React.FC = () => {
                 currentPeriodEnd={subscription?.currentPeriodEnd}
             />
 
-            {/* Plan Upgrade Modal */}
             <UpgradePlanModal
                 isOpen={isUpgradeModalOpen}
                 onClose={() => setIsUpgradeModalOpen(false)}
@@ -142,7 +140,6 @@ export const ManageSubscriptionPage: React.FC = () => {
                 onUpgrade={handleUpgradePlan}
             />
 
-            {/* Payment Feedback Modals */}
             <PaymentSuccessModal
                 isOpen={paymentHook.isSuccessModalOpen}
                 onClose={paymentHook.closeSuccessModal}
