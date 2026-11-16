@@ -173,6 +173,22 @@ export const EnvConfig = {
         },
     },
 
+    // Razorpay Payment Gateway
+    razorpay: {
+        get keyId(): string {
+            return process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+        },
+        get keySecret(): string {
+            return process.env.RAZORPAY_KEY_SECRET || 'placeholder_secret';
+        },
+        get webhookSecret(): string | undefined {
+            return process.env.RAZORPAY_WEBHOOK_SECRET;
+        },
+        get isTestMode(): boolean {
+            return this.keyId.startsWith('rzp_test_');
+        },
+    },
+
     // Biometric & External Services
     services: {
         get mlServiceUrl(): string {
