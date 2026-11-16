@@ -1,0 +1,121 @@
+.card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s ease;
+}
+
+.card:hover {
+    border-color: #d1d5db;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.viewAllLink {
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.viewAllLink:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #f9fafb;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.itemLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.itemActivity {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.itemDate {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.itemDelta {
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.deltaPositive {
+    color: #059669;
+}
+
+.deltaNegative {
+    color: #6d28d9;
+}
+
+.emptyState {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.825rem;
+}
+
+.skeletonItem {
+    height: 38px;
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

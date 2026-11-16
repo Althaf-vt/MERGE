@@ -63,7 +63,7 @@ export const createDefaultSubscriptionPlans = (): CreateSubscriptionPlanProps[] 
 export const createDefaultCreditPacks = (): CreateCreditPackProps[] => [
     {
         id: generateBillingId(BILLING_ID_PREFIXES.CREDIT_PACK),
-        name: 'Starter Pack (5 Credits)',
+        name: 'Starter Pack',
         code: 'PACK_5',
         creditsCount: 5,
         price: {
@@ -77,7 +77,7 @@ export const createDefaultCreditPacks = (): CreateCreditPackProps[] => [
     },
     {
         id: generateBillingId(BILLING_ID_PREFIXES.CREDIT_PACK),
-        name: 'Standard Pack (15 Credits)',
+        name: 'Standard Pack',
         code: 'PACK_15',
         creditsCount: 15,
         price: {
@@ -91,7 +91,7 @@ export const createDefaultCreditPacks = (): CreateCreditPackProps[] => [
     },
     {
         id: generateBillingId(BILLING_ID_PREFIXES.CREDIT_PACK),
-        name: 'Power Pack (30 Credits)',
+        name: 'Power Pack',
         code: 'PACK_30',
         creditsCount: 30,
         price: {

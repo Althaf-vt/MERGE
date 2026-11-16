@@ -1,0 +1,118 @@
+.dateText {
+    font-size: 0.8rem;
+    color: #4b5563;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.activityWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.activityIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activityIconPurchase {
+    background-color: #ecfdf5;
+    color: #059669;
+}
+
+.activityIconUsage {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+}
+
+.activityIconOther {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+.activityLabel {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.descriptionText {
+    font-size: 0.8rem;
+    color: #6b7280;
+    max-width: 360px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.deltaBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.deltaPositive {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.deltaNegative {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid rgba(109, 40, 217, 0.2);
+}
+
+.deltaNeutral {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.badgeSuccess {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+.badgePending {
+    background-color: #fffbeb;
+    color: #b45309;
+    border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.badgeFailed {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.badgeRefunded {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+}

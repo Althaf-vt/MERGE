@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTabNavigation } from '../hooks/use-tab-navigation.hook';
 import { useActiveConnections } from '../hooks/use-active-connections.hook';
 import { usePendingConnections } from '../hooks/use-pending-connections.hook';
@@ -12,6 +13,8 @@ import { PendingSubfilter } from '../components/pending-subfilter.component';
 import { PendingCard } from '../components/pending-card.component';
 import { PrivateListCard } from '../components/private-list-card.component';
 import { PriorityIntroModal } from '../components/priority-intro-modal.component';
+import { useGetUserCreditBalanceQuery } from '../../billing';
+import { APP_ROUTES } from '../../../shared/constants/app-routes.constant';
 import { getErrorMessage } from '../../../shared/utils/error.util';
 import styles from './connections.module.css';
 
@@ -32,6 +35,7 @@ const SkeletonGrid: React.FC = () => (
 );
 
 export const ConnectionsPage: React.FC = () => {
+    const navigate = useNavigate();
     const { activeTab, setActiveTab, isActive, isPending, isShortlisted, isReviewLater } = useTabNavigation();
 
     // Data hooks for tab counts and content
@@ -39,6 +43,11 @@ export const ConnectionsPage: React.FC = () => {
     const pendingHook = usePendingConnections();
     const shortlistHook = usePrivateList('SHORTLIST');
     const reviewLaterHook = usePrivateList('REVIEW_LATER');
+
+    // Credit balance hook for Priority Intro entitlement
+    const { data: balanceResponse, isLoading: isCreditLoading } = useGetUserCreditBalanceQuery();
+    const availableCredits = balanceResponse?.data?.balance ?? 0;
+    const handleBuyCredits = () => navigate(APP_ROUTES.PROFILE.BILLING);
 
     const counts = {
         active: activeHook.total,
@@ -50,7 +59,6 @@ export const ConnectionsPage: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.contentWrapper}>
-                {/* Header Section */}
                 <header className={styles.headerSection}>
                     <h1 className={styles.pageTitle}>Connections</h1>
                     <p className={styles.pageSubtitle}>
@@ -58,14 +66,12 @@ export const ConnectionsPage: React.FC = () => {
                     </p>
                 </header>
 
-                {/* Tabs Navigation */}
                 <ConnectionsTabsHeader
                     activeTab={activeTab}
                     onSelectTab={setActiveTab}
                     counts={counts}
                 />
 
-                {/* Main Content Area */}
                 <main className={styles.tabContentStage} id={`tabpanel-${activeTab.toLowerCase()}`} role="tabpanel">
                     {isActive && (
                         <ActiveTabSection hook={activeHook} />
@@ -76,11 +82,21 @@ export const ConnectionsPage: React.FC = () => {
                     )}
 
                     {isShortlisted && (
-                        <ShortlistTabSection hook={shortlistHook} />
+                        <ShortlistTabSection
+                            hook={shortlistHook}
+                            availableCredits={availableCredits}
+                            isCreditLoading={isCreditLoading}
+                            onBuyCredits={handleBuyCredits}
+                        />
                     )}
 
                     {isReviewLater && (
-                        <ReviewLaterTabSection hook={reviewLaterHook} />
+                        <ReviewLaterTabSection
+                            hook={reviewLaterHook}
+                            availableCredits={availableCredits}
+                            isCreditLoading={isCreditLoading}
+                            onBuyCredits={handleBuyCredits}
+                        />
                     )}
                 </main>
             </div>
@@ -259,8 +275,16 @@ const PendingTabSection: React.FC<PendingTabSectionProps> = ({ hook }) => {
 // 3. Shortlisted Profiles Tab Section
 interface ShortlistTabSectionProps {
     hook: ReturnType<typeof usePrivateList>;
+    availableCredits?: number;
+    isCreditLoading?: boolean;
+    onBuyCredits?: () => void;
 }
-const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
+const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({
+    hook,
+    availableCredits,
+    isCreditLoading,
+    onBuyCredits,
+}) => {
     const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
     const [priorityTarget, setPriorityTarget] = useState<{ id: string; name: string } | null>(null);
 
@@ -351,6 +375,9 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
                 isSubmitting={hook.actionLoading.isSendingIntro}
                 onConfirm={handleConfirmPriorityIntro}
                 onClose={() => setPriorityTarget(null)}
+                availableCredits={availableCredits}
+                isCreditLoading={isCreditLoading}
+                onBuyCredits={onBuyCredits}
             />
         </div>
     );
@@ -359,8 +386,16 @@ const ShortlistTabSection: React.FC<ShortlistTabSectionProps> = ({ hook }) => {
 // 4. Review Later Tab Section
 interface ReviewLaterTabSectionProps {
     hook: ReturnType<typeof usePrivateList>;
+    availableCredits?: number;
+    isCreditLoading?: boolean;
+    onBuyCredits?: () => void;
 }
-const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) => {
+const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({
+    hook,
+    availableCredits,
+    isCreditLoading,
+    onBuyCredits,
+}) => {
     const [actionState, setActionState] = useState<{ id: string; type: 'CONNECT' | 'MOVE' | 'REMOVE' } | null>(null);
     const [priorityTarget, setPriorityTarget] = useState<{ id: string; name: string } | null>(null);
 
@@ -451,6 +486,9 @@ const ReviewLaterTabSection: React.FC<ReviewLaterTabSectionProps> = ({ hook }) =
                 isSubmitting={hook.actionLoading.isSendingIntro}
                 onConfirm={handleConfirmPriorityIntro}
                 onClose={() => setPriorityTarget(null)}
+                availableCredits={availableCredits}
+                isCreditLoading={isCreditLoading}
+                onBuyCredits={onBuyCredits}
             />
         </div>
     );

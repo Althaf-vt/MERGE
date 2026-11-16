@@ -1,0 +1,67 @@
+.dateText {
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+
+.descriptionText {
+    font-weight: 600;
+    font-size: 0.825rem;
+    color: #111827;
+}
+
+.amountText {
+    font-weight: 700;
+    font-size: 0.825rem;
+    color: #111827;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badgeSuccess {
+    background-color: #ecfdf5;
+    color: #059669;
+}
+
+.badgeWarning {
+    background-color: #fffbeb;
+    color: #d97706;
+}
+
+.badgeDanger {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.receiptWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.receiptCode {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #4b5563;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.copyButton:hover {
+    background-color: #ede9fe;
+}

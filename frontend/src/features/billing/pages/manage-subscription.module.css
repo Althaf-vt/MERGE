@@ -1,0 +1,56 @@
+.pageContainer {
+    width: 100%;
+    max-width: 900px;
+    padding: 0 0 3.5rem 0;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    padding: 0.2rem 0;
+    transition: color 0.15s ease;
+}
+
+.backButton:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
+
+.pageHeader {
+    margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.01em;
+}
+
+.pageSubtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.45;
+}

@@ -49,6 +49,12 @@ import { ScenarioDetailPage } from './features/admin/scene-partner/pages/scenari
 import { DiscoveryPage } from './features/discovery/pages/discovery.page';
 import { ConnectionsPage } from './features/connections/pages/connections.page';
 import { ScenePartnerPage } from './features/scene-partner/pages/scene-partner.page';
+import {
+    SubscriptionCreditsPage,
+    ManageSubscriptionPage,
+    BillingHistoryPage,
+    CreditHistoryPage,
+} from './features/billing';
 
 
 export const App = () => {
@@ -123,18 +129,14 @@ export const App = () => {
                                 <Route path="insights" element={<V2PlaceholderPage title="Profile Insights" subtitle="Understand how others perceive your profile." />} />
                                 <Route path="analytics" element={<V2PlaceholderPage title="Advanced Analytics" subtitle="Deep dive into your matching metrics." />} />
                                 <Route path="blocked" element={<BlockedUsersPage/>} />
-                                {/* 
-                                <Route path="security" element={<SecuritySettingsPage />} />
-                                <Route path="blocked" element={<BlockedUsersPage />} />
-                                <Route path="billing" element={<SubscriptionCreditsPage />} /> 
-                                */}
+                                <Route path="billing" element={<SubscriptionCreditsPage />} />
+                                <Route path="billing/manage" element={<ManageSubscriptionPage />} />
+                                <Route path="billing/history" element={<BillingHistoryPage />} />
+                                <Route path="billing/credits/history" element={<CreditHistoryPage />} />
                             </Route>
 
-                            {/* 
-                                ONBOARDING ROUTES
-                                Nested inside OnboardingGuard so completed users 
-                                are automatically redirected to /profile-live
-                            */}
+                            {/* // ONBOARDING ROUTES
+                            // Nested inside OnboardingGuard so completed users are automatically redirected to /profile-live */}
                             <Route element={<OnboardingGuard />}>
                                 <Route path="/onboarding/kyc" element={<KycPage />} />
                                 <Route path="/onboarding/profile" element={<PersonaPage />} />

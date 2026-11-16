@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, type Variants } from 'motion/react';
 import { useDiscoveryFeed } from '../hooks/use-discovery-feed.hook';
 import { DEFAULT_DISCOVERY_QUERY } from '../constants/discovery.constants';
@@ -8,6 +9,8 @@ import { DiscoveryEmpty } from '../components/discovery-empty.component';
 import { DiscoveryActions } from '../components/discovery-actions.component';
 import { PriorityIntroModal } from '../components/priority-intro-modal.component';
 import { DiscoveryFilterDrawer } from '../components/discovery-filter-drawer.component';
+import { useGetUserCreditBalanceQuery } from '../../billing';
+import { APP_ROUTES } from '../../../shared/constants/app-routes.constant';
 import styles from './discovery.module.css';
 
 const cardVariants: Variants = {
@@ -37,6 +40,7 @@ const cardVariants: Variants = {
 };
 
 export const DiscoveryPage: React.FC = () => {
+    const navigate = useNavigate();
     const [queryParams, setQueryParams] = useState<GetRecommendationsQuery>({
         ...DEFAULT_DISCOVERY_QUERY,
     });
@@ -45,6 +49,9 @@ export const DiscoveryPage: React.FC = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState<number>(1);
     const isScrollingRef = useRef(false);
+
+    const { data: balanceResponse, isLoading: isCreditLoading } = useGetUserCreditBalanceQuery();
+    const availableCredits = balanceResponse?.data?.balance ?? 0;
 
     const {
         activeProfile,
@@ -187,7 +194,6 @@ export const DiscoveryPage: React.FC = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.reelsWrapper} onWheel={handleWheel}>
-                {/* Header Bar */}
                 <header className={styles.headerBar}>
                     <h1 className={styles.title}>Discover</h1>
                     <button
@@ -220,7 +226,6 @@ export const DiscoveryPage: React.FC = () => {
                     </button>
                 </header>
 
-                {/* Action Feedback Banner */}
                 {actionError && (
                     <div className={styles.actionErrorBanner} role="alert">
                         <span className={styles.actionErrorText}>{actionError}</span>
@@ -235,7 +240,6 @@ export const DiscoveryPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Reels Stage */}
                 <main className={styles.stage}>
                     <div className={styles.cardFrame}>
                         {isLoading ? (
@@ -329,7 +333,6 @@ export const DiscoveryPage: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Desktop Floating Up/Down Navigation Controls */}
                     <aside className={styles.sideControls} aria-label="Reels navigation">
                         <button
                             type="button"
@@ -375,7 +378,6 @@ export const DiscoveryPage: React.FC = () => {
                 </main>
             </div>
 
-            {/* Priority Introduction Modal */}
             {activeProfile && (
                 <PriorityIntroModal
                     isOpen={isPriorityIntroOpen}
@@ -384,10 +386,15 @@ export const DiscoveryPage: React.FC = () => {
                     onClose={() => setIsPriorityIntroOpen(false)}
                     onConfirm={handleConfirmPriorityIntro}
                     isSubmitting={isActionLoading}
+                    availableCredits={availableCredits}
+                    isCreditLoading={isCreditLoading}
+                    onBuyCredits={() => {
+                        setIsPriorityIntroOpen(false);
+                        navigate(APP_ROUTES.PROFILE.BILLING);
+                    }}
                 />
             )}
 
-            {/* Filter Slide-over Drawer */}
             <DiscoveryFilterDrawer
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
