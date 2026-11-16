@@ -96,6 +96,21 @@ export const API_ENDPOINTS = {
         GET_SHORTLIST: 'shortlist',
         GET_REVIEW_LATER: 'review-later',
     },
+    BILLING: {
+        BASE: 'billing',
+        PAYMENTS: {
+            BASE: 'billing/payments',
+            ORDER: 'order',
+            VERIFY: 'verify',
+        },
+        PLANS: 'plans',
+        SUBSCRIPTION: 'subscription',
+        AUTO_RENEW: 'subscription/auto-renew',
+        CANCEL: 'subscription/cancel',
+        CREDITS_PACKS: 'credits/packs',
+        CREDITS_BALANCE: 'credits/balance',
+        HISTORY: 'history',
+    },
     ADMIN: {
         AUTH: {
             BASE: 'admin/auth',
@@ -161,6 +176,14 @@ export const API_ENDPOINTS = {
         },
         AUDIT_LOGS: {
             BASE: 'admin/audit-logs',
+        },
+        BILLING: {
+            BASE: 'admin/billing',
+            PLANS: 'plans',
+            PLAN_BY_ID: 'plans/:id',
+            CREDIT_PACKS: 'credit-packs',
+            CREDIT_PACK_BY_ID: 'credit-packs/:id',
+            TRANSACTIONS: 'transactions',
         },
     }
 } as const;

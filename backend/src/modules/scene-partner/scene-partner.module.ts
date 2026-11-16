@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "../users/users.module";
+import { BillingModule } from "../billing/billing.module";
+import { BillingSubscriptionFacade } from "../billing/application/services/billing-subscription.facade";
 import { SceneSessionSchema, SceneSessionSchemaClass } from "./infrastructure/persistence/scene-session.schema";
 import { ScenarioSchema, ScenarioSchemaClass } from "./infrastructure/persistence/scenario.schema";
 import { ScenePartnerController } from "./presentation/controllers/scene-partner.controller";
@@ -12,7 +14,6 @@ import { ScenarioSeederService } from "./infrastructure/services/scenario-seeder
 import { SCENE_PARTNER_AI_SERVICE } from "./domain/interfaces/scene-partner-ai.interface";
 import { OpenRouterScenePartnerAiService } from "./infrastructure/services/openrouter-scene-partner-ai.service";
 import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from "./application/interfaces/scene-partner-subscription-facade.interface";
-import { MockSubscriptionFacade } from "./infrastructure/adapters/mock-subscription.facade";
 import { USER_CONTEXT_FACADE } from "./application/interfaces/user-context-facade.interface";
 import { UserContextAdapter } from "./infrastructure/adapters/user-context.adapter";
 import { PREVIEW_CONTEXT_BUILDER, SEND_PREVIEW_TURN_USE_CASE, START_PREVIEW_SESSION_USE_CASE } from "./application/interfaces/scene-partner-preview.use-cases.interface";
@@ -56,6 +57,7 @@ import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-
             { name: ScenarioSchemaClass.name, schema: ScenarioSchema },
         ]),
         UserModule,
+        BillingModule,
     ],
     controllers: [ScenePartnerController],
     providers: [
@@ -63,7 +65,7 @@ import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-
         { provide: SCENARIO_REPOSITORY, useClass: MongoScenarioRepository },
         ScenarioSeederService,
         { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
-        { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useClass: MockSubscriptionFacade },
+        { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useExisting: BillingSubscriptionFacade },
         { provide: USER_CONTEXT_FACADE, useClass: UserContextAdapter },
         { provide: PREVIEW_CONTEXT_BUILDER, useClass: PreviewContextBuilder },
         { provide: START_SCENE_SESSION_USE_CASE, useClass: StartSceneSessionUseCase },

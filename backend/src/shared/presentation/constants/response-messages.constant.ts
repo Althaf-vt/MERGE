@@ -87,6 +87,17 @@ export const RESPONSE_MESSAGES = {
         REMOVED: 'Profile removed from your list.',
         FETCHED: 'List fetched successfully.',
     },
+    BILLING: {
+        ORDER_CREATED: 'Payment order created successfully.',
+        PAYMENT_VERIFIED: 'Payment verified and item successfully activated.',
+        PLANS_FETCHED: 'Subscription plans retrieved successfully.',
+        SUBSCRIPTION_FETCHED: 'User subscription retrieved successfully.',
+        AUTO_RENEW_UPDATED: 'Auto-renewal preference updated successfully.',
+        SUBSCRIPTION_CANCELLED: 'Subscription cancelled successfully.',
+        CREDIT_PACKS_FETCHED: 'Credit packs retrieved successfully.',
+        CREDIT_BALANCE_FETCHED: 'Credit balance retrieved successfully.',
+        BILLING_HISTORY_FETCHED: 'Billing history retrieved successfully.',
+    },
     ADMIN: {
         TASK_CLAIMED: 'Task claimed successfully.',
         CLAIM_RELEASED: 'Claim released successfully.',
@@ -133,6 +144,15 @@ export const RESPONSE_MESSAGES = {
             PREVIEW_STARTED: 'Live preview simulation session started successfully.',
             PREVIEW_TURN_PROCESSED: 'Live preview simulation turn processed successfully.',
             PREVIEW_COACHING_UPDATED: 'Live preview simulation coaching mode updated successfully.',
+        },
+        BILLING: {
+            PLANS_FETCHED: 'Admin subscription plans retrieved successfully.',
+            PLAN_CREATED: 'Subscription plan created successfully.',
+            PLAN_UPDATED: 'Subscription plan updated successfully.',
+            CREDIT_PACKS_FETCHED: 'Admin credit packs retrieved successfully.',
+            CREDIT_PACK_CREATED: 'Credit pack created successfully.',
+            CREDIT_PACK_UPDATED: 'Credit pack updated successfully.',
+            TRANSACTIONS_FETCHED: 'Admin billing transactions retrieved successfully.',
         },
     }
 } as const;
