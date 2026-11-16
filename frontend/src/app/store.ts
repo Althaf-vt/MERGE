@@ -10,7 +10,7 @@ import { KycEscalationApi } from "../features/admin/kyc-escalation/api/kyc-escal
 import { discoveryApi } from "../features/discovery/api/discovery.api";
 import { connectionsApi } from '../shared/api/connections.api';
 import { scenePartnerApi } from "../features/scene-partner/api/scene-partner.api";
-import { billingApi } from "../features/billing/api/billing.api";
+import { billingApi } from "../features/billing";
 
 export const store = configureStore({
     reducer: {
