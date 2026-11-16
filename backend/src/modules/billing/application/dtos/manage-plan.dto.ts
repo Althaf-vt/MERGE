@@ -37,11 +37,6 @@ export class PlanOfferInputDto {
 }
 
 export class CreateSubscriptionPlanDto {
-    @IsOptional()
-    @IsString()
-    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-    id?: string;
-
     @IsString()
     @IsNotEmpty()
     @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
