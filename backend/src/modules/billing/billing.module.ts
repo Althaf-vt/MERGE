@@ -56,6 +56,11 @@ import { BillingAdminFacade } from './application/services/billing-admin.facade'
 import { BillingPriorityCreditFacade } from './application/services/billing-priority-credit.facade';
 import { BillingSubscriptionFacade } from './application/services/billing-subscription.facade';
 
+import { AdminBillingController } from './presentation/controllers/admin-billing.controller';
+import { CreditController } from './presentation/controllers/credit.controller';
+import { PaymentController } from './presentation/controllers/payment.controller';
+import { SubscriptionController } from './presentation/controllers/subscription.controller';
+
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -65,6 +70,12 @@ import { BillingSubscriptionFacade } from './application/services/billing-subscr
             { name: CreditAccountSchemaClass.name, schema: CreditAccountSchema },
             { name: BillingTransactionSchemaClass.name, schema: BillingTransactionSchema },
         ]),
+    ],
+    controllers: [
+        PaymentController,
+        SubscriptionController,
+        CreditController,
+        AdminBillingController,
     ],
     providers: [
         // Repositories
