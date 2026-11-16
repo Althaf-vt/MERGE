@@ -1,0 +1,178 @@
+.card {
+    background-color: #ffffff;
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.th {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.tr {
+    transition: background-color 0.15s ease;
+}
+
+.tr:hover {
+    background-color: #fafafa;
+}
+
+.td {
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.dateText {
+    font-size: 0.85rem;
+    color: #4b5563;
+}
+
+.descriptionText {
+    font-weight: 600;
+    color: #111827;
+}
+
+.amountText {
+    font-weight: 700;
+    color: #111827;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.725rem;
+    font-weight: 600;
+}
+
+.badgeSuccess {
+    background-color: #ecfdf5;
+    color: #059669;
+}
+
+.badgeWarning {
+    background-color: #fffbeb;
+    color: #d97706;
+}
+
+.badgeDanger {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.receiptWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.receiptCode {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    color: #7c3aed;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.copyButton:hover {
+    background-color: #ede9fe;
+}
+
+.paginationBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #f3f4f6;
+    font-size: 0.85rem;
+    color: #6b7280;
+    background-color: #ffffff;
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pageButton {
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    color: #374151;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pageButton:hover:not(:disabled) {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.pageButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.emptyState {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.skeletonRow {
+    height: 48px;
+    background: linear-gradient(90deg, #f9fafb 25%, #f3f4f6 50%, #f9fafb 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
