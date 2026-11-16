@@ -42,18 +42,31 @@ export class BillingSeederService implements OnApplicationBootstrap {
     }
 
     private async _seedCreditPacks(): Promise<void> {
+        const defaultPackProps = createDefaultCreditPacks();
         const packCount = await this._creditPackRepository.count();
-        if (packCount > 0) {
-            this._logger.log(`Credit packs already exist (${packCount} found). Skipping credit packs seeder.`);
+        if (packCount === 0) {
+            for (const props of defaultPackProps) {
+                const pack = CreditPack.create(props);
+                await this._creditPackRepository.create(pack);
+            }
+            this._logger.log(`Successfully seeded ${defaultPackProps.length} default credit packs into database.`);
             return;
         }
 
-        const defaultPackProps = createDefaultCreditPacks();
+        // Synchronize default pack names if existing
         for (const props of defaultPackProps) {
-            const pack = CreditPack.create(props);
-            await this._creditPackRepository.create(pack);
+            const existing = await this._creditPackRepository.findByCode(props.code);
+            if (existing && existing.name !== props.name) {
+                existing.updateDetails({
+                    name: props.name,
+                    creditsCount: props.creditsCount,
+                    price: props.price,
+                    badge: props.badge,
+                    sortOrder: props.sortOrder,
+                });
+                await this._creditPackRepository.update(existing);
+                this._logger.log(`Updated credit pack ${props.code} name to "${props.name}".`);
+            }
         }
-
-        this._logger.log(`Successfully seeded ${defaultPackProps.length} default credit packs into database.`);
     }
 }
