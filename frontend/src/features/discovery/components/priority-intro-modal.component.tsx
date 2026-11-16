@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useGetUserCreditBalanceQuery } from '../../billing/api/billing.api';
-import { BILLING_ROUTES } from '../../billing/constants/billing.constants';
 import { PRIORITY_INTRO_CONSTANTS } from '../constants/discovery.constants';
 import styles from './priority-intro-modal.module.css';
 
@@ -12,6 +9,9 @@ export interface PriorityIntroModalProps {
     onClose: () => void;
     onConfirm: (message: string) => void;
     isSubmitting?: boolean;
+    availableCredits?: number;
+    isCreditLoading?: boolean;
+    onBuyCredits?: () => void;
 }
 
 export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
@@ -21,14 +21,14 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
     onClose,
     onConfirm,
     isSubmitting = false,
+    availableCredits = 0,
+    isCreditLoading = false,
+    onBuyCredits,
 }) => {
-    const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [imageError, setImageError] = useState(false);
 
-    const { data: balanceResponse, isLoading: isBalanceLoading } = useGetUserCreditBalanceQuery();
-    const currentBalance = balanceResponse?.data?.balance ?? 0;
-    const hasSufficientCredits = currentBalance >= PRIORITY_INTRO_CONSTANTS.CREDIT_COST;
+    const hasSufficientCredits = availableCredits >= PRIORITY_INTRO_CONSTANTS.CREDIT_COST;
 
     // Reset message and image error when modal opens/closes
     useEffect(() => {
@@ -149,7 +149,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                     // Footer
                     <div className={styles.modalFooter}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                            <div className={`${styles.creditBadge} ${!hasSufficientCredits && !isBalanceLoading ? styles.creditBadgeWarning : ''}`}>
+                            <div className={`${styles.creditBadge} ${!hasSufficientCredits && !isCreditLoading ? styles.creditBadgeWarning : ''}`}>
                                 <svg
                                     width="14"
                                     height="14"
@@ -160,18 +160,15 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                                 </svg>
                                 <span>
                                     Cost: {PRIORITY_INTRO_CONSTANTS.CREDIT_COST} Credit
-                                    {isBalanceLoading ? '' : ` (Bal: ${currentBalance})`}
+                                    {isCreditLoading ? '' : ` (Bal: ${availableCredits})`}
                                 </span>
                             </div>
 
-                            {!hasSufficientCredits && !isBalanceLoading && (
+                            {!hasSufficientCredits && !isCreditLoading && onBuyCredits && (
                                 <button
                                     type="button"
                                     className={styles.buyCreditsCta}
-                                    onClick={() => {
-                                        onClose();
-                                        navigate(BILLING_ROUTES.HUB);
-                                    }}
+                                    onClick={onBuyCredits}
                                 >
                                     Buy Credits
                                 </button>
@@ -194,7 +191,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                             >
                                 {isSubmitting
                                     ? 'Sending...'
-                                    : !hasSufficientCredits && !isBalanceLoading
+                                    : !hasSufficientCredits && !isCreditLoading
                                       ? 'Insufficient Credits'
                                       : 'Send Introduction'}
                             </button>
