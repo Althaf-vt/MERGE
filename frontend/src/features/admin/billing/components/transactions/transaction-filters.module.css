@@ -1,0 +1,108 @@
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background-color: var(--admin-surface, #09090b);
+    border: 1px solid var(--admin-border, #27272a);
+    border-radius: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.filtersLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.searchInput {
+    background-color: var(--admin-bg, #000000);
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 7px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-radius: 4px;
+    outline: none;
+    min-width: 220px;
+    transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+    border-color: var(--admin-border-focus, #52525b);
+}
+
+.select {
+    background-color: var(--admin-bg, #000000);
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 7px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.select:focus {
+    border-color: var(--admin-border-focus, #52525b);
+}
+
+.dateRangeGroup {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dateLabel {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--admin-text-subtle, #71717a);
+    text-transform: uppercase;
+}
+
+.dateInput {
+    background-color: var(--admin-bg, #000000);
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+}
+
+.dateInput:focus {
+    border-color: var(--admin-border-focus, #52525b);
+}
+
+.resetBtn {
+    background-color: transparent;
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-secondary, #a1a1aa);
+    padding: 7px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.resetBtn:hover {
+    color: var(--admin-text-primary, #fafafa);
+    border-color: var(--admin-border-hover, #3f3f46);
+    background-color: var(--admin-hover, #18181b);
+}
