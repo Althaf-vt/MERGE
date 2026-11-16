@@ -167,5 +167,13 @@ export const API_ENDPOINTS = {
             PREVIEW_MESSAGE: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/message`,
             PREVIEW_COACHING: (sessionId: string) => `/admin/scene-partner/scenarios/preview/${sessionId}/coaching`,
         },
+        BILLING: {
+            BASE: '/admin/billing',
+            PLANS: '/admin/billing/plans',
+            PLAN_BY_ID: (id: string) => `/admin/billing/plans/${id}`,
+            CREDIT_PACKS: '/admin/billing/credit-packs',
+            CREDIT_PACK_BY_ID: (id: string) => `/admin/billing/credit-packs/${id}`,
+            TRANSACTIONS: '/admin/billing/transactions',
+        },
     }
 } as const;
