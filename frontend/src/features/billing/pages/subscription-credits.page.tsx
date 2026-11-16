@@ -19,6 +19,7 @@ import { PaymentSuccessModal } from '../components/payment/payment-success-modal
 import { PaymentFailedModal } from '../components/payment/payment-failed-modal.component';
 import { BILLING_ROUTES } from '../constants/billing.constants';
 import type { CreditPackDto, SubscriptionPlanDto } from '../types/billing.types';
+import { formatCurrencyDisplay } from '../utils/currency.util';
 import styles from './subscription-credits.module.css';
 
 export const SubscriptionCreditsPage: React.FC = () => {
@@ -90,7 +91,7 @@ export const SubscriptionCreditsPage: React.FC = () => {
             itemId: selectedPack.id,
             itemType: 'CREDIT_PACK',
             itemName: selectedPack.name,
-            amountFormatted: selectedPack.price.formatted,
+            amountFormatted: formatCurrencyDisplay(selectedPack.price.formatted),
         });
     };
 
@@ -100,7 +101,7 @@ export const SubscriptionCreditsPage: React.FC = () => {
             itemId: plan.id,
             itemType: 'PLAN',
             itemName: plan.name,
-            amountFormatted: plan.effectivePrice?.formatted || plan.price.formatted,
+            amountFormatted: formatCurrencyDisplay(plan.effectivePrice?.formatted || plan.price.formatted),
         });
     };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import styles from './checkout-summary-card.module.css';
 
 export interface CheckoutSummaryCardProps {
@@ -33,7 +34,7 @@ export const CheckoutSummaryCard: React.FC<CheckoutSummaryCardProps> = ({
                             <span className={styles.itemDescription}>{itemDescription}</span>
                         )}
                     </div>
-                    <span className={styles.amount}>{amountFormatted}</span>
+                    <span className={styles.amount}>{formatCurrencyDisplay(amountFormatted)}</span>
                 </div>
             ) : (
                 <div className={styles.emptyStateText}>

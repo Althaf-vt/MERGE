@@ -1,5 +1,6 @@
 import React from 'react';
 import type { CreditPackDto } from '../../types/billing.types';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import styles from './credit-pack-card.module.css';
 
 export interface CreditPackCardProps {
@@ -45,7 +46,7 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
                 <span className={styles.creditsLabel}>Credits</span>
             </div>
 
-            <div className={styles.priceTag}>{pack.price.formatted}</div>
+            <div className={styles.priceTag}>{formatCurrencyDisplay(pack.price.formatted)}</div>
 
             <button
                 type="button"

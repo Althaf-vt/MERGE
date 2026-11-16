@@ -16,6 +16,7 @@ import { BILLING_ROUTES } from '../constants/billing.constants';
 import type { SubscriptionPlanDto } from '../types/billing.types';
 import { toast } from '../../../shared/utils/toast.util';
 import { getErrorMessage } from '../../../shared/utils/error.util';
+import { formatCurrencyDisplay } from '../utils/currency.util';
 import styles from './manage-subscription.module.css';
 
 export const ManageSubscriptionPage: React.FC = () => {
@@ -45,7 +46,8 @@ export const ManageSubscriptionPage: React.FC = () => {
     // Find active plan details
     const activePlan = plans.find((p) => p.id === subscription?.planId);
     const planName = activePlan?.name || 'PREMIUM';
-    const planPriceFormatted = activePlan?.effectivePrice?.formatted || activePlan?.price.formatted || '₹999 / month';
+    const rawPrice = activePlan?.effectivePrice?.formatted || activePlan?.price.formatted;
+    const planPriceFormatted = rawPrice ? formatCurrencyDisplay(rawPrice) : '₹999 / month';
     const billingPeriodLabel =
         activePlan?.billingPeriod === 'ANNUAL'
             ? 'Annual Billing'
@@ -84,7 +86,7 @@ export const ManageSubscriptionPage: React.FC = () => {
             itemId: plan.id,
             itemType: 'PLAN',
             itemName: plan.name,
-            amountFormatted: plan.effectivePrice?.formatted || plan.price.formatted,
+            amountFormatted: formatCurrencyDisplay(plan.effectivePrice?.formatted || plan.price.formatted),
         });
     };
 

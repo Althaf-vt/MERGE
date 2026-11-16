@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import styles from './payment-success-modal.module.css';
 
 export interface PaymentSuccessModalProps {
@@ -85,7 +86,7 @@ export const PaymentSuccessModal: React.FC<PaymentSuccessModalProps> = ({
                     <div className={styles.summaryRow}>
                         <span className={styles.summaryLabel}>{itemName}</span>
                         {amountFormatted && (
-                            <span className={styles.summaryPrice}>{amountFormatted}</span>
+                            <span className={styles.summaryPrice}>{formatCurrencyDisplay(amountFormatted)}</span>
                         )}
                     </div>
                     {referenceId && (

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { BillingTransactionDto } from '../../types/billing.types';
 import { TRANSACTION_STATUS_CONFIG } from '../../constants/billing.constants';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import styles from './mini-billing-history.module.css';
 
 export interface MiniBillingHistoryProps {
@@ -93,7 +94,7 @@ export const MiniBillingHistory: React.FC<MiniBillingHistoryProps> = ({
                                 </div>
                                 <div className={styles.itemRight}>
                                     <span className={styles.itemAmount}>
-                                        {item.amount?.formatted || 'Free'}
+                                        {formatCurrencyDisplay(item.amount?.formatted) || 'Free'}
                                     </span>
                                     <span className={`${styles.statusBadge} ${getStatusClass(item.status)}`}>
                                         {statusMeta.label}

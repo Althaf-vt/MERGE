@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { SubscriptionPlanDto } from '../../types/billing.types';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import styles from './upgrade-plan-modal.module.css';
 
 export interface UpgradePlanModalProps {
@@ -114,7 +115,7 @@ export const UpgradePlanModal: React.FC<UpgradePlanModalProps> = ({
 
                                         <div className={styles.priceWrapper}>
                                             <span className={styles.amount}>
-                                                {plan.effectivePrice?.formatted || plan.price.formatted}
+                                                {formatCurrencyDisplay(plan.effectivePrice?.formatted || plan.price.formatted)}
                                             </span>
                                             <span className={styles.interval}>{periodLabel}</span>
 
@@ -192,7 +193,7 @@ export const UpgradePlanModal: React.FC<UpgradePlanModalProps> = ({
                                 ) : (
                                     <span>
                                         Upgrade to {selectedPlan?.name || 'Premium'} (
-                                        {selectedPlan?.effectivePrice?.formatted || selectedPlan?.price.formatted})
+                                        {formatCurrencyDisplay(selectedPlan?.effectivePrice?.formatted || selectedPlan?.price.formatted)})
                                     </span>
                                 )}
                             </button>

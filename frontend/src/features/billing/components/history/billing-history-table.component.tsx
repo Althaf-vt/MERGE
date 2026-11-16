@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { BillingTransactionDto } from '../../types/billing.types';
 import { TRANSACTION_STATUS_CONFIG } from '../../constants/billing.constants';
+import { formatCurrencyDisplay } from '../../utils/currency.util';
 import { DataTable, type DataTableColumn } from '../../../../shared/components/tables';
 import styles from './billing-history-table.module.css';
 
@@ -72,7 +73,7 @@ export const BillingHistoryTable: React.FC<BillingHistoryTableProps> = ({
             header: 'Amount',
             render: (tx) => (
                 <span className={styles.amountText}>
-                    {tx.amount?.formatted || 'Free'}
+                    {formatCurrencyDisplay(tx.amount?.formatted) || 'Free'}
                 </span>
             ),
         },
