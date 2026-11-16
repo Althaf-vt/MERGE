@@ -89,6 +89,21 @@ export const API_ENDPOINTS = {
         ADD: '/private-lists/add',
         REMOVE: (targetUserId: string) => `/private-lists/${targetUserId}`,
     },
+    BILLING: {
+        BASE: '/billing',
+        PLANS: '/billing/plans',
+        SUBSCRIPTION: '/billing/subscription',
+        AUTO_RENEW: '/billing/subscription/auto-renew',
+        CANCEL: '/billing/subscription/cancel',
+        CREDITS_PACKS: '/billing/credits/packs',
+        CREDITS_BALANCE: '/billing/credits/balance',
+        HISTORY: '/billing/history',
+        PAYMENTS: {
+            BASE: '/billing/payments',
+            ORDER: '/billing/payments/order',
+            VERIFY: '/billing/payments/verify',
+        },
+    },
     ADMIN: {
         AUTH: {
             BASE: '/admin/auth',
