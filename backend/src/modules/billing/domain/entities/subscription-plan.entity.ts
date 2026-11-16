@@ -74,6 +74,7 @@ export class SubscriptionPlan {
     get name(): string { return this._props.name; }
     get code(): string { return this._props.code; }
     get billingPeriod(): BillingPeriod { return this._props.billingPeriod; }
+    get billingPeriodVO(): PlanBillingPeriod { return this._billingPeriodVO; }
     get price(): MoneyVO { return this._priceVO; }
     get entitlements(): SubscriptionEntitlement[] { return [...this._props.entitlements]; }
     get offers(): PlanOffer[] { return [...this._offersVO]; }
