@@ -6,6 +6,7 @@ export const BILLING_ERROR_MESSAGES = {
     ENTITLEMENTS_REQUIRED: 'Subscription plan must have at least one entitlement.',
     PLAN_NOT_FOUND: 'Subscription plan not found.',
     PLAN_INACTIVE: 'Subscription plan is currently unavailable for purchase.',
+    PLAN_CODE_ALREADY_EXISTS: 'Subscription plan with this code already exists.',
     CREDIT_PACK_ID_REQUIRED: 'Credit pack ID is required.',
     CREDIT_PACK_CODE_REQUIRED: 'Credit pack code is required.',
     CREDIT_PACK_NAME_REQUIRED: 'Credit pack name is required.',
