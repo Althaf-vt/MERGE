@@ -5,7 +5,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(17, 24, 39, 0.45);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,20 +15,20 @@
 
 .modal {
     background-color: #ffffff;
-    border-radius: 20px;
+    border-radius: 12px;
     width: 100%;
-    max-width: 480px;
-    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15);
-    border: 1px solid #f3f4f6;
-    padding: 2rem;
+    max-width: 440px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e5e7eb;
+    padding: 1.5rem;
     position: relative;
-    animation: scaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes scaleIn {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(10px);
+        transform: scale(0.96) translateY(8px);
     }
     to {
         opacity: 1;
@@ -38,14 +38,14 @@
 
 .closeButton {
     position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
+    top: 1rem;
+    right: 1rem;
     background: transparent;
     border: none;
     color: #9ca3af;
     cursor: pointer;
-    padding: 0.35rem;
-    border-radius: 8px;
+    padding: 0.3rem;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,138 +58,152 @@
 }
 
 .iconWrapper {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     background-color: #fffbeb;
     border: 1px solid #fef3c7;
     color: #d97706;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .title {
-    font-size: 1.35rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 600;
     color: #111827;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.35rem 0;
 }
 
 .subtitle {
-    font-size: 0.925rem;
+    font-size: 0.85rem;
     color: #4b5563;
-    line-height: 1.5;
-    margin: 0 0 1.25rem 0;
+    line-height: 1.45;
+    margin: 0 0 1rem 0;
 }
 
 .highlightDate {
-    font-weight: 700;
+    font-weight: 600;
     color: #111827;
 }
 
 .benefitsCard {
     background-color: #f9fafb;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.25rem;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
 }
 
 .benefitsTitle {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #374151;
     margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .benefitsList {
+    list-style: none;
+    padding: 0;
     margin: 0;
-    padding-left: 1.2rem;
-    font-size: 0.85rem;
-    color: #374151;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.formGroup {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    margin-bottom: 1.5rem;
 }
 
-.label {
-    font-size: 0.85rem;
+.benefitItem {
+    font-size: 0.8rem;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.benefitIcon {
+    color: #059669;
+    flex-shrink: 0;
+}
+
+.reasonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+}
+
+.reasonLabel {
+    font-size: 0.775rem;
     font-weight: 600;
-    color: #374151;
+    color: #4b5563;
 }
 
-.select {
+.textarea {
     width: 100%;
-    padding: 0.65rem 0.85rem;
-    border-radius: 10px;
+    box-sizing: border-box;
     border: 1px solid #d1d5db;
-    background-color: #ffffff;
-    font-size: 0.9rem;
-    color: #1f2937;
-    transition: border-color 0.15s ease;
-    cursor: pointer;
-}
-
-.select:focus {
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.825rem;
+    color: #111827;
+    font-family: inherit;
+    resize: none;
     outline: none;
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    transition: border-color 0.15s ease;
 }
 
-.actionsRow {
+.textarea:focus {
+    border-color: #6d28d9;
+    box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.1);
+}
+
+.actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 0.6rem;
 }
 
 .keepButton {
-    background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid #d1d5db;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
     font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
-    transition: all 0.2s ease;
-}
-
-.keepButton:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.3);
-}
-
-.confirmButton {
-    background-color: transparent;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    color: #374151;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
+.keepButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.confirmButton {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
 .confirmButton:hover:not(:disabled) {
-    background-color: #fef2f2;
-    border-color: #f87171;
+    background-color: #b91c1c;
 }
 
 .confirmButton:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }

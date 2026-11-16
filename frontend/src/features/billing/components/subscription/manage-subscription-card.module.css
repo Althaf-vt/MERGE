@@ -1,64 +1,64 @@
 .container {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
     width: 100%;
 }
 
 .sectionCard {
     background-color: #ffffff;
-    border: 1px solid #f3f4f6;
-    border-radius: 16px;
-    padding: 1.75rem;
-    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     transition: border-color 0.15s ease;
 }
 
 .sectionCard:hover {
-    border-color: #e5e7eb;
+    border-color: #d1d5db;
 }
 
 .sectionTitle {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 600;
     color: #111827;
-    margin: 0 0 1.25rem 0;
+    margin: 0 0 1rem 0;
 }
 
 .planHeader {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .planInfoLeft {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .planIcon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
     background-color: #ede9fe;
-    color: #7c3aed;
+    color: #6d28d9;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .planName {
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #111827;
-    margin: 0 0 0.2rem 0;
+    margin: 0 0 0.15rem 0;
     letter-spacing: -0.01em;
 }
 
 .planSubtext {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #6b7280;
     margin: 0;
 }
@@ -66,9 +66,9 @@
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.65rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 9999px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -96,28 +96,28 @@
 .detailsGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    padding: 1.25rem 0;
+    gap: 1rem;
+    padding: 1rem 0;
     border-top: 1px solid #f3f4f6;
     border-bottom: 1px solid #f3f4f6;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 640px) {
     .detailsGrid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 }
 
 .detailCol {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
 .detailLabel {
-    font-size: 0.75rem;
+    font-size: 0.725rem;
     font-weight: 700;
     color: #6b7280;
     text-transform: uppercase;
@@ -125,8 +125,8 @@
 }
 
 .detailValue {
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 600;
     color: #111827;
     letter-spacing: -0.01em;
 }
@@ -134,24 +134,24 @@
 .entitlementsList {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.35rem;
 }
 
 .entitlementPill {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     background-color: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 9999px;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.775rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.725rem;
     font-weight: 500;
     color: #374151;
 }
 
 .pillIcon {
-    color: #7c3aed;
+    color: #6d28d9;
     display: flex;
     align-items: center;
 }
@@ -160,23 +160,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
 .toggleTextLeft {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
 }
 
 .toggleLabel {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: #111827;
 }
 
 .toggleSubtext {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: #6b7280;
     line-height: 1.4;
 }
@@ -184,8 +184,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 48px;
-    height: 26px;
+    width: 44px;
+    height: 24px;
     flex-shrink: 0;
 }
 
@@ -198,26 +198,23 @@
 .slider {
     position: absolute;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-color: #e5e7eb;
     transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    border-radius: 26px;
+    border-radius: 24px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
+    height: 18px;
+    width: 18px;
     left: 3px;
     bottom: 3px;
     background-color: #ffffff;
     transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .switchInput:checked + .slider {
@@ -225,25 +222,25 @@
 }
 
 .switchInput:checked + .slider:before {
-    transform: translateX(22px);
+    transform: translateX(20px);
 }
 
 .switchInput:disabled + .slider {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 .actionsSubtext {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: #6b7280;
-    margin: 0 0 1.25rem 0;
-    line-height: 1.45;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
 }
 
 .actionsRow {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
@@ -251,9 +248,9 @@
     background-color: #f3f4f6;
     color: #1f2937;
     border: 1px solid #e5e7eb;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.875rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -268,11 +265,11 @@
     background: transparent;
     border: none;
     color: #dc2626;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.825rem;
     font-weight: 600;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: all 0.15s ease;
 }
 
@@ -284,18 +281,18 @@
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
     color: #ffffff;
     border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.875rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.825rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.2);
     transition: all 0.2s ease;
 }
 
 .upgradeButton:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.3);
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
 }
 
 .skeleton {
