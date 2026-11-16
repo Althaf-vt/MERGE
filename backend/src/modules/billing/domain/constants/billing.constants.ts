@@ -25,3 +25,10 @@ export const BILLING_KILL_SWITCHES_DEFAULT = {
     CREDIT_PURCHASES_ENABLED: true,
     CREDIT_CONSUMPTION_ENABLED: true,
 } as const;
+
+export const BILLING_TRANSACTION_DESCRIPTIONS = {
+    SUBSCRIPTION_PURCHASE: (planName: string) => `Subscription purchase: ${planName}`,
+    CREDIT_PURCHASE: (packName: string, count: number) => `Purchased credit pack: ${packName} (+${count} credits)`,
+    PRIORITY_INTRO_SPEND: 'Priority Introduction consumption',
+    DEFAULT_CANCEL_REASON: 'User requested cancellation',
+} as const;
