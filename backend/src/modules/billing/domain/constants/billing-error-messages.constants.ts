@@ -10,6 +10,7 @@ export const BILLING_ERROR_MESSAGES = {
     CREDIT_PACK_ID_REQUIRED: 'Credit pack ID is required.',
     CREDIT_PACK_CODE_REQUIRED: 'Credit pack code is required.',
     CREDIT_PACK_NAME_REQUIRED: 'Credit pack name is required.',
+    CREDIT_PACK_CODE_ALREADY_EXISTS: 'Credit pack with this code already exists.',
     CREDIT_PACK_MIN_COUNT: 'Credit pack must contain at least 1 credit.',
     CREDIT_PACK_NOT_FOUND: 'Credit pack not found.',
     CREDIT_PACK_UNLISTED: 'Credit pack is currently unavailable for purchase.',

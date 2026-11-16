@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
 import { Model } from 'mongoose';
 import { ErrorCode } from '../../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../../../domain/constants/billing-error-messages.constants';
+import { BILLING_ID_PREFIXES, generateBillingId } from '../../../domain/constants/billing.constants';
 import { CreditAccount } from '../../../domain/entities/credit-account.entity';
 import { ICreditAccountRepository } from '../../../domain/interfaces/credit-account-repository.interface';
 import { CreditAccountPersistenceMapper } from '../mappers/credit-account-persistence.mapper';
@@ -34,7 +34,11 @@ export class MongoCreditAccountRepository implements ICreditAccountRepository {
             return existing;
         }
 
-        const newAccount = CreditAccount.initialize(randomUUID(), userId, 0);
+        const newAccount = CreditAccount.initialize(
+            generateBillingId(BILLING_ID_PREFIXES.CREDIT_ACCOUNT),
+            userId,
+            0,
+        );
         return this.create(newAccount);
     }
 
