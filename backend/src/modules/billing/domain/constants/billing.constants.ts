@@ -56,3 +56,9 @@ export const SUBSCRIPTION_RENEWAL_MESSAGES = {
     UNKNOWN_ERROR: 'An unexpected error occurred during subscription renewal.',
 } as const;
 
+export const PAYMENT_MESSAGES = {
+    ORDER_CREATED: 'Payment order created successfully.',
+    PAYMENT_VERIFIED: 'Payment verified and item successfully activated.',
+    PAYMENT_ALREADY_VERIFIED: 'Payment has already been verified and processed.',
+} as const;
+
