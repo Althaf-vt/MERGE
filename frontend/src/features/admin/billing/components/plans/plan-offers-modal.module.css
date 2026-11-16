@@ -1,0 +1,232 @@
+.container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+}
+
+.errorBanner {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.sectionTitle {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--admin-text-primary, #fafafa);
+    margin: 0;
+}
+
+.offersList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.offerCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 4px;
+    border: 1px solid var(--admin-border, #27272a);
+    background-color: var(--admin-surface, #09090b);
+    gap: 12px;
+}
+
+.offerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.offerHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.offerCode {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-accent-text, #d8b4fe);
+    letter-spacing: 0.04em;
+}
+
+.offerDiscount {
+    display: inline-flex;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.offerDates {
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.offerControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggleBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: opacity 0.15s ease;
+}
+
+.toggleBtnActive {
+    color: #34d399;
+}
+
+.toggleBtnInactive {
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.deleteBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-subtle, #71717a);
+    border-radius: 4px;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.deleteBtn:hover {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.emptyOffers {
+    padding: 20px;
+    text-align: center;
+    border: 1px dashed var(--admin-border, #27272a);
+    border-radius: 4px;
+    color: var(--admin-text-subtle, #71717a);
+    font-size: 11px;
+}
+
+.addForm {
+    border-top: 1px solid var(--admin-border, #27272a);
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.addFormRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.input {
+    background-color: var(--admin-surface, #000000);
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 7px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    border-color: var(--admin-border-focus, #52525b);
+}
+
+.addBtn {
+    align-self: flex-end;
+    background-color: var(--admin-accent-text, #d8b4fe);
+    color: #000;
+    border: none;
+    padding: 7px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.addBtn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.addBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--admin-border, #27272a);
+    padding-top: 16px;
+}
+
+.closeBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 8px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+    background: var(--admin-border, #27272a);
+}
