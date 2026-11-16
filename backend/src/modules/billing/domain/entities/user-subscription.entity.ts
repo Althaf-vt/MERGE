@@ -2,6 +2,7 @@ import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { AggregateRoot } from '../../../../shared/domain/events/aggregate-root';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
+import { BILLING_TRANSACTION_DESCRIPTIONS } from '../constants/billing.constants';
 import { SubscriptionEntitlement, SubscriptionStatus } from '../enums/billing.enums';
 import { RenewSubscriptionParams, SubscribeUserParams, UserSubscriptionData, UserSubscriptionProps, UserSubscriptionSnapshot } from '../interfaces/user-subscription.types';
 
@@ -123,7 +124,7 @@ export class UserSubscription extends AggregateRoot {
         this._props.autoRenew = false;
         this._props.status = SubscriptionStatus.CANCELED;
         this._props.canceledAt = new Date();
-        this._props.cancelReason = reason?.trim() ?? 'User requested cancellation';
+        this._props.cancelReason = reason?.trim() ?? BILLING_TRANSACTION_DESCRIPTIONS.DEFAULT_CANCEL_REASON;
         this._props.updatedAt = new Date();
     }
 
