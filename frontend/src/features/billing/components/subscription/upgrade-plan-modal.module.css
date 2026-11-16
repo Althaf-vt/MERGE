@@ -15,14 +15,14 @@
 
 .modal {
     background-color: #ffffff;
-    border-radius: 12px;
+    border-radius: 14px;
     width: 100%;
-    max-width: 680px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 740px;
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     border: 1px solid #e5e7eb;
-    padding: 1.5rem 1.75rem;
+    padding: 1.75rem 2rem;
     position: relative;
-    max-height: 90vh;
+    max-height: 92vh;
     overflow-y: auto;
     animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -40,13 +40,13 @@
 
 .closeButton {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 1.25rem;
+    right: 1.25rem;
     background: transparent;
     border: none;
     color: #9ca3af;
     cursor: pointer;
-    padding: 0.3rem;
+    padding: 0.35rem;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -59,13 +59,18 @@
     background-color: #f3f4f6;
 }
 
+.closeButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .header {
     text-align: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .title {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 700;
     color: #111827;
     letter-spacing: -0.01em;
@@ -75,7 +80,7 @@
 .subtitle {
     font-size: 0.85rem;
     color: #6b7280;
-    max-width: 480px;
+    max-width: 500px;
     margin: 0 auto;
     line-height: 1.45;
 }
@@ -84,7 +89,8 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    align-items: stretch;
 }
 
 @media (max-width: 768px) {
@@ -95,16 +101,17 @@
 
 .planCard {
     background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 1.15rem 0.85rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.35rem 1rem 1rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    text-align: center;
+    text-align: left;
     cursor: pointer;
     position: relative;
-    transition: all 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .planCard:hover {
@@ -114,151 +121,170 @@
 }
 
 .planCardSelected {
-    border-color: #6d28d9;
+    border-color: #7c3aed;
     background-color: #faf5ff;
-    box-shadow: 0 0 0 2px #6d28d9, 0 4px 12px -2px rgba(109, 40, 217, 0.12);
+    box-shadow: 0 0 0 2px #7c3aed, 0 6px 16px -2px rgba(124, 58, 237, 0.15);
 }
 
 .popularBadge {
     position: absolute;
-    top: -9px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
     color: #ffffff;
     font-size: 0.65rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    padding: 0.15rem 0.55rem;
+    padding: 0.2rem 0.65rem;
     border-radius: 9999px;
-    box-shadow: 0 2px 6px rgba(109, 40, 217, 0.25);
+    box-shadow: 0 2px 6px rgba(109, 40, 217, 0.3);
     white-space: nowrap;
 }
 
 .planName {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     color: #111827;
     margin: 0 0 0.35rem 0;
+    text-align: center;
 }
 
 .priceWrapper {
-    margin-bottom: 0.75rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
 }
 
-.priceValue {
-    font-size: 1.5rem;
-    font-weight: 700;
+.amount {
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #111827;
-    line-height: 1.1;
+    letter-spacing: -0.01em;
 }
 
-.pricePeriod {
-    font-size: 0.775rem;
-    color: #6b7280;
+.interval {
+    font-size: 0.8rem;
     font-weight: 500;
-}
-
-.originalPrice {
-    font-size: 0.75rem;
-    color: #9ca3af;
-    text-decoration: line-through;
-    margin-top: 0.15rem;
+    color: #6b7280;
+    margin-left: 0.15rem;
 }
 
 .discountBadge {
     display: inline-block;
     background-color: #ecfdf5;
     color: #059669;
-    font-size: 0.675rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 0.15rem 0.45rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 9999px;
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
 }
 
-.entitlementsList {
+.featuresList {
     list-style: none;
     padding: 0;
-    margin: 0 0 1rem 0;
+    margin: 0 0 1.25rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    text-align: left;
+    gap: 0.55rem;
+    flex: 1;
 }
 
-.entitlementItem {
-    font-size: 0.75rem;
-    color: #4b5563;
+.featureItem {
+    font-size: 0.775rem;
+    color: #374151;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    line-height: 1.35;
+}
+
+.featureCheck {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-}
-
-.entitlementIcon {
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ecfdf5;
     color: #059669;
     flex-shrink: 0;
+    margin-top: 0.05rem;
 }
 
-.selectIndicator {
+.selectButton {
     width: 100%;
-    padding: 0.45rem 0.65rem;
-    border-radius: 6px;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
     font-size: 0.8rem;
     font-weight: 600;
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #e5e7eb;
+    cursor: pointer;
     transition: all 0.15s ease;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    text-align: center;
 }
 
-.planCardSelected .selectIndicator {
-    background-color: #6d28d9;
-    border-color: #6d28d9;
+.selectButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.planCardSelected .selectButton {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
     color: #ffffff;
 }
 
-.footer {
+.planCardSelected .selectButton:hover {
+    background-color: #6d28d9;
+}
+
+.footerActions {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.65rem;
-    padding-top: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
     border-top: 1px solid #f3f4f6;
 }
 
-.checkoutButton {
+.upgradeButton {
     width: 100%;
-    max-width: 320px;
+    max-width: 400px;
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
     color: #ffffff;
     border: none;
-    padding: 0.6rem 1.25rem;
+    padding: 0.7rem 1.5rem;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(109, 40, 217, 0.2);
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     transition: all 0.2s ease;
 }
 
-.checkoutButton:hover:not(:disabled) {
+.upgradeButton:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.35);
 }
 
-.checkoutButton:disabled {
+.upgradeButton:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
 }
 
-.securityNote {
+.guaranteeText {
     font-size: 0.75rem;
     color: #6b7280;
     display: flex;
@@ -266,19 +292,20 @@
     gap: 0.3rem;
 }
 
-.skeletonCard {
-    height: 220px;
-    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 10px;
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: rotate 0.8s linear infinite;
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
     }
-    100% {
-        background-position: -200% 0;
+    to {
+        transform: rotate(360deg);
     }
 }
