@@ -1,0 +1,44 @@
+.pageContainer {
+    width: 100%;
+    max-width: 760px;
+    padding: 1.5rem 0 3rem 0;
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1.25rem;
+    padding: 0.25rem 0;
+    transition: color 0.15s ease;
+}
+
+.backButton:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
+
+.pageHeader {
+    margin-bottom: 1.75rem;
+}
+
+.pageTitle {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.45;
+}
