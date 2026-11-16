@@ -1,8 +1,10 @@
+import { APP_ROUTES } from '../../../shared/constants/app-routes.constant';
+
 export const BILLING_ROUTES = {
-    HUB: '/profile/billing',
-    MANAGE: '/profile/billing/manage',
-    HISTORY: '/profile/billing/history',
-    CREDIT_HISTORY: '/profile/billing/credits/history',
+    HUB: APP_ROUTES.PROFILE.BILLING,
+    MANAGE: APP_ROUTES.PROFILE.MANAGE_BILLING,
+    HISTORY: APP_ROUTES.PROFILE.BILLING_HISTORY,
+    CREDIT_HISTORY: APP_ROUTES.PROFILE.CREDIT_HISTORY,
 } as const;
 
 export const RAZORPAY_CONFIG = {
