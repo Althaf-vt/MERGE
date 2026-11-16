@@ -32,3 +32,18 @@ export const BILLING_TRANSACTION_DESCRIPTIONS = {
     PRIORITY_INTRO_SPEND: 'Priority Introduction consumption',
     DEFAULT_CANCEL_REASON: 'User requested cancellation',
 } as const;
+
+export const BILLING_ID_PREFIXES = {
+    PLAN: 'merge-plan',
+    CREDIT_PACK: 'merge-pack',
+    SUBSCRIPTION: 'merge-sub',
+    CREDIT_ACCOUNT: 'merge-acc',
+    TRANSACTION: 'merge-tx',
+} as const;
+
+export const generateBillingId = (prefix: string): string => {
+    const timestamp = Date.now().toString(36);
+    const entropy = Math.random().toString(36).substring(2, 6);
+    return `${prefix}-${timestamp}-${entropy}`;
+};
+
