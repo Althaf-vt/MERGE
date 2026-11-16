@@ -6,13 +6,12 @@ import { BILLING_ID_PREFIXES, generateBillingId, PAYMENT_MESSAGES } from '../../
 import { BillingTransaction } from '../../domain/entities/billing-transaction.entity';
 import { CreditAccount } from '../../domain/entities/credit-account.entity';
 import { UserSubscription } from '../../domain/entities/user-subscription.entity';
-import { BillingItemType, PaymentEnvironment } from '../../domain/enums/billing.enums';
+import { BillingItemType } from '../../domain/enums/billing.enums';
 import { BILLING_TRANSACTION_REPOSITORY, IBillingTransactionRepository } from '../../domain/interfaces/billing-transaction-repository.interface';
 import { CREDIT_ACCOUNT_REPOSITORY, ICreditAccountRepository } from '../../domain/interfaces/credit-account-repository.interface';
 import { CREDIT_PACK_REPOSITORY, ICreditPackRepository } from '../../domain/interfaces/credit-pack-repository.interface';
 import { ISubscriptionPlanRepository, SUBSCRIPTION_PLAN_REPOSITORY } from '../../domain/interfaces/subscription-plan-repository.interface';
 import { IUserSubscriptionRepository, USER_SUBSCRIPTION_REPOSITORY } from '../../domain/interfaces/user-subscription-repository.interface';
-import { PlanBillingPeriod } from '../../domain/value-objects/plan-billing-period.vo';
 import { PaymentVerificationResponseDto } from '../dtos/payment-verification-response.dto';
 import { VerifyPaymentDto } from '../dtos/verify-payment.dto';
 import { IPaymentGateway, PAYMENT_GATEWAY } from '../interfaces/payment-gateway.interface';
@@ -84,7 +83,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
             let subId: string;
 
             if (activeSub && activeSub.isActive(now)) {
-                const newEnd = PlanBillingPeriod.create(plan.billingPeriod).calculatePeriodEnd(
+                const newEnd = plan.billingPeriodVO.calculatePeriodEnd(
                     activeSub.currentPeriodEnd,
                 );
                 activeSub.renewPeriod({
@@ -94,7 +93,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
                 await this._userSubscriptionRepository.update(activeSub);
                 subId = activeSub.id;
             } else {
-                const periodEnd = PlanBillingPeriod.create(plan.billingPeriod).calculatePeriodEnd(now);
+                const periodEnd = plan.billingPeriodVO.calculatePeriodEnd(now);
                 const newSub = UserSubscription.subscribe({
                     id: generateBillingId(BILLING_ID_PREFIXES.SUBSCRIPTION),
                     userId: userId.trim(),
