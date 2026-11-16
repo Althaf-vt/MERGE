@@ -1,0 +1,161 @@
+.card {
+    background-color: #ffffff;
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.th {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.tr {
+    transition: background-color 0.15s ease;
+}
+
+.tr:hover {
+    background-color: #fafafa;
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+.clickableRow:hover {
+    background-color: #f5f3ff;
+}
+
+.td {
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+.skeletonRow {
+    height: 48px;
+    background: linear-gradient(90deg, #f9fafb 25%, #f3f4f6 50%, #f9fafb 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.emptyState {
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: #f5f3ff;
+    color: #7c3aed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.emptyTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+}
+
+.emptyDescription {
+    font-size: 0.85rem;
+    color: #6b7280;
+    max-width: 360px;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.paginationFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background-color: #fafafa;
+    border-top: 1px solid #f3f4f6;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.paginationInfo {
+    font-size: 0.825rem;
+    color: #6b7280;
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pageButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #374151;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+.pageButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pageIndicator {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 0 0.4rem;
+}
