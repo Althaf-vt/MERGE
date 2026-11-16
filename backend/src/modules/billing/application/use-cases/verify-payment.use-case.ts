@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
-import { EnvConfig } from '../../../../shared/infrastructure/config/env.config';
 import { BILLING_ERROR_MESSAGES } from '../../domain/constants/billing-error-messages.constants';
 import { BILLING_ID_PREFIXES, generateBillingId, PAYMENT_MESSAGES } from '../../domain/constants/billing.constants';
 import { BillingTransaction } from '../../domain/entities/billing-transaction.entity';
@@ -71,7 +70,7 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
         }
 
         const now = new Date();
-        const environment = EnvConfig.app.isProduction ? PaymentEnvironment.LIVE : PaymentEnvironment.TEST;
+        const environment = this._paymentGateway.environment;
         let referenceId = '';
         let transactionId = '';
 

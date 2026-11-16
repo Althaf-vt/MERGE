@@ -6,10 +6,15 @@ import { DomainException } from '../../../../shared/domain/exceptions/domain.exc
 import { EnvConfig } from '../../../../shared/infrastructure/config/env.config';
 import { CreatePaymentOrderParams, IPaymentGateway, PaymentOrderResult, VerifyPaymentSignatureParams } from '../../application/interfaces/payment-gateway.interface';
 import { BILLING_ERROR_MESSAGES } from '../../domain/constants/billing-error-messages.constants';
+import { PaymentEnvironment } from '../../domain/enums/billing.enums';
 
 @Injectable()
 export class RazorpayPaymentService implements IPaymentGateway {
     private readonly _razorpay: Razorpay;
+
+    public get environment(): PaymentEnvironment {
+        return EnvConfig.app.isProduction ? PaymentEnvironment.LIVE : PaymentEnvironment.TEST;
+    }
 
     constructor() {
         this._razorpay = new Razorpay({

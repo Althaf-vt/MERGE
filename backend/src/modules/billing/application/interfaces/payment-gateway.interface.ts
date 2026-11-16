@@ -1,4 +1,4 @@
-import { Currency } from '../../domain/enums/billing.enums';
+import { Currency, PaymentEnvironment } from '../../domain/enums/billing.enums';
 
 export const PAYMENT_GATEWAY = 'PAYMENT_GATEWAY';
 
@@ -23,6 +23,7 @@ export interface VerifyPaymentSignatureParams {
 }
 
 export interface IPaymentGateway {
+    readonly environment: PaymentEnvironment;
     createOrder(params: CreatePaymentOrderParams): Promise<PaymentOrderResult>;
     verifyPaymentSignature(params: VerifyPaymentSignatureParams): boolean;
 }
