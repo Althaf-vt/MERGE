@@ -1,6 +1,7 @@
 import { SubscriptionEntitlement, SubscriptionStatus } from '../enums/billing.enums';
 
 export interface SubscribeUserParams {
+    id: string;
     userId: string;
     planId: string;
     entitlements: SubscriptionEntitlement[];
