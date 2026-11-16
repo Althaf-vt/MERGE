@@ -1,0 +1,176 @@
+.pageContainer {
+    width: 100%;
+    max-width: 1040px;
+    padding: 1.5rem 0 3rem 0;
+}
+
+.backButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: none;
+    color: #6d28d9;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1.25rem;
+    padding: 0.25rem 0;
+    transition: color 0.15s ease;
+}
+
+.backButton:hover {
+    color: #5b21b6;
+    text-decoration: underline;
+}
+
+.pageHeader {
+    margin-bottom: 1.75rem;
+}
+
+.pageTitle {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.statsPanel {
+    background-color: #ffffff;
+    border: 1px solid #f3f4f6;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.statsTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.balanceBox {
+    background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
+    border: 1px solid #ede9fe;
+    border-radius: 14px;
+    padding: 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.balanceIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.65rem;
+    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.25);
+}
+
+.balanceLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #6d28d9;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.balanceValue {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0.25rem 0 0.15rem 0;
+    letter-spacing: -0.02em;
+}
+
+.balanceSub {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.metricsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f3f4f6;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.metricItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.metricLabel {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.metricValue {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.buyCreditsButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+    transition: all 0.15s ease;
+}
+
+.buyCreditsButton:hover {
+    background: linear-gradient(135deg, #6d28d9, #5b21b6);
+    box-shadow: 0 6px 16px rgba(109, 40, 217, 0.3);
+    transform: translateY(-1px);
+}
+
+.buyCreditsButton:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 860px) {
+    .gridContainer {
+        grid-template-columns: 1fr;
+    }
+}
