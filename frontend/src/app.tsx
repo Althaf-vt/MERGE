@@ -49,10 +49,12 @@ import { ScenarioDetailPage } from './features/admin/scene-partner/pages/scenari
 import { DiscoveryPage } from './features/discovery/pages/discovery.page';
 import { ConnectionsPage } from './features/connections/pages/connections.page';
 import { ScenePartnerPage } from './features/scene-partner/pages/scene-partner.page';
-import { SubscriptionCreditsPage } from './features/billing/pages/subscription-credits.page';
-import { ManageSubscriptionPage } from './features/billing/pages/manage-subscription.page';
-import { BillingHistoryPage } from './features/billing/pages/billing-history.page';
-import { CreditHistoryPage } from './features/billing/pages/credit-history.page';
+import {
+    SubscriptionCreditsPage,
+    ManageSubscriptionPage,
+    BillingHistoryPage,
+    CreditHistoryPage,
+} from './features/billing';
 
 
 export const App = () => {

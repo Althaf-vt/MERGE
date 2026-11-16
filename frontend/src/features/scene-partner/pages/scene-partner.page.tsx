@@ -9,9 +9,8 @@ import { SimulationChat } from '../components/simulation-chat.component';
 import { SessionSummaryModal } from '../components/session-summary-modal.component';
 import { SessionHistoryList } from '../components/session-history-list.component';
 import { ScenePartnerToastContainer } from '../components/scene-partner-toast.component';
-import { UpgradePlanModal } from '../../billing/components/subscription/upgrade-plan-modal.component';
-import { useGetPlansQuery } from '../../billing/api/billing.api';
-import { BILLING_ROUTES } from '../../billing/constants/billing.constants';
+import { UpgradePlanModal, useGetPlansQuery } from '../../billing';
+import { APP_ROUTES } from '../../../shared/constants/app-routes.constant';
 import { getErrorMessage } from '../../../shared/utils/error.util';
 import { toast } from '../../../shared/utils/toast.util';
 import type { SceneSessionDto, SimulationType } from '../types/scene-partner.types';
@@ -378,7 +377,7 @@ export const ScenePartnerPage: React.FC = () => {
                 isLoading={isPlansLoading}
                 onUpgrade={() => {
                     setIsUpgradeModalOpen(false);
-                    navigate(BILLING_ROUTES.HUB);
+                    navigate(APP_ROUTES.PROFILE.BILLING);
                 }}
             />
         </main>
