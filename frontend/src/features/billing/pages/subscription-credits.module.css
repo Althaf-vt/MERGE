@@ -1,0 +1,152 @@
+.pageContainer {
+    width: 100%;
+    max-width: 1040px;
+    padding: 1.5rem 0 3.5rem 0;
+}
+
+.pageHeader {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+}
+
+.pageSubtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.topGrid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    margin-bottom: 2.25rem;
+    align-items: stretch;
+}
+
+.storeSection {
+    margin-bottom: 2.5rem;
+}
+
+.storeLayout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.historyGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.promoBanner {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 8px 24px -4px rgba(109, 40, 217, 0.25);
+}
+
+.promoContent {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.promoIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.promoTexts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.promoTitle {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.promoSubtitle {
+    font-size: 0.875rem;
+    color: #ede9fe;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.promoButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.35rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #6d28d9;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.promoButton:hover {
+    background-color: #f5f3ff;
+    color: #5b21b6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.promoButton:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+    .topGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .storeLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .historyGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .promoBanner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .promoButton {
+        width: 100%;
+        justify-content: center;
+    }
+}
