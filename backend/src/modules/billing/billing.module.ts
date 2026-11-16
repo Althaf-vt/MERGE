@@ -22,6 +22,7 @@ import { MongoBillingTransactionRepository } from './infrastructure/persistence/
 
 import { PAYMENT_GATEWAY } from './application/interfaces/payment-gateway.interface';
 import { RazorpayPaymentService } from './infrastructure/services/razorpay-payment.service';
+import { BillingSeederService } from './infrastructure/services/billing-seeder.service';
 
 import { CREATE_SUBSCRIPTION_PLAN_USE_CASE, GET_SUBSCRIPTION_PLAN_BY_ID_USE_CASE, GET_SUBSCRIPTION_PLANS_USE_CASE, UPDATE_SUBSCRIPTION_PLAN_USE_CASE } from './application/interfaces/subscription-plan.use-cases.interface';
 import { CreateSubscriptionPlanUseCase } from './application/use-cases/create-subscription-plan.use-case';
@@ -87,6 +88,9 @@ import { SubscriptionController } from './presentation/controllers/subscription.
 
         // Payment Gateway
         { provide: PAYMENT_GATEWAY, useClass: RazorpayPaymentService },
+
+        // Startup Seeder
+        BillingSeederService,
 
         // UseCases
         { provide: GET_SUBSCRIPTION_PLANS_USE_CASE, useClass: GetSubscriptionPlansUseCase },
