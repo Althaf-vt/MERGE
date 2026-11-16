@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { BillingTransactionType, Currency, PaymentEnvironment, TransactionStatus } from '../../domain/enums/billing.enums';
 
 export interface BillingTransactionAmountDto {
@@ -52,4 +52,20 @@ export class BillingHistoryQueryDto {
     @IsInt()
     @Min(1)
     limit?: number;
+}
+
+export class AdminBillingHistoryQueryDto extends BillingHistoryQueryDto {
+    @IsOptional()
+    @IsString()
+    userId?: string;
+
+    @IsOptional()
+    @Type(() => Date)
+    @IsDate()
+    fromDate?: Date;
+
+    @IsOptional()
+    @Type(() => Date)
+    @IsDate()
+    toDate?: Date;
 }

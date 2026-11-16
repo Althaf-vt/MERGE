@@ -83,6 +83,17 @@ export class MongoBillingTransactionRepository implements IBillingTransactionRep
             query.status = filter.status;
         }
 
+        if (filter.fromDate || filter.toDate) {
+            const createdAtFilter: Record<string, Date> = {};
+            if (filter.fromDate) {
+                createdAtFilter['$gte'] = new Date(filter.fromDate);
+            }
+            if (filter.toDate) {
+                createdAtFilter['$lte'] = new Date(filter.toDate);
+            }
+            query.createdAt = createdAtFilter;
+        }
+
         const [documents, total] = await Promise.all([
             this._model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
             this._model.countDocuments(query).exec(),

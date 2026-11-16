@@ -8,6 +8,8 @@ export interface BillingHistoryFilter {
     userId?: string;
     type?: BillingTransactionType;
     status?: TransactionStatus;
+    fromDate?: Date;
+    toDate?: Date;
     page?: number;
     limit?: number;
 }
