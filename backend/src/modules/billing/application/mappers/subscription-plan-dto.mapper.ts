@@ -1,3 +1,4 @@
+import { BILLING_ID_PREFIXES, generateBillingId } from '../../domain/constants/billing.constants';
 import { SubscriptionPlan } from '../../domain/entities/subscription-plan.entity';
 import { PlanOfferProps } from '../../domain/interfaces/billing-value-objects.types';
 import { CreateSubscriptionPlanProps, SubscriptionPlanSnapshot, UpdateSubscriptionPlanProps } from '../../domain/interfaces/subscription-plan.types';
@@ -76,9 +77,9 @@ export class SubscriptionPlanDtoMapper {
         return dtos.map((dto) => SubscriptionPlanDtoMapper.toOfferProps(dto));
     }
 
-    public static toCreateProps(dto: CreateSubscriptionPlanDto, id: string): CreateSubscriptionPlanProps {
+    public static toCreateProps(dto: CreateSubscriptionPlanDto): CreateSubscriptionPlanProps {
         return {
-            id,
+            id: generateBillingId(BILLING_ID_PREFIXES.PLAN),
             name: dto.name,
             code: dto.code,
             billingPeriod: dto.billingPeriod,
