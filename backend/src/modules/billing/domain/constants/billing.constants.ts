@@ -48,3 +48,11 @@ export const generateBillingId = (prefix: string): string => {
     return `${prefix}-${timestamp}-${entropy}`;
 };
 
+export const SUBSCRIPTION_RENEWAL_MESSAGES = {
+    PLAN_UNAVAILABLE: 'Subscription plan is inactive or no longer exists.',
+    AUTO_RENEW_DISABLED: 'Auto-renewal is disabled; subscription period has expired.',
+    NOT_DUE_YET: 'Subscription is active and not yet due for renewal.',
+    ALREADY_INACTIVE: 'Subscription is already inactive or expired.',
+    UNKNOWN_ERROR: 'An unexpected error occurred during subscription renewal.',
+} as const;
+

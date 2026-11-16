@@ -51,3 +51,10 @@ export enum SubscriptionEntitlement {
     LUMEN_HIGH_QUOTA = 'LUMEN_HIGH_QUOTA',
     ADVANCED_DISCOVERY_FILTERS = 'ADVANCED_DISCOVERY_FILTERS',
 }
+
+export enum AutoRenewalAction {
+    RENEWED = 'RENEWED',
+    EXPIRED = 'EXPIRED',
+    SKIPPED = 'SKIPPED',
+    FAILED = 'FAILED',
+}
