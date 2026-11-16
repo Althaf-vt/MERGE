@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { BillingTransactionDto } from '../../types/billing.types';
 import { TRANSACTION_STATUS_CONFIG } from '../../constants/billing.constants';
+import { DataTable, type DataTableColumn } from '../../../../shared/components/tables';
 import styles from './billing-history-table.module.css';
 
 export interface BillingHistoryTableProps {
@@ -21,10 +22,6 @@ export const BillingHistoryTable: React.FC<BillingHistoryTableProps> = ({
     onPageChange,
 }) => {
     const [copiedId, setCopiedId] = useState<string | null>(null);
-
-    const totalPages = Math.ceil(total / limit) || 1;
-    const startIndex = total === 0 ? 0 : (page - 1) * limit + 1;
-    const endIndex = Math.min(page * limit, total);
 
     const formatDate = (dateStr: string) => {
         try {
@@ -59,133 +56,86 @@ export const BillingHistoryTable: React.FC<BillingHistoryTableProps> = ({
         }
     };
 
-    if (isLoading) {
-        return (
-            <div className={styles.card}>
-                <div className={styles.tableContainer}>
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th className={styles.th}>Date</th>
-                                <th className={styles.th}>Description</th>
-                                <th className={styles.th}>Amount</th>
-                                <th className={styles.th}>Status</th>
-                                <th className={styles.th}>Receipt / Reference</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[1, 2, 3, 4, 5].map((idx) => (
-                                <tr key={idx}>
-                                    <td colSpan={5} className={styles.td}>
-                                        <div className={styles.skeletonRow} />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        );
-    }
-
-    if (transactions.length === 0) {
-        return (
-            <div className={styles.card}>
-                <div className={styles.emptyState}>
-                    No billing transactions recorded yet.
-                </div>
-            </div>
-        );
-    }
+    const columns: DataTableColumn<BillingTransactionDto>[] = [
+        {
+            id: 'date',
+            header: 'Date',
+            render: (tx) => <span className={styles.dateText}>{formatDate(tx.createdAt)}</span>,
+        },
+        {
+            id: 'description',
+            header: 'Description',
+            render: (tx) => <span className={styles.descriptionText}>{tx.description}</span>,
+        },
+        {
+            id: 'amount',
+            header: 'Amount',
+            render: (tx) => (
+                <span className={styles.amountText}>
+                    {tx.amount?.formatted || 'Free'}
+                </span>
+            ),
+        },
+        {
+            id: 'status',
+            header: 'Status',
+            render: (tx) => {
+                const statusMeta = TRANSACTION_STATUS_CONFIG[tx.status] || { label: tx.status };
+                return (
+                    <span className={`${styles.badge} ${getStatusClass(tx.status)}`}>
+                        {statusMeta.label}
+                    </span>
+                );
+            },
+        },
+        {
+            id: 'receipt',
+            header: 'Receipt / Reference',
+            render: (tx) => {
+                const referenceText = tx.receiptNumber || tx.gatewayPaymentId || tx.referenceId || tx.id;
+                const isCopied = copiedId === tx.id;
+                return (
+                    <div className={styles.receiptWrapper}>
+                        <span className={styles.receiptCode}>
+                            {referenceText ? `${referenceText.slice(0, 14)}...` : '—'}
+                        </span>
+                        {referenceText && (
+                            <button
+                                type="button"
+                                className={styles.copyButton}
+                                onClick={() => handleCopy(tx.id, referenceText)}
+                                title="Copy full reference code"
+                            >
+                                {isCopied ? 'Copied' : 'Copy'}
+                            </button>
+                        )}
+                    </div>
+                );
+            },
+        },
+    ];
 
     return (
-        <div className={styles.card}>
-            <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th className={styles.th}>Date</th>
-                            <th className={styles.th}>Description</th>
-                            <th className={styles.th}>Amount</th>
-                            <th className={styles.th}>Status</th>
-                            <th className={styles.th}>Receipt / Reference</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transactions.map((tx) => {
-                            const statusMeta = TRANSACTION_STATUS_CONFIG[tx.status] || { label: tx.status };
-                            const referenceText = tx.receiptNumber || tx.gatewayPaymentId || tx.referenceId || tx.id;
-                            const isCopied = copiedId === tx.id;
-
-                            return (
-                                <tr key={tx.id} className={styles.tr}>
-                                    <td className={styles.td}>
-                                        <span className={styles.dateText}>{formatDate(tx.createdAt)}</span>
-                                    </td>
-                                    <td className={styles.td}>
-                                        <span className={styles.descriptionText}>{tx.description}</span>
-                                    </td>
-                                    <td className={styles.td}>
-                                        <span className={styles.amountText}>
-                                            {tx.amount?.formatted || 'Free'}
-                                        </span>
-                                    </td>
-                                    <td className={styles.td}>
-                                        <span className={`${styles.badge} ${getStatusClass(tx.status)}`}>
-                                            {statusMeta.label}
-                                        </span>
-                                    </td>
-                                    <td className={styles.td}>
-                                        <div className={styles.receiptWrapper}>
-                                            <span className={styles.receiptCode}>
-                                                {referenceText ? `${referenceText.slice(0, 14)}...` : '—'}
-                                            </span>
-                                            {referenceText && (
-                                                <button
-                                                    type="button"
-                                                    className={styles.copyButton}
-                                                    onClick={() => handleCopy(tx.id, referenceText)}
-                                                    title="Copy full reference code"
-                                                >
-                                                    {isCopied ? 'Copied' : 'Copy'}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-
-            <div className={styles.paginationBar}>
-                <span>
-                    Showing {startIndex}–{endIndex} of {total} transactions
-                </span>
-
-                <div className={styles.paginationControls}>
-                    <button
-                        type="button"
-                        className={styles.pageButton}
-                        disabled={page <= 1}
-                        onClick={() => onPageChange(page - 1)}
-                    >
-                        Previous
-                    </button>
-                    <span>
-                        Page {page} of {totalPages}
-                    </span>
-                    <button
-                        type="button"
-                        className={styles.pageButton}
-                        disabled={page >= totalPages}
-                        onClick={() => onPageChange(page + 1)}
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-        </div>
+        <DataTable<BillingTransactionDto>
+            columns={columns}
+            data={transactions}
+            keyExtractor={(tx) => tx.id}
+            isLoading={isLoading}
+            page={page}
+            limit={limit}
+            total={total}
+            onPageChange={onPageChange}
+            emptyTitle="No billing transactions recorded yet"
+            emptyDescription="Your subscription and credit pack transactions will appear here."
+            emptyIcon={(
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                </svg>
+            )}
+        />
     );
 };
