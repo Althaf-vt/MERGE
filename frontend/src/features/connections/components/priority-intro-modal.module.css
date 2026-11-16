@@ -250,3 +250,23 @@
         transform: rotate(360deg);
     }
 }
+
+.creditBadgeWarning {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.buyCreditsCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #6d28d9;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-decoration: underline;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}

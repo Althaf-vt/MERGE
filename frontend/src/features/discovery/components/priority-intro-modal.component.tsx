@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useGetUserCreditBalanceQuery } from '../../billing/api/billing.api';
+import { BILLING_ROUTES } from '../../billing/constants/billing.constants';
 import { PRIORITY_INTRO_CONSTANTS } from '../constants/discovery.constants';
 import styles from './priority-intro-modal.module.css';
 
@@ -19,8 +22,13 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
     onConfirm,
     isSubmitting = false,
 }) => {
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [imageError, setImageError] = useState(false);
+
+    const { data: balanceResponse, isLoading: isBalanceLoading } = useGetUserCreditBalanceQuery();
+    const currentBalance = balanceResponse?.data?.balance ?? 0;
+    const hasSufficientCredits = currentBalance >= PRIORITY_INTRO_CONSTANTS.CREDIT_COST;
 
     // Reset message and image error when modal opens/closes
     useEffect(() => {
@@ -72,7 +80,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                 className={styles.modalContent}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Header */}
+                // Header
                 <div className={styles.modalHeader}>
                     <div className={styles.headerLeft}>
                         {recipientPhotoUrl && !imageError ? (
@@ -119,7 +127,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                     </button>
                 </div>
 
-                {/* Body Form */}
+                // Body Form
                 <form onSubmit={handleSubmit}>
                     <div className={styles.modalBody}>
                         <div className={styles.textareaWrapper}>
@@ -138,18 +146,36 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Footer */}
+                    // Footer
                     <div className={styles.modalFooter}>
-                        <div className={styles.creditBadge}>
-                            <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                            >
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                            </svg>
-                            <span>Cost: {PRIORITY_INTRO_CONSTANTS.CREDIT_COST} Credit</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <div className={`${styles.creditBadge} ${!hasSufficientCredits && !isBalanceLoading ? styles.creditBadgeWarning : ''}`}>
+                                <svg
+                                    width="14"
+                                    height="14"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                </svg>
+                                <span>
+                                    Cost: {PRIORITY_INTRO_CONSTANTS.CREDIT_COST} Credit
+                                    {isBalanceLoading ? '' : ` (Bal: ${currentBalance})`}
+                                </span>
+                            </div>
+
+                            {!hasSufficientCredits && !isBalanceLoading && (
+                                <button
+                                    type="button"
+                                    className={styles.buyCreditsCta}
+                                    onClick={() => {
+                                        onClose();
+                                        navigate(BILLING_ROUTES.HUB);
+                                    }}
+                                >
+                                    Buy Credits
+                                </button>
+                            )}
                         </div>
 
                         <div className={styles.footerActions}>
@@ -164,9 +190,13 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                             <button
                                 type="submit"
                                 className={styles.submitButton}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || !hasSufficientCredits || !message.trim()}
                             >
-                                {isSubmitting ? 'Sending...' : 'Send Introduction'}
+                                {isSubmitting
+                                    ? 'Sending...'
+                                    : !hasSufficientCredits && !isBalanceLoading
+                                      ? 'Insufficient Credits'
+                                      : 'Send Introduction'}
                             </button>
                         </div>
                     </div>
