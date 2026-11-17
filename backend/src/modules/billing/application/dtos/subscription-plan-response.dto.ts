@@ -7,6 +7,8 @@ export interface PlanPriceResponseDto {
 }
 
 export interface PlanOfferResponseDto {
+    id: string;
+    name: string;
     code: string;
     discountPercentage: number;
     validFrom: Date;
