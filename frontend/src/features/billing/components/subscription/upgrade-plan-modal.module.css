@@ -172,6 +172,14 @@
     margin-left: 0.15rem;
 }
 
+.strikePrice {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+    margin-left: 0.35rem;
+    font-weight: 500;
+}
+
 .discountBadge {
     display: inline-block;
     background-color: #ecfdf5;
