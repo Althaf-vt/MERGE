@@ -51,11 +51,11 @@ export class CreditPackDtoMapper {
         };
     }
 
-    public static toCreateProps(dto: CreateCreditPackDto): CreateCreditPackProps {
+    public static toCreateProps(dto: CreateCreditPackDto, explicitCode?: string): CreateCreditPackProps {
         return {
             id: generateBillingId(BILLING_ID_PREFIXES.CREDIT_PACK),
             name: dto.name,
-            code: dto.code,
+            code: explicitCode ?? dto.code ?? '',
             creditsCount: dto.creditsCount,
             price: {
                 amount: dto.price.amount,

@@ -16,9 +16,11 @@ export class CreateCreditPackUseCase implements ICreateCreditPackUseCase {
     ) { }
 
     async execute(dto: CreateCreditPackDto): Promise<CreditPackResponseDto> {
-        const existing = await this._creditPackRepository.findByCode(dto.code);
-        if (existing) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_CODE_ALREADY_EXISTS);
+        if (dto.code) {
+            const existing = await this._creditPackRepository.findByCode(dto.code);
+            if (existing) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_CODE_ALREADY_EXISTS);
+            }
         }
 
         const createProps = CreditPackDtoMapper.toCreateProps(dto);
