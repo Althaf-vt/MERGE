@@ -147,13 +147,14 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
             });
             await this._creditAccountRepository.update(creditAccount);
 
+            const effectivePrice = pack.calculateEffectivePrice(now);
             const transaction = BillingTransaction.createCreditPurchase({
                 id: generateBillingId(BILLING_ID_PREFIXES.TRANSACTION),
                 userId: userId.trim(),
                 packId: pack.id,
                 packName: pack.name,
                 creditsCount: pack.creditsCount,
-                price: pack.price,
+                price: effectivePrice,
                 gatewayOrderId: dto.orderId.trim(),
                 gatewayPaymentId: dto.paymentId.trim(),
                 receiptNumber: dto.orderId.trim(),
