@@ -110,6 +110,17 @@ export class CreditPack {
     }
 
     public addOrUpdateOffer(offer: PlanOffer): void {
+        const normalizedName = offer.name.trim().toLowerCase();
+        const duplicate = this._offersVO.find(
+            (o) => o.id !== offer.id && o.name.trim().toLowerCase() === normalizedName,
+        );
+        if (duplicate) {
+            throw new DomainException(
+                ErrorCode.VALIDATION_FAILED,
+                BILLING_ERROR_MESSAGES.OFFER_NAME_ALREADY_EXISTS,
+            );
+        }
+
         PlanOffer.validateOfferUpdate([offer.toSnapshot()], this._offersVO);
         const existingIndex = this._offersVO.findIndex((o) => o.id === offer.id);
         if (existingIndex >= 0) {

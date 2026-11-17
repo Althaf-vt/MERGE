@@ -44,6 +44,7 @@ export const BILLING_ERROR_MESSAGES = {
     OFFER_ID_REQUIRED: 'Offer ID is required.',
     OFFER_NAME_REQUIRED: 'Offer campaign name is required.',
     OFFER_CODE_REQUIRED: 'Offer promo code is required.',
+    OFFER_NAME_ALREADY_EXISTS: 'An offer with this campaign name already exists.',
     INVALID_DISCOUNT_PERCENTAGE: 'Discount percentage must be between 1 and 100.',
     INVALID_OFFER_DATES: 'Offer validUntil date must be after validFrom date.',
     OFFER_PAST_DATE_NOT_ALLOWED: 'Offer valid until date must be in the future.',

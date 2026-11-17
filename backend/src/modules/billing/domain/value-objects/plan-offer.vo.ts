@@ -74,7 +74,19 @@ export class PlanOffer {
 
     public static validateNewOffers(offers?: PlanOfferProps[], atTime: number = Date.now()): void {
         if (!offers || offers.length === 0) return;
+        const nameSet = new Set<string>();
         for (const offer of offers) {
+            const campaignName = (offer.name ?? offer.code ?? '').trim().toLowerCase();
+            if (campaignName) {
+                if (nameSet.has(campaignName)) {
+                    throw new DomainException(
+                        ErrorCode.VALIDATION_FAILED,
+                        BILLING_ERROR_MESSAGES.OFFER_NAME_ALREADY_EXISTS,
+                    );
+                }
+                nameSet.add(campaignName);
+            }
+
             const untilTime = new Date(offer.validUntil).getTime();
             if (isNaN(untilTime) || untilTime <= atTime) {
                 throw new DomainException(
@@ -91,6 +103,21 @@ export class PlanOffer {
         atTime: number = Date.now(),
     ): void {
         if (!incomingOffers || incomingOffers.length === 0) return;
+
+        const nameSet = new Set<string>();
+        for (const offer of incomingOffers) {
+            const campaignName = (offer.name ?? offer.code ?? '').trim().toLowerCase();
+            if (campaignName) {
+                if (nameSet.has(campaignName)) {
+                    throw new DomainException(
+                        ErrorCode.VALIDATION_FAILED,
+                        BILLING_ERROR_MESSAGES.OFFER_NAME_ALREADY_EXISTS,
+                    );
+                }
+                nameSet.add(campaignName);
+            }
+        }
+
         const existingMap = new Map<string, PlanOffer>();
         existingOffers.forEach((o) => {
             if (o.id) existingMap.set(o.id, o);
