@@ -10,9 +10,21 @@ export interface PlanBillingPeriodProps {
 }
 
 export interface PlanOfferProps {
-    code: string;
+    id?: string;
+    name?: string;
     discountPercentage: number;
     validFrom: Date;
     validUntil: Date;
     isActive: boolean;
+    code?: string;
+}
+
+export interface PlanOfferSnapshot {
+    id: string;
+    name: string;
+    discountPercentage: number;
+    validFrom: Date;
+    validUntil: Date;
+    isActive: boolean;
+    code?: string;
 }
