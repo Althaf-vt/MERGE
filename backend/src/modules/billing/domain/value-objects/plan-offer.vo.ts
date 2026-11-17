@@ -67,8 +67,47 @@ export class PlanOffer {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
         }
 
-        if (props.validUntil.getTime() < props.validFrom.getTime()) {
+        if (props.validUntil.getTime() <= props.validFrom.getTime()) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
+        }
+    }
+
+    public static validateNewOffers(offers?: PlanOfferProps[], atTime: number = Date.now()): void {
+        if (!offers || offers.length === 0) return;
+        for (const offer of offers) {
+            const untilTime = new Date(offer.validUntil).getTime();
+            if (isNaN(untilTime) || untilTime <= atTime) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    BILLING_ERROR_MESSAGES.OFFER_PAST_DATE_NOT_ALLOWED,
+                );
+            }
+        }
+    }
+
+    public static validateOfferUpdate(
+        incomingOffers: PlanOfferProps[],
+        existingOffers: PlanOffer[],
+        atTime: number = Date.now(),
+    ): void {
+        if (!incomingOffers || incomingOffers.length === 0) return;
+        const existingMap = new Map<string, PlanOffer>();
+        existingOffers.forEach((o) => {
+            if (o.id) existingMap.set(o.id, o);
+        });
+
+        for (const offer of incomingOffers) {
+            const untilTime = new Date(offer.validUntil).getTime();
+            const existing = offer.id ? existingMap.get(offer.id) : undefined;
+            const isNew = !existing;
+            const expiryModified = existing && existing.validUntil.getTime() !== untilTime;
+
+            if ((isNew || expiryModified) && untilTime <= atTime) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    BILLING_ERROR_MESSAGES.OFFER_PAST_DATE_NOT_ALLOWED,
+                );
+            }
         }
     }
 

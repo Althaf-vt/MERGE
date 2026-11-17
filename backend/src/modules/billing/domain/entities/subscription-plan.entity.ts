@@ -37,6 +37,9 @@ export class SubscriptionPlan {
     }
 
     public static create(props: CreateSubscriptionPlanProps): SubscriptionPlan {
+        if (props.offers) {
+            PlanOffer.validateNewOffers(props.offers);
+        }
         return new SubscriptionPlan({
             ...props,
             isActive: props.isActive ?? true,
@@ -93,6 +96,10 @@ export class SubscriptionPlan {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.ENTITLEMENTS_REQUIRED);
         }
 
+        if (props.offers !== undefined) {
+            PlanOffer.validateOfferUpdate(props.offers, this._offersVO);
+        }
+
         const newPriceVO = MoneyVO.create(props.price);
         const newOffersVO = (props.offers ?? []).map((o) => PlanOffer.create(o));
 
@@ -100,6 +107,8 @@ export class SubscriptionPlan {
         this._props.price = newPriceVO.toJSON();
         this._props.entitlements = Array.from(new Set(props.entitlements));
         this._props.offers = newOffersVO.map((o) => o.toJSON());
+        this._offersVO.length = 0;
+        this._offersVO.push(...newOffersVO);
         if (props.sortOrder !== undefined) {
             this._props.sortOrder = props.sortOrder;
         }
@@ -117,6 +126,7 @@ export class SubscriptionPlan {
     }
 
     public addOrUpdateOffer(offer: PlanOffer): void {
+        PlanOffer.validateOfferUpdate([offer.toSnapshot()], this._offersVO);
         const existingIndex = this._offersVO.findIndex((o) => o.id === offer.id);
         if (existingIndex >= 0) {
             this._offersVO[existingIndex] = offer;

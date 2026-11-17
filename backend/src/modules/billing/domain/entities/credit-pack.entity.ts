@@ -34,6 +34,9 @@ export class CreditPack {
     }
 
     public static create(props: CreateCreditPackProps): CreditPack {
+        if (props.offers) {
+            PlanOffer.validateNewOffers(props.offers);
+        }
         return new CreditPack({
             ...props,
             isListed: props.isListed ?? true,
@@ -90,6 +93,7 @@ export class CreditPack {
         const newPriceVO = MoneyVO.create(props.price);
 
         if (props.offers !== undefined) {
+            PlanOffer.validateOfferUpdate(props.offers, this._offersVO);
             this._offersVO.length = 0;
             this._offersVO.push(...props.offers.map((o) => PlanOffer.create(o)));
             this._props.offers = this._offersVO.map((o) => o.toJSON());
@@ -106,6 +110,7 @@ export class CreditPack {
     }
 
     public addOrUpdateOffer(offer: PlanOffer): void {
+        PlanOffer.validateOfferUpdate([offer.toSnapshot()], this._offersVO);
         const existingIndex = this._offersVO.findIndex((o) => o.id === offer.id);
         if (existingIndex >= 0) {
             this._offersVO[existingIndex] = offer;
