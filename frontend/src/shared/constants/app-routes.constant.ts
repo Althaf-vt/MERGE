@@ -52,5 +52,6 @@ export const APP_ROUTES = {
         KYC_ESCALATIONS: '/admin/kyc-escalations',
         SCENE_PARTNER: '/admin/scene-partner',
         SCENARIO_DETAIL: (id: string) => `/admin/scene-partner/scenarios/${id}`,
+        BILLING: '/admin/billing',
     },
 } as const;

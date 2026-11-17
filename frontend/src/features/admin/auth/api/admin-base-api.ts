@@ -94,6 +94,9 @@ export const adminRootApi = createApi({
         'AdminScenario',
         'AdminSession',
         'AdminAnalytics',
+        'AdminBillingPlan',
+        'AdminCreditPack',
+        'AdminBillingTransaction',
     ],
     endpoints: () => ({}),
 });

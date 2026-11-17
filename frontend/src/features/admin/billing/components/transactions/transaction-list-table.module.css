@@ -1,0 +1,99 @@
+.container {
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--admin-text-primary, #fafafa);
+}
+
+.txnIdCell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--admin-accent-text, #d8b4fe);
+    font-weight: 600;
+}
+
+.txnIdCell:hover {
+    text-decoration: underline;
+}
+
+.userCell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--admin-text-secondary, #a1a1aa);
+}
+
+.copyBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--admin-text-subtle, #71717a);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+}
+
+.copyBtn:hover {
+    color: var(--admin-text-primary, #fafafa);
+    background-color: var(--admin-hover, #18181b);
+}
+
+.amount {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--admin-text-primary, #fafafa);
+}
+
+.creditPositive {
+    color: #34d399;
+    font-weight: 600;
+}
+
+.creditNegative {
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.dash {
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.dateCell {
+    font-size: 11px;
+    color: var(--admin-text-subtle, #71717a);
+    white-space: nowrap;
+}
+
+.inspectBtn {
+    background: transparent;
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.inspectBtn:hover {
+    border-color: var(--admin-accent-text, #d8b4fe);
+    color: var(--admin-accent-text, #d8b4fe);
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+}

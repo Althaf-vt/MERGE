@@ -1,0 +1,287 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.breakdownGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .breakdownGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.catalogColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ledgerColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.sectionCard {
+    background-color: var(--admin-surface, #181b22);
+    border: 1px solid var(--admin-border, #222634);
+    border-radius: 6px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--admin-border, #222634);
+    gap: 12px;
+}
+
+.cardHeaderTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cardTitle {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--admin-text-subtle, #71717a);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.badgeCount {
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+    background-color: var(--admin-bg, #0d0f14);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--admin-border, #222634);
+}
+
+.cardActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.actionBtnSecondary {
+    background: transparent;
+    border: 1px solid var(--admin-border, #222634);
+    color: var(--admin-text-subtle, #71717a);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.actionBtnSecondary:hover {
+    color: var(--admin-text-primary, #f4f4f5);
+    border-color: var(--admin-border-hover, #3b4252);
+    background-color: var(--admin-hover, #1f232d);
+}
+
+.actionBtnPrimary {
+    background-color: var(--admin-accent-text, #d8b4fe);
+    color: #000;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s ease;
+}
+
+.actionBtnPrimary:hover {
+    opacity: 0.9;
+}
+
+.itemList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.itemRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background-color: var(--admin-bg, #0d0f14);
+    border: 1px solid var(--admin-border, #222634);
+    border-radius: 6px;
+    gap: 12px;
+}
+
+.itemMain {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.itemNameRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.itemName {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--admin-text-primary, #f4f4f5);
+}
+
+.itemSlug {
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.promoBadge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background-color: var(--admin-accent-bg, rgba(216, 180, 254, 0.1));
+    color: var(--admin-accent-text, #d8b4fe);
+    border: 1px solid rgba(216, 180, 254, 0.25);
+}
+
+.itemMeta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.periodPill {
+    font-size: 9px;
+    color: #a78bfa;
+    background-color: rgba(167, 139, 250, 0.1);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.offersTag {
+    color: #4ade80;
+}
+
+.itemAside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.itemPrice {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--admin-text-primary, #f4f4f5);
+}
+
+.transactionStream {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.streamRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background-color: var(--admin-bg, #0d0f14);
+    border: 1px solid var(--admin-border, #222634);
+    border-radius: 6px;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.streamRow:hover {
+    border-color: var(--admin-border-hover, #3b4252);
+    background-color: var(--admin-hover, #1f232d);
+}
+
+.streamMain {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.streamTop {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.streamId {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--admin-text-primary, #f4f4f5);
+}
+
+.streamDesc {
+    font-size: 11px;
+    color: var(--admin-text-subtle, #71717a);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 320px;
+}
+
+.streamTimestamp {
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+}
+
+.streamAside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.streamAmount {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--admin-text-primary, #f4f4f5);
+}
+
+.emptyPrompt {
+    font-size: 11px;
+    color: var(--admin-text-subtle, #71717a);
+    font-style: italic;
+    padding: 12px;
+    text-align: center;
+}

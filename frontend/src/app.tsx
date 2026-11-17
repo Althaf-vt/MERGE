@@ -46,6 +46,7 @@ import { PhotoVerificationPage } from './features/admin/photo-verification/pages
 import { KycEscalationPage } from './features/admin/kyc-escalation/pages/kyc-escalation.page';
 import { ScenePartnerManagementPage } from './features/admin/scene-partner/pages/scene-partner-management.page';
 import { ScenarioDetailPage } from './features/admin/scene-partner/pages/scenario-detail.page';
+import { AdminBillingManagementPage } from './features/admin/billing';
 import { DiscoveryPage } from './features/discovery/pages/discovery.page';
 import { ConnectionsPage } from './features/connections/pages/connections.page';
 import { ScenePartnerPage } from './features/scene-partner/pages/scene-partner.page';
@@ -84,6 +85,7 @@ export const App = () => {
                             <Route path='/admin/kyc-escalation' element={<KycEscalationPage />} />
                             <Route path='/admin/scene-partner' element={<ScenePartnerManagementPage />} />
                             <Route path='/admin/scene-partner/scenarios/:id' element={<ScenarioDetailPage />} />
+                            <Route path='/admin/billing' element={<AdminBillingManagementPage />} />
                         </Route>
                     </Route>
                 </Route>
