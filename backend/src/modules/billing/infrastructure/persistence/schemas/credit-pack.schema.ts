@@ -13,6 +13,9 @@ export class CreditPackSchemaClass {
     name: string;
 
     @Prop({ required: true, trim: true, uppercase: true, unique: true })
+    normalizedName: string;
+
+    @Prop({ required: true, trim: true, uppercase: true, unique: true })
     code: string;
 
     @Prop({ required: true, type: Number })
