@@ -26,6 +26,7 @@ import { PlanFormModal } from '../components/plans/plan-form-modal.component';
 import { PlanOffersModal } from '../components/plans/plan-offers-modal.component';
 import { CreditPackTable } from '../components/credits/credit-pack-table.component';
 import { CreditPackFormModal } from '../components/credits/credit-pack-form-modal.component';
+import { CreditPackOffersModal } from '../components/credits/credit-pack-offers-modal.component';
 import { TransactionFilters } from '../components/transactions/transaction-filters.component';
 import { TransactionListTable } from '../components/transactions/transaction-list-table.component';
 import { TransactionDetailDrawer } from '../components/transactions/transaction-detail-drawer.component';
@@ -55,6 +56,10 @@ export const AdminBillingManagementPage: React.FC = () => {
     // Credit Packs tab modal states
     const [isCreditPackModalOpen, setIsCreditPackModalOpen] = useState(false);
     const [editingCreditPack, setEditingCreditPack] = useState<CreditPackDto | null>(null);
+    const [isCreditPackOffersModalOpen, setIsCreditPackOffersModalOpen] = useState(false);
+    const [selectedCreditPackForOffers, setSelectedCreditPackForOffers] = useState<CreditPackDto | null>(
+        null
+    );
 
     // Transactions History tab filter & pagination states
     const [txnPage, setTxnPage] = useState(1);
@@ -156,6 +161,11 @@ export const AdminBillingManagementPage: React.FC = () => {
     const handleEditCreditPack = (pack: CreditPackDto) => {
         setEditingCreditPack(pack);
         setIsCreditPackModalOpen(true);
+    };
+
+    const handleManageCreditPackOffers = (pack: CreditPackDto) => {
+        setSelectedCreditPackForOffers(pack);
+        setIsCreditPackOffersModalOpen(true);
     };
 
     const handleToggleCreditPackStatus = async (pack: CreditPackDto) => {
@@ -308,6 +318,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                                 isLoading={isCreditPacksLoading}
                                 isFetching={isCreditPacksFetching}
                                 onEditPack={handleEditCreditPack}
+                                onManageOffers={handleManageCreditPackOffers}
                                 onToggleActive={handleToggleCreditPackStatus}
                                 onToggleListed={handleToggleCreditPackListed}
                             />
@@ -387,6 +398,15 @@ export const AdminBillingManagementPage: React.FC = () => {
                     onClose={() => {
                         setIsCreditPackModalOpen(false);
                         setEditingCreditPack(null);
+                    }}
+                />
+
+                <CreditPackOffersModal
+                    isOpen={isCreditPackOffersModalOpen}
+                    pack={selectedCreditPackForOffers}
+                    onClose={() => {
+                        setIsCreditPackOffersModalOpen(false);
+                        setSelectedCreditPackForOffers(null);
                     }}
                 />
 
