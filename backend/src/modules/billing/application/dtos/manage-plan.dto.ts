@@ -13,10 +13,20 @@ export class PlanPriceDto {
 }
 
 export class PlanOfferInputDto {
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    id?: string;
+
+    @IsOptional()
+    @IsString()
+    @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+    name?: string;
+
+    @IsOptional()
+    @IsString()
     @Transform(({ value }) => (typeof value === 'string' ? value.trim().toUpperCase() : value))
-    code!: string;
+    code?: string;
 
     @IsNumber()
     @Min(1)
