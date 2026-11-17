@@ -50,7 +50,7 @@ export class CreatePaymentOrderUseCase implements ICreatePaymentOrderUseCase {
             if (!pack.isActive || !pack.isListed) {
                 throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_UNLISTED);
             }
-            priceVO = pack.price;
+            priceVO = pack.calculateEffectivePrice();
             itemName = pack.name;
         } else {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.ITEM_TYPE_REQUIRED);
