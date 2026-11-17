@@ -1,6 +1,6 @@
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { PlanPriceDto } from './manage-plan.dto';
+import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { PlanOfferInputDto, PlanPriceDto } from './manage-plan.dto';
 
 export class CreateCreditPackDto {
     @IsString()
@@ -20,6 +20,12 @@ export class CreateCreditPackDto {
     @ValidateNested()
     @Type(() => PlanPriceDto)
     price!: PlanPriceDto;
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => PlanOfferInputDto)
+    offers?: PlanOfferInputDto[];
 
     @IsOptional()
     @IsString()
@@ -54,6 +60,12 @@ export class UpdateCreditPackDto {
     @ValidateNested()
     @Type(() => PlanPriceDto)
     price?: PlanPriceDto;
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => PlanOfferInputDto)
+    offers?: PlanOfferInputDto[];
 
     @IsOptional()
     @IsString()
