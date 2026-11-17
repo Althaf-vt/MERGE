@@ -40,6 +40,21 @@
     box-shadow: 0 2px 6px rgba(109, 40, 217, 0.25);
 }
 
+.discountBadge {
+    position: absolute;
+    top: -9px;
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25);
+    white-space: nowrap;
+}
+
 .packName {
     font-size: 0.875rem;
     font-weight: 600;
@@ -78,6 +93,22 @@
     margin-bottom: 0.75rem;
     width: 82%;
     transition: background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.effectivePrice {
+    font-weight: 700;
+    color: inherit;
+}
+
+.strikePrice {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+    font-weight: 500;
 }
 
 .selected .priceTag {
