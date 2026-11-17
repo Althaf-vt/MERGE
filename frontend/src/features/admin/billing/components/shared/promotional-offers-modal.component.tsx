@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { AdminPlanOfferDto, PlanOfferInputPayload } from '../../types/admin-billing.types';
 import { OFFER_FORM_LIMITS } from '../../constants/admin-billing.constants';
 import { getOfferStatus } from '../../utils/admin-billing-offers.util';
@@ -35,6 +35,22 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
     const [validFrom, setValidFrom] = useState('');
     const [validUntil, setValidUntil] = useState('');
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setError(null);
+            setCampaignName('');
+            setDiscountPercentage('');
+            setValidFrom('');
+            setValidUntil('');
+        } else {
+            setError(null);
+        }
+    }, [isOpen, item?.id]);
+
+    const clearError = () => {
+        if (error) setError(null);
+    };
 
     if (!isOpen || !item) return null;
 
@@ -163,7 +179,20 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
             size="lg"
         >
             <div className={styles.container}>
-                {error && <div className={styles.errorBanner}>{error}</div>}
+                {error && (
+                    <div className={styles.errorBanner} role="alert">
+                        <span className={styles.errorBannerContent}>{error}</span>
+                        <button
+                            type="button"
+                            className={styles.errorDismissBtn}
+                            onClick={() => setError(null)}
+                            aria-label="Dismiss error message"
+                            title="Dismiss"
+                        >
+                            &times;
+                        </button>
+                    </div>
+                )}
 
                 <div className={styles.sectionTitle}>
                     Configured Promotional Offers ({currentOffers.length})
@@ -244,7 +273,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                 type="text"
                                 className={styles.input}
                                 value={campaignName}
-                                onChange={(e) => setCampaignName(e.target.value)}
+                                onChange={(e) => {
+                                    clearError();
+                                    setCampaignName(e.target.value);
+                                }}
                                 placeholder="e.g. Diwali Flash Sale"
                                 disabled={isUpdating}
                                 maxLength={OFFER_FORM_LIMITS.NAME_MAX}
@@ -259,11 +291,12 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                 max={OFFER_FORM_LIMITS.MAX_DISCOUNT}
                                 className={styles.input}
                                 value={discountPercentage}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                    clearError();
                                     setDiscountPercentage(
                                         e.target.value === '' ? '' : Number(e.target.value),
-                                    )
-                                }
+                                    );
+                                }}
                                 placeholder="20"
                                 disabled={isUpdating}
                             />
@@ -277,7 +310,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                 type="date"
                                 className={styles.input}
                                 value={validFrom}
-                                onChange={(e) => setValidFrom(e.target.value)}
+                                onChange={(e) => {
+                                    clearError();
+                                    setValidFrom(e.target.value);
+                                }}
                                 disabled={isUpdating}
                             />
                         </div>
@@ -288,7 +324,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                 type="date"
                                 className={styles.input}
                                 value={validUntil}
-                                onChange={(e) => setValidUntil(e.target.value)}
+                                onChange={(e) => {
+                                    clearError();
+                                    setValidUntil(e.target.value);
+                                }}
                                 disabled={isUpdating}
                             />
                         </div>
