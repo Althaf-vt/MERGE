@@ -40,6 +40,7 @@ export const BILLING_ID_PREFIXES = {
     SUBSCRIPTION: 'merge-sub',
     CREDIT_ACCOUNT: 'merge-acc',
     TRANSACTION: 'merge-tx',
+    OFFER: 'merge-offer',
 } as const;
 
 export const generateBillingId = (prefix: string): string => {
