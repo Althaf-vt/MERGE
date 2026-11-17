@@ -159,6 +159,20 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
             return;
         }
 
+        const normalizedName = trimmedName.toLowerCase();
+        const isDuplicateName = currentOffers.some((o) => {
+            if (editingOfferId && o.id === editingOfferId) {
+                return false;
+            }
+            const existingOfferName = (o.name || o.code || '').trim().toLowerCase();
+            return existingOfferName === normalizedName;
+        });
+
+        if (isDuplicateName) {
+            setError('An offer with this campaign name already exists.');
+            return;
+        }
+
         const discountNum = Number(discountPercentage);
         if (
             discountPercentage === '' ||
