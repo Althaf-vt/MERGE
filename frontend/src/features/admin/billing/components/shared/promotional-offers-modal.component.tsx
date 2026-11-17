@@ -18,7 +18,7 @@ export interface PromotionalOffersModalProps {
     item: PromotionalOffersModalItem | null;
     itemTypeLabel: 'Plan' | 'Credit Package';
     onClose: () => void;
-    onUpdateOffers: (id: string, offers: PlanOfferInputPayload[]) => Promise<void>;
+    onUpdateOffers: (id: string, offers: PlanOfferInputPayload[]) => Promise<AdminPlanOfferDto[] | void>;
     isUpdating?: boolean;
 }
 
@@ -37,12 +37,17 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
     const [error, setError] = useState<string | null>(null);
     const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null);
     const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
+    const [liveOffers, setLiveOffers] = useState<AdminPlanOfferDto[]>(item?.offers || []);
 
     const validFromInputRef = useRef<HTMLInputElement>(null);
     const validUntilInputRef = useRef<HTMLInputElement>(null);
 
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    useEffect(() => {
+        setLiveOffers(item?.offers || []);
+    }, [item?.offers]);
 
     useEffect(() => {
         setConfirmDeleteIndex(null);
@@ -97,7 +102,7 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
 
     if (!isOpen || !item) return null;
 
-    const currentOffers: AdminPlanOfferDto[] = item.offers || [];
+    const currentOffers: AdminPlanOfferDto[] = liveOffers;
 
     const handleToggleOffer = async (index: number) => {
         try {
@@ -112,7 +117,8 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                 isActive: idx === index ? !offer.isActive : offer.isActive,
             }));
 
-            await onUpdateOffers(item.id, updated);
+            const updatedList = await onUpdateOffers(item.id, updated);
+            if (updatedList) setLiveOffers(updatedList);
         } catch (err: unknown) {
             setError(getErrorMessage(err));
         }
@@ -133,7 +139,9 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                     isActive: offer.isActive,
                 }));
 
-            await onUpdateOffers(item.id, updated);
+            const updatedList = await onUpdateOffers(item.id, updated);
+            if (updatedList) setLiveOffers(updatedList);
+            setConfirmDeleteIndex(null);
         } catch (err: unknown) {
             setError(getErrorMessage(err));
         }
@@ -243,7 +251,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                     };
                 });
 
-                await onUpdateOffers(item.id, updated);
+                const updatedList = await onUpdateOffers(item.id, updated);
+                if (updatedList) {
+                    setLiveOffers(updatedList);
+                }
                 handleCancelEdit();
             } else {
                 // Attach new offer
@@ -266,7 +277,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                     isActive: true,
                 };
 
-                await onUpdateOffers(item.id, [...existingMapped, newOffer]);
+                const updatedList = await onUpdateOffers(item.id, [...existingMapped, newOffer]);
+                if (updatedList) {
+                    setLiveOffers(updatedList);
+                }
 
                 setCampaignName('');
                 setDiscountPercentage('');

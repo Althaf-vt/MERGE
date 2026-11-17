@@ -20,10 +20,11 @@ export const PlanOffersModal: React.FC<PlanOffersModalProps> = ({
     const [updatePlan, { isLoading: isUpdating }] = useUpdateAdminPlanMutation();
 
     const handleUpdateOffers = async (id: string, offers: PlanOfferInputPayload[]) => {
-        await updatePlan({
+        const res = await updatePlan({
             id,
             payload: { offers },
         }).unwrap();
+        return res.data?.offers;
     };
 
     return (

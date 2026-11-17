@@ -20,10 +20,11 @@ export const CreditPackOffersModal: React.FC<CreditPackOffersModalProps> = ({
     const [updateCreditPack, { isLoading: isUpdating }] = useUpdateAdminCreditPackMutation();
 
     const handleUpdateOffers = async (id: string, offers: PlanOfferInputPayload[]) => {
-        await updateCreditPack({
+        const res = await updateCreditPack({
             id,
             payload: { offers },
         }).unwrap();
+        return res.data?.offers;
     };
 
     return (

@@ -49,17 +49,13 @@ export const AdminBillingManagementPage: React.FC = () => {
     const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState<SubscriptionPlanDto | null>(null);
     const [isOffersModalOpen, setIsOffersModalOpen] = useState(false);
-    const [selectedPlanForOffers, setSelectedPlanForOffers] = useState<SubscriptionPlanDto | null>(
-        null
-    );
+    const [selectedPlanIdForOffers, setSelectedPlanIdForOffers] = useState<string | null>(null);
 
     // Credit Packs tab modal states
     const [isCreditPackModalOpen, setIsCreditPackModalOpen] = useState(false);
     const [editingCreditPack, setEditingCreditPack] = useState<CreditPackDto | null>(null);
     const [isCreditPackOffersModalOpen, setIsCreditPackOffersModalOpen] = useState(false);
-    const [selectedCreditPackForOffers, setSelectedCreditPackForOffers] = useState<CreditPackDto | null>(
-        null
-    );
+    const [selectedCreditPackIdForOffers, setSelectedCreditPackIdForOffers] = useState<string | null>(null);
 
     // Transactions History tab filter & pagination states
     const [txnPage, setTxnPage] = useState(1);
@@ -112,6 +108,11 @@ export const AdminBillingManagementPage: React.FC = () => {
     const transactions = txnsData?.data || [];
     const totalTransactions = txnsData?.meta?.total || transactions.length;
 
+    const selectedPlanForOffers =
+        plans.find((p) => p.id === selectedPlanIdForOffers) || null;
+    const selectedCreditPackForOffers =
+        creditPacks.find((c) => c.id === selectedCreditPackIdForOffers) || null;
+
     const isGlobalRefreshing = isPlansFetching || isCreditPacksFetching || isTxnsFetching;
 
     const handleTabChange = (tab: AdminBillingTab) => {
@@ -137,7 +138,7 @@ export const AdminBillingManagementPage: React.FC = () => {
     };
 
     const handleManageOffers = (plan: SubscriptionPlanDto) => {
-        setSelectedPlanForOffers(plan);
+        setSelectedPlanIdForOffers(plan.id);
         setIsOffersModalOpen(true);
     };
 
@@ -164,7 +165,7 @@ export const AdminBillingManagementPage: React.FC = () => {
     };
 
     const handleManageCreditPackOffers = (pack: CreditPackDto) => {
-        setSelectedCreditPackForOffers(pack);
+        setSelectedCreditPackIdForOffers(pack.id);
         setIsCreditPackOffersModalOpen(true);
     };
 
@@ -388,7 +389,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                     plan={selectedPlanForOffers}
                     onClose={() => {
                         setIsOffersModalOpen(false);
-                        setSelectedPlanForOffers(null);
+                        setSelectedPlanIdForOffers(null);
                     }}
                 />
 
@@ -406,7 +407,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                     pack={selectedCreditPackForOffers}
                     onClose={() => {
                         setIsCreditPackOffersModalOpen(false);
-                        setSelectedCreditPackForOffers(null);
+                        setSelectedCreditPackIdForOffers(null);
                     }}
                 />
 
