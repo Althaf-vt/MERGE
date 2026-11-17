@@ -206,6 +206,19 @@
     color: var(--admin-text-primary, #f4f4f5);
 }
 
+.priceContainer {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.strikePrice {
+    font-size: 10px;
+    color: var(--admin-text-subtle, #71717a);
+    text-decoration: line-through;
+    font-weight: 500;
+}
+
 .transactionStream {
     display: flex;
     flex-direction: column;
