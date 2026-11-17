@@ -41,6 +41,8 @@ export const BILLING_ERROR_MESSAGES = {
     CURRENCY_REQUIRED: 'Currency is required.',
     PERIOD_REQUIRED: 'Billing period is required.',
     INVALID_PERIOD: 'Invalid billing period.',
+    OFFER_ID_REQUIRED: 'Offer ID is required.',
+    OFFER_NAME_REQUIRED: 'Offer campaign name is required.',
     OFFER_CODE_REQUIRED: 'Offer promo code is required.',
     INVALID_DISCOUNT_PERCENTAGE: 'Discount percentage must be between 1 and 100.',
     INVALID_OFFER_DATES: 'Offer validUntil date must be after validFrom date.',
