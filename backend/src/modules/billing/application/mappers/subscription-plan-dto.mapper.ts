@@ -1,6 +1,9 @@
+import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
+import { BILLING_ERROR_MESSAGES } from '../../domain/constants/billing-error-messages.constants';
 import { BILLING_ID_PREFIXES, generateBillingId } from '../../domain/constants/billing.constants';
 import { SubscriptionPlan } from '../../domain/entities/subscription-plan.entity';
-import { PlanOfferProps } from '../../domain/interfaces/billing-value-objects.types';
+import { PlanOfferProps, PlanOfferSnapshot } from '../../domain/interfaces/billing-value-objects.types';
 import { CreateSubscriptionPlanProps, SubscriptionPlanSnapshot, UpdateSubscriptionPlanProps } from '../../domain/interfaces/subscription-plan.types';
 import { MoneyVO } from '../../domain/value-objects/money.vo';
 import { PlanOffer } from '../../domain/value-objects/plan-offer.vo';
@@ -60,6 +63,45 @@ export class SubscriptionPlanDtoMapper {
             items: SubscriptionPlanDtoMapper.toDtoList(entities, atDate),
             total,
         };
+    }
+
+    public static validateOfferDtos(
+        offerDtos?: PlanOfferInputDto[],
+        existingOffers?: (PlanOfferProps | PlanOfferSnapshot)[],
+    ): void {
+        if (!offerDtos || offerDtos.length === 0) return;
+
+        const now = Date.now();
+        const existingMap = new Map<string, PlanOfferProps | PlanOfferSnapshot>();
+        if (existingOffers) {
+            existingOffers.forEach((o) => {
+                if (o.id) existingMap.set(o.id, o);
+            });
+        }
+
+        for (const dto of offerDtos) {
+            const fromTime = new Date(dto.validFrom).getTime();
+            const untilTime = new Date(dto.validUntil).getTime();
+
+            if (isNaN(fromTime) || isNaN(untilTime)) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
+            }
+
+            if (untilTime <= fromTime) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
+            }
+
+            const existing = dto.id ? existingMap.get(dto.id) : undefined;
+            const isNew = !existing;
+            const expiryModified = existing && new Date(existing.validUntil).getTime() !== untilTime;
+
+            if ((isNew || expiryModified) && untilTime <= now) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    BILLING_ERROR_MESSAGES.OFFER_PAST_DATE_NOT_ALLOWED,
+                );
+            }
+        }
     }
 
     public static toOfferProps(dto: PlanOfferInputDto): PlanOfferProps {

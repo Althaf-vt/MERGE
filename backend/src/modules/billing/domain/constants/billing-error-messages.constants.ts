@@ -46,6 +46,7 @@ export const BILLING_ERROR_MESSAGES = {
     OFFER_CODE_REQUIRED: 'Offer promo code is required.',
     INVALID_DISCOUNT_PERCENTAGE: 'Discount percentage must be between 1 and 100.',
     INVALID_OFFER_DATES: 'Offer validUntil date must be after validFrom date.',
+    OFFER_PAST_DATE_NOT_ALLOWED: 'Offer valid until date must be in the future.',
     AMOUNT_CANNOT_BE_NEGATIVE: 'Amount cannot be negative.',
     KILL_SWITCH_SUBSCRIPTIONS_DISABLED: 'Premium subscriptions are currently disabled by system policy.',
     KILL_SWITCH_CREDIT_PURCHASES_DISABLED: 'Credit purchases are currently disabled by system policy.',

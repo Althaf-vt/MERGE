@@ -24,6 +24,10 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_NOT_FOUND);
         }
 
+        if (dto.offers) {
+            SubscriptionPlanDtoMapper.validateOfferDtos(dto.offers, plan.toSnapshot().offers);
+        }
+
         const updateProps = SubscriptionPlanDtoMapper.toUpdateProps(dto, plan.toSnapshot());
         plan.updateDetails(updateProps);
 

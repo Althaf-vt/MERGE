@@ -7,6 +7,7 @@ import { CreditPackResponseDto } from '../dtos/credit-pack-response.dto';
 import { UpdateCreditPackDto } from '../dtos/manage-credit-pack.dto';
 import { IUpdateCreditPackUseCase } from '../interfaces/credit.use-cases.interface';
 import { CreditPackDtoMapper } from '../mappers/credit-pack-dto.mapper';
+import { SubscriptionPlanDtoMapper } from '../mappers/subscription-plan-dto.mapper';
 
 @Injectable()
 export class UpdateCreditPackUseCase implements IUpdateCreditPackUseCase {
@@ -22,6 +23,10 @@ export class UpdateCreditPackUseCase implements IUpdateCreditPackUseCase {
         const pack = await this._creditPackRepository.findById(id.trim());
         if (!pack) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_NOT_FOUND);
+        }
+
+        if (dto.offers) {
+            SubscriptionPlanDtoMapper.validateOfferDtos(dto.offers, pack.toSnapshot().offers);
         }
 
         const updateProps = CreditPackDtoMapper.toUpdateProps(dto, pack.toSnapshot());

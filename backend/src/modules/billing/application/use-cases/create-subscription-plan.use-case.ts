@@ -21,6 +21,10 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_CODE_ALREADY_EXISTS);
         }
 
+        if (dto.offers) {
+            SubscriptionPlanDtoMapper.validateOfferDtos(dto.offers);
+        }
+
         const createProps = SubscriptionPlanDtoMapper.toCreateProps(dto);
         const plan = SubscriptionPlan.create(createProps);
 
