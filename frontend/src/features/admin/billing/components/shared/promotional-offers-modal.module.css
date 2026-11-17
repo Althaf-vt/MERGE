@@ -324,6 +324,57 @@
     border-color: var(--admin-border-focus, #52525b);
 }
 
+.dateInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.dateInput {
+    background-color: var(--admin-surface, #000000);
+    border: 1px solid var(--admin-border, #27272a);
+    color: var(--admin-text-primary, #fafafa);
+    padding: 7px 32px 7px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    color-scheme: dark;
+    cursor: pointer;
+}
+
+.dateInput:focus {
+    border-color: var(--admin-border-focus, #52525b);
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 32px;
+    height: 100%;
+}
+
+.calendarIcon {
+    position: absolute;
+    right: 9px;
+    color: var(--admin-text-subtle, #71717a);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+}
+
+.dateInputWrapper:hover .calendarIcon {
+    color: var(--admin-text-primary, #fafafa);
+}
+
 .sectionHeaderRow {
     display: flex;
     align-items: center;
