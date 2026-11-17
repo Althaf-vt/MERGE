@@ -42,6 +42,5 @@ export class CreditPackSchemaClass {
 
 export const CreditPackSchema = SchemaFactory.createForClass(CreditPackSchemaClass);
 
-CreditPackSchema.index({ code: 1 }, { unique: true });
 CreditPackSchema.index({ isListed: 1, isActive: 1, sortOrder: 1 });
 CreditPackSchema.index({ createdAt: -1 });

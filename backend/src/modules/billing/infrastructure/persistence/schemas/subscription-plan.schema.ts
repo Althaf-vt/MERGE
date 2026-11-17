@@ -79,6 +79,5 @@ export class SubscriptionPlanSchemaClass {
 
 export const SubscriptionPlanSchema = SchemaFactory.createForClass(SubscriptionPlanSchemaClass);
 
-SubscriptionPlanSchema.index({ code: 1 }, { unique: true });
 SubscriptionPlanSchema.index({ isActive: 1, sortOrder: 1 });
 SubscriptionPlanSchema.index({ createdAt: -1 });
