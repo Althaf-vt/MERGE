@@ -8,7 +8,6 @@ import { CreditPackResponseDto } from '../dtos/credit-pack-response.dto';
 import { CreateCreditPackDto } from '../dtos/manage-credit-pack.dto';
 import { ICreateCreditPackUseCase } from '../interfaces/credit.use-cases.interface';
 import { CreditPackDtoMapper } from '../mappers/credit-pack-dto.mapper';
-import { SubscriptionPlanDtoMapper } from '../mappers/subscription-plan-dto.mapper';
 
 @Injectable()
 export class CreateCreditPackUseCase implements ICreateCreditPackUseCase {
@@ -20,10 +19,6 @@ export class CreateCreditPackUseCase implements ICreateCreditPackUseCase {
         const existing = await this._creditPackRepository.findByCode(dto.code);
         if (existing) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_CODE_ALREADY_EXISTS);
-        }
-
-        if (dto.offers) {
-            SubscriptionPlanDtoMapper.validateOfferDtos(dto.offers);
         }
 
         const createProps = CreditPackDtoMapper.toCreateProps(dto);
