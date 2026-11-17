@@ -1,4 +1,4 @@
-import { PlanPriceResponseDto } from './subscription-plan-response.dto';
+import { PlanOfferResponseDto, PlanPriceResponseDto } from './subscription-plan-response.dto';
 
 export interface CreditPackResponseDto {
     id: string;
@@ -6,6 +6,8 @@ export interface CreditPackResponseDto {
     code: string;
     creditsCount: number;
     price: PlanPriceResponseDto;
+    effectivePrice: PlanPriceResponseDto;
+    offers: PlanOfferResponseDto[];
     badge: string | null;
     sortOrder: number;
     isListed: boolean;
