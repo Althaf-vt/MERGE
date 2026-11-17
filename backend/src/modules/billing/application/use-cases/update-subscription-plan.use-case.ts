@@ -3,6 +3,7 @@ import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../../domain/constants/billing-error-messages.constants';
 import { ISubscriptionPlanRepository, SUBSCRIPTION_PLAN_REPOSITORY } from '../../domain/interfaces/subscription-plan-repository.interface';
+import { BillingNormalizationUtil } from '../../domain/utils/billing-normalization.util';
 import { UpdateSubscriptionPlanDto } from '../dtos/manage-plan.dto';
 import { SubscriptionPlanResponseDto } from '../dtos/subscription-plan-response.dto';
 import { IUpdateSubscriptionPlanUseCase } from '../interfaces/subscription-plan.use-cases.interface';
@@ -22,6 +23,23 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
         const plan = await this._subscriptionPlanRepository.findById(id.trim());
         if (!plan) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_NOT_FOUND);
+        }
+
+        // Validate normalized name uniqueness if name is being changed
+        if (dto.name && dto.name.trim().length > 0) {
+            const nextNormalizedName = BillingNormalizationUtil.normalizeName(dto.name);
+            if (nextNormalizedName !== plan.normalizedName) {
+                const existingWithName = await this._subscriptionPlanRepository.findByNormalizedName(
+                    nextNormalizedName,
+                    plan.billingPeriod,
+                );
+                if (existingWithName && existingWithName.id !== plan.id) {
+                    throw new DomainException(
+                        ErrorCode.VALIDATION_FAILED,
+                        BILLING_ERROR_MESSAGES.PLAN_NAME_ALREADY_EXISTS,
+                    );
+                }
+            }
         }
 
         const updateProps = SubscriptionPlanDtoMapper.toUpdateProps(dto, plan.toSnapshot());
