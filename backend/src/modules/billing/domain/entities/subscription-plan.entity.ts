@@ -116,8 +116,8 @@ export class SubscriptionPlan {
         this._props.updatedAt = new Date();
     }
 
-    public addOffer(offer: PlanOffer): void {
-        const existingIndex = this._offersVO.findIndex((o) => o.code === offer.code);
+    public addOrUpdateOffer(offer: PlanOffer): void {
+        const existingIndex = this._offersVO.findIndex((o) => o.id === offer.id);
         if (existingIndex >= 0) {
             this._offersVO[existingIndex] = offer;
         } else {
@@ -127,10 +127,14 @@ export class SubscriptionPlan {
         this._props.updatedAt = new Date();
     }
 
-    public removeOffer(offerCode: string): void {
-        const normalized = offerCode.trim().toUpperCase();
+    public addOffer(offer: PlanOffer): void {
+        this.addOrUpdateOffer(offer);
+    }
+
+    public removeOffer(offerId: string): void {
+        const normalized = offerId.trim();
         const initialLength = this._offersVO.length;
-        const filtered = this._offersVO.filter((o) => o.code !== normalized);
+        const filtered = this._offersVO.filter((o) => o.id !== normalized && o.name !== normalized);
         if (filtered.length !== initialLength) {
             this._offersVO.length = 0;
             this._offersVO.push(...filtered);
@@ -150,7 +154,7 @@ export class SubscriptionPlan {
             curr.discountPercentage > best.discountPercentage ? curr : best,
         );
 
-        return bestOffer.calculateDiscountedPrice(this._priceVO);
+        return bestOffer.calculateDiscountedPrice(this._priceVO, date);
     }
 
     public hasEntitlement(entitlement: SubscriptionEntitlement): boolean {
