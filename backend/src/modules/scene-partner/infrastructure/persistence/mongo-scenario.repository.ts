@@ -111,7 +111,7 @@ export class MongoScenarioRepository implements IScenarioRepository {
     async update(scenario: Scenario): Promise<Scenario> {
         const persistenceData = ScenarioPersistenceMapper.toPersistence(scenario);
         const updated = await this._model
-            .findByIdAndUpdate(scenario.id, persistenceData, { new: true })
+            .findByIdAndUpdate(scenario.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {
