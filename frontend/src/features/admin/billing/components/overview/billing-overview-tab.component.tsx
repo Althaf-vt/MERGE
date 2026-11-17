@@ -3,9 +3,9 @@ import type {
     SubscriptionPlanDto,
     CreditPackDto,
     AdminBillingTransactionDto,
-    AdminPlanOfferDto,
 } from '../../types/admin-billing.types';
 import { type AdminBillingTab, ADMIN_BILLING_TABS } from '../../constants/admin-billing.constants';
+import { getOffersSummary } from '../../utils/admin-billing-offers.util';
 import { MetricCard } from '../shared/metric-card.component';
 import {
     BillingBadge,
@@ -225,7 +225,7 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
                                                 <>
                                                     <span>•</span>
                                                     <span className={styles.offersTag}>
-                                                        {plan.offers.filter((o: AdminPlanOfferDto) => o.isActive).length} active offers
+                                                        {getOffersSummary(plan.offers).activeCount} active offers
                                                     </span>
                                                 </>
                                             )}
