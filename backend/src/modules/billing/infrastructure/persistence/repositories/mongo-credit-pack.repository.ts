@@ -27,6 +27,14 @@ export class MongoCreditPackRepository implements ICreditPackRepository {
         return CreditPackPersistenceMapper.toDomain(document);
     }
 
+    async findByNormalizedName(normalizedName: string): Promise<CreditPack | null> {
+        const document = await this._model.findOne({
+            normalizedName: normalizedName.trim().toUpperCase(),
+        }).exec();
+        if (!document) return null;
+        return CreditPackPersistenceMapper.toDomain(document);
+    }
+
     async findListed(): Promise<CreditPack[]> {
         const documents = await this._model
             .find({ isListed: true, isActive: true })

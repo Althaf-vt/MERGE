@@ -6,7 +6,7 @@ export const SUBSCRIPTION_PLAN_REPOSITORY = 'SUBSCRIPTION_PLAN_REPOSITORY';
 
 export interface ISubscriptionPlanRepository extends IBaseRepository<SubscriptionPlan> {
     findByCode(code: string): Promise<SubscriptionPlan | null>;
-    findByNormalizedName?(normalizedName: string, billingPeriod: BillingPeriod): Promise<SubscriptionPlan | null>;
+    findByNormalizedName(normalizedName: string, billingPeriod: BillingPeriod): Promise<SubscriptionPlan | null>;
     findActive(): Promise<SubscriptionPlan[]>;
     findAll(): Promise<SubscriptionPlan[]>;
     count(): Promise<number>;

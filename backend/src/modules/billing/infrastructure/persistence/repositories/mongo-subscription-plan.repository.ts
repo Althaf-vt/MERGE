@@ -5,6 +5,7 @@ import { ErrorCode } from '../../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../../../domain/constants/billing-error-messages.constants';
 import { SubscriptionPlan } from '../../../domain/entities/subscription-plan.entity';
+import { BillingPeriod } from '../../../domain/enums/billing.enums';
 import { ISubscriptionPlanRepository } from '../../../domain/interfaces/subscription-plan-repository.interface';
 import { SubscriptionPlanPersistenceMapper } from '../mappers/subscription-plan-persistence.mapper';
 import { SubscriptionPlanDocument, SubscriptionPlanSchemaClass } from '../schemas/subscription-plan.schema';
@@ -23,6 +24,15 @@ export class MongoSubscriptionPlanRepository implements ISubscriptionPlanReposit
 
     async findByCode(code: string): Promise<SubscriptionPlan | null> {
         const document = await this._model.findOne({ code: code.trim().toUpperCase() }).exec();
+        if (!document) return null;
+        return SubscriptionPlanPersistenceMapper.toDomain(document);
+    }
+
+    async findByNormalizedName(normalizedName: string, billingPeriod: BillingPeriod): Promise<SubscriptionPlan | null> {
+        const document = await this._model.findOne({
+            normalizedName: normalizedName.trim().toUpperCase(),
+            billingPeriod,
+        }).exec();
         if (!document) return null;
         return SubscriptionPlanPersistenceMapper.toDomain(document);
     }
