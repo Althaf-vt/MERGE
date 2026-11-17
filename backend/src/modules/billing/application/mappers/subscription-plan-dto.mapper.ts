@@ -81,11 +81,11 @@ export class SubscriptionPlanDtoMapper {
         return dtos.map((dto) => SubscriptionPlanDtoMapper.toOfferProps(dto));
     }
 
-    public static toCreateProps(dto: CreateSubscriptionPlanDto): CreateSubscriptionPlanProps {
+    public static toCreateProps(dto: CreateSubscriptionPlanDto, explicitCode?: string): CreateSubscriptionPlanProps {
         return {
             id: generateBillingId(BILLING_ID_PREFIXES.PLAN),
             name: dto.name,
-            code: dto.code,
+            code: explicitCode ?? dto.code ?? '',
             billingPeriod: dto.billingPeriod,
             price: {
                 amount: dto.price.amount,

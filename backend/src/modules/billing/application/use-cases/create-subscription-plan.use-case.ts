@@ -16,9 +16,11 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
     ) { }
 
     async execute(dto: CreateSubscriptionPlanDto): Promise<SubscriptionPlanResponseDto> {
-        const existing = await this._subscriptionPlanRepository.findByCode(dto.code);
-        if (existing) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_CODE_ALREADY_EXISTS);
+        if (dto.code) {
+            const existing = await this._subscriptionPlanRepository.findByCode(dto.code);
+            if (existing) {
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_CODE_ALREADY_EXISTS);
+            }
         }
 
         const createProps = SubscriptionPlanDtoMapper.toCreateProps(dto);
