@@ -105,6 +105,17 @@
     background-color: rgba(216, 180, 254, 0.2);
 }
 
+.offersScheduled {
+    background-color: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.offersScheduled:hover {
+    border-color: #fbbf24;
+    background-color: rgba(251, 191, 36, 0.2);
+}
+
 .noOffers {
     background-color: transparent;
     color: var(--admin-text-subtle, #71717a);
