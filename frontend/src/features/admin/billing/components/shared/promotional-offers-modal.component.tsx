@@ -36,9 +36,11 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
     const [validUntil, setValidUntil] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null);
+    const [editingOfferId, setEditingOfferId] = useState<string | null>(null);
 
     useEffect(() => {
         setConfirmDeleteIndex(null);
+        setEditingOfferId(null);
         if (!isOpen) {
             setError(null);
             setCampaignName('');
@@ -52,6 +54,36 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
 
     const clearError = () => {
         if (error) setError(null);
+    };
+
+    const formatDateForInput = (d: string | Date | undefined): string => {
+        if (!d) return '';
+        try {
+            const dateObj = new Date(d);
+            if (isNaN(dateObj.getTime())) return '';
+            return dateObj.toISOString().split('T')[0];
+        } catch {
+            return '';
+        }
+    };
+
+    const handleStartEdit = (offer: AdminPlanOfferDto) => {
+        clearError();
+        setConfirmDeleteIndex(null);
+        setEditingOfferId(offer.id);
+        setCampaignName(offer.name || offer.code || '');
+        setDiscountPercentage(offer.discountPercentage);
+        setValidFrom(formatDateForInput(offer.validFrom));
+        setValidUntil(formatDateForInput(offer.validUntil));
+    };
+
+    const handleCancelEdit = () => {
+        setEditingOfferId(null);
+        setCampaignName('');
+        setDiscountPercentage('');
+        setValidFrom('');
+        setValidUntil('');
+        clearError();
     };
 
     if (!isOpen || !item) return null;
@@ -98,7 +130,7 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
         }
     };
 
-    const handleAddOffer = async (e: React.FormEvent) => {
+    const handleSubmitOffer = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
@@ -142,31 +174,61 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
         }
 
         try {
-            const existingMapped: PlanOfferInputPayload[] = currentOffers.map((o) => ({
-                id: o.id,
-                name: o.name || o.code || 'Promotional Offer',
-                code: o.code,
-                discountPercentage: o.discountPercentage,
-                validFrom: typeof o.validFrom === 'string' ? o.validFrom : new Date(o.validFrom).toISOString(),
-                validUntil: typeof o.validUntil === 'string' ? o.validUntil : new Date(o.validUntil).toISOString(),
-                isActive: o.isActive,
-            }));
+            if (editingOfferId) {
+                // Update existing offer in-place, preserving its id and isActive status
+                const updated: PlanOfferInputPayload[] = currentOffers.map((o) => {
+                    if (o.id === editingOfferId) {
+                        return {
+                            id: o.id,
+                            name: trimmedName,
+                            code: o.code || trimmedName.toUpperCase().replace(/\s+/g, '_').substring(0, 30),
+                            discountPercentage: discountNum,
+                            validFrom: new Date(validFrom).toISOString(),
+                            validUntil: new Date(validUntil).toISOString(),
+                            isActive: o.isActive,
+                        };
+                    }
+                    return {
+                        id: o.id,
+                        name: o.name || o.code || 'Promotional Offer',
+                        code: o.code,
+                        discountPercentage: o.discountPercentage,
+                        validFrom: typeof o.validFrom === 'string' ? o.validFrom : new Date(o.validFrom).toISOString(),
+                        validUntil: typeof o.validUntil === 'string' ? o.validUntil : new Date(o.validUntil).toISOString(),
+                        isActive: o.isActive,
+                    };
+                });
 
-            const newOffer: PlanOfferInputPayload = {
-                name: trimmedName,
-                code: trimmedName.toUpperCase().replace(/\s+/g, '_').substring(0, 30),
-                discountPercentage: discountNum,
-                validFrom: new Date(validFrom).toISOString(),
-                validUntil: new Date(validUntil).toISOString(),
-                isActive: true,
-            };
+                await onUpdateOffers(item.id, updated);
+                handleCancelEdit();
+            } else {
+                // Attach new offer
+                const existingMapped: PlanOfferInputPayload[] = currentOffers.map((o) => ({
+                    id: o.id,
+                    name: o.name || o.code || 'Promotional Offer',
+                    code: o.code,
+                    discountPercentage: o.discountPercentage,
+                    validFrom: typeof o.validFrom === 'string' ? o.validFrom : new Date(o.validFrom).toISOString(),
+                    validUntil: typeof o.validUntil === 'string' ? o.validUntil : new Date(o.validUntil).toISOString(),
+                    isActive: o.isActive,
+                }));
 
-            await onUpdateOffers(item.id, [...existingMapped, newOffer]);
+                const newOffer: PlanOfferInputPayload = {
+                    name: trimmedName,
+                    code: trimmedName.toUpperCase().replace(/\s+/g, '_').substring(0, 30),
+                    discountPercentage: discountNum,
+                    validFrom: new Date(validFrom).toISOString(),
+                    validUntil: new Date(validUntil).toISOString(),
+                    isActive: true,
+                };
 
-            setCampaignName('');
-            setDiscountPercentage('');
-            setValidFrom('');
-            setValidUntil('');
+                await onUpdateOffers(item.id, [...existingMapped, newOffer]);
+
+                setCampaignName('');
+                setDiscountPercentage('');
+                setValidFrom('');
+                setValidUntil('');
+            }
         } catch (err: unknown) {
             setError(getErrorMessage(err));
         }
@@ -281,6 +343,21 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                                 </button>
                                                 <button
                                                     type="button"
+                                                    className={`${styles.editBtn} ${
+                                                        editingOfferId === offer.id ? styles.editBtnActive : ''
+                                                    }`}
+                                                    onClick={() => handleStartEdit(offer)}
+                                                    disabled={isUpdating}
+                                                    title="Edit offer"
+                                                    aria-label={`Edit offer ${offer.name || offer.code}`}
+                                                >
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    type="button"
                                                     className={styles.deleteBtn}
                                                     onClick={() => setConfirmDeleteIndex(idx)}
                                                     disabled={isUpdating}
@@ -298,8 +375,15 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                     )}
                 </div>
 
-                <form onSubmit={handleAddOffer} className={styles.addForm}>
-                    <div className={styles.sectionTitle}>Attach New Promotional Offer</div>
+                <form onSubmit={handleSubmitOffer} className={styles.addForm}>
+                    <div className={styles.sectionHeaderRow}>
+                        <div className={styles.sectionTitle}>
+                            {editingOfferId ? 'Edit Promotional Offer' : 'Attach New Promotional Offer'}
+                        </div>
+                        {editingOfferId && (
+                            <span className={styles.editingBadge}>Editing Mode</span>
+                        )}
+                    </div>
 
                     <div className={styles.addFormRow}>
                         <div className={styles.inputGroup}>
@@ -368,13 +452,29 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        className={styles.addBtn}
-                        disabled={isUpdating}
-                    >
-                        {isUpdating ? 'Saving...' : `Add Offer to ${itemTypeLabel}`}
-                    </button>
+                    <div className={styles.formBtnRow}>
+                        {editingOfferId && (
+                            <button
+                                type="button"
+                                className={styles.cancelEditBtn}
+                                onClick={handleCancelEdit}
+                                disabled={isUpdating}
+                            >
+                                Cancel Edit
+                            </button>
+                        )}
+                        <button
+                            type="submit"
+                            className={styles.addBtn}
+                            disabled={isUpdating}
+                        >
+                            {isUpdating
+                                ? 'Saving...'
+                                : editingOfferId
+                                ? 'Save Changes'
+                                : `Add Offer to ${itemTypeLabel}`}
+                        </button>
+                    </div>
                 </form>
 
                 <div className={styles.footer}>
