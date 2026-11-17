@@ -167,6 +167,8 @@ export const CREDIT_PACK_FORM_LIMITS = {
 } as const;
 
 export const OFFER_FORM_LIMITS = {
+    NAME_MIN: 2,
+    NAME_MAX: 80,
     CODE_MIN: 2,
     CODE_MAX: 20,
     MIN_DISCOUNT: 1,
