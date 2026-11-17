@@ -35,8 +35,10 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
     const [validFrom, setValidFrom] = useState('');
     const [validUntil, setValidUntil] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null);
 
     useEffect(() => {
+        setConfirmDeleteIndex(null);
         if (!isOpen) {
             setError(null);
             setCampaignName('');
@@ -236,26 +238,59 @@ export const PromotionalOffersModal: React.FC<PromotionalOffersModalProps> = ({
                                     </div>
 
                                     <div className={styles.offerControls}>
-                                        <button
-                                            type="button"
-                                            className={`${styles.toggleBtn} ${
-                                                offer.isActive ? styles.toggleBtnActive : styles.toggleBtnInactive
-                                            }`}
-                                            onClick={() => handleToggleOffer(idx)}
-                                            disabled={isUpdating}
-                                            title={offer.isActive ? 'Disable offer' : 'Enable offer'}
-                                        >
-                                            {offer.isActive ? 'ACTIVE' : 'DISABLED'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={styles.deleteBtn}
-                                            onClick={() => handleDeleteOffer(idx)}
-                                            disabled={isUpdating}
-                                            title="Delete offer"
-                                        >
-                                            &times;
-                                        </button>
+                                        {confirmDeleteIndex === idx ? (
+                                            <div className={styles.confirmDeleteGroup}>
+                                                <span className={styles.confirmDeletePrompt}>Remove?</span>
+                                                <button
+                                                    type="button"
+                                                    className={styles.confirmDeleteBtn}
+                                                    onClick={() => {
+                                                        setConfirmDeleteIndex(null);
+                                                        handleDeleteOffer(idx);
+                                                    }}
+                                                    disabled={isUpdating}
+                                                    title="Confirm deletion"
+                                                >
+                                                    Delete
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={styles.cancelDeleteBtn}
+                                                    onClick={() => setConfirmDeleteIndex(null)}
+                                                    disabled={isUpdating}
+                                                    title="Cancel deletion"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className={`${styles.toggleBtn} ${
+                                                        offer.isActive ? styles.toggleBtnActive : styles.toggleBtnInactive
+                                                    }`}
+                                                    onClick={() => {
+                                                        setConfirmDeleteIndex(null);
+                                                        handleToggleOffer(idx);
+                                                    }}
+                                                    disabled={isUpdating}
+                                                    title={offer.isActive ? 'Disable offer' : 'Enable offer'}
+                                                >
+                                                    {offer.isActive ? 'ACTIVE' : 'DISABLED'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={styles.deleteBtn}
+                                                    onClick={() => setConfirmDeleteIndex(idx)}
+                                                    disabled={isUpdating}
+                                                    title="Remove offer"
+                                                    aria-label={`Remove offer ${offer.name || offer.code}`}
+                                                >
+                                                    &times;
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             );
