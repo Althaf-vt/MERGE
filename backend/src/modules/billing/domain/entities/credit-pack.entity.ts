@@ -1,7 +1,9 @@
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
+import { BILLING_CATALOG_LIMITS } from '../constants/billing.constants';
 import { CreateCreditPackProps, CreditPackData, CreditPackProps, CreditPackSnapshot, UpdateCreditPackProps } from '../interfaces/credit-pack.types';
+import { BillingNormalizationUtil } from '../utils/billing-normalization.util';
 import { MoneyVO } from '../value-objects/money.vo';
 import { PlanOffer } from '../value-objects/plan-offer.vo';
 
@@ -54,6 +56,15 @@ export class CreditPack {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_NAME_REQUIRED);
         }
 
+        const trimmedName = props.name.trim();
+        if (
+            trimmedName.length < BILLING_CATALOG_LIMITS.CREDIT_PACK_NAME_MIN_LENGTH ||
+            trimmedName.length > BILLING_CATALOG_LIMITS.CREDIT_PACK_NAME_MAX_LENGTH ||
+            !BillingNormalizationUtil.isValidNameFormat(trimmedName)
+        ) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_CREDIT_PACK_NAME_FORMAT);
+        }
+
         if (!props.code || props.code.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_CODE_REQUIRED);
         }
@@ -69,6 +80,7 @@ export class CreditPack {
 
     get id(): string { return this._props.id; }
     get name(): string { return this._props.name; }
+    get normalizedName(): string { return BillingNormalizationUtil.normalizeName(this._props.name); }
     get code(): string { return this._props.code; }
     get creditsCount(): number { return this._props.creditsCount; }
     get price(): MoneyVO { return this._priceVO; }
@@ -84,6 +96,13 @@ export class CreditPack {
         const trimmedName = props.name.trim();
         if (!trimmedName) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.CREDIT_PACK_NAME_REQUIRED);
+        }
+        if (
+            trimmedName.length < BILLING_CATALOG_LIMITS.CREDIT_PACK_NAME_MIN_LENGTH ||
+            trimmedName.length > BILLING_CATALOG_LIMITS.CREDIT_PACK_NAME_MAX_LENGTH ||
+            !BillingNormalizationUtil.isValidNameFormat(trimmedName)
+        ) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_CREDIT_PACK_NAME_FORMAT);
         }
 
         if (typeof props.creditsCount !== 'number' || isNaN(props.creditsCount) || props.creditsCount < 1) {

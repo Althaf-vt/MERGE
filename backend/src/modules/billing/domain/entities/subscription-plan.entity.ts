@@ -1,8 +1,10 @@
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
+import { BILLING_CATALOG_LIMITS } from '../constants/billing.constants';
 import { BillingPeriod, SubscriptionEntitlement } from '../enums/billing.enums';
 import { CreateSubscriptionPlanProps, SubscriptionPlanData, SubscriptionPlanProps, SubscriptionPlanSnapshot, UpdateSubscriptionPlanProps } from '../interfaces/subscription-plan.types';
+import { BillingNormalizationUtil } from '../utils/billing-normalization.util';
 import { MoneyVO } from '../value-objects/money.vo';
 import { PlanBillingPeriod } from '../value-objects/plan-billing-period.vo';
 import { PlanOffer } from '../value-objects/plan-offer.vo';
@@ -56,6 +58,15 @@ export class SubscriptionPlan {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_NAME_REQUIRED);
         }
 
+        const trimmedName = props.name.trim();
+        if (
+            trimmedName.length < BILLING_CATALOG_LIMITS.PLAN_NAME_MIN_LENGTH ||
+            trimmedName.length > BILLING_CATALOG_LIMITS.PLAN_NAME_MAX_LENGTH ||
+            !BillingNormalizationUtil.isValidNameFormat(trimmedName)
+        ) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_PLAN_NAME_FORMAT);
+        }
+
         if (!props.code || props.code.trim().length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_CODE_REQUIRED);
         }
@@ -75,6 +86,7 @@ export class SubscriptionPlan {
 
     get id(): string { return this._props.id; }
     get name(): string { return this._props.name; }
+    get normalizedName(): string { return BillingNormalizationUtil.normalizeName(this._props.name); }
     get code(): string { return this._props.code; }
     get billingPeriod(): BillingPeriod { return this._props.billingPeriod; }
     get billingPeriodVO(): PlanBillingPeriod { return this._billingPeriodVO; }
@@ -90,6 +102,13 @@ export class SubscriptionPlan {
         const trimmedName = props.name.trim();
         if (!trimmedName) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_NAME_REQUIRED);
+        }
+        if (
+            trimmedName.length < BILLING_CATALOG_LIMITS.PLAN_NAME_MIN_LENGTH ||
+            trimmedName.length > BILLING_CATALOG_LIMITS.PLAN_NAME_MAX_LENGTH ||
+            !BillingNormalizationUtil.isValidNameFormat(trimmedName)
+        ) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_PLAN_NAME_FORMAT);
         }
 
         if (!props.entitlements || props.entitlements.length === 0) {
