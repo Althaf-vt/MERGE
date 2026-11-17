@@ -91,7 +91,7 @@ export class MongoUserSubscriptionRepository implements IUserSubscriptionReposit
     async update(subscription: UserSubscription): Promise<UserSubscription> {
         const persistenceData = UserSubscriptionPersistenceMapper.toPersistence(subscription);
         const updated = await this._model
-            .findByIdAndUpdate(subscription.id, persistenceData, { new: true })
+            .findByIdAndUpdate(subscription.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {

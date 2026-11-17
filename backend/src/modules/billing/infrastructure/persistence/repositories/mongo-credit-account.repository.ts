@@ -52,7 +52,7 @@ export class MongoCreditAccountRepository implements ICreditAccountRepository {
     async update(account: CreditAccount): Promise<CreditAccount> {
         const persistenceData = CreditAccountPersistenceMapper.toPersistence(account);
         const updated = await this._model
-            .findByIdAndUpdate(account.id, persistenceData, { new: true })
+            .findByIdAndUpdate(account.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {

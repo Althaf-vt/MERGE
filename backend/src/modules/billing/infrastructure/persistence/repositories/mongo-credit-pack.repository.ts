@@ -55,7 +55,7 @@ export class MongoCreditPackRepository implements ICreditPackRepository {
     async update(pack: CreditPack): Promise<CreditPack> {
         const persistenceData = CreditPackPersistenceMapper.toPersistence(pack);
         const updated = await this._model
-            .findByIdAndUpdate(pack.id, persistenceData, { new: true })
+            .findByIdAndUpdate(pack.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {

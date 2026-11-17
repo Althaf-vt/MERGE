@@ -55,7 +55,7 @@ export class MongoSubscriptionPlanRepository implements ISubscriptionPlanReposit
     async update(plan: SubscriptionPlan): Promise<SubscriptionPlan> {
         const persistenceData = SubscriptionPlanPersistenceMapper.toPersistence(plan);
         const updated = await this._model
-            .findByIdAndUpdate(plan.id, persistenceData, { new: true })
+            .findByIdAndUpdate(plan.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {
