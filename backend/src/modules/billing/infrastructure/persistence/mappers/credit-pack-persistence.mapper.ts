@@ -39,6 +39,7 @@ export class CreditPackPersistenceMapper {
         return {
             _id: data.id,
             name: data.name,
+            normalizedName: entity.normalizedName,
             code: data.code,
             creditsCount: data.creditsCount,
             price: {

@@ -39,6 +39,7 @@ export class SubscriptionPlanPersistenceMapper {
         return {
             _id: data.id,
             name: data.name,
+            normalizedName: entity.normalizedName,
             code: data.code,
             billingPeriod: data.billingPeriod,
             price: {
