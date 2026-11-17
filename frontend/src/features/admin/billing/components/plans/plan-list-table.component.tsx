@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AdminSubscriptionPlanDto } from '../../types/admin-billing.types';
 import { AdminTable, type AdminTableColumn } from '../../../../../shared/admin/components/admin-table.component';
+import { getOffersSummary } from '../../utils/admin-billing-offers.util';
 import styles from './plan-list-table.module.css';
 
 export interface PlanListTableProps {
@@ -80,20 +81,33 @@ export const PlanListTable: React.FC<PlanListTableProps> = ({
         {
             header: 'OFFERS',
             render: (plan) => {
-                const activeOffersCount = plan.offers?.filter((o) => o.isActive).length ?? 0;
+                const { activeCount, scheduledCount } = getOffersSummary(plan.offers);
+
+                let label = 'MANAGE OFFERS';
+                let btnStyle = styles.noOffers;
+
+                if (activeCount > 0 && scheduledCount > 0) {
+                    label = `${activeCount} ACTIVE (${scheduledCount} SCHED)`;
+                    btnStyle = styles.offersActive;
+                } else if (activeCount > 0) {
+                    label = `${activeCount} ACTIVE OFFER${activeCount > 1 ? 'S' : ''}`;
+                    btnStyle = styles.offersActive;
+                } else if (scheduledCount > 0) {
+                    label = `${scheduledCount} SCHEDULED`;
+                    btnStyle = styles.offersScheduled;
+                }
+
                 return (
                     <button
                         type="button"
-                        className={`${styles.offersBtn} ${activeOffersCount > 0 ? styles.offersActive : styles.noOffers}`}
+                        className={`${styles.offersBtn} ${btnStyle}`}
                         onClick={(e) => {
                             e.stopPropagation();
                             onManageOffers(plan);
                         }}
                         title="Manage promotional offers for this plan"
                     >
-                        {activeOffersCount > 0
-                            ? `${activeOffersCount} ACTIVE OFFER${activeOffersCount > 1 ? 'S' : ''}`
-                            : 'MANAGE OFFERS'}
+                        {label}
                     </button>
                 );
             },
