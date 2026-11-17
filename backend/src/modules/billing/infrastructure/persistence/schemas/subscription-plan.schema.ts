@@ -17,8 +17,14 @@ export const MoneySchema = SchemaFactory.createForClass(MoneySchemaClass);
 // Subdocument Schema: Plan Offer
 @Schema({ _id: false })
 export class PlanOfferSchemaClass {
-    @Prop({ required: true, trim: true, uppercase: true })
-    code: string;
+    @Prop({ type: String, required: false })
+    id?: string;
+
+    @Prop({ type: String, required: false, trim: true })
+    name?: string;
+
+    @Prop({ type: String, required: false, trim: true, uppercase: true })
+    code?: string;
 
     @Prop({ required: true, type: Number })
     discountPercentage: number;
