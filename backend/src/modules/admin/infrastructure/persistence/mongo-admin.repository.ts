@@ -62,7 +62,7 @@ export class AdminRepository extends BaseRepository<AdminAggregate, AdminDocumen
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as unknown as AdminDocument)),
+            data: AdminPersistenceMapper.toDomainList(documents as unknown as AdminDocument[]),
             total,
             page,
             limit

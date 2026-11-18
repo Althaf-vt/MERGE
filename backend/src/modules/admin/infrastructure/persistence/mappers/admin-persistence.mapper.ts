@@ -30,6 +30,10 @@ export class AdminPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: AdminDocument[]): AdminAggregate[] {
+        return documents.map((doc) => AdminPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: AdminAggregate): Record<string, unknown> {
         const data = entity.toJSON();
         return {

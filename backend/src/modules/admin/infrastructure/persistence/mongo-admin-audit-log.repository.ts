@@ -67,7 +67,7 @@ export class MongoAdminAuditLogRepository implements IAdminAuditLogRepository {
         ]);
 
         return {
-            data: documents.map((doc) => AdminAuditLogPersistenceMapper.toDomain(doc)),
+            data: AdminAuditLogPersistenceMapper.toDomainList(documents),
             total,
             page,
             limit,

@@ -39,7 +39,7 @@ export class PhotoVerificationTaskRepository extends BaseRepository<PhotoVerific
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as unknown as PhotoVerificationTaskDocument)),
+            data: PhotoTaskPersistenceMapper.toDomainList(documents as unknown as PhotoVerificationTaskDocument[]),
             total,
             page: filters.page,
             limit: filters.limit
