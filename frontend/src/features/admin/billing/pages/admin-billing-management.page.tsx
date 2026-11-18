@@ -378,6 +378,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                 <PlanFormModal
                     isOpen={isPlanModalOpen}
                     plan={editingPlan}
+                    existingPlans={plans}
                     onClose={() => {
                         setIsPlanModalOpen(false);
                         setEditingPlan(null);
