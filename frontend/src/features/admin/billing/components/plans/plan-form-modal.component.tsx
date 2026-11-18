@@ -15,11 +15,14 @@ import {
 } from '../../api/admin-billing.api';
 import { AdminModal } from '../../../../../shared/admin/components/admin-modal.component';
 import { getErrorMessage } from '../../../../../shared/utils/error.util';
+import { BillingNormalizationUtil } from '../../utils/admin-billing-code-generator.util';
+import { AdminBillingValidationUtil } from '../../utils/admin-billing-validation.util';
 import styles from './plan-form-modal.module.css';
 
 export interface PlanFormModalProps {
     isOpen: boolean;
     plan?: AdminSubscriptionPlanDto | null;
+    existingPlans?: AdminSubscriptionPlanDto[];
     onClose: () => void;
     onSuccess?: (savedPlan: AdminSubscriptionPlanDto) => void;
 }
@@ -27,6 +30,7 @@ export interface PlanFormModalProps {
 export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     isOpen,
     plan,
+    existingPlans = [],
     onClose,
     onSuccess,
 }) => {
@@ -34,6 +38,7 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
 
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
+    const [isCodeManuallyEdited, setIsCodeManuallyEdited] = useState(false);
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('MONTHLY');
     const [amount, setAmount] = useState<number | ''>('');
     const [entitlements, setEntitlements] = useState<SubscriptionEntitlement[]>([]);
@@ -52,12 +57,14 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
         if (!isOpen) {
             setErrors({});
             setServerError(null);
+            setIsCodeManuallyEdited(false);
             return;
         }
 
         if (plan) {
             setName(plan.name);
             setCode(plan.code);
+            setIsCodeManuallyEdited(true); // Edit mode preserves existing code
             setBillingPeriod(plan.billingPeriod);
             setAmount(plan.price?.amount ?? 0);
             setEntitlements(plan.entitlements || []);
@@ -66,6 +73,7 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
         } else {
             setName('');
             setCode('');
+            setIsCodeManuallyEdited(false);
             setBillingPeriod('MONTHLY');
             setAmount('');
             setEntitlements(['SCENE_PARTNER_ACCESS']);
@@ -78,6 +86,70 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
 
     if (!isOpen) return null;
 
+    // Live name change handler with instant validation and code autofill
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = e.target.value;
+        setName(newName);
+
+        if (serverError) setServerError(null);
+
+        const nameError = AdminBillingValidationUtil.validatePlanName(
+            newName,
+            billingPeriod,
+            existingPlans,
+            plan?.id,
+        );
+        setErrors((prev) => ({ ...prev, name: nameError || '' }));
+
+        if (!isEdit && !isCodeManuallyEdited) {
+            const autoCode = BillingNormalizationUtil.generatePlanCode(newName, billingPeriod);
+            setCode(autoCode);
+            setErrors((prev) => ({ ...prev, code: '' }));
+        }
+    };
+
+    // Live billing period change handler
+    const handleBillingPeriodChange = (newPeriod: BillingPeriod) => {
+        setBillingPeriod(newPeriod);
+
+        const nameError = AdminBillingValidationUtil.validatePlanName(
+            name,
+            newPeriod,
+            existingPlans,
+            plan?.id,
+        );
+        setErrors((prev) => ({ ...prev, name: nameError || '' }));
+
+        if (!isEdit && !isCodeManuallyEdited) {
+            const autoCode = BillingNormalizationUtil.generatePlanCode(name, newPeriod);
+            setCode(autoCode);
+            setErrors((prev) => ({ ...prev, code: '' }));
+        }
+    };
+
+    // Manual code change handler
+    const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawCode = e.target.value.toUpperCase();
+        setCode(rawCode);
+        setIsCodeManuallyEdited(true);
+
+        const codeError = AdminBillingValidationUtil.validateCode(
+            rawCode,
+            existingPlans,
+            plan?.id,
+            PLAN_FORM_LIMITS,
+        );
+        setErrors((prev) => ({ ...prev, code: codeError || '' }));
+    };
+
+    // Reset code to auto-generated slug
+    const handleResetCodeToAuto = () => {
+        setIsCodeManuallyEdited(false);
+        const autoCode = BillingNormalizationUtil.generatePlanCode(name, billingPeriod);
+        setCode(autoCode);
+        setErrors((prev) => ({ ...prev, code: '' }));
+    };
+
     const toggleEntitlement = (key: SubscriptionEntitlement) => {
         setEntitlements((prev) =>
             prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key]
@@ -87,26 +159,22 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
     const validate = (): boolean => {
         const nextErrors: Record<string, string> = {};
 
-        const trimmedName = name.trim();
-        if (!trimmedName) {
-            nextErrors.name = 'Plan name is required.';
-        } else if (
-            trimmedName.length < PLAN_FORM_LIMITS.NAME_MIN ||
-            trimmedName.length > PLAN_FORM_LIMITS.NAME_MAX
-        ) {
-            nextErrors.name = `Name must be ${PLAN_FORM_LIMITS.NAME_MIN}-${PLAN_FORM_LIMITS.NAME_MAX} chars.`;
-        }
+        const nameError = AdminBillingValidationUtil.validatePlanName(
+            name,
+            billingPeriod,
+            existingPlans,
+            plan?.id,
+        );
+        if (nameError) nextErrors.name = nameError;
 
         if (!isEdit) {
-            const trimmedCode = code.trim();
-            if (!trimmedCode) {
-                nextErrors.code = 'Plan code is required.';
-            } else if (
-                trimmedCode.length < PLAN_FORM_LIMITS.CODE_MIN ||
-                trimmedCode.length > PLAN_FORM_LIMITS.CODE_MAX
-            ) {
-                nextErrors.code = `Code must be ${PLAN_FORM_LIMITS.CODE_MIN}-${PLAN_FORM_LIMITS.CODE_MAX} chars.`;
-            }
+            const codeError = AdminBillingValidationUtil.validateCode(
+                code,
+                existingPlans,
+                plan?.id,
+                PLAN_FORM_LIMITS,
+            );
+            if (codeError) nextErrors.code = codeError;
         }
 
         if (amount === '' || Number.isNaN(Number(amount)) || Number(amount) < 0) {
@@ -161,7 +229,15 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                 onClose();
             }
         } catch (err: unknown) {
-            setServerError(getErrorMessage(err));
+            const msg = getErrorMessage(err);
+            setServerError(msg);
+
+            // Server-side error mapping directly to field inputs
+            if (msg.toLowerCase().includes('name already exists') || msg.toLowerCase().includes('alphabetic')) {
+                setErrors((prev) => ({ ...prev, name: msg }));
+            } else if (msg.toLowerCase().includes('code already exists') || msg.toLowerCase().includes('plan code')) {
+                setErrors((prev) => ({ ...prev, code: msg }));
+            }
         }
     };
 
@@ -189,9 +265,9 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                         </div>
                         <input
                             type="text"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={handleNameChange}
                             placeholder="e.g. Premium Plus"
                             disabled={isSubmitting}
                         />
@@ -203,13 +279,30 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                             <label className={styles.label}>
                                 Plan Code<span className={styles.required}>*</span>
                             </label>
+                            {!isEdit && (
+                                <div className={styles.badgeWrapper}>
+                                    <span className={isCodeManuallyEdited ? styles.manualBadge : styles.autoBadge}>
+                                        {isCodeManuallyEdited ? 'CUSTOM' : 'AUTO'}
+                                    </span>
+                                    {isCodeManuallyEdited && (
+                                        <button
+                                            type="button"
+                                            className={styles.resetButton}
+                                            onClick={handleResetCodeToAuto}
+                                            title="Revert to auto-generated slug"
+                                        >
+                                            Reset
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <input
                             type="text"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.code ? styles.inputError : ''}`}
                             value={code}
-                            onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="e.g. PREMIUM_MONTHLY"
+                            onChange={handleCodeChange}
+                            placeholder="e.g. PLAN_MONTHLY_PREMIUM_PLUS"
                             disabled={isEdit || isSubmitting}
                         />
                         {errors.code && <span className={styles.fieldError}>{errors.code}</span>}
@@ -226,7 +319,7 @@ export const PlanFormModal: React.FC<PlanFormModalProps> = ({
                         <select
                             className={styles.select}
                             value={billingPeriod}
-                            onChange={(e) => setBillingPeriod(e.target.value as BillingPeriod)}
+                            onChange={(e) => handleBillingPeriodChange(e.target.value as BillingPeriod)}
                             disabled={isEdit || isSubmitting}
                         >
                             {BILLING_PERIOD_OPTIONS.map((opt) => (
