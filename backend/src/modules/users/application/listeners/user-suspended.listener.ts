@@ -2,19 +2,20 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { OnEvent } from "@nestjs/event-emitter";
-import { UserSupendedDomainEvent } from "../../domain/events/user-suspended.domain-event";
+import { UserSuspendedDomainEvent } from "../../domain/events/user-suspended.domain-event";
+import { USER_DOMAIN_EVENTS } from "../../domain/constants/user-events.constant";
 
 @Injectable()
-export class UserSuspendedListener{
+export class UserSuspendedListener {
     private readonly _logger = new Logger(UserSuspendedListener.name);
 
     constructor(
         @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository,
         @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService,
-    ){}
+    ) { }
 
-    @OnEvent('user.suspended', {async: true})
-    async handle(event: UserSupendedDomainEvent): Promise<void>{
+    @OnEvent(USER_DOMAIN_EVENTS.SUSPENDED, { async: true })
+    async handle(event: UserSuspendedDomainEvent): Promise<void> {
         this._logger.log(`Reacting to suspension event for user ${event.userId}`);
 
         const user = await this._userRepository.findById(event.userId);
