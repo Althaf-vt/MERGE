@@ -15,6 +15,10 @@ export class ConnectionPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: ConnectionDocument[]): ConnectionAggregate[] {
+        return documents.map((doc) => ConnectionPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: ConnectionAggregate): Record<string, unknown> {
         return {
             requesterId: entity.requesterId,

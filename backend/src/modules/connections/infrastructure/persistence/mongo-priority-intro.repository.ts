@@ -27,12 +27,12 @@ export class PriorityIntroRepository extends BaseRepository<PriorityIntroAggrega
 
     async findBySenderId(senderId: string): Promise<PriorityIntroAggregate[]> {
         const documents = await this._model.find({ senderId }).sort({ createdAt: -1 }).exec();
-        return documents.map(doc => this.toDomain(doc as unknown as PriorityIntroDocument));
+        return PriorityIntroPersistenceMapper.toDomainList(documents as unknown as PriorityIntroDocument[]);
     }
 
     async findByRecipientId(recipientId: string): Promise<PriorityIntroAggregate[]> {
         const documents = await this._model.find({ recipientId }).sort({ createdAt: -1 }).exec();
-        return documents.map(doc => this.toDomain(doc as unknown as PriorityIntroDocument));
+        return PriorityIntroPersistenceMapper.toDomainList(documents as unknown as PriorityIntroDocument[]);
     }
 
     async findInteractedUserIds(userId: string): Promise<string[]> {

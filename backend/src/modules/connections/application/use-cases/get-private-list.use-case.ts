@@ -23,37 +23,14 @@ export class GetPrivateListUseCase implements IGetPrivateListUseCase {
 
         const paginatedResult = await this._listRepo.getPaginatedList(userId, query.listType, page, limit);
 
-        const hydratedData = await Promise.all(
-            paginatedResult.data.map(async (entry) => {
-                const [targetProfile, outgoingRequest, incomingRequest] = await Promise.all([
-                    this._publicProfileFacade.getPublicProfile(entry.targetUserId),
-                    this._connectionRepo.findPendingRequest(userId, entry.targetUserId),
-                    this._connectionRepo.findPendingRequest(entry.targetUserId, userId),
-                ]);
-                
-                let targetPhotoUrl = targetProfile?.profilePhotoUrl ?? null;
-                if (targetPhotoUrl) {
-                    targetPhotoUrl = await this._mediaFacade.getPresignedMediaUrl(targetPhotoUrl) || targetPhotoUrl;
-                }
-
-                const hasPendingConnectionRequest = Boolean(outgoingRequest);
-                const hasIncomingConnectionRequest = Boolean(incomingRequest);
-
-                return PrivateListDtoMapper.toResponseDto(
-                    entry,
-                    targetProfile,
-                    targetPhotoUrl,
-                    hasPendingConnectionRequest,
-                    hasIncomingConnectionRequest
-                );
-            })
-        );
-
-        return {
-            data: hydratedData,
-            total: paginatedResult.total,
+        return PrivateListDtoMapper.toPaginatedResponseDto(
+            paginatedResult,
             page,
-            limit
-        };
+            limit,
+            userId,
+            this._publicProfileFacade,
+            this._connectionRepo,
+            this._mediaFacade,
+        );
     }
 }

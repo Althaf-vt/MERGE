@@ -12,6 +12,10 @@ export class PriorityIntroPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: PriorityIntroDocument[]): PriorityIntroAggregate[] {
+        return documents.map((doc) => PriorityIntroPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: PriorityIntroAggregate): Record<string, unknown> {
         return {
             senderId: entity.senderId,
