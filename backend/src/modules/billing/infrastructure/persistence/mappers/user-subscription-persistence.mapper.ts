@@ -16,8 +16,8 @@ export class UserSubscriptionPersistenceMapper {
             cancelReason: raw.cancelReason ?? null,
             paymentMethodRef: raw.paymentMethodRef ?? null,
             entitlements: (raw.entitlements ?? []) as SubscriptionEntitlement[],
-            createdAt: raw['createdAt'],
-            updatedAt: raw['updatedAt'],
+            createdAt: raw.createdAt,
+            updatedAt: raw.updatedAt,
         });
     }
 

@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "../users/users.module";
 import { BillingModule } from "../billing/billing.module";
-import { BillingSubscriptionFacade } from "../billing/application/services/billing-subscription.facade";
+import { BILLING_SUBSCRIPTION_FACADE } from "../billing/application/interfaces/billing-facades.interface";
 import { SceneSessionSchema, SceneSessionSchemaClass } from "./infrastructure/persistence/scene-session.schema";
 import { ScenarioSchema, ScenarioSchemaClass } from "./infrastructure/persistence/scenario.schema";
 import { ScenePartnerController } from "./presentation/controllers/scene-partner.controller";
@@ -65,7 +65,7 @@ import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-
         { provide: SCENARIO_REPOSITORY, useClass: MongoScenarioRepository },
         ScenarioSeederService,
         { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
-        { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useExisting: BillingSubscriptionFacade },
+        { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useExisting: BILLING_SUBSCRIPTION_FACADE },
         { provide: USER_CONTEXT_FACADE, useClass: UserContextAdapter },
         { provide: PREVIEW_CONTEXT_BUILDER, useClass: PreviewContextBuilder },
         { provide: START_SCENE_SESSION_USE_CASE, useClass: StartSceneSessionUseCase },

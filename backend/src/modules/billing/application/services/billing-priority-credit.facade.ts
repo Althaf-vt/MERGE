@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IBillingFacade } from '../../../connections/application/interfaces/billing-facade.interface';
 import { BILLING_POLICY, BILLING_TRANSACTION_DESCRIPTIONS } from '../../domain/constants/billing.constants';
 import { DEDUCT_PRIORITY_CREDIT_USE_CASE, GET_USER_CREDIT_BALANCE_USE_CASE, IDeductPriorityCreditUseCase, IGetUserCreditBalanceUseCase } from '../interfaces/credit.use-cases.interface';
 import { IBillingPriorityCreditFacade } from '../interfaces/billing-facades.interface';
 
 @Injectable()
-export class BillingPriorityCreditFacade implements IBillingPriorityCreditFacade, IBillingFacade {
+export class BillingPriorityCreditFacade implements IBillingPriorityCreditFacade {
     constructor(
         @Inject(DEDUCT_PRIORITY_CREDIT_USE_CASE) private readonly _deductPriorityCreditUseCase: IDeductPriorityCreditUseCase,
         @Inject(GET_USER_CREDIT_BALANCE_USE_CASE) private readonly _getUserCreditBalanceUseCase: IGetUserCreditBalanceUseCase,

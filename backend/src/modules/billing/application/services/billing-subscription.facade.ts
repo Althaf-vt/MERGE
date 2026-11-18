@@ -1,54 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IScenePartnerSubscriptionFacade } from '../../../scene-partner/application/interfaces/scene-partner-subscription-facade.interface';
 import { SubscriptionEntitlement } from '../../domain/enums/billing.enums';
-import { IUserSubscriptionRepository, USER_SUBSCRIPTION_REPOSITORY } from '../../domain/interfaces/user-subscription-repository.interface';
 import { UserSubscriptionResponseDto } from '../dtos/user-subscription-response.dto';
 import { IBillingSubscriptionFacade } from '../interfaces/billing-facades.interface';
-import { SubscriptionDtoMapper } from '../mappers/subscription-dto.mapper';
+import { GET_USER_SUBSCRIPTION_USE_CASE, IGetUserSubscriptionUseCase } from '../interfaces/subscription-lifecycle.use-cases.interface';
 
 @Injectable()
-export class BillingSubscriptionFacade implements IBillingSubscriptionFacade, IScenePartnerSubscriptionFacade {
+export class BillingSubscriptionFacade implements IBillingSubscriptionFacade {
     constructor(
-        @Inject(USER_SUBSCRIPTION_REPOSITORY) private readonly _userSubscriptionRepository: IUserSubscriptionRepository,
+        @Inject(GET_USER_SUBSCRIPTION_USE_CASE) private readonly _getUserSubscriptionUseCase: IGetUserSubscriptionUseCase,
     ) { }
 
     async hasActiveSubscription(userId: string): Promise<boolean> {
-        if (!userId || userId.trim().length === 0) {
-            return false;
-        }
-
-        const subscription = await this._userSubscriptionRepository.findByUserId(userId.trim());
-        if (!subscription) {
-            return false;
-        }
-
-        return subscription.isActive();
+        const subscription = await this._getActiveSubscription(userId);
+        return subscription !== null;
     }
 
     async getEntitlements(userId: string): Promise<SubscriptionEntitlement[]> {
-        if (!userId || userId.trim().length === 0) {
-            return [];
-        }
-
-        const subscription = await this._userSubscriptionRepository.findByUserId(userId.trim());
-        if (!subscription || !subscription.isActive()) {
-            return [];
-        }
-
-        return subscription.entitlements;
+        const subscription = await this._getActiveSubscription(userId);
+        return subscription?.entitlements ?? [];
     }
 
     async hasEntitlement(userId: string, entitlement: SubscriptionEntitlement): Promise<boolean> {
-        if (!userId || userId.trim().length === 0 || !entitlement) {
-            return false;
-        }
+        if (!entitlement) return false;
 
-        const subscription = await this._userSubscriptionRepository.findByUserId(userId.trim());
-        if (!subscription) {
-            return false;
-        }
-
-        return subscription.isEntitledTo(entitlement);
+        const subscription = await this._getActiveSubscription(userId);
+        return subscription?.entitlements.includes(entitlement) ?? false;
     }
 
     async canStartSession(userId: string): Promise<boolean> {
@@ -56,15 +32,19 @@ export class BillingSubscriptionFacade implements IBillingSubscriptionFacade, IS
     }
 
     async getActiveSubscriptionDetails(userId: string): Promise<UserSubscriptionResponseDto | null> {
+        return this._getActiveSubscription(userId);
+    }
+
+    private async _getActiveSubscription(userId: string): Promise<UserSubscriptionResponseDto | null> {
         if (!userId || userId.trim().length === 0) {
             return null;
         }
 
-        const subscription = await this._userSubscriptionRepository.findByUserId(userId.trim());
-        if (!subscription || !subscription.isActive()) {
+        const subscription = await this._getUserSubscriptionUseCase.execute(userId.trim());
+        if (!subscription || !subscription.isActive) {
             return null;
         }
 
-        return SubscriptionDtoMapper.toResponseDto(subscription);
+        return subscription;
     }
 }

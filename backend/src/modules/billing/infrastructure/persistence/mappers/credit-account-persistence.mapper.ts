@@ -7,8 +7,8 @@ export class CreditAccountPersistenceMapper {
             id: raw._id ? raw._id.toString() : '',
             userId: raw.userId,
             balance: raw.balance ?? 0,
-            createdAt: raw['createdAt'],
-            updatedAt: raw['updatedAt'],
+            createdAt: raw.createdAt,
+            updatedAt: raw.updatedAt,
         });
     }
 

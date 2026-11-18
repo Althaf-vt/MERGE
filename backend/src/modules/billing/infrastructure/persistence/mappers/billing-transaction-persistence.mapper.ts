@@ -23,7 +23,7 @@ export class BillingTransactionPersistenceMapper {
             receiptNumber: raw.receiptNumber ?? null,
             environment: (raw.environment as PaymentEnvironment) ?? PaymentEnvironment.TEST,
             metadata: raw.metadata ?? null,
-            createdAt: raw['createdAt'],
+            createdAt: raw.createdAt,
         });
     }
 

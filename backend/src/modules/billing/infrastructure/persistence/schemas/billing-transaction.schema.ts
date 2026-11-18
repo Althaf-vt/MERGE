@@ -55,5 +55,5 @@ BillingTransactionSchema.index({ userId: 1, createdAt: -1 });
 BillingTransactionSchema.index({ type: 1, createdAt: -1 });
 BillingTransactionSchema.index({ status: 1, createdAt: -1 });
 BillingTransactionSchema.index({ gatewayOrderId: 1 }, { sparse: true });
-BillingTransactionSchema.index({ gatewayPaymentId: 1 }, { sparse: true });
+BillingTransactionSchema.index({ gatewayPaymentId: 1 }, { unique: true, sparse: true });
 BillingTransactionSchema.index({ receiptNumber: 1 }, { sparse: true });

@@ -25,8 +25,8 @@ export class CreditPackPersistenceMapper {
             sortOrder: raw.sortOrder ?? 0,
             isListed: raw.isListed ?? true,
             isActive: raw.isActive ?? true,
-            createdAt: raw['createdAt'],
-            updatedAt: raw['updatedAt'],
+            createdAt: raw.createdAt,
+            updatedAt: raw.updatedAt,
         });
     }
 

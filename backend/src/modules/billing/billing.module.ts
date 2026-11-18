@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BILLING_FACADE } from '../connections/application/interfaces/billing-facade.interface';
-import { SCENE_PARTNER_SUBSCRIPTION_FACADE } from '../scene-partner/application/interfaces/scene-partner-subscription-facade.interface';
 
 import { BillingTransactionSchema, BillingTransactionSchemaClass } from './infrastructure/persistence/schemas/billing-transaction.schema';
 import { CreditAccountSchema, CreditAccountSchemaClass } from './infrastructure/persistence/schemas/credit-account.schema';
@@ -123,8 +121,6 @@ import { SubscriptionController } from './presentation/controllers/subscription.
         { provide: BILLING_SUBSCRIPTION_FACADE, useExisting: BillingSubscriptionFacade },
         { provide: BILLING_PRIORITY_CREDIT_FACADE, useExisting: BillingPriorityCreditFacade },
         { provide: BILLING_ADMIN_FACADE, useExisting: BillingAdminFacade },
-        { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useExisting: BillingSubscriptionFacade },
-        { provide: BILLING_FACADE, useExisting: BillingPriorityCreditFacade },
     ],
     exports: [
         BillingSubscriptionFacade,
@@ -133,8 +129,6 @@ import { SubscriptionController } from './presentation/controllers/subscription.
         BILLING_SUBSCRIPTION_FACADE,
         BILLING_PRIORITY_CREDIT_FACADE,
         BILLING_ADMIN_FACADE,
-        SCENE_PARTNER_SUBSCRIPTION_FACADE,
-        BILLING_FACADE,
     ],
 })
 export class BillingModule { }

@@ -46,5 +46,9 @@ export class UserSubscriptionSchemaClass {
 export const UserSubscriptionSchema = SchemaFactory.createForClass(UserSubscriptionSchemaClass);
 
 UserSubscriptionSchema.index({ userId: 1, status: 1 });
+UserSubscriptionSchema.index(
+    { userId: 1 },
+    { unique: true, partialFilterExpression: { status: SubscriptionStatus.ACTIVE } },
+);
 UserSubscriptionSchema.index({ userId: 1, createdAt: -1 });
 UserSubscriptionSchema.index({ status: 1, currentPeriodEnd: 1 });
