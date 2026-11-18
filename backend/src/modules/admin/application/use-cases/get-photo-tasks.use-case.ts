@@ -21,21 +21,6 @@ export class GetPhotoTasksUseCase implements IGetPhotoTasksUseCase {
             claimedBy: query.claimedBy,
         });
 
-        // Hydrate the raw S3 keys into secure presingned URLs concurrently
-        const mappedData = await Promise.all(
-            result.data.map(async (task) => {
-                const signedKycUrl = await this._mediaFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
-                const signedUploadedUrl = await this._mediaFacade.getPresignedMediaUrl(task.uploadedPhotoUrl) || task.uploadedPhotoUrl;
-
-                return PhotoTaskDtoMapper.toResponseDto(task, signedKycUrl, signedUploadedUrl)
-            })
-        );
-
-        return {
-            data: mappedData,
-            total: result.total,
-            page: result.page,
-            limit: result.limit
-        };
+        return PhotoTaskDtoMapper.toPaginatedResponseDto(result, this._mediaFacade);
     }
 }
