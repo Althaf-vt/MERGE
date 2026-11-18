@@ -397,6 +397,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                 <CreditPackFormModal
                     isOpen={isCreditPackModalOpen}
                     pack={editingCreditPack}
+                    existingPacks={creditPacks}
                     onClose={() => {
                         setIsCreditPackModalOpen(false);
                         setEditingCreditPack(null);
