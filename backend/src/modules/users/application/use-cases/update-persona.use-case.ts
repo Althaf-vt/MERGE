@@ -6,6 +6,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { UpdatePersonaDto } from "../dtos/update-persona.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { LocationVO } from "../../domain/value-objects/location.vo";
+import { UserProfileDtoMapper } from "../mappers/user-profile-dto.mapper";
 
 @Injectable()
 export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
@@ -47,12 +48,6 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
 
         await this._userRepository.update(user);
 
-        const profileProps = profile.toJSON();
-        const { bioGenerationAttempts: _, ...profileDto } = profileProps;
-
-        return {
-            profile: profileDto,
-            verifiedDOB: user.kycVerification?.verifiedDOB
-        };
+        return UserProfileDtoMapper.toPersonaResult(profile, user.kycVerification?.verifiedDOB);
     }
 }
