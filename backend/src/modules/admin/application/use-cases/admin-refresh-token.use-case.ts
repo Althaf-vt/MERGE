@@ -8,7 +8,7 @@ import { AdminStatus } from "../../domain/enums/admin.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-import { AdminResponseMapper } from "../mappers/admin-response.mapper";
+import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
 
 @Injectable()
 export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
@@ -50,7 +50,7 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(newPayload),
             refreshToken: this._tokenService.generateRefreshToken(newPayload),
-            admin: AdminResponseMapper.toResponse(admin),
+            admin: AdminDtoMapper.toAuthResponseDto(admin),
         };
     }
 }

@@ -22,11 +22,6 @@ export class GetAdminsUseCase implements IGetAdminsUseCase {
             excludeAdminId: currentAdminId,
         });
 
-        return {
-            data: result.data.map(admin => AdminDtoMapper.toDetailsDto(admin)),
-            total: result.total,
-            page: result.page,
-            limit: result.limit
-        };
+        return AdminDtoMapper.toPaginatedResponseDto(result);
     }
 }
