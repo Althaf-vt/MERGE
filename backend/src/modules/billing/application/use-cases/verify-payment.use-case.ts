@@ -83,13 +83,23 @@ export class VerifyPaymentUseCase implements IVerifyPaymentUseCase {
             let subId: string;
 
             if (activeSub && activeSub.isActive(now)) {
-                const newEnd = plan.billingPeriodVO.calculatePeriodEnd(
-                    activeSub.currentPeriodEnd,
-                );
-                activeSub.renewPeriod({
-                    newPeriodEnd: newEnd,
-                    paymentMethodRef: dto.paymentId.trim(),
-                });
+                if (activeSub.planId === plan.id) {
+                    const newEnd = plan.billingPeriodVO.calculatePeriodEnd(
+                        activeSub.currentPeriodEnd,
+                    );
+                    activeSub.renewPeriod({
+                        newPeriodEnd: newEnd,
+                        paymentMethodRef: dto.paymentId.trim(),
+                    });
+                } else {
+                    const newEnd = plan.billingPeriodVO.calculatePeriodEnd(now);
+                    activeSub.switchPlan({
+                        newPlanId: plan.id,
+                        newPeriodEnd: newEnd,
+                        newEntitlements: plan.entitlements,
+                        paymentMethodRef: dto.paymentId.trim(),
+                    });
+                }
                 await this._userSubscriptionRepository.update(activeSub);
                 subId = activeSub.id;
             } else {
