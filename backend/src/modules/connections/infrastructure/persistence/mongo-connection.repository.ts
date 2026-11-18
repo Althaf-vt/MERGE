@@ -5,11 +5,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { ConnectionAggregate } from "../../domain/entities/connection.entity";
 import { ConnectionDocument, ConnectionSchemaClass } from "./connection.schema";
-import {
-    GetConnectionsFilters,
-    IConnectionRepository,
-    PaginatedConnectionsResult
-} from "../../domain/interfaces/connection-repository.interface";
+import { GetConnectionsFilters, IConnectionRepository, PaginatedConnectionsResult } from "../../domain/interfaces/connection-repository.interface";
 import { ConnectionPersistenceMapper } from "./mappers/connection-persistence.mapper";
 import { ConnectionRole, ConnectionStatus } from "../../domain/enums/connection.enums";
 
@@ -73,7 +69,7 @@ export class ConnectionRepository extends BaseRepository<ConnectionAggregate, Co
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as unknown as ConnectionDocument)),
+            data: ConnectionPersistenceMapper.toDomainList(documents as unknown as ConnectionDocument[]),
             total
         };
     }

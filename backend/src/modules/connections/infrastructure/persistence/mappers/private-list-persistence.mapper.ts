@@ -13,6 +13,10 @@ export class PrivateListPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: PrivateListDocument[]): PrivateListAggregate[] {
+        return documents.map((doc) => PrivateListPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: PrivateListAggregate): Record<string, unknown> {
         return {
             userId: entity.userId,

@@ -43,7 +43,7 @@ export class PrivateListRepository extends BaseRepository<PrivateListAggregate, 
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as unknown as PrivateListDocument)),
+            data: PrivateListPersistenceMapper.toDomainList(documents as unknown as PrivateListDocument[]),
             total
         };
     }
