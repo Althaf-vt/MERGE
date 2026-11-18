@@ -30,6 +30,16 @@ export class PublicProfileFacadeMapper {
         };
     }
 
+    public static toSummaryDtoMap(users: UserAggregate[]): Map<string, PublicProfileSummaryDto> {
+        const resultMap = new Map<string, PublicProfileSummaryDto>();
+        for (const user of users) {
+            if (user.id && PublicProfileFacadeMapper.isInteractable(user)) {
+                resultMap.set(user.id, PublicProfileFacadeMapper.toSummaryDto(user));
+            }
+        }
+        return resultMap;
+    }
+
     public static toDto(user: UserAggregate): PublicProfileDto {
         const summary = this.toSummaryDto(user);
         const photos = user.photos || [];

@@ -58,12 +58,7 @@ export class UserManagementFacade implements IUserManagementFacade {
 
         const result = await this._userRepository.findAllPaginated(internalFilters);
 
-        return {
-            data: result.data.map(user => UserFacadeMapper.toDto(user)),
-            total: result.total,
-            page: result.page,
-            limit: result.limit
-        };
+        return UserFacadeMapper.toPaginatedResponseDto(result);
     }
 
     async getUserById(userId: string): Promise<FacadeUserDto | null> {
