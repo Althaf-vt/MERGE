@@ -6,8 +6,8 @@ import { IGoogleAuthService, GOOGLE_AUTH_SERVICE } from "../../domain/interfaces
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { GoogleLoginDto } from "../dtos/google-login.dto";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
-import { UserAggregate, UserRole } from "../../domain/entities/user.entity";
-import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
+import { UserAggregate } from "../../domain/entities/user.entity";
+import { AuthProvider, UserRole, UserStatus } from "../../domain/enums/user.enums";
 import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";

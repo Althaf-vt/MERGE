@@ -17,50 +17,7 @@ import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
 import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
 import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain-event";
-
-export enum UserRole {
-    USER = 'USER',
-    ADMIN = 'ADMIN',
-    SUPER_ADMIN = 'SUPER_ADMIN',
-}
-
-// Defines the data structure and properties required to create and manage User entity.
-export interface UserAggregateProps {
-    id?: string;
-    email: EmailVO;
-    passwordHash?: string | null;
-    authProvider: AuthProvider;
-    isEmailVerified: boolean;
-    accountStatus: UserStatus;
-    kycCompleted: boolean;
-    onboardingStep: number;
-    onboardingCompleted: boolean;
-    profileCompleted: boolean;
-    castingDirectorCompleted: boolean;
-    personalityVector?: number[];
-
-    // Moderation state
-    statusReason?: string | null;
-    statusChangedAt?: Date | null;
-    suspendedUntil?: Date | null;
-
-    // Lumen
-    lumenEnabled: boolean;
-    dailyMatchHours: number[];
-    lumenRecommendationGeneratedToday: number;
-    lastLumenReset: Date;
-    lastLogin?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
-
-    // Sub-Entities (The seperate collections)
-    profile?: UserProfile;
-    preferences?: UserPreference;
-    kycVerification?: UserKyc;
-    medicalRecord?: UserMedical;
-    privacySettings?: UserPrivacy;
-    photos?: UserPhoto[];
-}
+import { UserAggregateProps, UserSnapshot } from "../interfaces/user.types";
 
 // Represents the User domain entity, managing user data and 
 // controlling how its state can change through domain-specific behaviors.
@@ -452,7 +409,7 @@ export class UserAggregate extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    toJSON(): UserSnapshot {
         return {
             ...this._props,
             email: this._props.email.getValue(), // EmailVO needs to be unwrapped.

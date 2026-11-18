@@ -6,8 +6,7 @@ import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interfac
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../interfaces/handoff-notification.service.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { ITokenPayload, ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
-import { UserRole } from "../../domain/entities/user.entity";
-import { HandoffStatus } from "../../domain/enums/user.enums";
+import { HandoffStatus, UserRole } from "../../domain/enums/user.enums";
 
 @Injectable()
 export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
