@@ -1,5 +1,5 @@
 import { DiscoveryCandidateRaw, DiscoveryUserContext } from "../../domain/interfaces/discovery-repository.interface";
-import { DiscoveryRecommendationDto } from "../dtos/discovery.dto";
+import { DiscoveryRecommendationDto, PaginatedRecommendationsDto } from "../dtos/discovery.dto";
 import { GeoUtil } from "../../../../shared/domain/utils/geo.util";
 import { DateUtil } from "../../../../shared/domain/utils/date.util";
 import { IMediaFacade } from "../../../users/application/interfaces/media-facade.interface";
@@ -46,6 +46,34 @@ export class DiscoveryRecommendationMapper {
             distanceKm,
             matchScore,
             primaryPhotoUrl,
+        };
+    }
+
+    public static async toRecommendationDtoList(
+        candidates: DiscoveryCandidateRaw[],
+        userContext: DiscoveryUserContext,
+        mediaFacade: IMediaFacade,
+    ): Promise<DiscoveryRecommendationDto[]> {
+        return Promise.all(
+            candidates.map((candidate) =>
+                DiscoveryRecommendationMapper.toRecommendationDto(candidate, userContext, mediaFacade),
+            ),
+        );
+    }
+
+    public static async toPaginatedResponseDto(
+        candidates: DiscoveryCandidateRaw[],
+        page: number,
+        limit: number,
+        userContext: DiscoveryUserContext,
+        mediaFacade: IMediaFacade,
+    ): Promise<PaginatedRecommendationsDto> {
+        const data = await DiscoveryRecommendationMapper.toRecommendationDtoList(candidates, userContext, mediaFacade);
+        return {
+            data,
+            total: data.length, // Vector search post-filtered count
+            page,
+            limit,
         };
     }
 }

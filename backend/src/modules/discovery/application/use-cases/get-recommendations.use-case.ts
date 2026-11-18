@@ -49,17 +49,12 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
             skip,
         });
 
-        const hydratedCandidates = await Promise.all(
-            rawCandidates.map(candidate =>
-                DiscoveryRecommendationMapper.toRecommendationDto(candidate, userContext, this._userMediaFacade)
-            )
-        );
-
-        return {
-            data: hydratedCandidates,
-            total: hydratedCandidates.length, // Vector search post-filtered count
+        return DiscoveryRecommendationMapper.toPaginatedResponseDto(
+            rawCandidates,
             page,
             limit,
-        };
+            userContext,
+            this._userMediaFacade,
+        );
     }
 }
