@@ -7,11 +7,14 @@ import {
 } from '../../api/admin-billing.api';
 import { AdminModal } from '../../../../../shared/admin/components/admin-modal.component';
 import { getErrorMessage } from '../../../../../shared/utils/error.util';
+import { BillingNormalizationUtil } from '../../utils/admin-billing-code-generator.util';
+import { AdminBillingValidationUtil } from '../../utils/admin-billing-validation.util';
 import styles from './credit-pack-form-modal.module.css';
 
 export interface CreditPackFormModalProps {
     isOpen: boolean;
     pack?: AdminCreditPackDto | null;
+    existingPacks?: AdminCreditPackDto[];
     onClose: () => void;
     onSuccess?: (savedPack: AdminCreditPackDto) => void;
 }
@@ -19,6 +22,7 @@ export interface CreditPackFormModalProps {
 export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
     isOpen,
     pack,
+    existingPacks = [],
     onClose,
     onSuccess,
 }) => {
@@ -26,6 +30,7 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
 
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
+    const [isCodeManuallyEdited, setIsCodeManuallyEdited] = useState(false);
     const [creditsCount, setCreditsCount] = useState<number | ''>('');
     const [amount, setAmount] = useState<number | ''>('');
     const [badge, setBadge] = useState('');
@@ -45,12 +50,14 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
         if (!isOpen) {
             setErrors({});
             setServerError(null);
+            setIsCodeManuallyEdited(false);
             return;
         }
 
         if (pack) {
             setName(pack.name);
             setCode(pack.code);
+            setIsCodeManuallyEdited(true); // Edit mode preserves existing code
             setCreditsCount(pack.creditsCount);
             setAmount(pack.price?.amount ?? 0);
             setBadge(pack.badge || '');
@@ -60,6 +67,7 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
         } else {
             setName('');
             setCode('');
+            setIsCodeManuallyEdited(false);
             setCreditsCount('');
             setAmount('');
             setBadge('');
@@ -73,29 +81,80 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
 
     if (!isOpen) return null;
 
+    // Live name change handler with instant validation and code autofill
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = e.target.value;
+        setName(newName);
+
+        if (serverError) setServerError(null);
+
+        const nameError = AdminBillingValidationUtil.validateCreditPackName(
+            newName,
+            existingPacks,
+            pack?.id,
+        );
+        setErrors((prev) => ({ ...prev, name: nameError || '' }));
+
+        if (!isEdit && !isCodeManuallyEdited) {
+            const autoCode = BillingNormalizationUtil.generateCreditPackCode(newName, creditsCount);
+            setCode(autoCode);
+            setErrors((prev) => ({ ...prev, code: '' }));
+        }
+    };
+
+    // Live credits count change handler (re-generates code if in auto mode)
+    const handleCreditsCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value === '' ? '' : Number(e.target.value);
+        setCreditsCount(val);
+
+        if (!isEdit && !isCodeManuallyEdited) {
+            const autoCode = BillingNormalizationUtil.generateCreditPackCode(name, val);
+            setCode(autoCode);
+            setErrors((prev) => ({ ...prev, code: '' }));
+        }
+    };
+
+    // Manual code change handler
+    const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawCode = e.target.value.toUpperCase();
+        setCode(rawCode);
+        setIsCodeManuallyEdited(true);
+
+        const codeError = AdminBillingValidationUtil.validateCode(
+            rawCode,
+            existingPacks,
+            pack?.id,
+            CREDIT_PACK_FORM_LIMITS,
+        );
+        setErrors((prev) => ({ ...prev, code: codeError || '' }));
+    };
+
+    // Reset code to auto-generated slug
+    const handleResetCodeToAuto = () => {
+        setIsCodeManuallyEdited(false);
+        const autoCode = BillingNormalizationUtil.generateCreditPackCode(name, creditsCount);
+        setCode(autoCode);
+        setErrors((prev) => ({ ...prev, code: '' }));
+    };
+
     const validate = (): boolean => {
         const nextErrors: Record<string, string> = {};
 
-        const trimmedName = name.trim();
-        if (!trimmedName) {
-            nextErrors.name = 'Package name is required.';
-        } else if (
-            trimmedName.length < CREDIT_PACK_FORM_LIMITS.NAME_MIN ||
-            trimmedName.length > CREDIT_PACK_FORM_LIMITS.NAME_MAX
-        ) {
-            nextErrors.name = `Name must be ${CREDIT_PACK_FORM_LIMITS.NAME_MIN}-${CREDIT_PACK_FORM_LIMITS.NAME_MAX} chars.`;
-        }
+        const nameError = AdminBillingValidationUtil.validateCreditPackName(
+            name,
+            existingPacks,
+            pack?.id,
+        );
+        if (nameError) nextErrors.name = nameError;
 
         if (!isEdit) {
-            const trimmedCode = code.trim();
-            if (!trimmedCode) {
-                nextErrors.code = 'Package code is required.';
-            } else if (
-                trimmedCode.length < CREDIT_PACK_FORM_LIMITS.CODE_MIN ||
-                trimmedCode.length > CREDIT_PACK_FORM_LIMITS.CODE_MAX
-            ) {
-                nextErrors.code = `Code must be ${CREDIT_PACK_FORM_LIMITS.CODE_MIN}-${CREDIT_PACK_FORM_LIMITS.CODE_MAX} chars.`;
-            }
+            const codeError = AdminBillingValidationUtil.validateCode(
+                code,
+                existingPacks,
+                pack?.id,
+                CREDIT_PACK_FORM_LIMITS,
+            );
+            if (codeError) nextErrors.code = codeError;
         }
 
         const creditsNum = Number(creditsCount);
@@ -159,7 +218,15 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
                 onClose();
             }
         } catch (err: unknown) {
-            setServerError(getErrorMessage(err));
+            const msg = getErrorMessage(err);
+            setServerError(msg);
+
+            // Server-side error mapping directly to field inputs
+            if (msg.toLowerCase().includes('name already exists') || msg.toLowerCase().includes('alphabetic')) {
+                setErrors((prev) => ({ ...prev, name: msg }));
+            } else if (msg.toLowerCase().includes('code already exists') || msg.toLowerCase().includes('credit pack code')) {
+                setErrors((prev) => ({ ...prev, code: msg }));
+            }
         }
     };
 
@@ -187,9 +254,9 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
                         </div>
                         <input
                             type="text"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={handleNameChange}
                             placeholder="e.g. Starter Pack"
                             disabled={isSubmitting}
                         />
@@ -201,13 +268,30 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
                             <label className={styles.label}>
                                 Package Code<span className={styles.required}>*</span>
                             </label>
+                            {!isEdit && (
+                                <div className={styles.badgeWrapper}>
+                                    <span className={isCodeManuallyEdited ? styles.manualBadge : styles.autoBadge}>
+                                        {isCodeManuallyEdited ? 'CUSTOM' : 'AUTO'}
+                                    </span>
+                                    {isCodeManuallyEdited && (
+                                        <button
+                                            type="button"
+                                            className={styles.resetButton}
+                                            onClick={handleResetCodeToAuto}
+                                            title="Revert to auto-generated slug"
+                                        >
+                                            Reset
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <input
                             type="text"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.code ? styles.inputError : ''}`}
                             value={code}
-                            onChange={(e) => setCode(e.target.value.toUpperCase())}
-                            placeholder="e.g. CREDIT_PACK_10"
+                            onChange={handleCodeChange}
+                            placeholder="e.g. CREDIT_STARTER_PACK_10"
                             disabled={isEdit || isSubmitting}
                         />
                         {errors.code && <span className={styles.fieldError}>{errors.code}</span>}
@@ -225,13 +309,9 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
                             type="number"
                             min="1"
                             step="1"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.creditsCount ? styles.inputError : ''}`}
                             value={creditsCount}
-                            onChange={(e) =>
-                                setCreditsCount(
-                                    e.target.value === '' ? '' : Number(e.target.value)
-                                )
-                            }
+                            onChange={handleCreditsCountChange}
                             placeholder="10"
                             disabled={isSubmitting}
                         />
@@ -250,7 +330,7 @@ export const CreditPackFormModal: React.FC<CreditPackFormModalProps> = ({
                             type="number"
                             min="1"
                             step="1"
-                            className={styles.input}
+                            className={`${styles.input} ${errors.amount ? styles.inputError : ''}`}
                             value={amount}
                             onChange={(e) =>
                                 setAmount(e.target.value === '' ? '' : Number(e.target.value))

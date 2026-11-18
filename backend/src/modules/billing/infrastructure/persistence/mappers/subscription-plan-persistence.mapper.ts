@@ -15,7 +15,9 @@ export class SubscriptionPlanPersistenceMapper {
             },
             entitlements: (raw.entitlements ?? []) as SubscriptionEntitlement[],
             offers: (raw.offers ?? []).map((o) => ({
-                code: o.code,
+                id: o.id,
+                name: o.name ?? o.code,
+                code: o.code ?? o.name,
                 discountPercentage: o.discountPercentage,
                 validFrom: o.validFrom,
                 validUntil: o.validUntil,
@@ -37,6 +39,7 @@ export class SubscriptionPlanPersistenceMapper {
         return {
             _id: data.id,
             name: data.name,
+            normalizedName: entity.normalizedName,
             code: data.code,
             billingPeriod: data.billingPeriod,
             price: {
@@ -45,7 +48,9 @@ export class SubscriptionPlanPersistenceMapper {
             },
             entitlements: [...data.entitlements],
             offers: data.offers.map((o) => ({
-                code: o.code,
+                id: o.id,
+                name: o.name,
+                code: o.name,
                 discountPercentage: o.discountPercentage,
                 validFrom: o.validFrom,
                 validUntil: o.validUntil,

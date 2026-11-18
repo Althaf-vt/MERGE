@@ -31,13 +31,13 @@ export class BillingTransactionSchemaClass {
     @Prop({ type: String, default: null, index: true })
     referenceId?: string | null;
 
-    @Prop({ type: String, default: null, index: true })
+    @Prop({ type: String, default: null })
     gatewayPaymentId?: string | null;
 
-    @Prop({ type: String, default: null, index: true })
+    @Prop({ type: String, default: null })
     gatewayOrderId?: string | null;
 
-    @Prop({ type: String, default: null, index: true })
+    @Prop({ type: String, default: null })
     receiptNumber?: string | null;
 
     @Prop({ required: true, type: String, enum: PaymentEnvironment, default: PaymentEnvironment.TEST })

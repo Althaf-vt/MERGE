@@ -27,18 +27,22 @@ export class BillingSeederService implements OnApplicationBootstrap {
 
     private async _seedSubscriptionPlans(): Promise<void> {
         const planCount = await this._subscriptionPlanRepository.count();
-        if (planCount > 0) {
-            this._logger.log(`Subscription plans already exist (${planCount} found). Skipping plans seeder.`);
+        if (planCount === 0) {
+            const defaultPlanProps = createDefaultSubscriptionPlans();
+            for (const props of defaultPlanProps) {
+                const plan = SubscriptionPlan.create(props);
+                await this._subscriptionPlanRepository.create(plan);
+            }
+            this._logger.log(`Successfully seeded ${defaultPlanProps.length} default subscription plans into database.`);
             return;
         }
 
-        const defaultPlanProps = createDefaultSubscriptionPlans();
-        for (const props of defaultPlanProps) {
-            const plan = SubscriptionPlan.create(props);
-            await this._subscriptionPlanRepository.create(plan);
+        // Synchronize existing plans to ensure normalizedName is populated in database
+        const existingPlans = await this._subscriptionPlanRepository.findAll();
+        for (const plan of existingPlans) {
+            await this._subscriptionPlanRepository.update(plan);
         }
-
-        this._logger.log(`Successfully seeded ${defaultPlanProps.length} default subscription plans into database.`);
+        this._logger.log(`Synchronized ${existingPlans.length} subscription plans with normalized names.`);
     }
 
     private async _seedCreditPacks(): Promise<void> {
@@ -53,20 +57,24 @@ export class BillingSeederService implements OnApplicationBootstrap {
             return;
         }
 
-        // Synchronize default pack names if existing
-        for (const props of defaultPackProps) {
-            const existing = await this._creditPackRepository.findByCode(props.code);
-            if (existing && existing.name !== props.name) {
-                existing.updateDetails({
-                    name: props.name,
-                    creditsCount: props.creditsCount,
-                    price: props.price,
-                    badge: props.badge,
-                    sortOrder: props.sortOrder,
+        // Synchronize default pack names and ensure normalizedName is populated in database
+        const allPacks = await this._creditPackRepository.findAll();
+        for (const pack of allPacks) {
+            const defaultProp = defaultPackProps.find((p) => p.code === pack.code);
+            if (defaultProp && pack.name !== defaultProp.name) {
+                pack.updateDetails({
+                    name: defaultProp.name,
+                    creditsCount: defaultProp.creditsCount,
+                    price: defaultProp.price,
+                    badge: defaultProp.badge,
+                    sortOrder: defaultProp.sortOrder,
                 });
-                await this._creditPackRepository.update(existing);
-                this._logger.log(`Updated credit pack ${props.code} name to "${props.name}".`);
+                await this._creditPackRepository.update(pack);
+                this._logger.log(`Updated credit pack ${pack.code} name to "${defaultProp.name}".`);
+            } else {
+                await this._creditPackRepository.update(pack);
             }
         }
+        this._logger.log(`Synchronized ${allPacks.length} credit packs with normalized names.`);
     }
 }

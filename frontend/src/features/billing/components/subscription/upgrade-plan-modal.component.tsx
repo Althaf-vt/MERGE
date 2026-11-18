@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { SubscriptionPlanDto } from '../../types/billing.types';
 import { formatCurrencyDisplay } from '../../utils/currency.util';
+import { getEffectiveOffer } from '../../utils/billing-offers.util';
 import styles from './upgrade-plan-modal.module.css';
 
 export interface UpgradePlanModalProps {
@@ -85,7 +86,8 @@ export const UpgradePlanModal: React.FC<UpgradePlanModalProps> = ({
                             {plans.map((plan) => {
                                 const isSelected = selectedPlanId === plan.id;
                                 const isAnnual = plan.billingPeriod === 'ANNUAL';
-                                const activeOffer = plan.offers?.find((o) => o.isActive);
+                                const activeOffer = getEffectiveOffer(plan.offers);
+                                const hasDiscount = Boolean(activeOffer && plan.effectivePrice && plan.effectivePrice.amount < plan.price.amount);
 
                                 const periodLabel =
                                     plan.billingPeriod === 'MONTHLY'
@@ -117,12 +119,17 @@ export const UpgradePlanModal: React.FC<UpgradePlanModalProps> = ({
                                             <span className={styles.amount}>
                                                 {formatCurrencyDisplay(plan.effectivePrice?.formatted || plan.price.formatted)}
                                             </span>
+                                            {hasDiscount && (
+                                                <span className={styles.strikePrice}>
+                                                    {formatCurrencyDisplay(plan.price.formatted)}
+                                                </span>
+                                            )}
                                             <span className={styles.interval}>{periodLabel}</span>
 
                                             {activeOffer && (
                                                 <div>
                                                     <span className={styles.discountBadge}>
-                                                        Save {activeOffer.discountPercentage}%
+                                                        {activeOffer.name ? `${activeOffer.name} • ` : ''}Save {activeOffer.discountPercentage}%
                                                     </span>
                                                 </div>
                                             )}

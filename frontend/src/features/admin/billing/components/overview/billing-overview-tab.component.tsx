@@ -3,9 +3,9 @@ import type {
     SubscriptionPlanDto,
     CreditPackDto,
     AdminBillingTransactionDto,
-    AdminPlanOfferDto,
 } from '../../types/admin-billing.types';
 import { type AdminBillingTab, ADMIN_BILLING_TABS } from '../../constants/admin-billing.constants';
+import { getOffersSummary } from '../../utils/admin-billing-offers.util';
 import { MetricCard } from '../shared/metric-card.component';
 import {
     BillingBadge,
@@ -41,11 +41,11 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
 }) => {
     // 1. Calculate Gross Platform Volume from completed transactions
     const completedTransactions = transactions.filter((t) => t.status === 'COMPLETED');
-    const totalGrossPaise = completedTransactions.reduce(
+    const totalGrossRevenue = completedTransactions.reduce(
         (sum, t) => sum + (t.amount?.amount ?? 0),
         0
     );
-    const grossVolumeFormatted = `₹${(totalGrossPaise / 100).toLocaleString('en-IN', {
+    const grossVolumeFormatted = `₹${totalGrossRevenue.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     })}`;
@@ -54,20 +54,20 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
     const subscriptionTransactions = completedTransactions.filter(
         (t) => t.type === 'SUBSCRIPTION_PURCHASE' || t.type === 'SUBSCRIPTION_RENEWAL'
     );
-    const subRevenuePaise = subscriptionTransactions.reduce(
+    const subRevenueAmount = subscriptionTransactions.reduce(
         (sum, t) => sum + (t.amount?.amount ?? 0),
         0
     );
     const subSharePercent =
-        totalGrossPaise > 0 ? ((subRevenuePaise / totalGrossPaise) * 100).toFixed(1) : '0.0';
+        totalGrossRevenue > 0 ? ((subRevenueAmount / totalGrossRevenue) * 100).toFixed(1) : '0.0';
 
     const creditTransactions = completedTransactions.filter((t) => t.type === 'CREDIT_PURCHASE');
-    const creditRevenuePaise = creditTransactions.reduce(
+    const creditRevenueAmount = creditTransactions.reduce(
         (sum, t) => sum + (t.amount?.amount ?? 0),
         0
     );
     const creditSharePercent =
-        totalGrossPaise > 0 ? ((creditRevenuePaise / totalGrossPaise) * 100).toFixed(1) : '0.0';
+        totalGrossRevenue > 0 ? ((creditRevenueAmount / totalGrossRevenue) * 100).toFixed(1) : '0.0';
 
     // 3. Success rate calculation
     const sampledTotal = transactions.length;
@@ -104,7 +104,7 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
                 <MetricCard
                     title="Subscription Share"
                     value={`${subSharePercent}%`}
-                    subtitle={`₹${(subRevenuePaise / 100).toLocaleString('en-IN')} revenue`}
+                    subtitle={`₹${subRevenueAmount.toLocaleString('en-IN')} revenue`}
                     isLoading={isLoading}
                     trend={{
                         value: `${subscriptionTransactions.length} txns`,
@@ -120,7 +120,7 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
                 <MetricCard
                     title="Priority Credits Share"
                     value={`${creditSharePercent}%`}
-                    subtitle={`₹${(creditRevenuePaise / 100).toLocaleString('en-IN')} revenue`}
+                    subtitle={`₹${creditRevenueAmount.toLocaleString('en-IN')} revenue`}
                     isLoading={isLoading}
                     trend={{
                         value: `${creditTransactions.length} txns`,
@@ -225,16 +225,23 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
                                                 <>
                                                     <span>•</span>
                                                     <span className={styles.offersTag}>
-                                                        {plan.offers.filter((o: AdminPlanOfferDto) => o.isActive).length} active offers
+                                                        {getOffersSummary(plan.offers).activeCount} active offers
                                                     </span>
                                                 </>
                                             )}
                                         </div>
                                     </div>
                                     <div className={styles.itemAside}>
-                                        <span className={styles.itemPrice}>
-                                            {plan.price.currency} {(plan.price.amount / 100).toFixed(0)}
-                                        </span>
+                                        {plan.effectivePrice && plan.effectivePrice.amount < plan.price.amount ? (
+                                            <div className={styles.priceContainer}>
+                                                <span className={styles.itemPrice}>{plan.effectivePrice.formatted}</span>
+                                                <span className={styles.strikePrice}>{plan.price.formatted}</span>
+                                            </div>
+                                        ) : (
+                                            <span className={styles.itemPrice}>
+                                                {plan.effectivePrice?.formatted || plan.price.formatted}
+                                            </span>
+                                        )}
                                         <PlanStatusBadge isActive={plan.isActive} />
                                     </div>
                                 </div>
@@ -272,9 +279,10 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
 
                         <div className={styles.itemList}>
                             {creditPacks.slice(0, 4).map((pack) => {
+                                const effectiveAmount = pack.effectivePrice?.amount ?? pack.price.amount;
                                 const unitPrice =
                                     pack.creditsCount > 0
-                                        ? (pack.price.amount / 100 / pack.creditsCount).toFixed(2)
+                                        ? (effectiveAmount / pack.creditsCount).toFixed(2)
                                         : '0.00';
                                 return (
                                     <div key={pack.id} className={styles.itemRow}>
@@ -292,9 +300,16 @@ export const BillingOverviewTab: React.FC<BillingOverviewTabProps> = ({
                                             </div>
                                         </div>
                                         <div className={styles.itemAside}>
-                                            <span className={styles.itemPrice}>
-                                                ₹{(pack.price.amount / 100).toFixed(0)}
-                                            </span>
+                                            {pack.effectivePrice && pack.effectivePrice.amount < pack.price.amount ? (
+                                                <div className={styles.priceContainer}>
+                                                    <span className={styles.itemPrice}>{pack.effectivePrice.formatted}</span>
+                                                    <span className={styles.strikePrice}>{pack.price.formatted}</span>
+                                                </div>
+                                            ) : (
+                                                <span className={styles.itemPrice}>
+                                                    {pack.effectivePrice?.formatted || pack.price.formatted}
+                                                </span>
+                                            )}
                                             <BillingBadge variant={pack.isListed ? 'success' : 'muted'}>
                                                 {pack.isListed ? 'LISTED' : 'HIDDEN'}
                                             </BillingBadge>

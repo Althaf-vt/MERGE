@@ -1,11 +1,13 @@
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
-import { PlanOfferProps } from '../interfaces/billing-value-objects.types';
+import { BILLING_ID_PREFIXES, generateBillingId } from '../constants/billing.constants';
+import { PlanOfferProps, PlanOfferSnapshot } from '../interfaces/billing-value-objects.types';
 import { MoneyVO } from './money.vo';
 
 export class PlanOffer {
-    private readonly _code: string;
+    private readonly _id: string;
+    private readonly _name: string;
     private readonly _discountPercentage: number;
     private readonly _validFrom: Date;
     private readonly _validUntil: Date;
@@ -14,11 +16,17 @@ export class PlanOffer {
     constructor(props: PlanOfferProps) {
         this._validateInvariants(props);
 
-        this._code = props.code.trim().toUpperCase();
+        const assignedId =
+            props.id && props.id.trim().length > 0
+                ? props.id.trim()
+                : generateBillingId(BILLING_ID_PREFIXES.OFFER);
+
+        this._id = assignedId;
+        this._name = (props.name ?? props.code ?? '').trim();
         this._discountPercentage = Math.round(props.discountPercentage);
         this._validFrom = new Date(props.validFrom);
         this._validUntil = new Date(props.validUntil);
-        this._isActive = props.isActive;
+        this._isActive = Boolean(props.isActive);
     }
 
     public static create(props: PlanOfferProps): PlanOffer {
@@ -27,11 +35,16 @@ export class PlanOffer {
 
     private _validateInvariants(props: PlanOfferProps): void {
         if (!props) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.OFFER_CODE_REQUIRED);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.OFFER_NAME_REQUIRED);
         }
 
-        if (!props.code || props.code.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.OFFER_CODE_REQUIRED);
+        const campaignName = (props.name ?? props.code ?? '').trim();
+        if (!campaignName || campaignName.length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.OFFER_NAME_REQUIRED);
+        }
+
+        if (campaignName.length > 80) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.OFFER_NAME_REQUIRED);
         }
 
         if (
@@ -54,12 +67,80 @@ export class PlanOffer {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
         }
 
-        if (props.validUntil.getTime() < props.validFrom.getTime()) {
+        if (props.validUntil.getTime() <= props.validFrom.getTime()) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_OFFER_DATES);
         }
     }
 
-    get code(): string { return this._code; }
+    public static validateNewOffers(offers?: PlanOfferProps[], atTime: number = Date.now()): void {
+        if (!offers || offers.length === 0) return;
+        const nameSet = new Set<string>();
+        for (const offer of offers) {
+            const campaignName = (offer.name ?? offer.code ?? '').trim().toLowerCase();
+            if (campaignName) {
+                if (nameSet.has(campaignName)) {
+                    throw new DomainException(
+                        ErrorCode.VALIDATION_FAILED,
+                        BILLING_ERROR_MESSAGES.OFFER_NAME_ALREADY_EXISTS,
+                    );
+                }
+                nameSet.add(campaignName);
+            }
+
+            const untilTime = new Date(offer.validUntil).getTime();
+            if (isNaN(untilTime) || untilTime <= atTime) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    BILLING_ERROR_MESSAGES.OFFER_PAST_DATE_NOT_ALLOWED,
+                );
+            }
+        }
+    }
+
+    public static validateOfferUpdate(
+        incomingOffers: PlanOfferProps[],
+        existingOffers: PlanOffer[],
+        atTime: number = Date.now(),
+    ): void {
+        if (!incomingOffers || incomingOffers.length === 0) return;
+
+        const nameSet = new Set<string>();
+        for (const offer of incomingOffers) {
+            const campaignName = (offer.name ?? offer.code ?? '').trim().toLowerCase();
+            if (campaignName) {
+                if (nameSet.has(campaignName)) {
+                    throw new DomainException(
+                        ErrorCode.VALIDATION_FAILED,
+                        BILLING_ERROR_MESSAGES.OFFER_NAME_ALREADY_EXISTS,
+                    );
+                }
+                nameSet.add(campaignName);
+            }
+        }
+
+        const existingMap = new Map<string, PlanOffer>();
+        existingOffers.forEach((o) => {
+            if (o.id) existingMap.set(o.id, o);
+        });
+
+        for (const offer of incomingOffers) {
+            const untilTime = new Date(offer.validUntil).getTime();
+            const existing = offer.id ? existingMap.get(offer.id) : undefined;
+            const isNew = !existing;
+            const expiryModified = existing && existing.validUntil.getTime() !== untilTime;
+
+            if ((isNew || expiryModified) && untilTime <= atTime) {
+                throw new DomainException(
+                    ErrorCode.VALIDATION_FAILED,
+                    BILLING_ERROR_MESSAGES.OFFER_PAST_DATE_NOT_ALLOWED,
+                );
+            }
+        }
+    }
+
+    get id(): string { return this._id; }
+    get name(): string { return this._name; }
+    get code(): string { return this._name; }
     get discountPercentage(): number { return this._discountPercentage; }
     get validFrom(): Date { return new Date(this._validFrom); }
     get validUntil(): Date { return new Date(this._validUntil); }
@@ -71,26 +152,19 @@ export class PlanOffer {
         return timestamp >= this._validFrom.getTime() && timestamp <= this._validUntil.getTime();
     }
 
-    public calculateDiscountedPrice(basePrice: MoneyVO): MoneyVO {
-        if (!this.isValidAt()) {
+    public calculateDiscountedPrice(basePrice: MoneyVO, date: Date = new Date()): MoneyVO {
+        if (!this.isValidAt(date)) {
             return basePrice;
         }
 
-        const discountMultiplier = this._discountPercentage / 100;
-        const discountAmount = Math.round(basePrice.amount * discountMultiplier * 100) / 100;
-
-        return basePrice.subtract(
-            MoneyVO.create({
-                amount: discountAmount,
-                currency: basePrice.currency,
-            }),
-        );
+        return basePrice.calculateDiscountedPrice(this._discountPercentage);
     }
 
     public equals(other: PlanOffer): boolean {
         if (!other) return false;
         return (
-            this._code === other.code &&
+            this._id === other.id &&
+            this._name === other.name &&
             this._discountPercentage === other.discountPercentage &&
             this._validFrom.getTime() === other.validFrom.getTime() &&
             this._validUntil.getTime() === other.validUntil.getTime() &&
@@ -98,13 +172,19 @@ export class PlanOffer {
         );
     }
 
-    public toJSON(): PlanOfferProps {
+    public toSnapshot(): PlanOfferSnapshot {
         return {
-            code: this._code,
+            id: this._id,
+            name: this._name,
+            code: this._name,
             discountPercentage: this._discountPercentage,
             validFrom: new Date(this._validFrom),
             validUntil: new Date(this._validUntil),
             isActive: this._isActive,
         };
+    }
+
+    public toJSON(): PlanOfferSnapshot {
+        return this.toSnapshot();
     }
 }

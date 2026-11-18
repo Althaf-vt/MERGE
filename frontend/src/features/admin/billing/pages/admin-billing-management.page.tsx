@@ -26,6 +26,7 @@ import { PlanFormModal } from '../components/plans/plan-form-modal.component';
 import { PlanOffersModal } from '../components/plans/plan-offers-modal.component';
 import { CreditPackTable } from '../components/credits/credit-pack-table.component';
 import { CreditPackFormModal } from '../components/credits/credit-pack-form-modal.component';
+import { CreditPackOffersModal } from '../components/credits/credit-pack-offers-modal.component';
 import { TransactionFilters } from '../components/transactions/transaction-filters.component';
 import { TransactionListTable } from '../components/transactions/transaction-list-table.component';
 import { TransactionDetailDrawer } from '../components/transactions/transaction-detail-drawer.component';
@@ -48,13 +49,13 @@ export const AdminBillingManagementPage: React.FC = () => {
     const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState<SubscriptionPlanDto | null>(null);
     const [isOffersModalOpen, setIsOffersModalOpen] = useState(false);
-    const [selectedPlanForOffers, setSelectedPlanForOffers] = useState<SubscriptionPlanDto | null>(
-        null
-    );
+    const [selectedPlanIdForOffers, setSelectedPlanIdForOffers] = useState<string | null>(null);
 
     // Credit Packs tab modal states
     const [isCreditPackModalOpen, setIsCreditPackModalOpen] = useState(false);
     const [editingCreditPack, setEditingCreditPack] = useState<CreditPackDto | null>(null);
+    const [isCreditPackOffersModalOpen, setIsCreditPackOffersModalOpen] = useState(false);
+    const [selectedCreditPackIdForOffers, setSelectedCreditPackIdForOffers] = useState<string | null>(null);
 
     // Transactions History tab filter & pagination states
     const [txnPage, setTxnPage] = useState(1);
@@ -107,6 +108,11 @@ export const AdminBillingManagementPage: React.FC = () => {
     const transactions = txnsData?.data || [];
     const totalTransactions = txnsData?.meta?.total || transactions.length;
 
+    const selectedPlanForOffers =
+        plans.find((p) => p.id === selectedPlanIdForOffers) || null;
+    const selectedCreditPackForOffers =
+        creditPacks.find((c) => c.id === selectedCreditPackIdForOffers) || null;
+
     const isGlobalRefreshing = isPlansFetching || isCreditPacksFetching || isTxnsFetching;
 
     const handleTabChange = (tab: AdminBillingTab) => {
@@ -132,7 +138,7 @@ export const AdminBillingManagementPage: React.FC = () => {
     };
 
     const handleManageOffers = (plan: SubscriptionPlanDto) => {
-        setSelectedPlanForOffers(plan);
+        setSelectedPlanIdForOffers(plan.id);
         setIsOffersModalOpen(true);
     };
 
@@ -156,6 +162,11 @@ export const AdminBillingManagementPage: React.FC = () => {
     const handleEditCreditPack = (pack: CreditPackDto) => {
         setEditingCreditPack(pack);
         setIsCreditPackModalOpen(true);
+    };
+
+    const handleManageCreditPackOffers = (pack: CreditPackDto) => {
+        setSelectedCreditPackIdForOffers(pack.id);
+        setIsCreditPackOffersModalOpen(true);
     };
 
     const handleToggleCreditPackStatus = async (pack: CreditPackDto) => {
@@ -308,6 +319,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                                 isLoading={isCreditPacksLoading}
                                 isFetching={isCreditPacksFetching}
                                 onEditPack={handleEditCreditPack}
+                                onManageOffers={handleManageCreditPackOffers}
                                 onToggleActive={handleToggleCreditPackStatus}
                                 onToggleListed={handleToggleCreditPackListed}
                             />
@@ -366,6 +378,7 @@ export const AdminBillingManagementPage: React.FC = () => {
                 <PlanFormModal
                     isOpen={isPlanModalOpen}
                     plan={editingPlan}
+                    existingPlans={plans}
                     onClose={() => {
                         setIsPlanModalOpen(false);
                         setEditingPlan(null);
@@ -377,16 +390,26 @@ export const AdminBillingManagementPage: React.FC = () => {
                     plan={selectedPlanForOffers}
                     onClose={() => {
                         setIsOffersModalOpen(false);
-                        setSelectedPlanForOffers(null);
+                        setSelectedPlanIdForOffers(null);
                     }}
                 />
 
                 <CreditPackFormModal
                     isOpen={isCreditPackModalOpen}
                     pack={editingCreditPack}
+                    existingPacks={creditPacks}
                     onClose={() => {
                         setIsCreditPackModalOpen(false);
                         setEditingCreditPack(null);
+                    }}
+                />
+
+                <CreditPackOffersModal
+                    isOpen={isCreditPackOffersModalOpen}
+                    pack={selectedCreditPackForOffers}
+                    onClose={() => {
+                        setIsCreditPackOffersModalOpen(false);
+                        setSelectedCreditPackIdForOffers(null);
                     }}
                 />
 

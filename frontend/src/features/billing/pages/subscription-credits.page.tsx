@@ -91,7 +91,7 @@ export const SubscriptionCreditsPage: React.FC = () => {
             itemId: selectedPack.id,
             itemType: 'CREDIT_PACK',
             itemName: selectedPack.name.replace(/\s*\(\d+\s*Credits\)/i, '').trim(),
-            amountFormatted: formatCurrencyDisplay(selectedPack.price.formatted),
+            amountFormatted: formatCurrencyDisplay(selectedPack.effectivePrice?.formatted || selectedPack.price.formatted),
         });
     };
 
@@ -142,7 +142,7 @@ export const SubscriptionCreditsPage: React.FC = () => {
                     <CheckoutSummaryCard
                         itemName={selectedPack?.name}
                         itemDescription={selectedPack ? `${selectedPack.creditsCount} Priority Introductions` : undefined}
-                        amountFormatted={selectedPack?.price.formatted}
+                        amountFormatted={selectedPack?.effectivePrice?.formatted || selectedPack?.price.formatted}
                         isProcessing={paymentHook.isProcessing}
                         onContinueToPayment={handleCheckoutPack}
                         disabled={!selectedPack}

@@ -33,7 +33,9 @@ export interface AdminPlanPriceDto {
 }
 
 export interface AdminPlanOfferDto {
-    code: string;
+    id: string;
+    name: string;
+    code?: string;
     discountPercentage: number;
     validFrom: string;
     validUntil: string;
@@ -63,6 +65,8 @@ export interface AdminCreditPackDto {
     code: string;
     creditsCount: number;
     price: AdminPlanPriceDto;
+    effectivePrice: AdminPlanPriceDto;
+    offers: AdminPlanOfferDto[];
     badge: string | null;
     sortOrder: number;
     isListed: boolean;
@@ -109,7 +113,9 @@ export interface PlanPriceInput {
 }
 
 export interface PlanOfferInputPayload {
-    code: string;
+    id?: string;
+    name?: string;
+    code?: string;
     discountPercentage: number;
     validFrom: string;
     validUntil: string;
@@ -141,6 +147,7 @@ export interface CreateCreditPackPayload {
     code: string;
     creditsCount: number;
     price: PlanPriceInput;
+    offers?: PlanOfferInputPayload[];
     badge?: string;
     sortOrder?: number;
     isListed?: boolean;
@@ -151,6 +158,7 @@ export interface UpdateCreditPackPayload {
     name?: string;
     creditsCount?: number;
     price?: PlanPriceInput;
+    offers?: PlanOfferInputPayload[];
     badge?: string;
     sortOrder?: number;
     isListed?: boolean;

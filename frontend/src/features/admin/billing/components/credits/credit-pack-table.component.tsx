@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AdminCreditPackDto } from '../../types/admin-billing.types';
 import { AdminTable, type AdminTableColumn } from '../../../../../shared/admin/components/admin-table.component';
+import { getOffersSummary } from '../../utils/admin-billing-offers.util';
 import styles from './credit-pack-table.module.css';
 
 export interface CreditPackTableProps {
@@ -8,6 +9,7 @@ export interface CreditPackTableProps {
     isLoading?: boolean;
     isFetching?: boolean;
     onEditPack: (pack: AdminCreditPackDto) => void;
+    onManageOffers: (pack: AdminCreditPackDto) => void;
     onToggleListed: (pack: AdminCreditPackDto) => void;
     onToggleActive: (pack: AdminCreditPackDto) => void;
     onViewPack?: (pack: AdminCreditPackDto) => void;
@@ -19,6 +21,7 @@ export const CreditPackTable: React.FC<CreditPackTableProps> = ({
     isLoading = false,
     isFetching = false,
     onEditPack,
+    onManageOffers,
     onToggleListed,
     onToggleActive,
     onViewPack,
@@ -52,14 +55,21 @@ export const CreditPackTable: React.FC<CreditPackTableProps> = ({
         {
             header: 'PRICE',
             render: (pack) => {
+                const hasDiscount =
+                    pack.effectivePrice && pack.effectivePrice.amount < pack.price.amount;
                 const unitPrice =
                     pack.creditsCount > 0
                         ? (pack.price.amount / pack.creditsCount).toFixed(2)
                         : null;
                 return (
                     <div className={styles.priceCell}>
-                        <span className={styles.priceFormatted}>{pack.price.formatted}</span>
-                        {unitPrice && (
+                        <span className={styles.priceFormatted}>
+                            {pack.effectivePrice?.formatted || pack.price.formatted}
+                        </span>
+                        {hasDiscount && (
+                            <span className={styles.strikePrice}>{pack.price.formatted}</span>
+                        )}
+                        {unitPrice && !hasDiscount && (
                             <span className={styles.unitPrice}>₹{unitPrice} / credit</span>
                         )}
                     </div>
@@ -74,6 +84,40 @@ export const CreditPackTable: React.FC<CreditPackTableProps> = ({
                 ) : (
                     <span className={styles.noBadge}>&mdash;</span>
                 ),
+        },
+        {
+            header: 'OFFERS',
+            render: (pack) => {
+                const { activeCount, scheduledCount } = getOffersSummary(pack.offers);
+
+                let label = 'MANAGE OFFERS';
+                let btnStyle = styles.noOffers;
+
+                if (activeCount > 0 && scheduledCount > 0) {
+                    label = `${activeCount} ACTIVE (${scheduledCount} SCHED)`;
+                    btnStyle = styles.offersActive;
+                } else if (activeCount > 0) {
+                    label = `${activeCount} ACTIVE OFFER${activeCount > 1 ? 'S' : ''}`;
+                    btnStyle = styles.offersActive;
+                } else if (scheduledCount > 0) {
+                    label = `${scheduledCount} SCHEDULED`;
+                    btnStyle = styles.offersScheduled;
+                }
+
+                return (
+                    <button
+                        type="button"
+                        className={`${styles.offersBtn} ${btnStyle}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onManageOffers(pack);
+                        }}
+                        title="Manage promotional offers for this credit package"
+                    >
+                        {label}
+                    </button>
+                );
+            },
         },
         {
             header: 'STORE LISTED',

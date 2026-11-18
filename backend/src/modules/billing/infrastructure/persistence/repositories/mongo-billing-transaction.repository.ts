@@ -115,7 +115,7 @@ export class MongoBillingTransactionRepository implements IBillingTransactionRep
     async update(transaction: BillingTransaction): Promise<BillingTransaction> {
         const persistenceData = BillingTransactionPersistenceMapper.toPersistence(transaction);
         const updated = await this._model
-            .findByIdAndUpdate(transaction.id, persistenceData, { new: true })
+            .findByIdAndUpdate(transaction.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
         if (!updated) {

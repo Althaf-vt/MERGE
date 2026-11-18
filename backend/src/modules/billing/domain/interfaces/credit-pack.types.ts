@@ -1,4 +1,4 @@
-import { MoneyProps } from './billing-value-objects.types';
+import { MoneyProps, PlanOfferProps } from './billing-value-objects.types';
 
 export interface CreateCreditPackProps {
     id: string;
@@ -6,6 +6,7 @@ export interface CreateCreditPackProps {
     code: string;
     creditsCount: number;
     price: MoneyProps;
+    offers?: PlanOfferProps[];
     badge?: string | null;
     sortOrder?: number;
     isListed?: boolean;
@@ -16,6 +17,7 @@ export interface UpdateCreditPackProps {
     name: string;
     creditsCount: number;
     price: MoneyProps;
+    offers?: PlanOfferProps[];
     badge?: string | null;
     sortOrder?: number;
 }
@@ -26,6 +28,7 @@ export interface CreditPackProps {
     code: string;
     creditsCount: number;
     price: MoneyProps;
+    offers?: PlanOfferProps[];
     badge?: string | null;
     sortOrder?: number;
     isListed?: boolean;
@@ -40,6 +43,7 @@ export interface CreditPackData {
     code: string;
     creditsCount: number;
     price: MoneyProps;
+    offers: PlanOfferProps[];
     badge: string | null;
     sortOrder: number;
     isListed: boolean;
@@ -54,6 +58,7 @@ export interface CreditPackSnapshot {
     code: string;
     creditsCount: number;
     price: MoneyProps;
+    offers: PlanOfferProps[];
     badge: string | null;
     sortOrder: number;
     isListed: boolean;

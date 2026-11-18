@@ -8,7 +8,7 @@ export class CreditAccountSchemaClass {
     @Prop({ type: String, required: true })
     _id: string;
 
-    @Prop({ required: true, unique: true, index: true })
+    @Prop({ required: true, unique: true })
     userId: string;
 
     @Prop({ required: true, type: Number, default: 0, min: 0 })
@@ -19,5 +19,3 @@ export class CreditAccountSchemaClass {
 }
 
 export const CreditAccountSchema = SchemaFactory.createForClass(CreditAccountSchemaClass);
-
-CreditAccountSchema.index({ userId: 1 }, { unique: true });

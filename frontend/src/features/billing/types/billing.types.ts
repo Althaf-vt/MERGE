@@ -37,7 +37,9 @@ export interface PlanPriceDto {
 }
 
 export interface PlanOfferDto {
-    code: string;
+    id: string;
+    name: string;
+    code?: string;
     discountPercentage: number;
     validFrom: string;
     validUntil: string;
@@ -87,6 +89,8 @@ export interface CreditPackDto {
     code: string;
     creditsCount: number;
     price: PlanPriceDto;
+    effectivePrice?: PlanPriceDto;
+    offers?: PlanOfferDto[];
     badge: string | null;
     sortOrder: number;
     isListed: boolean;

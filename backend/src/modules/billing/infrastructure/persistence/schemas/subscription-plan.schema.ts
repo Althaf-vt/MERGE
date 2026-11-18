@@ -17,8 +17,14 @@ export const MoneySchema = SchemaFactory.createForClass(MoneySchemaClass);
 // Subdocument Schema: Plan Offer
 @Schema({ _id: false })
 export class PlanOfferSchemaClass {
-    @Prop({ required: true, trim: true, uppercase: true })
-    code: string;
+    @Prop({ type: String, required: false })
+    id?: string;
+
+    @Prop({ type: String, required: false, trim: true })
+    name?: string;
+
+    @Prop({ type: String, required: false, trim: true, uppercase: true })
+    code?: string;
 
     @Prop({ required: true, type: Number })
     discountPercentage: number;
@@ -45,6 +51,9 @@ export class SubscriptionPlanSchemaClass {
 
     @Prop({ required: true, trim: true })
     name: string;
+
+    @Prop({ required: true, trim: true, uppercase: true })
+    normalizedName: string;
 
     @Prop({ required: true, trim: true, uppercase: true, unique: true })
     code: string;
@@ -73,6 +82,6 @@ export class SubscriptionPlanSchemaClass {
 
 export const SubscriptionPlanSchema = SchemaFactory.createForClass(SubscriptionPlanSchemaClass);
 
-SubscriptionPlanSchema.index({ code: 1 }, { unique: true });
+SubscriptionPlanSchema.index({ normalizedName: 1, billingPeriod: 1 }, { unique: true });
 SubscriptionPlanSchema.index({ isActive: 1, sortOrder: 1 });
 SubscriptionPlanSchema.index({ createdAt: -1 });

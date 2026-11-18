@@ -1,5 +1,21 @@
 import { Currency } from '../enums/billing.enums';
 
+export const BILLING_NAME_LIMITS = {
+    MIN_LENGTH: 2,
+    MAX_LENGTH: 50,
+} as const;
+
+export const BILLING_CATALOG_LIMITS = {
+    PLAN_NAME_MIN_LENGTH: 2,
+    PLAN_NAME_MAX_LENGTH: 50,
+    PLAN_CODE_MIN_LENGTH: 2,
+    PLAN_CODE_MAX_LENGTH: 30,
+    CREDIT_PACK_NAME_MIN_LENGTH: 2,
+    CREDIT_PACK_NAME_MAX_LENGTH: 50,
+    CREDIT_PACK_CODE_MIN_LENGTH: 2,
+    CREDIT_PACK_CODE_MAX_LENGTH: 30,
+} as const;
+
 export const BILLING_POLICY = {
     DEFAULT_CURRENCY: Currency.INR,
     PRIORITY_INTRO_CREDIT_COST: 1,
@@ -40,6 +56,7 @@ export const BILLING_ID_PREFIXES = {
     SUBSCRIPTION: 'merge-sub',
     CREDIT_ACCOUNT: 'merge-acc',
     TRANSACTION: 'merge-tx',
+    OFFER: 'merge-offer',
 } as const;
 
 export const generateBillingId = (prefix: string): string => {

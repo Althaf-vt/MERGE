@@ -1,6 +1,7 @@
 import React from 'react';
 import type { CreditPackDto } from '../../types/billing.types';
 import { formatCurrencyDisplay } from '../../utils/currency.util';
+import { getEffectiveOffer } from '../../utils/billing-offers.util';
 import styles from './credit-pack-card.module.css';
 
 export interface CreditPackCardProps {
@@ -18,6 +19,9 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
 }) => {
     // Sanitize pack name if legacy brackets are present
     const displayName = pack.name.replace(/\s*\(\d+\s*Credits\)/i, '').trim();
+
+    const effectiveOffer = getEffectiveOffer(pack.offers);
+    const hasDiscount = Boolean(effectiveOffer && pack.effectivePrice && pack.effectivePrice.amount < pack.price.amount);
 
     const handleClick = () => {
         if (!disabled) {
@@ -40,7 +44,13 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
             aria-pressed={isSelected}
             aria-disabled={disabled}
         >
-            {pack.badge && <span className={styles.badge}>{pack.badge}</span>}
+            {effectiveOffer ? (
+                <span className={styles.discountBadge}>
+                    {effectiveOffer.name ? `${effectiveOffer.name} • ` : ''}Save {effectiveOffer.discountPercentage}%
+                </span>
+            ) : pack.badge ? (
+                <span className={styles.badge}>{pack.badge}</span>
+            ) : null}
 
             <span className={styles.packName}>{displayName}</span>
 
@@ -49,7 +59,20 @@ export const CreditPackCard: React.FC<CreditPackCardProps> = ({
                 <span className={styles.creditsLabel}>Credits</span>
             </div>
 
-            <div className={styles.priceTag}>{formatCurrencyDisplay(pack.price.formatted)}</div>
+            <div className={styles.priceTag}>
+                {hasDiscount ? (
+                    <>
+                        <span className={styles.effectivePrice}>
+                            {formatCurrencyDisplay(pack.effectivePrice?.formatted || pack.price.formatted)}
+                        </span>
+                        <span className={styles.strikePrice}>
+                            {formatCurrencyDisplay(pack.price.formatted)}
+                        </span>
+                    </>
+                ) : (
+                    <span>{formatCurrencyDisplay(pack.price.formatted)}</span>
+                )}
+            </div>
 
             <button
                 type="button"

@@ -18,6 +18,8 @@ export class SubscriptionPlanDtoMapper {
 
     public static toPlanOfferResponseDto(offer: PlanOffer): PlanOfferResponseDto {
         return {
+            id: offer.id,
+            name: offer.name,
             code: offer.code,
             discountPercentage: offer.discountPercentage,
             validFrom: offer.validFrom,
@@ -62,7 +64,9 @@ export class SubscriptionPlanDtoMapper {
 
     public static toOfferProps(dto: PlanOfferInputDto): PlanOfferProps {
         return {
-            code: dto.code,
+            id: dto.id,
+            name: dto.name ?? dto.code,
+            code: dto.code ?? dto.name,
             discountPercentage: dto.discountPercentage,
             validFrom: dto.validFrom,
             validUntil: dto.validUntil,
@@ -77,11 +81,11 @@ export class SubscriptionPlanDtoMapper {
         return dtos.map((dto) => SubscriptionPlanDtoMapper.toOfferProps(dto));
     }
 
-    public static toCreateProps(dto: CreateSubscriptionPlanDto): CreateSubscriptionPlanProps {
+    public static toCreateProps(dto: CreateSubscriptionPlanDto, explicitCode?: string): CreateSubscriptionPlanProps {
         return {
             id: generateBillingId(BILLING_ID_PREFIXES.PLAN),
             name: dto.name,
-            code: dto.code,
+            code: explicitCode ?? dto.code ?? '',
             billingPeriod: dto.billingPeriod,
             price: {
                 amount: dto.price.amount,

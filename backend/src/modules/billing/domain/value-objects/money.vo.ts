@@ -88,6 +88,34 @@ export class MoneyVO {
         });
     }
 
+    public calculateDiscountedPrice(discountPercentage: number): MoneyVO {
+        if (
+            typeof discountPercentage !== 'number' ||
+            isNaN(discountPercentage) ||
+            discountPercentage < 0 ||
+            discountPercentage > 100
+        ) {
+            throw new DomainException(
+                ErrorCode.VALIDATION_FAILED,
+                BILLING_ERROR_MESSAGES.INVALID_DISCOUNT_PERCENTAGE,
+            );
+        }
+
+        if (discountPercentage === 0) {
+            return new MoneyVO({ amount: this._amount, currency: this._currency });
+        }
+
+        const discountMultiplier = discountPercentage / 100;
+        const discountAmount = Math.round(this._amount * discountMultiplier * 100) / 100;
+
+        return this.subtract(
+            new MoneyVO({
+                amount: discountAmount,
+                currency: this._currency,
+            }),
+        );
+    }
+
     public equals(other: MoneyVO): boolean {
         if (!other) return false;
         return this._amount === other.amount && this._currency === other.currency;

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { MoneySchema, MoneySchemaClass } from './subscription-plan.schema';
+import { MoneySchema, MoneySchemaClass, PlanOfferSchema, PlanOfferSchemaClass } from './subscription-plan.schema';
 
 export type CreditPackDocument = CreditPackSchemaClass & Document;
 
@@ -13,6 +13,9 @@ export class CreditPackSchemaClass {
     name: string;
 
     @Prop({ required: true, trim: true, uppercase: true, unique: true })
+    normalizedName: string;
+
+    @Prop({ required: true, trim: true, uppercase: true, unique: true })
     code: string;
 
     @Prop({ required: true, type: Number })
@@ -20,6 +23,9 @@ export class CreditPackSchemaClass {
 
     @Prop({ required: true, type: MoneySchema })
     price: MoneySchemaClass;
+
+    @Prop({ type: [PlanOfferSchema], default: [] })
+    offers: PlanOfferSchemaClass[];
 
     @Prop({ type: String, default: null })
     badge?: string | null;
@@ -39,6 +45,5 @@ export class CreditPackSchemaClass {
 
 export const CreditPackSchema = SchemaFactory.createForClass(CreditPackSchemaClass);
 
-CreditPackSchema.index({ code: 1 }, { unique: true });
 CreditPackSchema.index({ isListed: 1, isActive: 1, sortOrder: 1 });
 CreditPackSchema.index({ createdAt: -1 });
