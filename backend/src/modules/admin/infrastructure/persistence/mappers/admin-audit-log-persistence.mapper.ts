@@ -19,6 +19,10 @@ export class AdminAuditLogPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: AdminAuditLogDocument[]): AdminAuditLog[] {
+        return documents.map((doc) => AdminAuditLogPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: AdminAuditLog): Record<string, unknown> {
         return {
             adminId: entity.adminId,

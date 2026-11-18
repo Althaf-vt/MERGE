@@ -21,6 +21,6 @@ export class ModerationLogRepository implements IModerationLogRepository {
 
     async findByUserId(userId: string): Promise<ModerationLog[]> {
         const docs = await this._model.find({ targetUserId: userId }).sort({ createdAt: -1 }).exec();
-        return docs.map(doc => ModerationLogPersistenceMapper.toDomain(doc));
+        return ModerationLogPersistenceMapper.toDomainList(docs);
     }
 }

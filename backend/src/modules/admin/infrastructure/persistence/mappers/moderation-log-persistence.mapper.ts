@@ -15,6 +15,10 @@ export class ModerationLogPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: ModerationLogDocument[]): ModerationLog[] {
+        return documents.map((doc) => ModerationLogPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: ModerationLog): Record<string, unknown> {
         return {
             targetUserId: entity.targetUserId,

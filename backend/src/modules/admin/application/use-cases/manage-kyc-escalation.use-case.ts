@@ -33,21 +33,7 @@ export class GetKycTasksUseCase implements IGetKycTasksUseCase {
             claimedBy: query.claimedBy,
         });
 
-        const mappedData = await Promise.all(
-            result.data.map(async (task) => {
-                const signedSelfieUrl = await this._mediaFacade.getPresignedMediaUrl(task.kycSelfieUrl) || task.kycSelfieUrl;
-                const signedDocumentUrl = await this._mediaFacade.getPresignedMediaUrl(task.uploadedDocumentUrl) || task.uploadedDocumentUrl;
-
-                return KycEscalationDtoMapper.toResponseDto(task, signedSelfieUrl, signedDocumentUrl);
-            })
-        );
-
-        return {
-            data: mappedData,
-            total: result.total,
-            page: result.page,
-            limit: result.limit,
-        }
+        return KycEscalationDtoMapper.toPaginatedResponseDto(result, this._mediaFacade);
     }
 }
 

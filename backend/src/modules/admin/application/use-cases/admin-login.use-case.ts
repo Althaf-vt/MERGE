@@ -10,7 +10,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-import { AdminResponseMapper } from "../mappers/admin-response.mapper";
+import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
@@ -58,7 +58,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         return {
             accessToken: this._tokenService.generateAccessToken(payload),
             refreshToken: this._tokenService.generateRefreshToken(payload),
-            admin: AdminResponseMapper.toResponse(admin),
+            admin: AdminDtoMapper.toAuthResponseDto(admin),
         }
     }
 }

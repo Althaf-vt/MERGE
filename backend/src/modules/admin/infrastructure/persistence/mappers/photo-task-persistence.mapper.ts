@@ -28,6 +28,10 @@ export class PhotoTaskPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: PhotoVerificationTaskDocument[]): PhotoVerificationTask[] {
+        return documents.map((doc) => PhotoTaskPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: PhotoVerificationTask): Record<string, unknown> {
         const json = entity.toJSON();
         return {
