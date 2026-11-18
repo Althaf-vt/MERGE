@@ -10,13 +10,10 @@ import { UserMedical } from "../../../domain/entities/user-medical.entity";
 import { InfectiousVisibility, PhotoVerificationStatus, ProfileVisibility } from "../../../domain/enums/profile.enums";
 import { UserPhoto } from "../../../domain/entities/user-photo.entity";
 
-// Maps between domain UserEntity objects and Mongoose persistence documents.
 export class UserPersistenceMapper {
 
-    // Converts a MongoDB/Mongoose User document into a domain UserEntity.
     public static toDomain(raw: UserDocument): UserAggregate {
 
-        // Reconstruct the UserKyc entity if the data exists in the database
         let kycEntity: UserKyc | undefined;
 
         if (raw.kycVerification) {
@@ -29,7 +26,6 @@ export class UserPersistenceMapper {
                 verifiedDOB: raw.kycVerification.verifiedDOB,
                 hashedDocumentNumber: raw.kycVerification.hashedDocumentNumber,
 
-                // Selfie Identity Baseline
                 liveSelfieS3: raw.kycVerification.liveSelfieS3,
                 selfieFaceEmbedding: raw.kycVerification.selfieFaceEmbedding,
                 selfieConfidence: raw.kycVerification.selfieConfidence,
@@ -38,7 +34,6 @@ export class UserPersistenceMapper {
                 livenessResults: raw.kycVerification.livenessResults,
                 verificationSubmitted: raw.kycVerification.verificationSubmitted,
 
-                // Liveness & Review
                 manualReviewRequired: raw.kycVerification.manualReviewRequired,
                 adminReviewedBy: raw.kycVerification.adminReviewedBy,
                 rejectionReason: raw.kycVerification.rejectionReason,
@@ -51,7 +46,6 @@ export class UserPersistenceMapper {
             });
         }
 
-        // Reconstruct the UserProfile entity if profile data exists
         let profileEntity: UserProfile | undefined;
 
         if (raw.profile) {
@@ -90,7 +84,6 @@ export class UserPersistenceMapper {
             });
         }
 
-        // Reconstruct UserPreference entity if preference data exists
         let preferenceEntity: UserPreference | undefined;
 
         if (raw.preference) {
@@ -177,7 +170,6 @@ export class UserPersistenceMapper {
         });
     }
 
-    // Converts a domain UserEntity into a plain object that can be stored in MongoDB.
     public static toPersistence(entity: UserAggregate): Record<string, unknown> {
         const data = entity.toJSON();
         return {
@@ -198,7 +190,6 @@ export class UserPersistenceMapper {
             lastLumenReset: data.lastLumenReset,
             lastLogin: data.lastLogin,
 
-            // Flatten profile for persistence
             profile: data.profile ? {
                 displayName: data.profile.displayName,
                 customLabel: data.profile.customLabel,
@@ -233,7 +224,6 @@ export class UserPersistenceMapper {
                 isProfileVisible: data.profile.isProfileVisible,
             } : null,
 
-            // Flatten preferences for persistence
             preference: data.preference ? {
                 preferredGender: data.preference.preferredGender,
                 preferredAgeMin: data.preference.preferredAgeMin,
@@ -250,7 +240,6 @@ export class UserPersistenceMapper {
                 disablilityPreferece: data.preference.disablilityPreferece,
             } : null,
 
-            // Flatten the KYC entity for MongoDB storage
             kycVerification: data.kycVerification ? {
                 verificationStatus: data.kycVerification.verificationStatus,
                 documentType: data.kycVerification.documentType,
@@ -296,5 +285,9 @@ export class UserPersistenceMapper {
 
             photos: data.photos || [],
         };
+    }
+
+    public static toDomainList(documents: UserDocument[]): UserAggregate[] {
+        return documents.map((doc) => UserPersistenceMapper.toDomain(doc));
     }
 }

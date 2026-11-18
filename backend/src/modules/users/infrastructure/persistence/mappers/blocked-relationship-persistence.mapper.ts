@@ -13,6 +13,10 @@ export class BlockedRelationshipPersistenceMapper {
         });
     }
 
+    public static toDomainList(documents: BlockedRelationshipDocument[]): BlockedRelationship[] {
+        return documents.map((doc) => BlockedRelationshipPersistenceMapper.toDomain(doc));
+    }
+
     public static toPersistence(entity: BlockedRelationship): Record<string, unknown> {
         return {
             blockerId: entity.blockerId,

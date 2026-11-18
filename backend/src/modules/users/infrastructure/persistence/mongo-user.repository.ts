@@ -47,7 +47,7 @@ export class UserRepository extends BaseRepository<UserAggregate, UserDocument> 
         const validIds = (ids || []).filter(id => Types.ObjectId.isValid(id));
         if (validIds.length === 0) return [];
         const documents = await this._model.find({ _id: { $in: validIds } }).exec();
-        return documents.map(doc => this.toDomain(doc as unknown as UserDocument));
+        return UserPersistenceMapper.toDomainList(documents as unknown as UserDocument[]);
     }
 
     async addLivenessResult(userId: string, record: LivenessEvaluationRecord): Promise<void> {
@@ -94,7 +94,7 @@ export class UserRepository extends BaseRepository<UserAggregate, UserDocument> 
         ]);
 
         return {
-            data: documents.map(doc => this.toDomain(doc as unknown as UserDocument)),
+            data: UserPersistenceMapper.toDomainList(documents as unknown as UserDocument[]),
             total,
             page: filters.page,
             limit: filters.limit

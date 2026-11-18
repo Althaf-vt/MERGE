@@ -40,7 +40,7 @@ export class BlockedRelationshipRepository implements IBlockedRelationshipReposi
             .sort({ createdAt: sortDirection })
             .exec();
 
-        return docs.map(doc => BlockedRelationshipPersistenceMapper.toDomain(doc));
+        return BlockedRelationshipPersistenceMapper.toDomainList(docs as unknown as BlockedRelationshipDocument[]);
     }
 
     async delete(blockerId: string, blockedId: string): Promise<void> {
