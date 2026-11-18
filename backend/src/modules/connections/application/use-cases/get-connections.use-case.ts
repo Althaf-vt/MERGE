@@ -27,25 +27,13 @@ export class GetConnectionsUseCase implements IGetConnectionsUseCase {
             limit
         });
 
-        const hydratedData = await Promise.all(
-            paginatedResult.data.map(async (connection) => {
-                const partnerId = connection.getPartnerId(userId);
-                const partnerProfile = await this._publicProfileFacade.getPublicProfile(partnerId);
-                
-                let partnerPhotoUrl = partnerProfile?.profilePhotoUrl ?? null;
-                if (partnerPhotoUrl) {
-                    partnerPhotoUrl = await this._mediaFacade.getPresignedMediaUrl(partnerPhotoUrl) || partnerPhotoUrl;
-                }
-
-                return ConnectionDtoMapper.toResponseDto(connection, userId, partnerProfile, partnerPhotoUrl);
-            })
-        );
-
-        return {
-            data: hydratedData,
-            total: paginatedResult.total,
+        return ConnectionDtoMapper.toPaginatedResponseDto(
+            paginatedResult,
             page,
-            limit
-        };
+            limit,
+            userId,
+            this._publicProfileFacade,
+            this._mediaFacade,
+        );
     }
 }
