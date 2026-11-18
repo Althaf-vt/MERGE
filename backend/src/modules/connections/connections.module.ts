@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "../users/users.module";
 import { BillingModule } from "../billing/billing.module";
-import { BillingPriorityCreditFacade } from "../billing/application/services/billing-priority-credit.facade";
+import { BILLING_PRIORITY_CREDIT_FACADE } from "../billing/application/interfaces/billing-facades.interface";
 import { CONNECTION_REPOSITORY } from "./domain/interfaces/connection-repository.interface";
 import { PRIVATE_LIST_REPOSITORY } from "./domain/interfaces/private-list-repository.interface";
 import { PRIORITY_INTRO_REPOSITORY } from "./domain/interfaces/priority-intro-repository.interface";
@@ -48,7 +48,7 @@ import { ConnectionAcceptedListener } from "./application/listeners/connection-a
         { provide: CONNECTION_REPOSITORY, useClass: ConnectionRepository },
         { provide: PRIVATE_LIST_REPOSITORY, useClass: PrivateListRepository },
         { provide: PRIORITY_INTRO_REPOSITORY, useClass: PriorityIntroRepository },
-        { provide: BILLING_FACADE, useExisting: BillingPriorityCreditFacade },
+        { provide: BILLING_FACADE, useExisting: BILLING_PRIORITY_CREDIT_FACADE },
 
         { provide: CONNECTIONS_FACADE, useClass: ConnectionsFacade },
 
