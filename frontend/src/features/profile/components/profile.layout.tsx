@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { logout } from '../../auth/slices/auth.slice';
@@ -13,13 +13,19 @@ export const ProfileLayout: React.FC = () => {
     // Fetch fresh profile data including presigned photo URLs
     const { data: profileResponse } = useGetProfileQuery();
     const liveProfile = profileResponse?.data?.profile || user?.profile;
-    const photos = profileResponse?.data?.photos || user?.photos || [];
+    // Extract photos strictly from profile query to ensure presigned URLs are used
+    const photos = profileResponse?.data?.photos || [];
 
     // Fallback if image fails to load via network/CORS
     const [imageError, setImageError] = useState(false);
 
     // Primary photo must be explicitly APPROVED and marked as primary
     const primaryPhoto = photos.find((p) => p.isPrimary && p.status === 'APPROVED');
+
+    // Reset image error state whenever primary photo URL changes
+    useEffect(() => {
+        setImageError(false);
+    }, [primaryPhoto?.url]);
 
     const handleLogout = () => {
         dispatch(logout());
