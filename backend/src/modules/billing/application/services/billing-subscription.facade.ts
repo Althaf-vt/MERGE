@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IScenePartnerSubscriptionFacade } from '../../../scene-partner/application/interfaces/scene-partner-subscription-facade.interface';
 import { SubscriptionEntitlement } from '../../domain/enums/billing.enums';
 import { IUserSubscriptionRepository, USER_SUBSCRIPTION_REPOSITORY } from '../../domain/interfaces/user-subscription-repository.interface';
 import { UserSubscriptionResponseDto } from '../dtos/user-subscription-response.dto';
@@ -7,7 +6,7 @@ import { IBillingSubscriptionFacade } from '../interfaces/billing-facades.interf
 import { SubscriptionDtoMapper } from '../mappers/subscription-dto.mapper';
 
 @Injectable()
-export class BillingSubscriptionFacade implements IBillingSubscriptionFacade, IScenePartnerSubscriptionFacade {
+export class BillingSubscriptionFacade implements IBillingSubscriptionFacade {
     constructor(
         @Inject(USER_SUBSCRIPTION_REPOSITORY) private readonly _userSubscriptionRepository: IUserSubscriptionRepository,
     ) { }
