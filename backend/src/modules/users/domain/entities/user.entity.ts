@@ -7,7 +7,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SuspensionDurationVO } from "../value-objects/suspension-duration.vo";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
-import { UserSupendedDomainEvent } from "../events/user-suspended.domain-event";
+import { UserSuspendedDomainEvent } from "../events/user-suspended.domain-event";
 import { UserBannedDomainEvent } from "../events/user-banned.domain-event";
 import { PhotoVerificationStatus } from "../enums/profile.enums";
 import { UserMedical } from "./user-medical.entity";
@@ -15,7 +15,7 @@ import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
 import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
-import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
+import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
 import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain-event";
 
 export enum UserRole {
@@ -192,7 +192,7 @@ export class UserAggregate extends AggregateRoot {
 
         // Emit internal domain event
         if (this.id) {
-            this.addDomainEvent(new UserSupendedDomainEvent(this.id, reason, duration.until));
+            this.addDomainEvent(new UserSuspendedDomainEvent(this.id, reason, duration.until));
         }
     }
 
@@ -421,7 +421,7 @@ export class UserAggregate extends AggregateRoot {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot unblock yourself.");
         }
 
-        this.addDomainEvent(new UserUnblockDomainEvent(this.id, targetUserId));
+        this.addDomainEvent(new UserUnblockedDomainEvent(this.id, targetUserId));
     }
 
     // 3. LUMEN AGENT SCHEDULING & QUOTAS
