@@ -25,8 +25,8 @@ export class SubscriptionPlanPersistenceMapper {
             })),
             sortOrder: raw.sortOrder ?? 0,
             isActive: raw.isActive ?? true,
-            createdAt: raw['createdAt'],
-            updatedAt: raw['updatedAt'],
+            createdAt: raw.createdAt,
+            updatedAt: raw.updatedAt,
         });
     }
 
