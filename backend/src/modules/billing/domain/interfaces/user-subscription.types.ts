@@ -16,6 +16,13 @@ export interface RenewSubscriptionParams {
     paymentMethodRef?: string | null;
 }
 
+export interface SwitchPlanParams {
+    newPlanId: string;
+    newPeriodEnd: Date;
+    newEntitlements: SubscriptionEntitlement[];
+    paymentMethodRef?: string | null;
+}
+
 export interface UserSubscriptionProps {
     id: string;
     userId: string;

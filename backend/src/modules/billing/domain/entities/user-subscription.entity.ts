@@ -4,7 +4,7 @@ import { DomainException } from '../../../../shared/domain/exceptions/domain.exc
 import { BILLING_ERROR_MESSAGES } from '../constants/billing-error-messages.constants';
 import { BILLING_TRANSACTION_DESCRIPTIONS } from '../constants/billing.constants';
 import { SubscriptionEntitlement, SubscriptionStatus } from '../enums/billing.enums';
-import { RenewSubscriptionParams, SubscribeUserParams, UserSubscriptionData, UserSubscriptionProps, UserSubscriptionSnapshot } from '../interfaces/user-subscription.types';
+import { RenewSubscriptionParams, SubscribeUserParams, SwitchPlanParams, UserSubscriptionData, UserSubscriptionProps, UserSubscriptionSnapshot } from '../interfaces/user-subscription.types';
 
 export class UserSubscription extends AggregateRoot {
     private readonly _props: UserSubscriptionData;
@@ -157,6 +157,30 @@ export class UserSubscription extends AggregateRoot {
             this._props.paymentMethodRef = params.paymentMethodRef.trim();
         }
         this._props.updatedAt = new Date();
+    }
+
+    public switchPlan(params: SwitchPlanParams): void {
+        if (!params.newPlanId || params.newPlanId.trim().length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.PLAN_ID_REQUIRED);
+        }
+
+        const newEnd = new Date(params.newPeriodEnd);
+        const now = new Date();
+        if (isNaN(newEnd.getTime()) || newEnd.getTime() <= now.getTime()) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, BILLING_ERROR_MESSAGES.INVALID_PERIOD_DATES);
+        }
+
+        this._props.planId = params.newPlanId.trim();
+        this._props.currentPeriodStart = now;
+        this._props.currentPeriodEnd = newEnd;
+        this._props.entitlements = [...params.newEntitlements];
+        this._props.status = SubscriptionStatus.ACTIVE;
+        this._props.canceledAt = null;
+        this._props.cancelReason = null;
+        if (params.paymentMethodRef !== undefined) {
+            this._props.paymentMethodRef = params.paymentMethodRef ? params.paymentMethodRef.trim() : null;
+        }
+        this._props.updatedAt = now;
     }
 
     public markPastDue(): void {
