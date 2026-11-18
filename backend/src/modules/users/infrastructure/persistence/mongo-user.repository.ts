@@ -5,7 +5,8 @@ import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserPersistenceMapper } from "./mappers/user-persistence.mapper";
 import { User, UserDocument } from "./user.schema";
 import { Model, Types } from "mongoose";
-import { LivenessEvaluationRecord, UserKyc } from "../../domain/entities/kyc-verification.entity";
+import { UserKyc } from "../../domain/entities/kyc-verification.entity";
+import { LivenessEvaluationRecord } from "../../domain/interfaces/kyc-verification.types";
 import { BaseRepository } from "../../../../shared/infrastructure/persistence/base-mongo.repository";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 

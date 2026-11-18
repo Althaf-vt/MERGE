@@ -3,86 +3,16 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationStatus } from "../enums/profile.enums";
 import { KYC_POLICY } from "../constants/kyc-policy.constant";
-
-export interface LivenessEvaluationRecord {
-    prompt: string;
-    score: number;
-    status: string;
-    videoS3?: string;
-}
-
-export interface UserKycProps {
-    id?: string;
-    userId?: string;
-    verificationStatus?: VerificationStatus;
-    reviewDecision?: ReviewDecision;
-    verificationAttempt?: number;
-    documentType?: DocumentType;
-    issuingCountry?: string;
-    verificationDevice?: VerificationDevice;
-    qrSessionId?: string;
-    legalName?: string;
-    verifiedDOB?: Date;
-    hashedDocumentNumber?: string;
-    liveSelfieS3?: string;
-    selfieFaceEmbedding?: number[];
-    selfieConfidence?: number;
-    selfieVerificationStatus?: SelfieVerificationStatus;
-    livenessResults?: Array<{
-        prompt: string;
-        score: number;
-        status: string;
-        videoS3?: string;
-    }>;
-    verificationSubmitted?: boolean;
-    manualReviewRequired?: boolean;
-    adminReviewedBy?: string;
-    rejectionReason?: string;
-    resubmissionReasons?: string[];
-    resubmissionMessage?: string;
-    resubmissionRequestedAt?: Date;
-    submittedAt?: Date;
-    approvedAt?: Date;
-    rejectedAt?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-export interface SubmitPkiDocumentsPayload {
-    documentType: DocumentType;
-    issuingCountry: string;
-    legalName: string;
-    verifiedDOB: Date;
-    hashedDocumentNumber: string;
-}
-
-export interface RecordSelfiePayload {
-    liveSelfieS3: string;
-    selfieFaceEmbedding: number[];
-    selfieConfidence: number;
-    rejectionReason?: string;
-}
-
-export interface RecordLivenessPayload {
-    prompt: string;
-    score: number;
-    videoS3?: string;
-}
-
-export interface ApproveManualReviewPayload {
-    adminId: string;
-}
-
-export interface RejectManualReviewPayload {
-    adminId: string;
-    rejectionReason: string;
-}
-
-export interface RequestResubmissionPayload {
-    adminId: string;
-    reasons: string[];
-    message?: string;
-}
+import {
+    ApproveManualReviewPayload,
+    RecordLivenessPayload,
+    RecordSelfiePayload,
+    RejectManualReviewPayload,
+    RequestResubmissionPayload,
+    SubmitPkiDocumentsPayload,
+    UserKycProps,
+    UserKycSnapshot,
+} from "../interfaces/kyc-verification.types";
 
 export class UserKyc {
     private _props: UserKycProps;
@@ -326,7 +256,7 @@ export class UserKyc {
         this._props.updatedAt = new Date();
     }
 
-    toJSON(): Record<string, unknown> {
+    toJSON(): UserKycSnapshot {
         return { ...this._props };
     }
 }
