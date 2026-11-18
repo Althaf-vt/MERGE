@@ -24,18 +24,11 @@ export class PublicProfileFacade implements IPublicProfileFacade {
     }
 
     async getPublicProfiles(userIds: string[]): Promise<Map<string, PublicProfileSummaryDto>> {
-        const resultMap = new Map<string, PublicProfileSummaryDto>();
-        if (!userIds || userIds.length === 0) return resultMap;
+        if (!userIds || userIds.length === 0) return new Map();
 
         const uniqueIds = Array.from(new Set(userIds.filter(Boolean)));
         const users = await this._userRepository.findByIds(uniqueIds);
 
-        for (const user of users) {
-            if (user.id && PublicProfileFacadeMapper.isInteractable(user)) {
-                resultMap.set(user.id, PublicProfileFacadeMapper.toSummaryDto(user));
-            }
-        }
-
-        return resultMap;
+        return PublicProfileFacadeMapper.toSummaryDtoMap(users);
     }
 }

@@ -4,6 +4,7 @@ import { IUserRepository, USER_REPOSITORY } from '../../domain/interfaces/user-r
 import { IStorageService, STORAGE_SERVICE } from '../interfaces/storage-service.interface';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { UserResponseMapper } from '../mappers/user-response.mapper';
 
 @Injectable()
 export class GetProfileUseCase implements IGetProfileUseCase {
@@ -18,26 +19,6 @@ export class GetProfileUseCase implements IGetProfileUseCase {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
         }
 
-        const photosWithSignedUrls = await Promise.all(
-            (user.photos || []).map(async (photo) => {
-                const signedUrl = await this._storageService.getPresignedUrl(photo.url, 900);
-                return {
-                    ...photo.toJSON(),
-                    url: signedUrl
-                };
-            })
-        );
-
-        return {
-            id: user.id as string,
-            email: user.email.getValue(),
-            profile: user.profile ? user.profile.toJSON() : null,
-            preference: user.preference ? user.preference.toJSON() : null,
-            photos: photosWithSignedUrls,
-            privacySettings: user.privacySettings ? user.privacySettings.toJSON() : null,
-            medicalRecord: user.medicalRecord ? user.medicalRecord.toJSON() : null,
-            kycCompleted: user.kycCompleted,
-            onboardingCompleted: user.onboardingCompleted,
-        };
+        return UserResponseMapper.toProfileDataResult(user, this._storageService);
     }
 }

@@ -6,6 +6,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { UpdateLifestyleDto } from "../dtos/update-lifestyle.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { UserProfileResponseDto } from "../dtos/user-profile-response.dto";
+import { UserProfileDtoMapper } from "../mappers/user-profile-dto.mapper";
 
 @Injectable()
 export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
@@ -40,9 +41,6 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
 
         await this._userRepository.update(user);
 
-        const profileProps = profile.toJSON();
-        const { bioGenerationAttempts: _, ...profileDto } = profileProps;
-
-        return profileDto;
+        return UserProfileDtoMapper.toResponseDto(profile);
     }
 }

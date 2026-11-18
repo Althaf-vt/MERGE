@@ -1,5 +1,7 @@
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { UserResponseDto } from "../dtos/user-response.dto";
+import { IStorageService } from "../interfaces/storage-service.interface";
+import { GetProfileDataResult } from "../interfaces/get-profile.use-case.interface";
 
 export class UserResponseMapper {
     public static toResponse(entity: UserAggregate): UserResponseDto {
@@ -36,6 +38,37 @@ export class UserResponseMapper {
             medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
 
             createdAt: entity.createdAt
+        };
+    }
+
+    public static toResponseList(entities: UserAggregate[]): UserResponseDto[] {
+        return entities.map((entity) => UserResponseMapper.toResponse(entity));
+    }
+
+    public static async toProfileDataResult(
+        entity: UserAggregate,
+        storageService: IStorageService,
+    ): Promise<GetProfileDataResult> {
+        const photosWithSignedUrls = await Promise.all(
+            (entity.photos || []).map(async (photo) => {
+                const signedUrl = await storageService.getPresignedUrl(photo.url, 900);
+                return {
+                    ...photo.toJSON(),
+                    url: signedUrl,
+                };
+            }),
+        );
+
+        return {
+            id: entity.id as string,
+            email: entity.email.getValue(),
+            profile: entity.profile ? entity.profile.toJSON() : null,
+            preference: entity.preference ? entity.preference.toJSON() : null,
+            photos: photosWithSignedUrls,
+            privacySettings: entity.privacySettings ? entity.privacySettings.toJSON() : null,
+            medicalRecord: entity.medicalRecord ? entity.medicalRecord.toJSON() : null,
+            kycCompleted: entity.kycCompleted,
+            onboardingCompleted: entity.onboardingCompleted,
         };
     }
 }
