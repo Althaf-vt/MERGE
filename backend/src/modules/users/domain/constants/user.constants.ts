@@ -1,0 +1,28 @@
+export const USER_POLICY = {
+    MAX_PHOTOS: 6,
+    MAX_BIO_ATTEMPTS: 3,
+    PASSWORD_RESET_OTP_TTL_SECONDS: 600,
+    REGISTRATION_OTP_TTL_SECONDS: 600,
+    EMAIL_CHANGE_OTP_TTL_SECONDS: 600,
+    SECURITY_OTP_TTL_SECONDS: 600,
+    BIOMETRIC_CONFIDENCE_THRESHOLD: 85,
+    ONBOARDING_STEPS: {
+        INITIAL: 1,
+        GOOGLE_INITIAL: 2,
+        EMAIL_VERIFY: 3,
+        PERSONA_COMPLETED: 3,
+        LIFESTYLE_COMPLETED: 4,
+        PREFERENCES_COMPLETED: 5,
+        KYC_COMPLETE: 8,
+        FINAL_STEP: 14,
+    },
+    PHOTO_MAX_FILE_SIZE_BYTES: 5 * 1024 * 1024,
+    PHOTO_ALLOWED_MIME_TYPES: ['image/jpeg', 'image/png'] as const,
+} as const;
+
+export const USER_VALIDATION_PATTERNS = {
+    INDIAN_PHONE: /^\+91[6-9]\d{9}$/,
+    PRONOUNS: /^[A-Za-z0-9/,\s-]+$/,
+    DISPLAY_NAME: /^[A-Za-z]+(?: [A-Za-z]+)*$/,
+    ALPHANUMERIC: /(?=.*[a-zA-Z0-9])/,
+} as const;
