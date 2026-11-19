@@ -1,14 +1,5 @@
 import { PhotoVerificationStatus } from "../enums/profile.enums";
-
-export interface UserPhotoProps {
-    id: string;
-    url: string;
-    isPrimary: boolean;
-    status: PhotoVerificationStatus;
-    faceMatchScore?: number;
-    rejectionReason?: string;
-    uploadedAt?: Date;
-}
+import { UserPhotoProps, UserPhotoSnapshot } from "../interfaces/user-photo.types";
 
 export class UserPhoto {
     private _props: UserPhotoProps;
@@ -51,7 +42,7 @@ export class UserPhoto {
         }
     }
 
-    toJSON() {
+    toJSON(): UserPhotoSnapshot {
         return { ...this._props };
     }
 }
