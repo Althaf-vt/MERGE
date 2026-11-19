@@ -5,7 +5,9 @@ export interface UserPreferenceProps {
     userId?: string;
     preferredGender?: string[];
     preferredAgeMin?: number;
+    preferredAgeMax?: number;
     prefferedAgeMax?: number;
+    relationshipGoals?: RelationshipGoal;
     relationShipGoals?: RelationshipGoal;
     minimumOutnessLevel?: number;
     openToAdoption?: boolean;
@@ -13,10 +15,12 @@ export interface UserPreferenceProps {
     partnerExpectations?: string;
 
     // Health compatibility preferences
+    diabetesBpPreference?: HealthConditionPreference;
     diabeteBpPreference?: HealthConditionPreference;
     fertilityPreference?: HealthConditionPreference;
     geneticPreference?: HealthConditionPreference;
     infectiousPreference?: HealthConditionPreference;
+    disabilityPreference?: HealthConditionPreference;
     disablilityPreferece?: HealthConditionPreference;
 
     createdAt?: Date;
@@ -27,16 +31,20 @@ export interface UpdatePreferencesPayload {
     preferredGender?: string[];
     preferredAgeMin?: number;
     preferredAgeMax?: number;
+    prefferedAgeMax?: number;
+    relationshipGoals?: RelationshipGoal;
     relationShipGoals?: RelationshipGoal;
     minimumOutnessLevel?: number;
     openToAdoption?: boolean;
     immigrationReady?: boolean;
     partnerExpectations?: string;
 
+    diabetesBpPreference?: HealthConditionPreference;
     diabeteBpPreference?: HealthConditionPreference;
     fertilityPreference?: HealthConditionPreference;
     geneticPreference?: HealthConditionPreference;
     infectiousPreference?: HealthConditionPreference;
+    disabilityPreference?: HealthConditionPreference;
     disablilityPreferece?: HealthConditionPreference;
 }
 
@@ -45,16 +53,20 @@ export interface UserPreferenceSnapshot {
     userId?: string;
     preferredGender?: string[];
     preferredAgeMin?: number;
+    preferredAgeMax?: number;
     prefferedAgeMax?: number;
+    relationshipGoals?: RelationshipGoal;
     relationShipGoals?: RelationshipGoal;
     minimumOutnessLevel?: number;
     openToAdoption?: boolean;
     immigrationReady?: boolean; 
     partnerExpectations?: string;
+    diabetesBpPreference?: HealthConditionPreference;
     diabeteBpPreference?: HealthConditionPreference;
     fertilityPreference?: HealthConditionPreference;
     geneticPreference?: HealthConditionPreference;
     infectiousPreference?: HealthConditionPreference;
+    disabilityPreference?: HealthConditionPreference;
     disablilityPreferece?: HealthConditionPreference;
     createdAt?: Date;
     updatedAt?: Date;

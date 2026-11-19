@@ -9,7 +9,7 @@ import { SuspensionDurationVO } from "../value-objects/suspension-duration.vo";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { UserSuspendedDomainEvent } from "../events/user-suspended.domain-event";
 import { UserBannedDomainEvent } from "../events/user-banned.domain-event";
-import { PhotoVerificationStatus } from "../enums/profile.enums";
+import { PhotoVerificationStatus, ProfileVisibility } from "../enums/profile.enums";
 import { UserMedical } from "./user-medical.entity";
 import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
@@ -20,9 +20,8 @@ import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain
 import { UserAggregateProps, UserSnapshot } from "../interfaces/user.types";
 import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
 import { USER_POLICY } from "../constants/user.constants";
+import { DateUtil } from "../../../../shared/domain/utils/date.util";
 
-// Represents the User domain entity, managing user data and 
-// controlling how its state can change through domain-specific behaviors.
 export class UserAggregate extends AggregateRoot {
     private _props: UserAggregateProps;
 
@@ -53,7 +52,6 @@ export class UserAggregate extends AggregateRoot {
         };
     }
 
-    // Getters: Provides read-only access to the User's private properties.
     get id(): string | undefined { return this._props.id; }
     get email(): EmailVO { return this._props.email; }
     get passwordHash(): string | null | undefined { return this._props.passwordHash; }
@@ -83,7 +81,6 @@ export class UserAggregate extends AggregateRoot {
     get preference(): UserPreference | undefined { return this._props.preferences; }
     get kycVerification(): UserKyc | undefined { return this._props.kycVerification; }
 
-    // 1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
     recordLogin(): void {
         // Auto-lift expired suspension
         if (this._props.accountStatus === UserStatus.SUSPENDED) {
@@ -196,12 +193,10 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    // Update KYC verification
     updateKycVerification(kycEntity: UserKyc): void {
         this._props.kycVerification = kycEntity;
     }
 
-    // Resets KYC verification state for retries after failure
     resetKycVerification(): void {
         if (this._props.kycVerification) {
             this._props.kycVerification.resetLiveness();
@@ -211,7 +206,6 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    // 2. ONBOARDING & PIPELINE PROGRESSION
     advanceOnboardingStep(step: number): void {
         this._props.onboardingStep = step;
         this.markUpdatedAt();
@@ -227,9 +221,13 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    attatchPreferences(preferences: UserPreference): void {
+    attachPreferences(preferences: UserPreference): void {
         this._props.preferences = preferences;
         this.markUpdatedAt();
+    }
+
+    attatchPreferences(preferences: UserPreference): void {
+        this.attachPreferences(preferences);
     }
 
     completeKyc(): void {
@@ -277,13 +275,17 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    appovePhoto(photoId: string): void{
+    approvePhoto(photoId: string): void {
         if(!this._props.photos) return;
         const photo = this._props.photos.find(p => p.id === photoId);
-        if(!photo) return // Fail silently if user already deleted the photo
+        if(!photo) return; // Fail silently if user already deleted the photo
 
         photo.updateVerificationStatus(PhotoVerificationStatus.APPROVED);
         this.markUpdatedAt();
+    }
+
+    appovePhoto(photoId: string): void {
+        this.approvePhoto(photoId);
     }
 
     rejectPhoto(photoId: string, reason: string): void{
@@ -400,11 +402,31 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    resetLumendailyCounters(newHours: number[]): void {
+    resetLumenDailyCounters(newHours: number[]): void {
         this._props.lumenRecommendationGeneratedToday = 0;
         this._props.dailyMatchHours = newHours;
         this._props.lastLumenReset = new Date();
         this.markUpdatedAt();
+    }
+
+    resetLumendailyCounters(newHours: number[]): void {
+        this.resetLumenDailyCounters(newHours);
+    }
+
+    isInteractable(): boolean {
+        const isActive = this._props.accountStatus === UserStatus.ACTIVE;
+        const isNotHidden = this._props.privacySettings?.profileVisibility !== ProfileVisibility.HIDDEN;
+        const isProfileVisible = this._props.profile?.isProfileVisible !== false;
+        return isActive && isNotHidden && isProfileVisible;
+    }
+
+    calculateAge(ignorePrivacy = false): number | null {
+        if (!ignorePrivacy && this._props.privacySettings?.showAge === false) {
+            return null;
+        }
+        const dob = this._props.kycVerification?.verifiedDOB;
+        if (!dob) return null;
+        return DateUtil.calculateAge(dob);
     }
 
     markUpdatedAt(): void {
