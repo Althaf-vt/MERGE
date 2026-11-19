@@ -197,10 +197,10 @@ export class UserPreferenceSchema {
     preferredAgeMin?: number;
 
     @Prop({ default: 45 })
-    prefferedAgeMax?: number;
+    preferredAgeMax?: number;
 
     @Prop({ type: String, enum: RelationshipGoal, default: RelationshipGoal.LONG_TERM_RELATIONSHIP })
-    relationShipGoals?: RelationshipGoal;
+    relationshipGoals?: RelationshipGoal;
 
     @Prop({ default: 1 })
     minimumOutnessLevel?: number;
@@ -215,7 +215,7 @@ export class UserPreferenceSchema {
     partnerExpectations?: string;
 
     @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
-    diabeteBpPreference?: HealthConditionPreference;
+    diabetesBpPreference?: HealthConditionPreference;
 
     @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
     fertilityPreference?: HealthConditionPreference;
@@ -227,7 +227,7 @@ export class UserPreferenceSchema {
     infectiousPreference?: HealthConditionPreference;
 
     @Prop({ type: String, enum: Object.values(HealthConditionPreference), default: HealthConditionPreference.NO_PREFERENCE })
-    disablilityPreferece?: HealthConditionPreference;
+    disabilityPreference?: HealthConditionPreference;
 }
 
 @Schema({ _id: false })
