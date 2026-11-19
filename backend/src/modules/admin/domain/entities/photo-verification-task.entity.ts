@@ -6,21 +6,7 @@ import { PhotoTaskStatus } from "../enums/photo-task-status.enum";
 import { PhotoApprovedDomainEvent } from "../events/photo-approved.domain-event";
 import { PhotoRejectedDomainEvent } from "../events/photo-rejected.domain-event";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
-
-export interface PhotoVerificationTaskProps {
-    id?: string;
-    targetUserId: string;
-    photoId: string;
-    kycSelfieUrl: string; // The Golden Identity baseline
-    uploadedPhotoUrl: string; // The low-confidence photo under review
-    faceMatchScore: number;
-    taskStatus?: PhotoTaskStatus;
-    claimDetails?: ClaimDetailsVO;
-    rejectionReason?: string;
-    resolvedAt?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { PhotoVerificationTaskProps, PhotoVerificationTaskSnapshot } from "../interfaces/photo-verification-task.types";
 
 export class PhotoVerificationTask extends AggregateRoot {
     private _props: Required<PhotoVerificationTaskProps>;
@@ -100,7 +86,7 @@ export class PhotoVerificationTask extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    toJSON(): PhotoVerificationTaskSnapshot {
         return {
             ...this._props,
             claimDetails: this._props.claimDetails.toJSON(),
