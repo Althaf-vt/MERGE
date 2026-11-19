@@ -7,6 +7,8 @@ import { UpdatePersonaDto } from "../dtos/update-persona.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { LocationVO } from "../../domain/value-objects/location.vo";
 import { UserProfileDtoMapper } from "../mappers/user-profile-dto.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
@@ -18,7 +20,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
         const user = await this._userRepository.findById(userId);
 
         if(!user){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         const profile = user.profile || new UserProfile({});
@@ -44,7 +46,7 @@ export class UpdatePersonaUseCase implements IUpdatePersonaUseCase {
         });
 
         user.attachProfile(profile);
-        user.advanceOnboardingStep(3); 
+        user.advanceOnboardingStep(USER_POLICY.ONBOARDING_STEPS.PERSONA_COMPLETED); 
 
         await this._userRepository.update(user);
 

@@ -12,6 +12,8 @@ import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 import { IVerifyOtpUseCase } from "../interfaces/verify-otp.use-case.interface";
 import { UserResponseDto } from "../dtos/user-response.dto";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 // Handles the OTP verification process and marks the user's email as verified
 @Injectable()
@@ -29,13 +31,13 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         const draftData = await this._otpService.verifyAndRetrieveDraft(dto.email, dto.otp);
 
         if (!draftData) {
-            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired OTP');
+            throw new DomainException(ErrorCode.OTP_INVALID, USER_ERROR_MESSAGES.OTP_INVALID);
         }
 
         const existingUser = await this._userRepository.findByEmail(dto.email);
 
         if (existingUser) {
-            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User already verified");
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, USER_ERROR_MESSAGES.USER_ALREADY_VERIFIED);
         }
 
         // Create the Domain Entity 
@@ -46,7 +48,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
             isEmailVerified: true,
             accountStatus: UserStatus.ACTIVE,
             kycCompleted: false,
-            onboardingStep: 1,
+            onboardingStep: USER_POLICY.ONBOARDING_STEPS.INITIAL,
             onboardingCompleted: false,
             profileCompleted: false,
             castingDirectorCompleted: false,

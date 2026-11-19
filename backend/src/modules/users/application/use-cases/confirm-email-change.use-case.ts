@@ -7,6 +7,7 @@ import { ConfirmEmailChangeDto } from "../dtos/security-management.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class ConfirmEmailChangeUseCase implements IConfirmEmailChangeUseCase {
@@ -18,12 +19,12 @@ export class ConfirmEmailChangeUseCase implements IConfirmEmailChangeUseCase {
 
     async execute(userId: string, dto: ConfirmEmailChangeDto): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // 1. Retrive the draft from Redis using the submitted otp
         const newEmailString = await this._otpService.verifyAndRetrieveEmailChangeDraft(userId, dto.newEmailOtp);
         if (!newEmailString) {
-            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired verification code for the new email.');
+            throw new DomainException(ErrorCode.OTP_INVALID, USER_ERROR_MESSAGES.INVALID_NEW_EMAIL_CODE);
         }
 
         // 2. perform the domain entity update

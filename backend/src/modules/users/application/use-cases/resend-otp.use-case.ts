@@ -7,6 +7,8 @@ import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.in
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { ResendOtpDto } from "../dtos/resend-otp.dto";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class ResendOtpUseCase implements IResendOtpUseCase{
@@ -19,7 +21,7 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
     async execute(dto: ResendOtpDto): Promise<void> {
         const existingUser = await this._userRepository.findByEmail(dto.email);
         if (existingUser) {
-            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, USER_ERROR_MESSAGES.USER_ALREADY_EXISTS);
         }
 
         const emailVo = new EmailVO(dto.email);
@@ -27,7 +29,7 @@ export class ResendOtpUseCase implements IResendOtpUseCase{
 
         const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        await this._otpService.refreshRegistrationDraft(standardizedEmail, newOtp, 600);
+        await this._otpService.refreshRegistrationDraft(standardizedEmail, newOtp, USER_POLICY.REGISTRATION_OTP_TTL_SECONDS);
 
         await this._emailService.sendOtpEmail(standardizedEmail, newOtp);
     }

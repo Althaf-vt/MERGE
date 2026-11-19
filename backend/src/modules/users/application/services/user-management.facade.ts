@@ -6,6 +6,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { UserStatus } from "../../domain/enums/user.enums";
 import { UserFacadeMapper } from "../mappers/user-facade.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class UserManagementFacade implements IUserManagementFacade {
@@ -15,7 +16,7 @@ export class UserManagementFacade implements IUserManagementFacade {
 
     async suspendUser(userId: string, duration: number, unit: FacadeSuspensionUnit, reason: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target user not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.TARGET_USER_NOT_FOUND);
 
         // Map boundary type to internal Domain Value Object
         const internalUnit = unit === 'HOURS' ? SuspensionUnit.HOURS : SuspensionUnit.DAYS;
@@ -27,7 +28,7 @@ export class UserManagementFacade implements IUserManagementFacade {
 
     async unsuspendUser(userId: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target user not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.TARGET_USER_NOT_FOUND);
 
         user.unsuspendAccount();
         await this._userRepository.update(user);
@@ -35,7 +36,7 @@ export class UserManagementFacade implements IUserManagementFacade {
 
     async banUser(userId: string, reason: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target user not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.TARGET_USER_NOT_FOUND);
 
         user.banAccount(reason);
         await this._userRepository.update(user);
@@ -43,7 +44,7 @@ export class UserManagementFacade implements IUserManagementFacade {
 
     async unbanUser(userId: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Target user not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.TARGET_USER_NOT_FOUND);
 
         user.unbanAccount();
         await this._userRepository.update(user);

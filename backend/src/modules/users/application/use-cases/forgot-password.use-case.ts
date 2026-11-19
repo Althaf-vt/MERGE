@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IForgotPasswordUseCase } from "../interfaces/forgot-password.use-case.interface";
 import { ForgotPasswordDto } from "../dtos/forgot-password.dto";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
@@ -23,7 +24,7 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
-        await this._otpService.storePasswordResetOtp(emailVo.getValue(), otp, 600); // 10 mins TTL
+        await this._otpService.storePasswordResetOtp(emailVo.getValue(), otp, USER_POLICY.PASSWORD_RESET_OTP_TTL_SECONDS);
         await this._emailService.sendOtpEmail(emailVo.getValue(), otp);
     }
 }

@@ -12,6 +12,8 @@ import { ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfac
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class GoogleLoginUseCase implements IGoogleLoginUseCase {
@@ -26,7 +28,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         const payload = await this._googleAuthService.verifyToken(dto.idToken);
 
         if (!payload) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Invalid Google token payload.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.INVALID_GOOGLE_TOKEN_PAYLOAD);
         }
 
         const emailVo = new EmailVO(payload.email);
@@ -40,7 +42,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
                 isEmailVerified: true,
                 accountStatus: UserStatus.ACTIVE,
                 kycCompleted: false,
-                onboardingStep: 2,
+                onboardingStep: USER_POLICY.ONBOARDING_STEPS.GOOGLE_INITIAL,
                 onboardingCompleted: false,
                 profileCompleted: false,
                 castingDirectorCompleted: false,
@@ -59,7 +61,7 @@ export class GoogleLoginUseCase implements IGoogleLoginUseCase {
         }
 
         if (!user.id) {
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "User identification failed.");
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, USER_ERROR_MESSAGES.USER_IDENTIFICATION_FAILED);
         }
 
         const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;

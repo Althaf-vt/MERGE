@@ -7,6 +7,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.interface";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class ResetPasswordUseCase implements IResetPasswordUseCase {
@@ -21,12 +22,12 @@ export class ResetPasswordUseCase implements IResetPasswordUseCase {
         const isValid = await this._otpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp);
 
         if (!isValid) {
-            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired reset code.');
+            throw new DomainException(ErrorCode.OTP_INVALID, USER_ERROR_MESSAGES.INVALID_RESET_CODE);
         }
 
         const user = await this._userRepository.findByEmail(emailVo.getValue());
         if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         const hashedPassword = await this._passwordHasher.hash(dto.newPassword);

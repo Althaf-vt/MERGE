@@ -4,6 +4,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { CastingUserContextDto } from "../dtos/casting-user-context.dto";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class CastingUserFacade implements IcastingUserFacade{
@@ -28,7 +29,7 @@ export class CastingUserFacade implements IcastingUserFacade{
 
     async markCastingComplete(userId: string, personalityVector: number[]): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // update the aggregate
         user.completeCastingDirector(personalityVector);

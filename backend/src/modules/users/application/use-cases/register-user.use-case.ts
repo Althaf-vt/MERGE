@@ -11,6 +11,8 @@ import type { IEmailService } from "../../../../shared/domain/interfaces/email-s
 import { PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import type { IPasswordHasher } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { IRegisterUserUseCase } from "../interfaces/register-user.use-case.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 // Handles the user registration process, including validation,
 // password hashing, OTP generation, and user creation.
@@ -29,14 +31,14 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
   async execute(dto: RegisterUserDto): Promise<void> {
     const existingUser = await this._userRepository.findByEmail(dto.email);
     if (existingUser) {
-      throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, "User with this email already exists");
+      throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, USER_ERROR_MESSAGES.USER_ALREADY_EXISTS);
     }
 
     const passwordHash = await this._passwordHasher.hash(dto.password);
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await this._otpService.storeRegistrationDraft(dto.email, otp, passwordHash, 600);
+    await this._otpService.storeRegistrationDraft(dto.email, otp, passwordHash, USER_POLICY.REGISTRATION_OTP_TTL_SECONDS);
 
     await this._emailService.sendOtpEmail(dto.email, otp);
   }

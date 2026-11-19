@@ -5,6 +5,8 @@ import { IOtpService, OTP_SERVICE } from "../../domain/interfaces/otp-service.in
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class RequestSecurityOtpUseCase implements IRequestSecurityOtpUseCase {
@@ -16,12 +18,12 @@ export class RequestSecurityOtpUseCase implements IRequestSecurityOtpUseCase {
 
     async execute(userId: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         const email = user.email.getValue();
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        await this._otpService.storeSecurityAuthOtp(email, otp, 600);
+        await this._otpService.storeSecurityAuthOtp(email, otp, USER_POLICY.SECURITY_OTP_TTL_SECONDS);
 
         await this._emailService.sendOtpEmail(email, otp);
     }
