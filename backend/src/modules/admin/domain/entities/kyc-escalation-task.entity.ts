@@ -6,25 +6,7 @@ import { KycResubmissionReason } from "../enums/kyc-resubmission-reason.enum";
 import { KycTaskStatus } from "../enums/kyc-task-status.enum";
 import { KycEscalationApprovedDomainEvent, KycEscalationRejectedDomainEvent, KycEscalationResubmissionRequestedDomainEvent } from "../events/kyc-escalation.domain-events";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
-
-export interface KycEscalationTaskProps {
-    id?: string;
-    targetUserId: string;
-    documentType: string;
-    issuingCountry: string;
-    kycSelfieUrl: string;
-    uploadedDocumentUrl: string;
-    livenessScore: number;
-    faceMatchScore: number;
-    taskStatus?: KycTaskStatus;
-    claimDetails?: ClaimDetailsVO;
-    rejectionReason?: string;
-    resubmissionReasons?: KycResubmissionReason[];
-    resubmissionMessage?: string | null;
-    resolvedAt?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { KycEscalationTaskProps, KycEscalationTaskSnapshot } from "../interfaces/kyc-escalation-task.types";
 
 export class KycEscalationTask extends AggregateRoot {
     private _props: Required<KycEscalationTaskProps>;
@@ -133,7 +115,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    public toJSON(): Record<string, unknown> {
+    public toJSON(): KycEscalationTaskSnapshot {
         return {
             ...this._props,
             claimDetails: this._props.claimDetails.toJSON(),
