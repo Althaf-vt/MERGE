@@ -1,0 +1,4 @@
+export const ADMIN_POLICY = {
+    INVITE_TOKEN_BYTE_LENGTH: 32,
+    MIN_SUSPENSION_DURATION: 1,
+} as const;
