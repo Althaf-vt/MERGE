@@ -70,6 +70,38 @@ import { AdminScenePartnerController } from "./presentation/controllers/admin-sc
 import { AdminAuditLogController } from "./presentation/controllers/admin-audit-log.controller";
 import { ADMIN_APP_CONFIG } from "./application/interfaces/admin-app-config.interface";
 import { EnvConfig } from "../../shared/infrastructure/config/env.config";
+import {
+    ADMIN_CREATE_SCENARIO_USE_CASE,
+    ADMIN_EXPORT_SCENARIOS_USE_CASE,
+    ADMIN_GET_SCENARIO_BY_ID_USE_CASE,
+    ADMIN_GET_SCENARIO_IN_DEPTH_USE_CASE,
+    ADMIN_GET_SCENARIOS_USE_CASE,
+    ADMIN_GET_SCENE_ANALYTICS_USE_CASE,
+    ADMIN_GET_SCENE_SESSION_DETAILS_USE_CASE,
+    ADMIN_GET_SCENE_SESSIONS_USE_CASE,
+    ADMIN_SEND_PREVIEW_TURN_USE_CASE,
+    ADMIN_START_PREVIEW_SESSION_USE_CASE,
+    ADMIN_TOGGLE_SCENARIO_STATUS_USE_CASE,
+    ADMIN_UPDATE_PREVIEW_COACHING_USE_CASE,
+    ADMIN_UPDATE_SCENARIO_USE_CASE,
+} from "./application/interfaces/admin-scene-partner.use-cases.interface";
+import {
+    AdminCreateScenarioUseCase,
+    AdminExportScenariosUseCase,
+    AdminGetScenarioByIdUseCase,
+    AdminGetScenarioInDepthUseCase,
+    AdminGetScenariosUseCase,
+    AdminToggleScenarioStatusUseCase,
+    AdminUpdateScenarioUseCase,
+} from "./application/use-cases/admin-scenario.use-cases";
+import {
+    AdminGetSceneAnalyticsUseCase,
+    AdminGetSceneSessionDetailsUseCase,
+    AdminGetSceneSessionsUseCase,
+    AdminSendPreviewTurnUseCase,
+    AdminStartPreviewSessionUseCase,
+    AdminUpdatePreviewCoachingUseCase,
+} from "./application/use-cases/admin-scene-session.use-cases";
 
 @Module({
     imports: [
@@ -136,6 +168,21 @@ import { EnvConfig } from "../../shared/infrastructure/config/env.config";
         { provide: RECORD_ADMIN_AUDIT_LOG_USE_CASE, useClass: RecordAdminAuditLogUseCase },
         { provide: GET_ADMIN_AUDIT_LOGS_USE_CASE, useClass: GetAdminAuditLogsUseCase },
         { provide: GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, useClass: GetScenarioActivityHistoryUseCase },
+        // Scenario Administration Use Cases
+        { provide: ADMIN_CREATE_SCENARIO_USE_CASE, useClass: AdminCreateScenarioUseCase },
+        { provide: ADMIN_GET_SCENARIOS_USE_CASE, useClass: AdminGetScenariosUseCase },
+        { provide: ADMIN_GET_SCENARIO_BY_ID_USE_CASE, useClass: AdminGetScenarioByIdUseCase },
+        { provide: ADMIN_GET_SCENARIO_IN_DEPTH_USE_CASE, useClass: AdminGetScenarioInDepthUseCase },
+        { provide: ADMIN_UPDATE_SCENARIO_USE_CASE, useClass: AdminUpdateScenarioUseCase },
+        { provide: ADMIN_TOGGLE_SCENARIO_STATUS_USE_CASE, useClass: AdminToggleScenarioStatusUseCase },
+        { provide: ADMIN_EXPORT_SCENARIOS_USE_CASE, useClass: AdminExportScenariosUseCase },
+        // Scene Sessions & Analytics Use Cases
+        { provide: ADMIN_GET_SCENE_ANALYTICS_USE_CASE, useClass: AdminGetSceneAnalyticsUseCase },
+        { provide: ADMIN_GET_SCENE_SESSIONS_USE_CASE, useClass: AdminGetSceneSessionsUseCase },
+        { provide: ADMIN_GET_SCENE_SESSION_DETAILS_USE_CASE, useClass: AdminGetSceneSessionDetailsUseCase },
+        { provide: ADMIN_START_PREVIEW_SESSION_USE_CASE, useClass: AdminStartPreviewSessionUseCase },
+        { provide: ADMIN_SEND_PREVIEW_TURN_USE_CASE, useClass: AdminSendPreviewTurnUseCase },
+        { provide: ADMIN_UPDATE_PREVIEW_COACHING_USE_CASE, useClass: AdminUpdatePreviewCoachingUseCase },
         AdminAuditInterceptor,
         // Register Event Listener
         UserPhotoFlaggedListener,
