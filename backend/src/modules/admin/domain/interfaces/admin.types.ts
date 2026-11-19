@@ -1,6 +1,5 @@
-import { AdminPermission } from "../enums/admin-permission.enums";
 import { AdminStatus } from "../enums/admin.enums";
-import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminPermission, AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 
 export interface AdminStatusLog {

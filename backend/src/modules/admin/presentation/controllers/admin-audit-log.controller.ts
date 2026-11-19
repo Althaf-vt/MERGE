@@ -3,7 +3,7 @@ import { JwtAuthGuard } from '../../../../shared/infrastructure/security/guards/
 import { AdminSessionGuard } from '../../infrastructure/security/guards/admin-session.guard';
 import { AdminPermissionsGuard } from '../../../../shared/infrastructure/security/guards/admin-permissions.guard';
 import { RequirePermissions } from '../../../../shared/infrastructure/security/decorators/require-permissions.decorator';
-import { AdminPermission } from '../../domain/enums/admin-permission.enums';
+import { AdminPermission } from '../../../../shared/domain/enums/admin-rbac.enums';
 import { API_ENDPOINTS } from '../../../../shared/presentation/constants/api-endpoints.constant';
 import { ApiResponse } from '../../../../shared/presentation/interfaces/api-response.interface';
 import { RESPONSE_MESSAGES } from '../../../../shared/presentation/constants/response-messages.constant';

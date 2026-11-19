@@ -5,12 +5,11 @@ import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-se
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { APPROVE_KYC_TASK_USE_CASE, CLAIM_KYC_TASK_USE_CASE, GET_KYC_TASKS_USE_CASE, IApproveKycTaskUseCase, IClaimKycTaskUseCase, IGetKycTasksUseCase, IRejectKycTaskUseCase, IReleaseKycTaskClaimUseCase, IRequestKycResubmissionUseCase, ITakeoverKycTaskClaimUseCase, REJECT_KYC_TASK_USE_CASE, RELEASE_KYC_TASK_CLAIM_USE_CASE, REQUEST_RESUBMISSION_KYC_TASK_USE_CASE, TAKEOVER_KYC_TASK_CLAIM_USE_CASE } from "../../application/interfaces/kyc-escalation.use-case.interface";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
-import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { AdminPermission, AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { GetKycTasksQueryDto, KycEscalationTaskResponseDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../../application/dtos/kyc-escalation.dto";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AdminRolesGuard } from "../../../../shared/infrastructure/security/guards/admin-roles.guard";
 import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";

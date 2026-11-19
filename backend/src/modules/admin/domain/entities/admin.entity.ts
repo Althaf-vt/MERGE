@@ -2,8 +2,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
-import { AdminPermission } from "../enums/admin-permission.enums";
-import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminPermission, AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AdminStatus } from "../enums/admin.enums";
 import { AdminSuspensionDurationVO } from "../value-objects/admin-suspension-duration.vo";
 import { AdminAggregateProps, AdminSnapshot, AdminStatusLog, InternalAdminProps } from "../interfaces/admin.types";
@@ -48,7 +47,7 @@ export class AdminAggregate extends AggregateRoot {
             return false;
         }
 
-        // Super Admin bypass persmission checks
+        // Super Admin bypass permission checks
         if (this._props.role === AdminRole.SUPER_ADMIN) {
             return true;
         }

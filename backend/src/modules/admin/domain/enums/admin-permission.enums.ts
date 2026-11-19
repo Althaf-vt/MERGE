@@ -1,1 +1,0 @@
-export { AdminPermission } from "../../../../shared/domain/enums/admin-rbac.enums";

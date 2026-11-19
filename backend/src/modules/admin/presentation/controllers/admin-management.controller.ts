@@ -3,7 +3,7 @@ import { ACCEPT_ADMIN_INVITE_USE_CASE, IAcceptAdminInviteUseCase, IInviteAdminUs
 import { JwtAuthGuard } from "../../../../shared/infrastructure/security/guards/jwt-auth.guard";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
-import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { AdminPermission } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AcceptAdminInviteDto, InviteAdminDto, UpdateAdminDto } from "../../application/dtos/admin-management.dto";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GET_ADMINS_USE_CASE, IGetAdminsUseCase } from "../../application/interfaces/get-admins.use-case.interface";
