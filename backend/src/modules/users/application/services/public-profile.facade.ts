@@ -13,13 +13,13 @@ export class PublicProfileFacade implements IPublicProfileFacade {
         if (!userId) return false;
         const user = await this._userRepository.findById(userId);
         if (!user) return false;
-        return PublicProfileFacadeMapper.isInteractable(user);
+        return user.isInteractable();
     }
 
     async getPublicProfile(userId: string): Promise<PublicProfileDto | null> {
         if (!userId) return null;
         const user = await this._userRepository.findById(userId);
-        if (!user || !PublicProfileFacadeMapper.isInteractable(user)) return null;
+        if (!user || !user.isInteractable()) return null;
         return PublicProfileFacadeMapper.toDto(user);
     }
 
