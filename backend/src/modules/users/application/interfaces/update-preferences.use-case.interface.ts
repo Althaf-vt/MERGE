@@ -1,5 +1,5 @@
 import { UpdatePreferencesDto } from "../dtos/update-preferences.dto";
-import { UserPreferenceProps } from "../../domain/entities/user-preference.entity";
+import { UserPreferenceProps } from "../../domain/interfaces/user-preference.types";
 
 export const UPDATE_PREFERENCES_USE_CASE = Symbol('UPDATE_PREFERENCES_USE_CASE');
 

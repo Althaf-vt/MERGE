@@ -4,7 +4,8 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { IUpdatePreferencesUseCase } from "../interfaces/update-preferences.use-case.interface";
 import { UpdatePreferencesDto } from "../dtos/update-preferences.dto";
-import { UserPreference, UserPreferenceProps } from "../../domain/entities/user-preference.entity";
+import { UserPreference } from "../../domain/entities/user-preference.entity";
+import { UserPreferenceProps } from "../../domain/interfaces/user-preference.types";
 
 @Injectable()
 export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase {
