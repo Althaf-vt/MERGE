@@ -1,17 +1,14 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-
-export enum SuspensionUnit {
-    HOURS = "HOURS",
-    DAYS = "DAYS",
-}
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
+import { SuspensionUnit } from "../enums/user.enums";
 
 export class SuspensionDurationVO {
     private readonly _until: Date;
 
     constructor(value: number, unit: SuspensionUnit) {
         if (!value || value <= 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Suspension duration must be greater than zero");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.SUSPENSION_DURATION_POSITIVE);
         }
 
         const now = new Date();

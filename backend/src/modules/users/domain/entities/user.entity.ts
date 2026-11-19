@@ -7,63 +7,21 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SuspensionDurationVO } from "../value-objects/suspension-duration.vo";
 import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
-import { UserSupendedDomainEvent } from "../events/user-suspended.domain-event";
+import { UserSuspendedDomainEvent } from "../events/user-suspended.domain-event";
 import { UserBannedDomainEvent } from "../events/user-banned.domain-event";
-import { PhotoVerificationStatus } from "../enums/profile.enums";
+import { PhotoVerificationStatus, ProfileVisibility } from "../enums/profile.enums";
 import { UserMedical } from "./user-medical.entity";
 import { UserPrivacy } from "./user-privacy.entity";
 import { UserPhoto } from "./user-photo.entity";
 import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
-import { UserUnblockDomainEvent } from "../events/user-unblocked.domain-event";
+import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
 import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain-event";
+import { UserAggregateProps, UserSnapshot } from "../interfaces/user.types";
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
+import { USER_POLICY } from "../constants/user.constants";
+import { DateUtil } from "../../../../shared/domain/utils/date.util";
 
-export enum UserRole {
-    USER = 'USER',
-    ADMIN = 'ADMIN',
-    SUPER_ADMIN = 'SUPER_ADMIN',
-}
-
-// Defines the data structure and properties required to create and manage User entity.
-export interface UserAggregateProps {
-    id?: string;
-    email: EmailVO;
-    passwordHash?: string | null;
-    authProvider: AuthProvider;
-    isEmailVerified: boolean;
-    accountStatus: UserStatus;
-    kycCompleted: boolean;
-    onboardingStep: number;
-    onboardingCompleted: boolean;
-    profileCompleted: boolean;
-    castingDirectorCompleted: boolean;
-    personalityVector?: number[];
-
-    // Moderation state
-    statusReason?: string | null;
-    statusChangedAt?: Date | null;
-    suspendedUntil?: Date | null;
-
-    // Lumen
-    lumenEnabled: boolean;
-    dailyMatchHours: number[];
-    lumenRecommendationGeneratedToday: number;
-    lastLumenReset: Date;
-    lastLogin?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
-
-    // Sub-Entities (The seperate collections)
-    profile?: UserProfile;
-    preferences?: UserPreference;
-    kycVerification?: UserKyc;
-    medicalRecord?: UserMedical;
-    privacySettings?: UserPrivacy;
-    photos?: UserPhoto[];
-}
-
-// Represents the User domain entity, managing user data and 
-// controlling how its state can change through domain-specific behaviors.
 export class UserAggregate extends AggregateRoot {
     private _props: UserAggregateProps;
 
@@ -94,7 +52,6 @@ export class UserAggregate extends AggregateRoot {
         };
     }
 
-    // Getters: Provides read-only access to the User's private properties.
     get id(): string | undefined { return this._props.id; }
     get email(): EmailVO { return this._props.email; }
     get passwordHash(): string | null | undefined { return this._props.passwordHash; }
@@ -124,14 +81,13 @@ export class UserAggregate extends AggregateRoot {
     get preference(): UserPreference | undefined { return this._props.preferences; }
     get kycVerification(): UserKyc | undefined { return this._props.kycVerification; }
 
-    // 1. AUTHENTICATION & ACCOUNT STATUS BEHAVIORS
     recordLogin(): void {
         // Auto-lift expired suspension
         if (this._props.accountStatus === UserStatus.SUSPENDED) {
             if (this._props.suspendedUntil && new Date() > this._props.suspendedUntil) {
                 this.unsuspendAccount();
             } else {
-                throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Account is currently suspended");
+                throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.ACCOUNT_SUSPENDED);
             }
         }
 
@@ -141,7 +97,7 @@ export class UserAggregate extends AggregateRoot {
         }
 
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Inactive account cannot login');
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.INACTIVE_ACCOUNT_CANNOT_LOGIN);
         }
 
         this._props.lastLogin = new Date();
@@ -150,10 +106,10 @@ export class UserAggregate extends AggregateRoot {
 
     updatePassword(newPasswordHash: string): void {
         if (!newPasswordHash || newPasswordHash.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Password hash cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PASSWORD_HASH_EMPTY);
         }
         if (this._props.accountStatus !== UserStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Cannot update password for ${this._props.accountStatus.toLowerCase()} account.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_UPDATE_PASSWORD_FOR_STATUS(this._props.accountStatus));
         }
         this._props.passwordHash = newPasswordHash;
         this.markUpdatedAt();
@@ -166,7 +122,7 @@ export class UserAggregate extends AggregateRoot {
 
     completeCastingDirector(vector: number[]): void {
         if (!vector || vector.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PERSONALITY_VECTOR_EMPTY);
         }
         this._props.personalityVector = vector;
         this._props.castingDirectorCompleted = true;
@@ -175,13 +131,13 @@ export class UserAggregate extends AggregateRoot {
 
     suspendAccount(duration: SuspensionDurationVO, reason: string): void {
         if (this._props.accountStatus === UserStatus.BANNED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend an already banned account");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_SUSPEND_BANNED);
         }
         if (this._props.accountStatus === UserStatus.DELETED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot suspend a deleted account");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_SUSPEND_DELETED);
         }
         if (!reason || reason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Suspension reason is required");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.SUSPENSION_REASON_REQUIRED);
         }
         const now = new Date();
         this._props.accountStatus = UserStatus.SUSPENDED;
@@ -192,13 +148,13 @@ export class UserAggregate extends AggregateRoot {
 
         // Emit internal domain event
         if (this.id) {
-            this.addDomainEvent(new UserSupendedDomainEvent(this.id, reason, duration.until));
+            this.addDomainEvent(new UserSuspendedDomainEvent(this.id, reason, duration.until));
         }
     }
 
     unsuspendAccount(): void {
         if (this._props.accountStatus !== UserStatus.SUSPENDED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not suspended");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.ACCOUNT_NOT_SUSPENDED);
         }
         this._props.accountStatus = UserStatus.ACTIVE;
         this._props.suspendedUntil = null;
@@ -209,10 +165,10 @@ export class UserAggregate extends AggregateRoot {
 
     banAccount(reason: string): void {
         if (this._props.accountStatus === UserStatus.DELETED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot ban a deleted account");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_BAN_DELETED);
         }
         if (!reason || reason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Ban reason is required");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.BAN_REASON_REQUIRED);
         }
         this._props.accountStatus = UserStatus.BANNED;
         this._props.statusChangedAt = new Date();
@@ -229,7 +185,7 @@ export class UserAggregate extends AggregateRoot {
 
     unbanAccount(): void {
         if (this._props.accountStatus !== UserStatus.BANNED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Account is not banned");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.ACCOUNT_NOT_BANNED);
         }
         this._props.accountStatus = UserStatus.ACTIVE;
         this._props.statusReason = null;
@@ -237,22 +193,19 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    // Update KYC verification
     updateKycVerification(kycEntity: UserKyc): void {
         this._props.kycVerification = kycEntity;
     }
 
-    // Resets KYC verification state for retries after failure
     resetKycVerification(): void {
         if (this._props.kycVerification) {
             this._props.kycVerification.resetLiveness();
         }
         this._props.kycCompleted = false;
-        this._props.onboardingStep = 3;
+        this._props.onboardingStep = USER_POLICY.ONBOARDING_STEPS.EMAIL_VERIFY;
         this.markUpdatedAt();
     }
 
-    // 2. ONBOARDING & PIPELINE PROGRESSION
     advanceOnboardingStep(step: number): void {
         this._props.onboardingStep = step;
         this.markUpdatedAt();
@@ -268,24 +221,28 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    attatchPreferences(preferences: UserPreference): void {
+    attachPreferences(preferences: UserPreference): void {
         this._props.preferences = preferences;
         this.markUpdatedAt();
     }
 
+    attatchPreferences(preferences: UserPreference): void {
+        this.attachPreferences(preferences);
+    }
+
     completeKyc(): void {
         this._props.kycCompleted = true;
-        this.advanceOnboardingStep(8);
+        this.advanceOnboardingStep(USER_POLICY.ONBOARDING_STEPS.KYC_COMPLETE);
         this.markUpdatedAt();
     }
 
     finalizeOnboarding(): void {
-        if (!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, 'Email must be verified first');
-        if (!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification must be completed first');
-        if (!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User profile must be completed first');
+        if (!this._props.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, USER_ERROR_MESSAGES.EMAIL_MUST_BE_VERIFIED);
+        if (!this._props.kycCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_MUST_BE_COMPLETED);
+        if (!this._props.profileCompleted) throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PROFILE_MUST_BE_COMPLETED);
 
         this._props.onboardingCompleted = true;
-        this._props.onboardingStep = 14;
+        this._props.onboardingStep = USER_POLICY.ONBOARDING_STEPS.FINAL_STEP;
         this.markUpdatedAt();
     }
 
@@ -300,8 +257,8 @@ export class UserAggregate extends AggregateRoot {
     }
 
     addPhoto(photo: UserPhoto, kycSelfieUrl?: string): void {
-        if (this._props.photos && this._props.photos.length >= 6) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum of 6 photos allowed.');
+        if (this._props.photos && this._props.photos.length >= USER_POLICY.MAX_PHOTOS) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.MAX_PHOTOS_EXCEEDED(USER_POLICY.MAX_PHOTOS));
         }
         this._props.photos?.push(photo);
 
@@ -318,13 +275,17 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
-    appovePhoto(photoId: string): void{
+    approvePhoto(photoId: string): void {
         if(!this._props.photos) return;
         const photo = this._props.photos.find(p => p.id === photoId);
-        if(!photo) return // Fail silently if user already deleted the photo
+        if(!photo) return; // Fail silently if user already deleted the photo
 
         photo.updateVerificationStatus(PhotoVerificationStatus.APPROVED);
         this.markUpdatedAt();
+    }
+
+    appovePhoto(photoId: string): void {
+        this.approvePhoto(photoId);
     }
 
     rejectPhoto(photoId: string, reason: string): void{
@@ -339,9 +300,9 @@ export class UserAggregate extends AggregateRoot {
     setPrimaryPhoto(photoId: string): void {
         if (!this._props.photos) return;
         const photoExists = this._props.photos.find(p => p.id === photoId);
-        if (!photoExists) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Photo not found.');
+        if (!photoExists) throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PHOTO_NOT_FOUND);
         if (photoExists.status !== PhotoVerificationStatus.APPROVED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only approved photos can be set as primary.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.ONLY_APPROVED_PHOTOS_PRIMARY);
         }
         this._props.photos.forEach(p => {
             if (p.id === photoId) {
@@ -360,14 +321,14 @@ export class UserAggregate extends AggregateRoot {
     }
 
     validatePhotoLimit(): void {
-        if (this._props.photos && this._props.photos.length >= 6) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'You have reached the maximum limit of 6 photos.');
+        if (this._props.photos && this._props.photos.length >= USER_POLICY.MAX_PHOTOS) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PHOTO_LIMIT_REACHED(USER_POLICY.MAX_PHOTOS));
         }
     }
 
     deactivateAccount(): void {
         if (this._props.accountStatus === UserStatus.DELETED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot deactivate a deleted account.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_DEACTIVATE_DELETED);
         }
         this._props.accountStatus = UserStatus.DEACTIVATED;
         this.markUpdatedAt();
@@ -375,7 +336,7 @@ export class UserAggregate extends AggregateRoot {
 
     reactivateAccount(): void {
         if (this._props.accountStatus !== UserStatus.DEACTIVATED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only deactivated accounts can be reactivated.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.ONLY_DEACTIVATED_CAN_REACTIVATE);
         }
         this._props.accountStatus = UserStatus.ACTIVE;
         this.markUpdatedAt();
@@ -388,7 +349,7 @@ export class UserAggregate extends AggregateRoot {
 
     updateEmail(newEmail: EmailVO): void {
         if (this._props.authProvider === AuthProvider.GOOGLE) {
-            throw new DomainException(ErrorCode.FORBIDDEN, "Google-authenticated accounts cannot change their email address.");
+            throw new DomainException(ErrorCode.FORBIDDEN, USER_ERROR_MESSAGES.GOOGLE_AUTH_CANNOT_CHANGE_EMAIL);
         }
         this._props.email = newEmail;
         this._props.isEmailVerified = true;
@@ -397,10 +358,10 @@ export class UserAggregate extends AggregateRoot {
 
     blockUser(targetUserId: string, reason: BlockReason = BlockReason.PERSONAL_PREFERENCE): BlockedRelationship {
         if (!this.id) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot block users from an unsaved account.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_BLOCK_FROM_UNSAVED);
         }
         if (this.id === targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot block yourself.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_BLOCK_SELF);
         }
 
         // Emit domain event to sever downstream states asynchronously
@@ -415,13 +376,13 @@ export class UserAggregate extends AggregateRoot {
 
     unblockUser(targetUserId: string): void {
         if (!this.id) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Cannot perform unblock actions on an unsaved account.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_UNBLOCK_FROM_UNSAVED);
         }
         if (this.id === targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "You cannot unblock yourself.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_UNBLOCK_SELF);
         }
 
-        this.addDomainEvent(new UserUnblockDomainEvent(this.id, targetUserId));
+        this.addDomainEvent(new UserUnblockedDomainEvent(this.id, targetUserId));
     }
 
     // 3. LUMEN AGENT SCHEDULING & QUOTAS
@@ -432,27 +393,47 @@ export class UserAggregate extends AggregateRoot {
 
     incrementLumenRecommendations(maxDailyQuota: number): void {
         if (!this._props.lumenEnabled) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Lumen is not enabled for this user');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.LUMEN_NOT_ENABLED);
         }
         if (this._props.lumenRecommendationGeneratedToday >= maxDailyQuota) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Daily lumen quota reached');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.LUMEN_DAILY_QUOTA_REACHED);
         }
         this._props.lumenRecommendationGeneratedToday += 1;
         this.markUpdatedAt();
     }
 
-    resetLumendailyCounters(newHours: number[]): void {
+    resetLumenDailyCounters(newHours: number[]): void {
         this._props.lumenRecommendationGeneratedToday = 0;
         this._props.dailyMatchHours = newHours;
         this._props.lastLumenReset = new Date();
         this.markUpdatedAt();
     }
 
+    resetLumendailyCounters(newHours: number[]): void {
+        this.resetLumenDailyCounters(newHours);
+    }
+
+    isInteractable(): boolean {
+        const isActive = this._props.accountStatus === UserStatus.ACTIVE;
+        const isNotHidden = this._props.privacySettings?.profileVisibility !== ProfileVisibility.HIDDEN;
+        const isProfileVisible = this._props.profile?.isProfileVisible !== false;
+        return isActive && isNotHidden && isProfileVisible;
+    }
+
+    calculateAge(ignorePrivacy = false): number | null {
+        if (!ignorePrivacy && this._props.privacySettings?.showAge === false) {
+            return null;
+        }
+        const dob = this._props.kycVerification?.verifiedDOB;
+        if (!dob) return null;
+        return DateUtil.calculateAge(dob);
+    }
+
     markUpdatedAt(): void {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    toJSON(): UserSnapshot {
         return {
             ...this._props,
             email: this._props.email.getValue(), // EmailVO needs to be unwrapped.

@@ -4,6 +4,7 @@ import { IUnblockUserUseCase } from "../interfaces/block-management.use-case.int
 import { BLOCKED_RELATIONSHIP_REPOSITORY, IBlockedRelationshipRepository } from "../../domain/interfaces/blocked-relationship-repository.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class UnblockUserUseCase implements IUnblockUserUseCase {
@@ -14,12 +15,12 @@ export class UnblockUserUseCase implements IUnblockUserUseCase {
 
     async execute(blockerId: string, blockedId: string): Promise<void> {
         const user = await this._userRepository.findById(blockerId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // Guard: Verify the block actually exists before attempting to unblock
         const existingBlock = await this._blockRepo.findByPair(blockerId, blockedId);
         if (!existingBlock) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'No active block found for this profile.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PROFILE_NOT_BLOCKED);
         }
 
         user.unblockUser(blockedId);

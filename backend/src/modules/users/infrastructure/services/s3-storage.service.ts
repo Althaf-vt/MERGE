@@ -6,6 +6,7 @@ import { IStorageService } from "../../application/interfaces/storage-service.in
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 export const S3_CLIENT = 'S3_CLIENT';
 
 @Injectable()
@@ -21,7 +22,7 @@ export class S3StorageService implements IStorageService {
     const bucketName = EnvConfig.aws.bucketName;
 
     if (!region || !bucketName) {
-      throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'Missing required AWS S3 configuration in environment variables.');
+      throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, USER_ERROR_MESSAGES.S3_CONFIGURATION_MISSING);
     }
 
     this._region = region;

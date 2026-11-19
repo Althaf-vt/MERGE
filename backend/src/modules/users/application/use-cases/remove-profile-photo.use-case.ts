@@ -3,6 +3,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { IRemoveProfilePhotoUseCase } from "../interfaces/profile-management.use-case.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class RemoveProfilePhotoUseCase implements IRemoveProfilePhotoUseCase {
@@ -10,7 +11,7 @@ export class RemoveProfilePhotoUseCase implements IRemoveProfilePhotoUseCase {
 
     async execute(userId: string, photoId: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // Note: Actual S3 deletion can be handled asynchronously via Domain Events in the future
         // For now, we simply sever the relationship in the domain aggregate

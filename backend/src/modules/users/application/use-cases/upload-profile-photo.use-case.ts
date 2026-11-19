@@ -8,6 +8,7 @@ import { DomainException } from '../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
 import { UserPhoto } from '../../domain/entities/user-photo.entity';
 import { PhotoVerificationStatus } from '../../domain/enums/profile.enums';
+import { USER_ERROR_MESSAGES } from '../../domain/constants/user-error-messages.constant';
 
 @Injectable()
 export class UploadProfilePhotoUseCase implements IUploadProfilePhotoUseCase {
@@ -19,7 +20,7 @@ export class UploadProfilePhotoUseCase implements IUploadProfilePhotoUseCase {
 
     async execute(userId: string, fileBuffer: Buffer, mimeType: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // 1. prevalidation to check the photo limit
         user.validatePhotoLimit();
@@ -30,7 +31,7 @@ export class UploadProfilePhotoUseCase implements IUploadProfilePhotoUseCase {
         // 3. Delegate ALL quality and matching validation to Domain
         const kyc = user.kycVerification;
         if(!kyc){
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC records are missing.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_RECORDS_MISSING);
         }
 
         const {score, status} = kyc.evaluateFaceMatch(faceEmbedding, confidence);

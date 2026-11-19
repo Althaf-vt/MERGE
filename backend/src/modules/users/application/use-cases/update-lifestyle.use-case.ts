@@ -7,6 +7,8 @@ import { UpdateLifestyleDto } from "../dtos/update-lifestyle.dto";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { UserProfileResponseDto } from "../dtos/user-profile-response.dto";
 import { UserProfileDtoMapper } from "../mappers/user-profile-dto.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
@@ -18,7 +20,7 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
         const user = await this._userRepository.findById(userId);
 
         if(!user){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         const profile = user.profile || new UserProfile({});
@@ -37,7 +39,7 @@ export class UpdateLifeStyleUseCase implements IUpdateLifestyleUseCase {
         });
 
         user.attachProfile(profile);
-        user.advanceOnboardingStep(4);
+        user.advanceOnboardingStep(USER_POLICY.ONBOARDING_STEPS.LIFESTYLE_COMPLETED);
 
         await this._userRepository.update(user);
 

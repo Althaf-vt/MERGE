@@ -25,7 +25,7 @@ import { CompleteHandoffSessionUseCase } from "./application/use-cases/complete-
 import { CancelHandoffSessionUseCase } from "./application/use-cases/cancel-handoff-session.use-case";
 import { HANDOFF_SERVICE } from "./application/interfaces/handoff-service.interface";
 import { REDIS_CLIENT, RedisHandoffService } from "./infrastructure/services/redis-handoff.service";
-import { HttpModule } from "@nestjs/axios";
+import { HttpModule, HttpService } from "@nestjs/axios";
 import { SubmitLiveSelfieUseCase } from "./application/use-cases/submit-live-selfie.use-case";
 import { BIOMETRIC_SERVICE } from "./domain/interfaces/biometric-service.interface";
 import { HttpBiometricService } from "./infrastructure/services/http-biometric.service";
@@ -120,6 +120,26 @@ import { MediaFacade } from "./application/services/media.facade";
 import { EnvConfig } from "../../shared/infrastructure/config/env.config";
 import { PUBLIC_PROFILE_FACADE } from "./application/interfaces/public-profile-facade.interface";
 import { PublicProfileFacade } from "./application/services/public-profile.facade";
+import { HTTP_CLIENT } from "./infrastructure/tokens/http-client.token";
+import { USER_APP_CONFIG } from "./application/interfaces/user-app-config.interface";
+import { SUSPEND_USER_USE_CASE } from "./application/interfaces/suspend-user.use-case.interface";
+import { SuspendUserUseCase } from "./application/use-cases/suspend-user.use-case";
+import { UNSUSPEND_USER_USE_CASE } from "./application/interfaces/unsuspend-user.use-case.interface";
+import { UnsuspendUserUseCase } from "./application/use-cases/unsuspend-user.use-case";
+import { BAN_USER_USE_CASE } from "./application/interfaces/ban-user.use-case.interface";
+import { BanUserUseCase } from "./application/use-cases/ban-user.use-case";
+import { UNBAN_USER_USE_CASE } from "./application/interfaces/unban-user.use-case.interface";
+import { UnbanUserUseCase } from "./application/use-cases/unban-user.use-case";
+import { MARK_CASTING_COMPLETE_USE_CASE } from "./application/interfaces/mark-casting-complete.use-case.interface";
+import { MarkCastingCompleteUseCase } from "./application/use-cases/mark-casting-complete.use-case";
+import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
+import { GetAdminUsersUseCase } from "./application/use-cases/get-admin-users.use-case";
+import { GET_ADMIN_USER_BY_ID_USE_CASE } from "./application/interfaces/get-admin-user-by-id.use-case.interface";
+import { GetAdminUserByIdUseCase } from "./application/use-cases/get-admin-user-by-id.use-case";
+import { GET_CASTING_USER_CONTEXT_USE_CASE } from "./application/interfaces/get-casting-user-context.use-case.interface";
+import { GetCastingUserContextUseCase } from "./application/use-cases/get-casting-user-context.use-case";
+import { GET_PUBLIC_PROFILE_USE_CASE } from "./application/interfaces/get-public-profile.use-case.interface";
+import { GetPublicProfileUseCase } from "./application/use-cases/get-public-profile.use-case";
 
 @Module({
     imports: [
@@ -208,6 +228,25 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
         { provide: SET_PRIMARY_PHOTO_USE_CASE, useClass: SetPrimaryPhotoUseCase },
         { provide: REMOVE_PROFILE_PHOTO_USE_CASE, useClass: RemoveProfilePhotoUseCase },
         { provide: UPDATE_FULL_PREFERENCES_USE_CASE, useClass: UpdateFullPreferencesUseCase },
+        {
+            provide: HTTP_CLIENT,
+            useExisting: HttpService,
+        },
+        {
+            provide: USER_APP_CONFIG,
+            useValue: {
+                frontendUrl: EnvConfig.app.frontendUrl,
+                sessionTtlSeconds: EnvConfig.jwt.refreshExpirationSeconds,
+            },
+        },
+        { provide: SUSPEND_USER_USE_CASE, useClass: SuspendUserUseCase },
+        { provide: UNSUSPEND_USER_USE_CASE, useClass: UnsuspendUserUseCase },
+        { provide: BAN_USER_USE_CASE, useClass: BanUserUseCase },
+        { provide: UNBAN_USER_USE_CASE, useClass: UnbanUserUseCase },
+        { provide: MARK_CASTING_COMPLETE_USE_CASE, useClass: MarkCastingCompleteUseCase },
+        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUseCase },
+        { provide: GET_ADMIN_USER_BY_ID_USE_CASE, useClass: GetAdminUserByIdUseCase },
+        { provide: GET_CASTING_USER_CONTEXT_USE_CASE, useClass: GetCastingUserContextUseCase },
         { provide: USER_MANAGEMENT_FACADE, useClass: UserManagementFacade },
         { provide: CASTING_USER_FACADE, useClass: CastingUserFacade },
         { provide: MEDIA_FACADE, useClass: MediaFacade },
@@ -225,6 +264,7 @@ import { PublicProfileFacade } from "./application/services/public-profile.facad
         { provide: BLOCK_USER_USE_CASE, useClass: BlockUserUseCase },
         { provide: UNBLOCK_USER_USE_CASE, useClass: UnblockUserUseCase },
         { provide: GET_BLOCKED_USERS_USE_CASE, useClass: GetBlockedUsersUseCase },
+        { provide: GET_PUBLIC_PROFILE_USE_CASE, useClass: GetPublicProfileUseCase },
         { provide: PUBLIC_PROFILE_FACADE, useClass: PublicProfileFacade },
         AdminPhotoReviewListener,
         AdminKycReviewListener,

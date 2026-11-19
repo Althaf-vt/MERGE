@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import { ISubmitFinalVerificationUseCase, SubmitFinalVerificationResult } from "../interfaces/submit-final-verification.use-case.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { VerificationStatus } from "../../domain/enums/user.enums";
@@ -15,7 +16,7 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
         const user = await this._userRepository.findById(userId);
 
         if (!user || !user.kycVerification) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User or Kyc record not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_OR_KYC_NOT_FOUND);
         }
 
         const kyc = user.kycVerification;

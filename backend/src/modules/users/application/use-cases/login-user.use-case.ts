@@ -11,8 +11,9 @@ import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-servic
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase, LoginUserResponse } from "../interfaces/login-user.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { IUserAppConfig, USER_APP_CONFIG } from "../interfaces/user-app-config.interface";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -21,22 +22,23 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
+        @Inject(USER_APP_CONFIG) private readonly _config: IUserAppConfig,
     ) { }
 
     async execute(dto: LoginUserDto, deviceInfo: string, ipAddress: string): Promise<LoginUserResponse> {
         const user = await this._userRepository.findByEmail(dto.email);
 
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User with this email is not exists. Please register first");
-        if (!user.passwordHash) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "This account uses social login. Please sign in with Google.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_EXISTS_REGISTER);
+        if (!user.passwordHash) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.SOCIAL_LOGIN_GOOGLE);
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
-        if (!isPasswordValid) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid Email or Password");
-        if (!user.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, "Please verify your email before logging in");
+        if (!isPasswordValid) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.INVALID_CREDENTIALS);
+        if (!user.isEmailVerified) throw new DomainException(ErrorCode.EMAIL_NOT_VERIFIED, USER_ERROR_MESSAGES.EMAIL_NOT_VERIFIED_LOGIN);
 
         user.recordLogin();
         await this._userRepository.update(user);
 
-        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
+        const ttlSeconds = this._config.sessionTtlSeconds;
         const sessionId = await this._sessionService.createSession(user.id!, deviceInfo, ipAddress, ttlSeconds);
         
         const payload = {

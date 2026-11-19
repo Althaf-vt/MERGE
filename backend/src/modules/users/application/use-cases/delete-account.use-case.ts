@@ -3,6 +3,7 @@ import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-r
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import { IDeleteAccountUseCase } from "../interfaces/security-management.use-case.interface";
 
 @Injectable()
@@ -14,7 +15,7 @@ export class DeleteAccountUseCase implements IDeleteAccountUseCase {
 
     async execute(userId: string): Promise<void> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         user.deleteAccount();
         await this._userRepository.update(user);

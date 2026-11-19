@@ -4,6 +4,7 @@ import { IUserRepository, USER_REPOSITORY } from '../../domain/interfaces/user-r
 import { IStorageService, STORAGE_SERVICE } from '../interfaces/storage-service.interface';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { USER_ERROR_MESSAGES } from '../../domain/constants/user-error-messages.constant';
 import { UserResponseMapper } from '../mappers/user-response.mapper';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class GetProfileUseCase implements IGetProfileUseCase {
     async execute(userId: string): Promise<GetProfileDataResult> {
         const user = await this._userRepository.findById(userId);
         if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         return UserResponseMapper.toProfileDataResult(user, this._storageService);

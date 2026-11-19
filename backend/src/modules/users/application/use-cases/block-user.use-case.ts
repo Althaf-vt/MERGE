@@ -5,6 +5,7 @@ import { BLOCKED_RELATIONSHIP_REPOSITORY, IBlockedRelationshipRepository } from 
 import { BlockUserDto } from "../dtos/block-management.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class BlockUserUseCase implements IBlockUserUseCase {
@@ -15,14 +16,14 @@ export class BlockUserUseCase implements IBlockUserUseCase {
 
     async execute(blockerId: string, dto: BlockUserDto): Promise<void> {
         const user = await this._userRepository.findById(blockerId);
-        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         const targetUser = await this._userRepository.findById(dto.blockedId);
-        if (!targetUser) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Target profile does not exist.');
+        if (!targetUser) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.TARGET_PROFILE_NOT_FOUND);
 
         const existingBlock = await this._blockRepo.findByPair(blockerId, dto.blockedId);
         if (existingBlock) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'This profile is already blocked.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.PROFILE_ALREADY_BLOCKED);
         }
 
         // execute domain behavior 

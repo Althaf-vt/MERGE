@@ -6,8 +6,8 @@ import { IValidateHandoffUseCase } from "../interfaces/validate-handoff.interfac
 import { HANDOFF_NOTIFICATION_SERVICE, IHandoffNotificationService } from "../interfaces/handoff-notification.service.interface";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { ITokenPayload, ITokenservice, TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-service.interface";
-import { UserRole } from "../../domain/entities/user.entity";
-import { HandoffStatus } from "../../domain/enums/user.enums";
+import { HandoffStatus, UserRole } from "../../domain/enums/user.enums";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
@@ -22,13 +22,13 @@ export class ValidateHandoffUseCase implements IValidateHandoffUseCase {
         const userId = await this._handoffService.validateSession(sessionId);
 
         if (!userId) {
-            throw new DomainException(ErrorCode.HANDOFF_SESSION_EXPIRED, 'QR Code session has expired or is invalid.');
+            throw new DomainException(ErrorCode.HANDOFF_SESSION_EXPIRED, USER_ERROR_MESSAGES.HANDOFF_SESSION_EXPIRED);
         }
 
         // Fetch user to build token payload
         const user = await this._userRepository.findById(userId);
         if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User associated with this session no longer exists.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.SESSION_USER_NOT_FOUND);
         }
 
         const tokenPayload: ITokenPayload = {

@@ -6,6 +6,8 @@ import { BIOMETRIC_SERVICE, type IBiometricService } from "../../domain/interfac
 import { SelfieVerificationStatus } from "../../domain/enums/user.enums";
 import { ISubmitLiveSelfieUseCase, SubmitLiveSelfieResult } from "../interfaces/submit-live-selfie.use-case.interface";
 import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
@@ -17,11 +19,11 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
 
     async execute(userId: string, fileBuffer: Buffer): Promise<SubmitLiveSelfieResult> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         // Ensure phase 3-7 (Document PKI) is actually finished first
         if (user.kycVerification?.verificationStatus !== 'APPROVED') {
-            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, 'Document verification must be completed first.');
+            throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, USER_ERROR_MESSAGES.DOCUMENT_VERIFICATION_FIRST);
         }
 
         // 1. Offload the heavy vector math to the Python worker
@@ -35,7 +37,7 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
             liveSelfieS3,
             selfieFaceEmbedding: faceEmbedding,
             selfieConfidence: confidence,
-            rejectionReason: confidence < 85 ? "Face not clearly visible or poor lighting" : undefined
+            rejectionReason: confidence < USER_POLICY.BIOMETRIC_CONFIDENCE_THRESHOLD ? USER_ERROR_MESSAGES.SELFIE_DEFAULT_REJECTION_REASON : undefined
         });
 
         // 4. Save the entity state
@@ -43,7 +45,7 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
 
         // 5. If the entity rejected the selfie, throw an error to trigger the UI retry state
         if (user.kycVerification.selfieVerificationStatus === SelfieVerificationStatus.REJECTED) {
-            throw new DomainException(ErrorCode.FACE_MISMATCH, 'Selfie rejected: Face not clearly visible or poor lighting. Please try again.');
+            throw new DomainException(ErrorCode.FACE_MISMATCH, USER_ERROR_MESSAGES.SELFIE_REJECTED);
         }
 
         return { 

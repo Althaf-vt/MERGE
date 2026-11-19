@@ -1,3 +1,9 @@
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+}
+
 export enum AuthProvider {
   EMAIL = 'EMAIL',
   GOOGLE = 'GOOGLE',
@@ -159,4 +165,9 @@ export enum HandoffStatus {
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
   EXPIRED = 'EXPIRED',
+}
+
+export enum SuspensionUnit {
+  HOURS = 'HOURS',
+  DAYS = 'DAYS',
 }

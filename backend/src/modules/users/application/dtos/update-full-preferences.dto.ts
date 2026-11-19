@@ -28,6 +28,10 @@ export class UpdateFullPreferencesDto {
 
     @IsOptional()
     @IsEnum(HealthConditionPreference)
+    diabetesBpPreference?: HealthConditionPreference;
+
+    @IsOptional()
+    @IsEnum(HealthConditionPreference)
     diabeteBpPreference?: HealthConditionPreference;
 
     @IsOptional()
@@ -41,6 +45,10 @@ export class UpdateFullPreferencesDto {
     @IsOptional()
     @IsEnum(HealthConditionPreference)
     infectiousPreference?: HealthConditionPreference;
+
+    @IsOptional()
+    @IsEnum(HealthConditionPreference)
+    disabilityPreference?: HealthConditionPreference;
 
     @IsOptional()
     @IsEnum(HealthConditionPreference)

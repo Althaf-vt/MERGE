@@ -92,17 +92,17 @@ export class UserPersistenceMapper {
                 userId: raw._id.toString(),
                 preferredGender: rawPref.preferredGender,
                 preferredAgeMin: rawPref.preferredAgeMin,
-                prefferedAgeMax: rawPref.prefferedAgeMax,
-                relationShipGoals: rawPref.relationShipGoals,
+                preferredAgeMax: rawPref.preferredAgeMax ?? (rawPref as any).prefferedAgeMax,
+                relationshipGoals: rawPref.relationshipGoals ?? (rawPref as any).relationShipGoals,
                 minimumOutnessLevel: rawPref.minimumOutnessLevel,
                 openToAdoption: rawPref.openToAdoption,
                 immigrationReady: rawPref.immigrationReady,
                 partnerExpectations: rawPref.partnerExpectations,
-                diabeteBpPreference: rawPref.diabeteBpPreference,
+                diabetesBpPreference: rawPref.diabetesBpPreference ?? (rawPref as any).diabeteBpPreference,
                 fertilityPreference: rawPref.fertilityPreference,
                 geneticPreference: rawPref.geneticPreference,
                 infectiousPreference: rawPref.infectiousPreference,
-                disablilityPreferece: rawPref.disablilityPreferece,
+                disabilityPreference: rawPref.disabilityPreference ?? (rawPref as any).disablilityPreferece,
             });
         }
 
@@ -227,17 +227,17 @@ export class UserPersistenceMapper {
             preference: data.preference ? {
                 preferredGender: data.preference.preferredGender,
                 preferredAgeMin: data.preference.preferredAgeMin,
-                prefferedAgeMax: data.preference.prefferedAgeMax,
-                relationShipGoals: data.preference.relationShipGoals,
+                preferredAgeMax: data.preference.preferredAgeMax,
+                relationshipGoals: data.preference.relationshipGoals,
                 minimumOutnessLevel: data.preference.minimumOutnessLevel,
                 openToAdoption: data.preference.openToAdoption,
                 immigrationReady: data.preference.immigrationReady,
                 partnerExpectations: data.preference.partnerExpectations,
-                diabeteBpPreference: data.preference.diabeteBpPreference,
+                diabetesBpPreference: data.preference.diabetesBpPreference,
                 fertilityPreference: data.preference.fertilityPreference,
                 geneticPreference: data.preference.geneticPreference,
                 infectiousPreference: data.preference.infectiousPreference,
-                disablilityPreferece: data.preference.disablilityPreferece,
+                disabilityPreference: data.preference.disabilityPreference,
             } : null,
 
             kycVerification: data.kycVerification ? {

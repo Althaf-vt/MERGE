@@ -6,6 +6,8 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AI_MESSAGE_ROLE, OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 import { BioPrompts } from "../../domain/prompts/bio.prompts";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { USER_POLICY } from "../../domain/constants/user.constants";
 
 @Injectable()
 export class OpenRouterAiService implements IAiService {
@@ -18,7 +20,7 @@ export class OpenRouterAiService implements IAiService {
         const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
             this._logger.error('CRITICAL: OPENROUTER_API_KEY is missing from environment variables.');
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'OPENROUTER_API_KEY is required to boot the AI service.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, USER_ERROR_MESSAGES.OPENROUTER_API_KEY_REQUIRED);
         }
 
         this._chatModel = EnvConfig.ai.bioModel;
@@ -64,7 +66,7 @@ export class OpenRouterAiService implements IAiService {
 
             throw new DomainException(
                 ErrorCode.INTERNAL_SERVER_ERROR,
-                'Failed to generate bios from AI service. Please try again later.'
+                USER_ERROR_MESSAGES.FAILED_TO_GENERATE_BIOS
             );
         }
     }
@@ -102,13 +104,13 @@ export class OpenRouterAiService implements IAiService {
             .map((line) => line.replace(/^[-*0-9.)\s]+/, '').trim())
             .filter((line) => line.length > 20 && !line.toLowerCase().startsWith('user safety:'));
 
-        if (lines.length >= 3) {
-            return lines.slice(0, 3);
+        if (lines.length >= USER_POLICY.MAX_BIO_ATTEMPTS) {
+            return lines.slice(0, USER_POLICY.MAX_BIO_ATTEMPTS);
         }
 
         throw new DomainException(
             ErrorCode.INTERNAL_SERVER_ERROR,
-            'LLM response did not contain a valid JSON array or extractable bios.'
+            USER_ERROR_MESSAGES.INVALID_LLM_RESPONSE_ARRAY
         );
     }
 }

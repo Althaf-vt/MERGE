@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { AI_SERVICE, IAiService } from "../../domain/interfaces/ai-service.interface";
 import { GeneratebioResult, IGenerateBioUseCase } from "../interfaces/generate-bio.use-case.interface";
@@ -17,20 +18,17 @@ export class GenerateBioUseCase implements IGenerateBioUseCase {
         const user = await this._userRepository.findById(userId);
 
         if (!user || !user.profile) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User or profile not found.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_OR_PROFILE_NOT_FOUND);
         }
 
         // 1. Enforce Rate Limiting to prevent API abuse
         if (!user.profile.canGenerateBio()) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Maximum bio generation attemps reached.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.MAX_BIO_ATTEMPTS_REACHED);
         }
 
-        // 2. Calculate age safely
-        let age: string | undefined;
-        if (user.kycVerification?.verifiedDOB) {
-            const diff = Date.now() - new Date(user.kycVerification.verifiedDOB).getTime();
-            age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25)).toString();
-        }
+        // 2. Calculate age safely using domain method
+        const calculatedAge = user.calculateAge();
+        const age = calculatedAge !== null ? calculatedAge.toString() : undefined;
 
         // 3. Generate Bios
         const generateBios = await this._aiService.generateDatingBios({

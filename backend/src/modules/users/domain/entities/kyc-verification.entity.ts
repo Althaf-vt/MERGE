@@ -3,86 +3,17 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationStatus } from "../enums/profile.enums";
 import { KYC_POLICY } from "../constants/kyc-policy.constant";
-
-export interface LivenessEvaluationRecord {
-    prompt: string;
-    score: number;
-    status: string;
-    videoS3?: string;
-}
-
-export interface UserKycProps {
-    id?: string;
-    userId?: string;
-    verificationStatus?: VerificationStatus;
-    reviewDecision?: ReviewDecision;
-    verificationAttempt?: number;
-    documentType?: DocumentType;
-    issuingCountry?: string;
-    verificationDevice?: VerificationDevice;
-    qrSessionId?: string;
-    legalName?: string;
-    verifiedDOB?: Date;
-    hashedDocumentNumber?: string;
-    liveSelfieS3?: string;
-    selfieFaceEmbedding?: number[];
-    selfieConfidence?: number;
-    selfieVerificationStatus?: SelfieVerificationStatus;
-    livenessResults?: Array<{
-        prompt: string;
-        score: number;
-        status: string;
-        videoS3?: string;
-    }>;
-    verificationSubmitted?: boolean;
-    manualReviewRequired?: boolean;
-    adminReviewedBy?: string;
-    rejectionReason?: string;
-    resubmissionReasons?: string[];
-    resubmissionMessage?: string;
-    resubmissionRequestedAt?: Date;
-    submittedAt?: Date;
-    approvedAt?: Date;
-    rejectedAt?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-export interface SubmitPkiDocumentsPayload {
-    documentType: DocumentType;
-    issuingCountry: string;
-    legalName: string;
-    verifiedDOB: Date;
-    hashedDocumentNumber: string;
-}
-
-export interface RecordSelfiePayload {
-    liveSelfieS3: string;
-    selfieFaceEmbedding: number[];
-    selfieConfidence: number;
-    rejectionReason?: string;
-}
-
-export interface RecordLivenessPayload {
-    prompt: string;
-    score: number;
-    videoS3?: string;
-}
-
-export interface ApproveManualReviewPayload {
-    adminId: string;
-}
-
-export interface RejectManualReviewPayload {
-    adminId: string;
-    rejectionReason: string;
-}
-
-export interface RequestResubmissionPayload {
-    adminId: string;
-    reasons: string[];
-    message?: string;
-}
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
+import {
+    ApproveManualReviewPayload,
+    RecordLivenessPayload,
+    RecordSelfiePayload,
+    RejectManualReviewPayload,
+    RequestResubmissionPayload,
+    SubmitPkiDocumentsPayload,
+    UserKycProps,
+    UserKycSnapshot,
+} from "../interfaces/kyc-verification.types";
 
 export class UserKyc {
     private _props: UserKycProps;
@@ -163,7 +94,7 @@ export class UserKyc {
             this._props.selfieVerificationStatus = SelfieVerificationStatus.APPROVED;
         } else {
             this._props.selfieVerificationStatus = SelfieVerificationStatus.REJECTED;
-            this._props.rejectionReason = payload.rejectionReason || "Face not clearly visible or poor lighting";
+            this._props.rejectionReason = payload.rejectionReason || USER_ERROR_MESSAGES.SELFIE_DEFAULT_REJECTION_REASON;
         }
     }
 
@@ -211,13 +142,13 @@ export class UserKyc {
 
         // Ensure all required steps were actually performed
         if (passedCount < KYC_POLICY.REQUIRED_PROMPTS_COUNT) {
-            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Cannot submit verification: Incomplete liveness prompts. Expected ${KYC_POLICY.REQUIRED_PROMPTS_COUNT}, got ${passedCount}.`);
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, USER_ERROR_MESSAGES.INCOMPLETE_LIVENESS_PROMPTS(KYC_POLICY.REQUIRED_PROMPTS_COUNT, passedCount));
         }
 
         if (hasFailedPrompts) {
             this._props.verificationStatus = VerificationStatus.REJECTED;
             this._props.reviewDecision = ReviewDecision.AUTO_REJECTED;
-            this._props.rejectionReason = "One or more liveness prompts failed verification.";
+            this._props.rejectionReason = USER_ERROR_MESSAGES.LIVENESS_PROMPTS_FAILED;
         } else {
             // Calculate aggregate scores to determine if we can bypass manual review
             const averageLivenessScore = latestResults.reduce((acc, curr) => acc + curr.score, 0) / passedCount;
@@ -245,11 +176,11 @@ export class UserKyc {
         const baseline = this._props.selfieFaceEmbedding;
 
         if (!baseline || baseline.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC biometric baseline missing. Cannot verify photo.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_BIOMETRIC_BASELINE_MISSING);
         }
 
         if (baseline.length !== newEmbedding.length) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Embedding dimension mismatch.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.EMBEDDING_DIMENSION_MISMATCH);
         }
 
         if (!newEmbedding || newEmbedding.length === 0 || confidence < KYC_POLICY.MIN_FACE_MATCH_CONFIDENCE || baseline.length !== newEmbedding.length) {
@@ -277,7 +208,7 @@ export class UserKyc {
 
     approveManualReview(payload: ApproveManualReviewPayload): void {
         if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_NOT_IN_REVIEWABLE_STATE);
         }
 
         this._props.verificationStatus = VerificationStatus.APPROVED;
@@ -291,11 +222,11 @@ export class UserKyc {
 
     rejectManualReview(payload: RejectManualReviewPayload): void {
         if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_NOT_IN_REVIEWABLE_STATE);
         }
 
         if (!payload.rejectionReason || payload.rejectionReason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Rejection reason is required when rejecting KYC');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.REJECTION_REASON_REQUIRED);
         }
 
         this._props.verificationStatus = VerificationStatus.REJECTED;
@@ -309,11 +240,11 @@ export class UserKyc {
 
     requestResubmission(payload: RequestResubmissionPayload): void {
         if (this._props.verificationStatus !== VerificationStatus.UNDER_REVIEW) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'KYC verification is not in a reviewable state');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.KYC_NOT_IN_REVIEWABLE_STATE);
         }
 
         if (!payload.reasons || payload.reasons.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'At least one resubmission reason is required when requesting KYC resubmission');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.RESUBMISSION_REASON_REQUIRED);
         }
 
         this._props.verificationStatus = VerificationStatus.RESUBMISSION_REQUESTED;
@@ -326,7 +257,7 @@ export class UserKyc {
         this._props.updatedAt = new Date();
     }
 
-    toJSON(): Record<string, unknown> {
+    toJSON(): UserKycSnapshot {
         return { ...this._props };
     }
 }

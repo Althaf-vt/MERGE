@@ -4,27 +4,26 @@ import {
     ImmigrationReadiness, IntersexOption, MaritalStatus, 
     RelationshipGoal, RelationshipStatus, SmokingHabit 
 } from '../../domain/enums/user.enums';
-
-const AlphaNumericRegex = /(?=.*[a-zA-Z0-9])/;
+import { USER_VALIDATION_PATTERNS } from '../../domain/constants/user.constants';
 
 export class UpdateFullProfileDto {
     @IsOptional() 
     @IsString() 
     @Length(2, 50, { message: 'Display name must be between 2 and 50 characters.' })
-    @Matches(/^[A-Za-z]+(?: [A-Za-z]+)*$/, { message: 'Display name can only contain letters and single spaces.' })
+    @Matches(USER_VALIDATION_PATTERNS.DISPLAY_NAME, { message: 'Display name can only contain letters and single spaces.' })
     displayName?: string;
 
     // FIX: Bypasses strict validation if the user explicitly clears the field (empty string)
     @ValidateIf((o) => o.customLabel !== undefined && o.customLabel !== null && o.customLabel !== '')
     @IsString() 
     @Length(1, 40, { message: 'Custom label cannot exceed 40 characters.' })
-    @Matches(AlphaNumericRegex, { message: 'Custom label must contain alphanumeric characters.' })
+    @Matches(USER_VALIDATION_PATTERNS.ALPHANUMERIC, { message: 'Custom label must contain alphanumeric characters.' })
     customLabel?: string;
 
     @ValidateIf((o) => o.bio !== undefined && o.bio !== null && o.bio !== '')
     @IsString() 
     @Length(1, 1000, { message: 'Bio cannot exceed 1000 characters.' })
-    @Matches(AlphaNumericRegex, { message: 'Bio must contain alphanumeric characters.' })
+    @Matches(USER_VALIDATION_PATTERNS.ALPHANUMERIC, { message: 'Bio must contain alphanumeric characters.' })
     bio?: string;
 
     @ValidateIf((o) => o.pronouns !== undefined && o.pronouns !== null && o.pronouns !== '')

@@ -2,22 +2,19 @@ import { Injectable } from "@nestjs/common";
 import { IOtpService } from "../../domain/interfaces/otp-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import Redis from "ioredis";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
-// Injecting OTP storage and verification using Redis.
 @Injectable()
 export class RedisOtpService implements IOtpService{
 
-    // Redis client used to store and retrieve OTPs 
     private readonly _redis: Redis;
 
-    // Create a connection to the Redis server
     constructor(){
         this._redis = new Redis(EnvConfig.redis.uri);
     }
 
-    // Generate a consistent Redis key for each user's registration OTP
     private _getKey(email: string): string{
         return `otp:registraction:${email.toLowerCase().trim()}`;
     }
@@ -34,13 +31,11 @@ export class RedisOtpService implements IOtpService{
         return `otp:security_auth:${email.toLowerCase().trim()}`;
     }
 
-    // Stores an OTP in Redis with a time-to-live to expire it automatically
     async storeRegistrationDraft(email: string, otp: string, passwordHash: string, ttlSeconds: number): Promise<void> {
         const payload = JSON.stringify({otp,passwordHash});
         await this._redis.set(this._getKey(email), payload, 'EX', ttlSeconds);
     }
 
-    // Checks whether the provided OTP matched the stored OTP
     async verifyAndRetrieveDraft(email: string, otp: string): Promise<{passwordHash: string} | null> {
         const key = this._getKey(email);
         const storedData = await this._redis.get(key);
@@ -59,7 +54,6 @@ export class RedisOtpService implements IOtpService{
         return {passwordHash: parsedData.passwordHash}
     }
 
-    // Removed the user's OTP form Redis
     async deleteDraft(email: string): Promise<void> {
         await this._redis.del(this._getKey(email))
     }
@@ -69,7 +63,7 @@ export class RedisOtpService implements IOtpService{
         const storedData = await this._redis.get(key);
 
         if(!storedData){
-            throw new DomainException(ErrorCode.OTP_EXPIRED, 'Registration session expired. Please register again.');
+            throw new DomainException(ErrorCode.OTP_EXPIRED, USER_ERROR_MESSAGES.REGISTRATION_SESSION_EXPIRED);
         }
 
         const parsedData = JSON.parse(storedData);

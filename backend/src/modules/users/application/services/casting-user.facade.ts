@@ -1,37 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IcastingUserFacade } from "../interfaces/casting-user-facade.interface";
-import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { CastingUserContextDto } from "../dtos/casting-user-context.dto";
+import { IMarkCastingCompleteUseCase, MARK_CASTING_COMPLETE_USE_CASE } from "../interfaces/mark-casting-complete.use-case.interface";
+import { GET_CASTING_USER_CONTEXT_USE_CASE, IGetCastingUserContextUseCase } from "../interfaces/get-casting-user-context.use-case.interface";
 
 @Injectable()
-export class CastingUserFacade implements IcastingUserFacade{
+export class CastingUserFacade implements IcastingUserFacade {
     constructor(
-        @Inject(USER_REPOSITORY) private readonly _userRepository: IUserRepository
-    ){}
+        @Inject(GET_CASTING_USER_CONTEXT_USE_CASE) private readonly _getCastingUserContextUseCase: IGetCastingUserContextUseCase,
+        @Inject(MARK_CASTING_COMPLETE_USE_CASE) private readonly _markCastingCompleteUseCase: IMarkCastingCompleteUseCase,
+    ) {}
 
     async getUserContextForCasting(userId: string): Promise<CastingUserContextDto | null> {
-        const user = await this._userRepository.findById(userId);
-        if(!user || !user.profile || !user.preference) return null;
-
-        return {
-            id: user.id as string,
-            displayName: user.profile.displayName || 'User',
-            bio: user.profile.bio || '',
-            relationshipGoal: (user.preference.relationshipGoals as string) || 'Not specified',
-            selectedTraits: user.profile.selectedTraits || [],
-            interests: user.profile.interests || [],
-            partnerExpectations: user.preference.partnerExpectations,
-        }
+        return this._getCastingUserContextUseCase.execute(userId);
     }
 
     async markCastingComplete(userId: string, personalityVector: number[]): Promise<void> {
-        const user = await this._userRepository.findById(userId);
-        if(!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
-
-        // update the aggregate
-        user.completeCastingDirector(personalityVector);
-        await this._userRepository.update(user);
+        return this._markCastingCompleteUseCase.execute(userId, personalityVector);
     }
 }

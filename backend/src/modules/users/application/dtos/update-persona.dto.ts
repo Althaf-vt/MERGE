@@ -20,18 +20,19 @@ import {
   RelationshipGoal, 
   RelationshipStatus 
 } from '../../domain/enums/user.enums';
+import { USER_VALIDATION_PATTERNS } from '../../domain/constants/user.constants';
 
 export class UpdatePersonaDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[A-Za-z]+(?: [A-Za-z]+)*$/, {
+  @Matches(USER_VALIDATION_PATTERNS.DISPLAY_NAME, {
     message: 'Display name can only contain letters and single spaces between words.',
   })
   displayName!: string;
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\+91[6-9]\d{9}$/, {
+  @Matches(USER_VALIDATION_PATTERNS.INDIAN_PHONE, {
     message: 'Phone number must be a valid Indian mobile number prefixed with +91.',
   })
   phoneNumber!: string;
@@ -39,7 +40,7 @@ export class UpdatePersonaDto {
   @IsString()
   @IsOptional()
   @Length(2, 30, { message: 'Pronouns must be between 2 and 30 characters.' })
-  @Matches(/^[A-Za-z0-9/,\s-]+$/, {
+  @Matches(USER_VALIDATION_PATTERNS.PRONOUNS, {
     message: 'Pronouns contain invalid characters.',
   })
   pronouns?: string;

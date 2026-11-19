@@ -6,6 +6,7 @@ import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/do
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IUpdateSecurityPasswordUseCase } from "../interfaces/security-management.use-case.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class UpdateSecurityPasswordUseCase implements IUpdateSecurityPasswordUseCase {
@@ -18,26 +19,26 @@ export class UpdateSecurityPasswordUseCase implements IUpdateSecurityPasswordUse
     async execute(userId: string, dto: UpdateSecurityPasswordDto): Promise<void> {
         const user = await this._userRepository.findById(userId);
         if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
         }
 
         if (!user.passwordHash) {
             throw new DomainException(
                 ErrorCode.INVALID_CREDENTIALS,
-                'Accounts registered through social login do not have a password.'
+                USER_ERROR_MESSAGES.SOCIAL_LOGIN_NO_PASSWORD
             );
         }
 
         const isCurrentValid = await this._passwordHasher.compare(dto.currentPassword, user.passwordHash);
         if (!isCurrentValid) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, 'Current password is incorrect.');
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.CURRENT_PASSWORD_INCORRECT);
         }
 
         const isSamePassword = await this._passwordHasher.compare(dto.newPassword, user.passwordHash);
         if (isSamePassword) {
             throw new DomainException(
                 ErrorCode.VALIDATION_FAILED,
-                'New password cannot be the same as your current password.'
+                USER_ERROR_MESSAGES.NEW_PASSWORD_SAME_AS_CURRENT
             );
         }
 

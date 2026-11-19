@@ -5,6 +5,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { UserPreference } from "../../domain/entities/user-preference.entity";
 import { UpdateFullPreferencesDto } from "../dtos/update-full-preferences.dto";
 import { IUpdateFullPreferencesUseCase } from "../interfaces/update-full-preferences.use-case.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class UpdateFullPreferencesUseCase implements IUpdateFullPreferencesUseCase {
@@ -14,11 +15,11 @@ export class UpdateFullPreferencesUseCase implements IUpdateFullPreferencesUseCa
 
     async execute(userId: string, dto: UpdateFullPreferencesDto): Promise<void> {
         if (dto.preferredAgeMin > dto.preferredAgeMax) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Minimum age cannot be greater than maximum age.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.AGE_MIN_GREATER_THAN_MAX);
         }
 
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         const preferences = user.preference || new UserPreference({ userId });
 
@@ -26,17 +27,17 @@ export class UpdateFullPreferencesUseCase implements IUpdateFullPreferencesUseCa
             preferredGender: dto.preferredGender,
             preferredAgeMin: dto.preferredAgeMin,
             preferredAgeMax: dto.preferredAgeMax,
-            relationShipGoals: dto.relationshipGoals,
+            relationshipGoals: dto.relationshipGoals,
             openToAdoption: dto.openToAdoption,
-            diabeteBpPreference: dto.diabeteBpPreference,
+            diabetesBpPreference: dto.diabetesBpPreference ?? dto.diabeteBpPreference,
             fertilityPreference: dto.fertilityPreference,
             geneticPreference: dto.geneticPreference,
             infectiousPreference: dto.infectiousPreference,
-            disablilityPreferece: dto.disablilityPreferece,
+            disabilityPreference: dto.disabilityPreference ?? dto.disablilityPreferece,
             partnerExpectations: dto.partnerExpectations?.trim() || undefined,
         });
 
-        user.attatchPreferences(preferences);
+        user.attachPreferences(preferences);
         await this._userRepository.update(user);
     }
 }

@@ -4,6 +4,7 @@ import * as crypto from "crypto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 @Injectable()
 export class KycHashService implements IKycHashService {
     private readonly _pepper: string;
@@ -11,7 +12,7 @@ export class KycHashService implements IKycHashService {
     constructor() {
         const pepper = EnvConfig.services.kycPepper;
         if (!pepper || pepper.trim().length === 0) {
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'CRITICAL: KYC_HASH_PEPPER is missing from environment variables.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, USER_ERROR_MESSAGES.KYC_HASH_PEPPER_MISSING);
         }
         this._pepper = pepper;
     }

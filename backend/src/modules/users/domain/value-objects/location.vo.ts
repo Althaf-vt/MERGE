@@ -1,6 +1,7 @@
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { GLOBAL_LOCATION_DATA } from "../constants/location-data.constant";
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
 
 export class LocationVO {
     private readonly _country: string;
@@ -11,18 +12,18 @@ export class LocationVO {
         // 1. Validate Country exists in our central dictionary
         const countryData = GLOBAL_LOCATION_DATA[country];
         if (!countryData) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Country '${country}' is not currently supported.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.UNSUPPORTED_COUNTRY(country));
         }
 
         // 2. Validate State exists within the matched Country
         const validCities = countryData[state];
         if (!validCities) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid state '${state}' for country '${country}'.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.INVALID_STATE_FOR_COUNTRY(state, country));
         }
         
         // 3. Validate City exists within the matched State
         if (!validCities.includes(city)) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, `City '${city}' does not belong to state '${state}'.`);
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.INVALID_CITY_FOR_STATE(city, state));
         }
 
         this._country = country;

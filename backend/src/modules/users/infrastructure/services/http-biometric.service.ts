@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { isAxiosError } from "axios";
 import { lastValueFrom } from "rxjs";
@@ -6,11 +6,13 @@ import FormData from "form-data";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import {
     IExtractionResult,
     IBiometricService,
     ILivenessResult
 } from "../../domain/interfaces/biometric-service.interface";
+import { HTTP_CLIENT } from "../tokens/http-client.token";
 
 interface IMlWorkerErrorResponse {
     detail?: string;
@@ -20,7 +22,9 @@ interface IMlWorkerErrorResponse {
 export class HttpBiometricService implements IBiometricService {
     private readonly _logger = new Logger(HttpBiometricService.name);
 
-    constructor(private readonly _httpService: HttpService) {}
+    constructor(
+        @Inject(HTTP_CLIENT) private readonly _httpService: HttpService,
+    ) {}
 
     private _handleWorkerError(error: unknown, fallbackMessage: string): never {
         let status: number | undefined;
@@ -39,7 +43,7 @@ export class HttpBiometricService implements IBiometricService {
         this._logger.error(`ML Worker error: ${errorMessage}`, errorStack);
 
         if (status === 400) {
-            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || 'Biometric validation failed.');
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || USER_ERROR_MESSAGES.BIOMETRIC_VALIDATION_FAILED);
         }
 
         throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, detail || fallbackMessage);

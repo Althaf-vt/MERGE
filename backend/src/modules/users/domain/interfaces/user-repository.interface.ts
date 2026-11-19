@@ -1,4 +1,5 @@
-import { LivenessEvaluationRecord, UserKyc } from "../entities/kyc-verification.entity";
+import { UserKyc } from "../entities/kyc-verification.entity";
+import { LivenessEvaluationRecord } from "./kyc-verification.types";
 import { UserAggregate } from "../entities/user.entity";
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { UserStatus } from "../enums/user.enums";

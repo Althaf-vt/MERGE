@@ -5,6 +5,7 @@ import { ISubmitLivenessCheckUseCase, SubmitLivenessCheckResult } from "../inter
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
 import { BIOMETRIC_SERVICE, IBiometricService } from "../../domain/interfaces/biometric-service.interface";
 import { IStorageService, STORAGE_SERVICE } from "../interfaces/storage-service.interface";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase {
@@ -16,12 +17,12 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase {
 
     async execute(userId: string, promptType: string, videoBuffer: Buffer): Promise<SubmitLivenessCheckResult> {
         const user = await this._userRepository.findById(userId);
-        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, "User not found.");
+        if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
         const kyc = user.kycVerification;
 
         if (!kyc || !kyc.selfieFaceEmbedding || kyc.selfieFaceEmbedding.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Live Selfie is missing. Please complete the live selfie step first.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.LIVE_SELFIE_MISSING);
         }
 
         // 1. Pass the target prompt to the ML worker for specific landmark analysis
@@ -43,7 +44,7 @@ export class SubmitLivenessCheckUseCase implements ISubmitLivenessCheckUseCase {
         await this._userRepository.saveLivenessUpdate(user, newRecord);
 
         if (!passed) {
-            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, `Liveness check failed for prompt: ${promptType}.`);
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, USER_ERROR_MESSAGES.LIVENESS_CHECK_FAILED(promptType));
         }
 
         return {
