@@ -26,12 +26,9 @@ export class GenerateBioUseCase implements IGenerateBioUseCase {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.MAX_BIO_ATTEMPTS_REACHED);
         }
 
-        // 2. Calculate age safely
-        let age: string | undefined;
-        if (user.kycVerification?.verifiedDOB) {
-            const diff = Date.now() - new Date(user.kycVerification.verifiedDOB).getTime();
-            age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25)).toString();
-        }
+        // 2. Calculate age safely using domain method
+        const calculatedAge = user.calculateAge();
+        const age = calculatedAge !== null ? calculatedAge.toString() : undefined;
 
         // 3. Generate Bios
         const generateBios = await this._aiService.generateDatingBios({

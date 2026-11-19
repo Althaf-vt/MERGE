@@ -27,17 +27,17 @@ export class UpdateFullPreferencesUseCase implements IUpdateFullPreferencesUseCa
             preferredGender: dto.preferredGender,
             preferredAgeMin: dto.preferredAgeMin,
             preferredAgeMax: dto.preferredAgeMax,
-            relationShipGoals: dto.relationshipGoals,
+            relationshipGoals: dto.relationshipGoals,
             openToAdoption: dto.openToAdoption,
-            diabeteBpPreference: dto.diabeteBpPreference,
+            diabetesBpPreference: dto.diabetesBpPreference ?? dto.diabeteBpPreference,
             fertilityPreference: dto.fertilityPreference,
             geneticPreference: dto.geneticPreference,
             infectiousPreference: dto.infectiousPreference,
-            disablilityPreferece: dto.disablilityPreferece,
+            disabilityPreference: dto.disabilityPreference ?? dto.disablilityPreferece,
             partnerExpectations: dto.partnerExpectations?.trim() || undefined,
         });
 
-        user.attatchPreferences(preferences);
+        user.attachPreferences(preferences);
         await this._userRepository.update(user);
     }
 }

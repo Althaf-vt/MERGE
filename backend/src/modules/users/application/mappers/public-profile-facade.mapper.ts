@@ -1,14 +1,10 @@
 import { UserAggregate } from "../../domain/entities/user.entity";
 import { PublicProfileDto, PublicProfileSummaryDto } from "../interfaces/public-profile-facade.interface";
-import { UserStatus } from "../../domain/enums/user.enums";
-import { PhotoVerificationStatus, ProfileVisibility } from "../../domain/enums/profile.enums";
+import { PhotoVerificationStatus } from "../../domain/enums/profile.enums";
 
 export class PublicProfileFacadeMapper {
     public static isInteractable(user: UserAggregate): boolean {
-        const isActive = user.accountStatus === UserStatus.ACTIVE;
-        const isNotHidden = user.privacySettings?.profileVisibility !== ProfileVisibility.HIDDEN;
-        const isProfileVisible = user.profile?.isProfileVisible !== false;
-        return isActive && isNotHidden && isProfileVisible;
+        return user.isInteractable();
     }
 
     public static toSummaryDto(user: UserAggregate): PublicProfileSummaryDto {
@@ -21,19 +17,19 @@ export class PublicProfileFacadeMapper {
             displayName: user.profile?.displayName ?? 'Unknown',
             customLabel: user.profile?.customLabel ?? null,
             profilePhotoUrl: primaryPhoto?.url ?? null,
-            age: this.calculateAge(user),
+            age: user.calculateAge(),
             city: user.profile?.city ?? null,
             country: user.profile?.country ?? null,
             isKycVerified: Boolean(user.kycCompleted),
             isPhotoVerified,
-            isInteractable: this.isInteractable(user),
+            isInteractable: user.isInteractable(),
         };
     }
 
     public static toSummaryDtoMap(users: UserAggregate[]): Map<string, PublicProfileSummaryDto> {
         const resultMap = new Map<string, PublicProfileSummaryDto>();
         for (const user of users) {
-            if (user.id && PublicProfileFacadeMapper.isInteractable(user)) {
+            if (user.id && user.isInteractable()) {
                 resultMap.set(user.id, PublicProfileFacadeMapper.toSummaryDto(user));
             }
         }
@@ -62,20 +58,5 @@ export class PublicProfileFacadeMapper {
             drinkingHabit: user.profile?.drinkingHabit ?? null,
             photos: photos.map(p => p.url),
         };
-    }
-
-    private static calculateAge(user: UserAggregate): number | null {
-        if (user.privacySettings?.showAge === false) return null;
-        const dob = user.kycVerification?.verifiedDOB;
-        if (!dob) return null;
-
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age >= 0 ? age : null;
     }
 }

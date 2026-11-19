@@ -22,7 +22,7 @@ export class AdminPhotoReviewListener {
         const user = await this._userRepository.findById(event.targetUserId);
         if (!user) return;
 
-        user.appovePhoto(event.photoId);
+        user.approvePhoto(event.photoId);
         await this._userRepository.update(user);
     }
 

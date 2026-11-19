@@ -32,14 +32,14 @@ export class UpdatePreferencesUseCase implements IUpdatePreferencesUseCase {
             preferredGender: payload.preferredGender,
             preferredAgeMin: payload.preferredAgeMin,
             preferredAgeMax: payload.preferredAgeMax,
-            relationShipGoals: payload.relationshipGoals,
+            relationshipGoals: payload.relationshipGoals,
             minimumOutnessLevel: payload.minimumOutnessLevel,
             openToAdoption: payload.openToAdoption,
             immigrationReady: payload.immigrationReady,
             partnerExpectations: payload.partnerExpectations
         });
 
-        user.attatchPreferences(preferences);
+        user.attachPreferences(preferences);
         user.advanceOnboardingStep(USER_POLICY.ONBOARDING_STEPS.PREFERENCES_COMPLETED);
 
         await this._userRepository.update(user);
