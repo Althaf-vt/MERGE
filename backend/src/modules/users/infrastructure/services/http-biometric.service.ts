@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { isAxiosError } from "axios";
 import { lastValueFrom } from "rxjs";
@@ -12,6 +12,7 @@ import {
     IBiometricService,
     ILivenessResult
 } from "../../domain/interfaces/biometric-service.interface";
+import { HTTP_CLIENT } from "../tokens/http-client.token";
 
 interface IMlWorkerErrorResponse {
     detail?: string;
@@ -21,7 +22,9 @@ interface IMlWorkerErrorResponse {
 export class HttpBiometricService implements IBiometricService {
     private readonly _logger = new Logger(HttpBiometricService.name);
 
-    constructor(private readonly _httpService: HttpService) {}
+    constructor(
+        @Inject(HTTP_CLIENT) private readonly _httpService: HttpService,
+    ) {}
 
     private _handleWorkerError(error: unknown, fallbackMessage: string): never {
         let status: number | undefined;
