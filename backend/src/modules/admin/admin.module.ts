@@ -14,7 +14,7 @@ import { AdminForgotPasswordUseCase } from "./application/use-cases/admin-forgot
 import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-password.use-case";
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
 import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
-import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
+import { AdminRefreshTokenUseCase } from "./application/use-cases/admin-refresh-token.use-case";
 import { ADMIN_LOGOUT_USE_CASE } from "./application/interfaces/admin-logout.use-case.interface";
 import { AdminLogoutUseCase } from "./application/use-cases/admin-logout.use-case";
 import { UserModule } from "../users/users.module";
@@ -32,7 +32,7 @@ import { AdminAuditInterceptor } from "./presentation/interceptors/admin-audit.i
 import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
-import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
+import { GetAdminUsersUseCase } from "./application/use-cases/get-admin-users.use-case";
 import { GET_ADMIN_USER_DETAILS_USE_CASE } from "./application/interfaces/get-admin-user-details.use-case.interface";
 import { GetAdminUserDetailsUseCase } from "./application/use-cases/get-admin-user-details.use-case";
 import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
@@ -137,11 +137,11 @@ import {
         { provide: ADMIN_FORGOT_PASSWORD_USE_CASE, useClass: AdminForgotPasswordUseCase },
         { provide: ADMIN_VERIFY_RESET_OTP_USE_CASE, useClass: AdminVerifyResetOtpUseCase },
         { provide: ADMIN_RESET_PASSWORD_USE_CASE, useClass: AdminResetPasswordUseCase },
-        { provide: ADMIN_REFRESH_TOKEN_USE_CASE, useClass: AdminRefreshTokenUsecase },
+        { provide: ADMIN_REFRESH_TOKEN_USE_CASE, useClass: AdminRefreshTokenUseCase },
         { provide: ADMIN_LOGOUT_USE_CASE, useClass: AdminLogoutUseCase },
         { provide: MODERATION_LOG_REPOSITORY, useClass: ModerationLogRepository },
         { provide: MANAGE_USER_STATUS_USE_CASE, useClass: ManageUserStatusUseCase },
-        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUserCase },
+        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUseCase },
         { provide: GET_ADMIN_USER_DETAILS_USE_CASE, useClass: GetAdminUserDetailsUseCase },
         { provide: ADMIN_INVITE_SERVICE, useClass: AdminRedisInviteService },
         { provide: INVITE_ADMIN_USE_CASE, useClass: InviteAdminUseCase },

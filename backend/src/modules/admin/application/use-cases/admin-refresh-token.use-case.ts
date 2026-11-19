@@ -12,7 +12,7 @@ import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-message
 import { ADMIN_APP_CONFIG, IAdminAppConfig } from "../interfaces/admin-app-config.interface";
 
 @Injectable()
-export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
+export class AdminRefreshTokenUseCase implements IAdminRefreshTokenUseCase {
     constructor(
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
