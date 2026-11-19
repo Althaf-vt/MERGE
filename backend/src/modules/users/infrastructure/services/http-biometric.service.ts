@@ -6,6 +6,7 @@ import FormData from "form-data";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 import {
     IExtractionResult,
     IBiometricService,
@@ -39,7 +40,7 @@ export class HttpBiometricService implements IBiometricService {
         this._logger.error(`ML Worker error: ${errorMessage}`, errorStack);
 
         if (status === 400) {
-            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || 'Biometric validation failed.');
+            throw new DomainException(ErrorCode.LIVENESS_CHECK_FAILED, detail || USER_ERROR_MESSAGES.BIOMETRIC_VALIDATION_FAILED);
         }
 
         throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, detail || fallbackMessage);

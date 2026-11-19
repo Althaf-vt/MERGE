@@ -4,6 +4,7 @@ import { IGoogleAuthService } from "../../domain/interfaces/google-auth-service.
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
 @Injectable()
 export class GoogleAuthService implements IGoogleAuthService {
@@ -30,7 +31,7 @@ export class GoogleAuthService implements IGoogleAuthService {
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this._logger.error(`Google token verification failed: ${errorMessage}`);
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Google token verification failed.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.GOOGLE_TOKEN_VERIFICATION_FAILED);
         }
     }
 }
