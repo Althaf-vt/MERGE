@@ -1,7 +1,9 @@
 import { EmailVO } from "../../../../../shared/domain/value-objects/email.vo";
-import { AdminAggregate, AdminStatusLog } from "../../../domain/entities/admin.entity";
+import { AdminAggregate } from "../../../domain/entities/admin.entity";
+import { AdminStatusLog } from "../../../domain/interfaces/admin.types";
 import { AdminPermission } from "../../../domain/enums/admin-permission.enums";
-import { AdminRole, AdminStatus } from "../../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../../domain/enums/admin.enums";
 import { AdminDocument } from "../admin.schema";
 
 export class AdminPersistenceMapper {

@@ -3,39 +3,10 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { AdminPermission } from "../enums/admin-permission.enums";
-import { AdminRole, AdminStatus } from "../enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../enums/admin.enums";
 import { AdminSuspensionDurationVO } from "../value-objects/admin-suspension-duration.vo";
-
-
-export interface AdminStatusLog {
-    status: AdminStatus;
-    reason: string;
-    actionBy: string;
-    timestamp: Date;
-}
-
-export interface AdminAggregateProps {
-    id?: string;
-    email: EmailVO;
-    passwordHash?: string | null;
-    role: AdminRole;
-    fullName: string;
-    profilePhotoUrl?: string;
-    status: AdminStatus;
-    suspendedUntil?: Date | null;
-    statusHistory?: AdminStatusLog[];
-    permissions: AdminPermission[];
-    inviteExpiresAt?: Date | null;
-    lastLoginAt?: Date;
-    createdBy?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-interface InternalAdminProps extends AdminAggregateProps {
-    statusHistory: AdminStatusLog[];
-    permissions: AdminPermission[];
-}
+import { AdminAggregateProps, AdminSnapshot, AdminStatusLog, InternalAdminProps } from "../interfaces/admin.types";
 
 export class AdminAggregate extends AggregateRoot {
     private _props: InternalAdminProps;
@@ -194,7 +165,7 @@ export class AdminAggregate extends AggregateRoot {
         })
     }
 
-    toJSON() {
+    toJSON(): AdminSnapshot {
         return {
             ...this._props,
             email: this._props.email.getValue(),

@@ -1,14 +1,5 @@
 import { ModerationAction } from "../enums/moderation.enums";
-
-export interface ModerationLogProps {
-    id?: string;
-    targetUserId: string;
-    adminId: string;
-    action: ModerationAction;
-    reason: string;
-    durationContext?: string;
-    createdAt?: Date;
-}
+import { ModerationLogProps, ModerationLogSnapshot } from "../interfaces/moderation-log.types";
 
 export class ModerationLog {
     private readonly _props: ModerationLogProps;
@@ -28,7 +19,7 @@ export class ModerationLog {
     get durationContext(): string | undefined { return this._props.durationContext; }
     get createdAt(): Date | undefined { return this._props.createdAt; }
 
-    toJSON() {
+    toJSON(): ModerationLogSnapshot {
         return { ...this._props };
     }
 }
