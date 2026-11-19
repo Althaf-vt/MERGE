@@ -9,6 +9,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
@@ -21,19 +22,19 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
     async execute(token: string): Promise<AdminRefreshTokenResponse> {
         const payload = this._tokenService.verifyRefreshToken(token);
         if (!payload) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token");
+            throw new DomainException(ErrorCode.TOKEN_INVALID, ADMIN_ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
         }
 
         // 1. STRICT CHECK: Does the Redis session still exist?
         const hasSession = await this._sessionService.hasValidSession(payload.userId);
         if (!hasSession) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session was forcefully terminated. Please log in again.");
+            throw new DomainException(ErrorCode.UNAUTHORIZED, ADMIN_ERROR_MESSAGES.SESSION_FORCEFULLY_TERMINATED);
         }
 
         const admin = await this._adminRepository.findById(payload.userId);
 
         if (!admin || admin.status !== AdminStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Admin account is inactive or deleted.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.ACCOUNT_INACTIVE_OR_DELETED);
         }
 
         const newPayload = {

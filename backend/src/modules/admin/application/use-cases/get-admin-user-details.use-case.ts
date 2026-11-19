@@ -3,6 +3,7 @@ import { IGetAdminUserDetailsUseCase } from "../interfaces/get-admin-user-detail
 import { FacadeUserDto, IUserManagementFacade, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class GetAdminUserDetailsUseCase implements IGetAdminUserDetailsUseCase {
@@ -13,7 +14,7 @@ export class GetAdminUserDetailsUseCase implements IGetAdminUserDetailsUseCase {
     async execute(userId: string): Promise<FacadeUserDto> {
         const user = await this._userFacade.getUserById(userId);
         if (!user) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.USER_NOT_FOUND);
         }
         return user;
     }

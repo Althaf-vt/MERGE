@@ -5,6 +5,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
 import { IGetAdminDetailsUseCase } from "../interfaces/admin-personnel.use-case.interface";
 import { AdminDetailsDto } from "../dtos/admin-output.dto";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class GetAdminDetailsUseCase implements IGetAdminDetailsUseCase {
@@ -15,7 +16,7 @@ export class GetAdminDetailsUseCase implements IGetAdminDetailsUseCase {
     async execute(targetAdminId: string): Promise<AdminDetailsDto> {
         const admin = await this._adminRepository.findById(targetAdminId);
         if (!admin) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin personnel not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_PERSONNEL_NOT_FOUND);
         }
         return AdminDtoMapper.toDetailsDto(admin);
     }

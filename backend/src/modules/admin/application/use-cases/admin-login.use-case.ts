@@ -11,6 +11,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
@@ -27,17 +28,17 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         const admin = await this._adminRepository.findByEmail(emailVo.getValue());
 
         if (!admin) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         if (!admin.passwordHash) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, admin.passwordHash);
 
         if (!isPasswordValid) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         // 2. Domain invariant check (validates if account is active, updates lastLogin)

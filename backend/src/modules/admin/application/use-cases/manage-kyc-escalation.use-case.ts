@@ -16,6 +16,7 @@ import { GetKycTasksQueryDto, RejectKycTaskDto, RequestKycResubmissionDto } from
 import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 import { KycEscalationDtoMapper } from "../mappers/kyc-escalation-dto.mapper";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class GetKycTasksUseCase implements IGetKycTasksUseCase {
@@ -45,7 +46,7 @@ export class ClaimKycTaskUseCase implements IClaimKycTaskUseCase {
 
     async execute(taskId: string, adminId: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         task.claim(adminId);
         await this._repository.update(task);
@@ -60,7 +61,7 @@ export class ReleaseKycTaskClaimUseCase implements IReleaseKycTaskClaimUseCase {
 
     async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.releaseClaim(adminId, isSuperAdmin);
@@ -76,7 +77,7 @@ export class TakeoverKycTaskClaimUseCase implements ITakeoverKycTaskClaimUseCase
 
     async execute(taskId: string, superAdminId: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         task.takeoverClaim(superAdminId);
         await this._repository.update(task);
@@ -91,7 +92,7 @@ export class ApproveKycTaskUseCase implements IApproveKycTaskUseCase {
 
     async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.approve(adminId, isSuperAdmin);
@@ -107,7 +108,7 @@ export class RejectKycTaskUseCase implements IRejectKycTaskUseCase {
 
     async execute(taskId: string, adminId: string, role: string, dto: RejectKycTaskDto): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.reject(adminId, isSuperAdmin, dto.reason);
@@ -123,7 +124,7 @@ export class RequestKycResubmissionUseCase implements IRequestKycResubmissionUse
 
     async execute(taskId: string, adminId: string, role: string, dto: RequestKycResubmissionDto): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.requestResubmission(adminId, isSuperAdmin, dto.reasons, dto.message);

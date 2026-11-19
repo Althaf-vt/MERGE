@@ -13,6 +13,8 @@ import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AdminStatus } from "../../domain/enums/admin.enums";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
+import { ADMIN_POLICY } from "../../domain/constants/admin.constants";
 
 @Injectable()
 export class InviteAdminUseCase implements IInviteAdminUseCase {
@@ -27,7 +29,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         const existingAdmin = await this._adminRepository.findByEmail(emailVo.getValue());
 
         if(existingAdmin){
-            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, 'An admin account with this email already exists.');
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, ADMIN_ERROR_MESSAGES.EMAIL_ALREADY_EXISTS);
         }
 
         const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
@@ -46,7 +48,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
 
         await this._adminRepository.create(newAdmin);
         
-        const token = crypto.randomBytes(32).toString('hex');        
+        const token = crypto.randomBytes(ADMIN_POLICY.INVITE_TOKEN_BYTE_LENGTH).toString('hex');        
         await this._inviteService.storeInviteToken(emailVo, token, ttlSeconds);
         const senderDisplayName = inviterEmail || 'Super Admin';
         await this._emailService.sendAdminInviteEmail(emailVo.getValue(), token, senderDisplayName);

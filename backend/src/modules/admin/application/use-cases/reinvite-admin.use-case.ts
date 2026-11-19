@@ -7,6 +7,8 @@ import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfac
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
+import { ADMIN_POLICY } from "../../domain/constants/admin.constants";
 
 @Injectable()
 export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
@@ -18,14 +20,14 @@ export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
 
     async execute(targetAdminId: string, inviterEmail?: string): Promise<void> {
         const admin = await this._adminRepository.findById(targetAdminId);
-        if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
+        if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_NOT_FOUND);
 
         const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
         const newExpiryDate = new Date(Date.now() + (ttlSeconds * 1000));
 
         admin.renewInvitation(newExpiryDate);
 
-        const token = crypto.randomBytes(32).toString('hex');
+        const token = crypto.randomBytes(ADMIN_POLICY.INVITE_TOKEN_BYTE_LENGTH).toString('hex');
         await this._inviteService.storeInviteToken(admin.email, token, ttlSeconds);
 
         const senderDisplayName = inviterEmail || 'Super Admin';

@@ -6,6 +6,7 @@ import { IPasswordHasher, PASSWORD_HASHER } from '../../../../shared/domain/inte
 import { AcceptAdminInviteDto } from '../dtos/admin-management.dto';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { ADMIN_ERROR_MESSAGES } from '../../domain/constants/admin-error-messages.constant';
 
 @Injectable()
 export class AcceptAdminInviteUseCase implements IAcceptAdminInviteUseCase {
@@ -19,13 +20,13 @@ export class AcceptAdminInviteUseCase implements IAcceptAdminInviteUseCase {
         const normalizedEmail = await this._inviteService.verifyAndRetriveInvite(dto.token);
 
         if(!normalizedEmail){
-            throw new DomainException(ErrorCode.TOKEN_INVALID, 'Invalid or expired invitation token.');
+            throw new DomainException(ErrorCode.TOKEN_INVALID, ADMIN_ERROR_MESSAGES.INVALID_INVITATION_TOKEN);
         }
 
         const admin = await this._adminRepository.findByEmail(normalizedEmail);
 
         if(!admin){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Invited admin account could not be found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.INVITED_ADMIN_NOT_FOUND);
         }
 
         const hashedPassword = await this._passwordHasher.hash(dto.password);
