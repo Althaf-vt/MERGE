@@ -1,6 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { GENDER_IDENTITY_OPTIONS, LANGUAGE_SUGGESTIONS, PRONOUN_SUGGESTIONS } from "../constants/profile-options.constant";
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
 import { DietType, DrinkingHabit, SmokingHabit } from "../enums/user.enums";
 
 import {
@@ -72,14 +73,14 @@ export class UserProfile {
 
         if (payload.pronouns !== undefined) {
             if (!PRONOUN_SUGGESTIONS.includes(payload.pronouns)) {
-                throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid pronoun selection: ${payload.pronouns}`);
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.INVALID_PRONOUN_SELECTION(payload.pronouns));
             }
             this._props.pronouns = payload.pronouns;
         }
 
         if (payload.genderIdentity !== undefined) {
             if (!GENDER_IDENTITY_OPTIONS.includes(payload.genderIdentity)) {
-                throw new DomainException(ErrorCode.VALIDATION_FAILED, `Invalid gender identity: ${payload.genderIdentity}`);
+                throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.INVALID_GENDER_IDENTITY(payload.genderIdentity));
             }
             this._props.genderIdentity = payload.genderIdentity;
         }
@@ -89,7 +90,7 @@ export class UserProfile {
             if (invalidLanguages.length > 0) {
                 throw new DomainException(
                     ErrorCode.VALIDATION_FAILED,
-                    `The following languages are not supported: ${invalidLanguages.join(', ')}`
+                    USER_ERROR_MESSAGES.UNSUPPORTED_LANGUAGES(invalidLanguages.join(', '))
                 );
             }
             this._props.languages = payload.languages;

@@ -2,13 +2,14 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { BlockReason } from "../enums/user.enums";
 import { BlockedRelationshipProps, BlockedRelationshipSnapshot } from "../interfaces/blocked-relationship.types";
+import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
 
 export class BlockedRelationship {
     private _props: BlockedRelationshipProps;
 
     constructor(props: BlockedRelationshipProps) {
         if (props.blockerId === props.blockedId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, "Users cannot block themselves.");
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_BLOCK_SELF);
         }
         this._props = {
             ...props,
