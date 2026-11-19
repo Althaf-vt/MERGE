@@ -1,5 +1,5 @@
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, IsStrongPassword, MaxLength } from "class-validator";
-import { Match } from "../../../../shared/presentation/validation/match.decorator";
+import { Match } from "../../../../shared/application/validation/match.decorator";
 
 export class InviteAdminDto {
     @IsEmail({}, { message: 'Provide a valid email address.' })
