@@ -1,14 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { BlockReason } from "../enums/user.enums";
-
-export interface BlockedRelationshipProps {
-    id?: string;
-    blockerId: string;
-    blockedId: string;
-    reason?: BlockReason;
-    createdAt?: Date;
-}
+import { BlockedRelationshipProps, BlockedRelationshipSnapshot } from "../interfaces/blocked-relationship.types";
 
 export class BlockedRelationship {
     private _props: BlockedRelationshipProps;
@@ -30,7 +23,7 @@ export class BlockedRelationship {
     get reason(): BlockReason | undefined { return this._props.reason; }
     get createdAt(): Date | undefined { return this._props.createdAt; }
 
-    toJSON() {
+    toJSON(): BlockedRelationshipSnapshot {
         return { ...this._props };
     }
 }
