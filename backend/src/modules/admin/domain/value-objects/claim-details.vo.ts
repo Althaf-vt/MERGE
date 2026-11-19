@@ -1,6 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ClaimStatus } from "../enums/claim-status.enum";
+import { ClaimDetailsProps, ClaimDetailsSnapshot } from "../interfaces/claim-details.types";
 
 export class ClaimDetailsVO {
     private readonly _status: ClaimStatus;
@@ -69,7 +70,7 @@ export class ClaimDetailsVO {
         return new ClaimDetailsVO(ClaimStatus.RESOLVED, this._claimedBy, this._claimedAt);
     }
 
-    public toJSON() {
+    public toJSON(): ClaimDetailsSnapshot {
         return {
             status: this._status,
             claimedBy: this._claimedBy,
