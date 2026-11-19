@@ -7,33 +7,35 @@ import { AdminAggregate } from "../../domain/entities/admin.entity";
 import { AdminStatus } from "../../domain/enums/admin.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
+import { ADMIN_APP_CONFIG, IAdminAppConfig } from "../interfaces/admin-app-config.interface";
 
 @Injectable()
-export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
+export class AdminRefreshTokenUseCase implements IAdminRefreshTokenUseCase {
     constructor(
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(ADMIN_SESSION_SERVICE) private readonly _sessionService: IAdminSessionService, // <-- INJECT THIS
+        @Inject(ADMIN_APP_CONFIG) private readonly _config: IAdminAppConfig,
     ) { }
 
     async execute(token: string): Promise<AdminRefreshTokenResponse> {
         const payload = this._tokenService.verifyRefreshToken(token);
         if (!payload) {
-            throw new DomainException(ErrorCode.TOKEN_INVALID, "Invalid or expired refresh token");
+            throw new DomainException(ErrorCode.TOKEN_INVALID, ADMIN_ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
         }
 
         // 1. STRICT CHECK: Does the Redis session still exist?
         const hasSession = await this._sessionService.hasValidSession(payload.userId);
         if (!hasSession) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, "Session was forcefully terminated. Please log in again.");
+            throw new DomainException(ErrorCode.UNAUTHORIZED, ADMIN_ERROR_MESSAGES.SESSION_FORCEFULLY_TERMINATED);
         }
 
         const admin = await this._adminRepository.findById(payload.userId);
 
         if (!admin || admin.status !== AdminStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Admin account is inactive or deleted.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.ACCOUNT_INACTIVE_OR_DELETED);
         }
 
         const newPayload = {
@@ -44,7 +46,7 @@ export class AdminRefreshTokenUsecase implements IAdminRefreshTokenUseCase {
         };
         
         // 2. Keep the session alive for another 7 days
-        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
+        const ttlSeconds = this._config.refreshExpirationSeconds;
         await this._sessionService.createSession(admin.id!, ttlSeconds);
 
         return {

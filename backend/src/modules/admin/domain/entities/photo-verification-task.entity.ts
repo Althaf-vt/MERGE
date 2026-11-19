@@ -6,21 +6,8 @@ import { PhotoTaskStatus } from "../enums/photo-task-status.enum";
 import { PhotoApprovedDomainEvent } from "../events/photo-approved.domain-event";
 import { PhotoRejectedDomainEvent } from "../events/photo-rejected.domain-event";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
-
-export interface PhotoVerificationTaskProps {
-    id?: string;
-    targetUserId: string;
-    photoId: string;
-    kycSelfieUrl: string; // The Golden Identity baseline
-    uploadedPhotoUrl: string; // The low-confidence photo under review
-    faceMatchScore: number;
-    taskStatus?: PhotoTaskStatus;
-    claimDetails?: ClaimDetailsVO;
-    rejectionReason?: string;
-    resolvedAt?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { PhotoVerificationTaskProps, PhotoVerificationTaskSnapshot } from "../interfaces/photo-verification-task.types";
+import { ADMIN_ERROR_MESSAGES } from "../constants/admin-error-messages.constant";
 
 export class PhotoVerificationTask extends AggregateRoot {
     private _props: Required<PhotoVerificationTaskProps>;
@@ -83,7 +70,7 @@ export class PhotoVerificationTask extends AggregateRoot {
         this._props.claimDetails.validateCanAct(adminId, isSuperAdmin);
 
         if (!reason || reason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A reason is required when rejecting a profile photo.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.PHOTO_REJECTION_REASON_REQUIRED);
         }
 
         this._props.taskStatus = PhotoTaskStatus.REJECTED;
@@ -100,7 +87,7 @@ export class PhotoVerificationTask extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    toJSON(): PhotoVerificationTaskSnapshot {
         return {
             ...this._props,
             claimDetails: this._props.claimDetails.toJSON(),

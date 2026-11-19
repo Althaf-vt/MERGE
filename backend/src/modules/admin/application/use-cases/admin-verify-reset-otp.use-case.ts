@@ -5,6 +5,7 @@ import { AdminVerifyResetOtpDto } from "../dtos/admin-forgot-password.dto";
 import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class AdminVerifyResetOtpUseCase implements IAdminVerifyResetOtpUseCase {
@@ -17,7 +18,7 @@ export class AdminVerifyResetOtpUseCase implements IAdminVerifyResetOtpUseCase {
         const isValid = await this._adminOtpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp)
 
         if (!isValid) {
-            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired verification code.');
+            throw new DomainException(ErrorCode.OTP_INVALID, ADMIN_ERROR_MESSAGES.INVALID_VERIFY_CODE);
         }
     }
 }

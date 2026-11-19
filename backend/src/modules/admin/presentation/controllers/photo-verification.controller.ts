@@ -4,10 +4,9 @@ import { AdminSessionGuard } from "../../infrastructure/security/guards/admin-se
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
 import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
-import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { AdminPermission, AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
-import { AdminRole } from "../../domain/enums/admin.enums";
 import {
     APPROVE_PHOTO_VERIFICATION_USE_CASE,
     CLAIM_PHOTO_TASK_USE_CASE,

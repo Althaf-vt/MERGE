@@ -3,6 +3,7 @@ import { ADMIN_SESSION_SERVICE, IAdminSessionService } from '../../../domain/int
 import { ErrorCode } from '../../../../../shared/domain/enums/error-code.enum';
 import { DomainException } from '../../../../../shared/domain/exceptions/domain.exception';
 import { AuthenticatedRequest } from '../../../../../shared/infrastructure/security/interfaces/authenticated-request.interface';
+import { ADMIN_ERROR_MESSAGES } from '../../../domain/constants/admin-error-messages.constant';
 
 @Injectable()
 export class AdminSessionGuard implements CanActivate {
@@ -15,12 +16,12 @@ export class AdminSessionGuard implements CanActivate {
         const userId = request.user?.userId; // Set by JwtAuthGuard previously
 
         if (!userId) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Authentication context missing.');
+            throw new DomainException(ErrorCode.UNAUTHORIZED, ADMIN_ERROR_MESSAGES.AUTH_CONTEXT_MISSING);
         }
 
         const hasSession = await this._sessionService.hasValidSession(userId);
         if (!hasSession) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Session has expired or was forcefully terminated.');
+            throw new DomainException(ErrorCode.UNAUTHORIZED, ADMIN_ERROR_MESSAGES.SESSION_EXPIRED_OR_TERMINATED);
         }
 
         return true;

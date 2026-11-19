@@ -1,5 +1,3 @@
-export { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
-
 export const AdminStatus = {
     INVITED: 'INVITED',
     ACTIVE: 'ACTIVE',

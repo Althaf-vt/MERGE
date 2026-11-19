@@ -4,7 +4,8 @@ import { ADMIN_REPOSITORY, IAdminRepository } from "../../domain/interfaces/admi
 import { GetAdminsDto } from "../dtos/get-admins.dto";
 import { PaginatedAdminsResponseDto } from "../dtos/admin-output.dto";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
 
 @Injectable()
 export class GetAdminsUseCase implements IGetAdminsUseCase {

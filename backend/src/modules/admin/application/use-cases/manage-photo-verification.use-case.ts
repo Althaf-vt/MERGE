@@ -12,7 +12,8 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 import { RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class ClaimPhotoTaskUseCase implements IClaimPhotoTaskUseCase {
@@ -22,7 +23,7 @@ export class ClaimPhotoTaskUseCase implements IClaimPhotoTaskUseCase {
 
     async execute(taskId: string, adminId: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         task.claim(adminId);
         await this._repository.update(task);
@@ -37,7 +38,7 @@ export class ReleasePhotoTaskClaimUseCase implements IReleasePhotoTaskClaimUseCa
 
     async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.releaseClaim(adminId, isSuperAdmin);
@@ -53,7 +54,7 @@ export class TakeoverPhotoTaskClaimUseCase implements ITakeoverPhotoTaskClaimUse
 
     async execute(taskId: string, superAdminId: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         task.takeoverClaim(superAdminId);
         await this._repository.update(task);
@@ -68,7 +69,7 @@ export class ApprovePhotoVerificationUseCase implements IApprovePhotoVerificatio
 
     async execute(taskId: string, adminId: string, role: string): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.approve(adminId, isSuperAdmin);
@@ -84,7 +85,7 @@ export class RejectPhotoVerificationUseCase implements IRejectPhotoVerificationU
 
     async execute(taskId: string, adminId: string, role: string, dto: RejectPhotoTaskDto): Promise<void> {
         const task = await this._repository.findById(taskId);
-        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task not found.');
+        if (!task) throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_FOUND);
 
         const isSuperAdmin = role === AdminRole.SUPER_ADMIN;
         task.reject(adminId, isSuperAdmin, dto.reason);

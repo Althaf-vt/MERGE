@@ -6,25 +6,8 @@ import { KycResubmissionReason } from "../enums/kyc-resubmission-reason.enum";
 import { KycTaskStatus } from "../enums/kyc-task-status.enum";
 import { KycEscalationApprovedDomainEvent, KycEscalationRejectedDomainEvent, KycEscalationResubmissionRequestedDomainEvent } from "../events/kyc-escalation.domain-events";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
-
-export interface KycEscalationTaskProps {
-    id?: string;
-    targetUserId: string;
-    documentType: string;
-    issuingCountry: string;
-    kycSelfieUrl: string;
-    uploadedDocumentUrl: string;
-    livenessScore: number;
-    faceMatchScore: number;
-    taskStatus?: KycTaskStatus;
-    claimDetails?: ClaimDetailsVO;
-    rejectionReason?: string;
-    resubmissionReasons?: KycResubmissionReason[];
-    resubmissionMessage?: string | null;
-    resolvedAt?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { KycEscalationTaskProps, KycEscalationTaskSnapshot } from "../interfaces/kyc-escalation-task.types";
+import { ADMIN_ERROR_MESSAGES } from "../constants/admin-error-messages.constant";
 
 export class KycEscalationTask extends AggregateRoot {
     private _props: Required<KycEscalationTaskProps>;
@@ -92,7 +75,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.claimDetails.validateCanAct(adminId, isSuperAdmin);
 
         if (!reason || reason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A reason is required when rejecting a KYC escalation.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.KYC_REJECTION_REASON_REQUIRED);
         }
 
         this._props.taskStatus = KycTaskStatus.REJECTED;
@@ -108,7 +91,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.claimDetails.validateCanAct(adminId, isSuperAdmin);
 
         if (!reasons || reasons.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'At least one reason is required when requesting KYC resubmission.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.KYC_RESUBMISSION_REASON_REQUIRED);
         }
 
         this._props.taskStatus = KycTaskStatus.RESUBMISSION_REQUESTED;
@@ -133,7 +116,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    public toJSON(): Record<string, unknown> {
+    public toJSON(): KycEscalationTaskSnapshot {
         return {
             ...this._props,
             claimDetails: this._props.claimDetails.toJSON(),

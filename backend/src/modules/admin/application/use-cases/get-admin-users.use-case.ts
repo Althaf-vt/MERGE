@@ -3,7 +3,7 @@ import { IGetAdminUsersUseCase } from "../interfaces/get-admin-users.use-case.in
 import { GetUsersFilters, IUserManagementFacade, PaginatedUsersResult, USER_MANAGEMENT_FACADE } from "../../../users/application/interfaces/user-management-facade.interface";
 
 @Injectable()
-export class GetAdminUsersUserCase implements IGetAdminUsersUseCase {
+export class GetAdminUsersUseCase implements IGetAdminUsersUseCase {
     constructor(
         @Inject(USER_MANAGEMENT_FACADE) private readonly _userFacade: IUserManagementFacade,
     ) { }

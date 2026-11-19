@@ -9,9 +9,11 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
-import { AdminPermission } from "../../domain/enums/admin-permission.enums";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { AdminPermission, AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
+import { ADMIN_POLICY } from "../../domain/constants/admin.constants";
+import { ADMIN_APP_CONFIG, IAdminAppConfig } from "../interfaces/admin-app-config.interface";
 
 @Injectable()
 export class InviteAdminUseCase implements IInviteAdminUseCase {
@@ -19,6 +21,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
         @Inject(ADMIN_INVITE_SERVICE) private readonly _inviteService: IAdminInviteService,
         @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService,
+        @Inject(ADMIN_APP_CONFIG) private readonly _config: IAdminAppConfig,
     ) {}
 
     async execute(dto: InviteAdminDto, inviterId: string, inviterEmail?: string): Promise<void> {
@@ -26,10 +29,10 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
         const existingAdmin = await this._adminRepository.findByEmail(emailVo.getValue());
 
         if(existingAdmin){
-            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, 'An admin account with this email already exists.');
+            throw new DomainException(ErrorCode.USER_ALREADY_EXISTS, ADMIN_ERROR_MESSAGES.EMAIL_ALREADY_EXISTS);
         }
 
-        const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
+        const ttlSeconds = this._config.inviteTtlSeconds;
         const expiresAt = new Date(Date.now() + (ttlSeconds * 1000));
 
         const newAdmin = new AdminAggregate({
@@ -45,7 +48,7 @@ export class InviteAdminUseCase implements IInviteAdminUseCase {
 
         await this._adminRepository.create(newAdmin);
         
-        const token = crypto.randomBytes(32).toString('hex');        
+        const token = crypto.randomBytes(ADMIN_POLICY.INVITE_TOKEN_BYTE_LENGTH).toString('hex');        
         await this._inviteService.storeInviteToken(emailVo, token, ttlSeconds);
         const senderDisplayName = inviterEmail || 'Super Admin';
         await this._emailService.sendAdminInviteEmail(emailVo.getValue(), token, senderDisplayName);

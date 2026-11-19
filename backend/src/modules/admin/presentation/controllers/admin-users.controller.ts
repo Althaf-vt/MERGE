@@ -4,7 +4,7 @@ import { IManageUserStatusUseCase, MANAGE_USER_STATUS_USE_CASE } from "../../app
 import { GET_ADMIN_USERS_USE_CASE, IGetAdminUsersUseCase } from "../../application/interfaces/get-admin-users.use-case.interface";
 import { GET_ADMIN_USER_DETAILS_USE_CASE, IGetAdminUserDetailsUseCase } from "../../application/interfaces/get-admin-user-details.use-case.interface";
 import { RequirePermissions } from "../../../../shared/infrastructure/security/decorators/require-permissions.decorator";
-import { AdminPermission } from "../../domain/enums/admin-permission.enums";
+import { AdminPermission } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { BanUserDto, GetUsersQueryDto, SuspendUserDto, UnbanUserDto, UnSuspendUserDto } from "../../application/dtos/user-management.dto";
 import { AdminPermissionsGuard } from "../../../../shared/infrastructure/security/guards/admin-permissions.guard";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";

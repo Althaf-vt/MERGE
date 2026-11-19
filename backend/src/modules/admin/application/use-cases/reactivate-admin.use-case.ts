@@ -3,6 +3,7 @@ import { IReactivateAdminUseCase } from '../interfaces/admin-status.use-case.int
 import { ADMIN_REPOSITORY, IAdminRepository } from '../../domain/interfaces/admin-repository.interface';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
+import { ADMIN_ERROR_MESSAGES } from '../../domain/constants/admin-error-messages.constant';
 
 @Injectable()
 export class ReactivateAdminUseCase implements IReactivateAdminUseCase {
@@ -14,7 +15,7 @@ export class ReactivateAdminUseCase implements IReactivateAdminUseCase {
         const admin = await this._adminRepository.findById(targetAdminId);
         
         if (!admin) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_NOT_FOUND);
         }
 
         admin.reactivateAccount(reason, actionByAdminId);

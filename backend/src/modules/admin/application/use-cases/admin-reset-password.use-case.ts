@@ -7,6 +7,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IPasswordHasher, PASSWORD_HASHER } from "../../../../shared/domain/interfaces/password-hasher.interface";
 import { AdminResetPasswordDto } from "../dtos/admin-forgot-password.dto";
 import { IAdminResetPasswordUseCase } from "../interfaces/admin-forgot-password.use-case.interface";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 
 @Injectable()
 export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
@@ -21,12 +22,12 @@ export class AdminResetPasswordUseCase implements IAdminResetPasswordUseCase {
         
         const isValid = await this._otpService.verifyPasswordResetOtp(emailVo.getValue(), dto.otp);
         if (!isValid) {
-            throw new DomainException(ErrorCode.OTP_INVALID, 'Invalid or expired reset code.');
+            throw new DomainException(ErrorCode.OTP_INVALID, ADMIN_ERROR_MESSAGES.INVALID_RESET_CODE);
         }
 
         const admin = await this._adminRepository.findByEmail(emailVo.getValue());
         if (!admin) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_NOT_FOUND);
         }
 
         const hashedPassword = await this._passwordHaser.hash(dto.newPassword);

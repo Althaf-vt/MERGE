@@ -1,6 +1,8 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ClaimStatus } from "../enums/claim-status.enum";
+import { ClaimDetailsProps, ClaimDetailsSnapshot } from "../interfaces/claim-details.types";
+import { ADMIN_ERROR_MESSAGES } from "../constants/admin-error-messages.constant";
 
 export class ClaimDetailsVO {
     private readonly _status: ClaimStatus;
@@ -22,25 +24,25 @@ export class ClaimDetailsVO {
         if (isSuperAdmin) return; // Super admins bypass claim ownership rules
 
         if (this._status === ClaimStatus.UNCLAIMED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task must be claimed before taking action.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_MUST_BE_CLAIMED);
         }
 
         if (this._status === ClaimStatus.RESOLVED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task is already resolved and immutable.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_ALREADY_RESOLVED);
         }
 
         if (!isSuperAdmin && this._claimedBy !== adminId) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Task is currently claimed by another administrator.');
+            throw new DomainException(ErrorCode.FORBIDDEN, ADMIN_ERROR_MESSAGES.TASK_CLAIMED_BY_ANOTHER);
         }
     }
 
     claim(adminId: string): ClaimDetailsVO {
         if (this._status === ClaimStatus.RESOLVED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot claim a resolved task.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.CANNOT_CLAIM_RESOLVED_TASK);
         }
 
         if (this._status === ClaimStatus.CLAIMED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task is already claimed.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_ALREADY_CLAIMED);
         }
 
         return new ClaimDetailsVO(ClaimStatus.CLAIMED, adminId, new Date())
@@ -48,17 +50,17 @@ export class ClaimDetailsVO {
 
     public release(adminId: string, isSuperAdmin: boolean): ClaimDetailsVO {
         if (this._status !== ClaimStatus.CLAIMED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Task is not currently claimed.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.TASK_NOT_CLAIMED);
         }
         if (this._claimedBy !== adminId && !isSuperAdmin) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Only the claim owner or a Super Admin can release this claim.');
+            throw new DomainException(ErrorCode.FORBIDDEN, ADMIN_ERROR_MESSAGES.ONLY_CLAIM_OWNER_OR_SUPER_ADMIN_CAN_RELEASE);
         }
         return new ClaimDetailsVO(ClaimStatus.UNCLAIMED, null, null);
     }
 
     public takeover(superAdminId: string): ClaimDetailsVO {
         if (this._status === ClaimStatus.RESOLVED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot takeover a resolved task.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.CANNOT_TAKEOVER_RESOLVED_TASK);
         }
         // Directly assigns ownership to the Super Admin, overriding any existing claim
         return new ClaimDetailsVO(ClaimStatus.CLAIMED, superAdminId, new Date());
@@ -69,7 +71,7 @@ export class ClaimDetailsVO {
         return new ClaimDetailsVO(ClaimStatus.RESOLVED, this._claimedBy, this._claimedAt);
     }
 
-    public toJSON() {
+    public toJSON(): ClaimDetailsSnapshot {
         return {
             status: this._status,
             claimedBy: this._claimedBy,

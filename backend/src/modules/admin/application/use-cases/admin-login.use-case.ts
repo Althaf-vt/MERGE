@@ -9,8 +9,9 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AdminDtoMapper } from "../mappers/admin-dto.mapper";
+import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
+import { ADMIN_APP_CONFIG, IAdminAppConfig } from "../interfaces/admin-app-config.interface";
 
 @Injectable()
 export class AdminLoginUseCase implements IAdminLoginUseCase {
@@ -19,6 +20,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(ADMIN_SESSION_SERVICE) private readonly _sessionService: IAdminSessionService,
+        @Inject(ADMIN_APP_CONFIG) private readonly _config: IAdminAppConfig,
     ) { }
     async execute(dto: AdminLoginDto): Promise<AdminLoginResponse> {
         const emailVo = new EmailVO(dto.email);
@@ -27,17 +29,17 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         const admin = await this._adminRepository.findByEmail(emailVo.getValue());
 
         if (!admin) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         if (!admin.passwordHash) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, admin.passwordHash);
 
         if (!isPasswordValid) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Invalid email or password.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         // 2. Domain invariant check (validates if account is active, updates lastLogin)
@@ -52,7 +54,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
         };
 
         // Create the session in Redis for 7 days (matches the refresh token lifespan)
-        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
+        const ttlSeconds = this._config.refreshExpirationSeconds;
         await this._sessionService.createSession(admin.id!, ttlSeconds);
 
         return {

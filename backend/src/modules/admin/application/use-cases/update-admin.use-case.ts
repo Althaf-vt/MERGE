@@ -4,8 +4,8 @@ import { ADMIN_REPOSITORY, IAdminRepository } from '../../domain/interfaces/admi
 import { UpdateAdminDto } from '../dtos/admin-management.dto';
 import { DomainException } from '../../../../shared/domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../../shared/domain/enums/error-code.enum';
-import { AdminPermission } from '../../domain/enums/admin-permission.enums';
-import { AdminRole } from '../../domain/enums/admin.enums';
+import { AdminPermission, AdminRole } from '../../../../shared/domain/enums/admin-rbac.enums';
+import { ADMIN_ERROR_MESSAGES } from '../../domain/constants/admin-error-messages.constant';
 
 @Injectable()
 export class UpdateAdminUseCase implements IUpdateAdminUseCase {
@@ -17,7 +17,7 @@ export class UpdateAdminUseCase implements IUpdateAdminUseCase {
         const admin = await this._adminRepository.findById(targetAdminId);
 
         if(!admin){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'Admin account not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_NOT_FOUND);
         }
 
         if(dto.permissions){

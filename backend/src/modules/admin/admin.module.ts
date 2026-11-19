@@ -14,7 +14,7 @@ import { AdminForgotPasswordUseCase } from "./application/use-cases/admin-forgot
 import { AdminResetPasswordUseCase } from "./application/use-cases/admin-reset-password.use-case";
 import { AdminVerifyResetOtpUseCase } from "./application/use-cases/admin-verify-reset-otp.use-case";
 import { ADMIN_REFRESH_TOKEN_USE_CASE } from "./application/interfaces/admin-refresh-token.use-case.interface";
-import { AdminRefreshTokenUsecase } from "./application/use-cases/admin-refresh-token.use-case";
+import { AdminRefreshTokenUseCase } from "./application/use-cases/admin-refresh-token.use-case";
 import { ADMIN_LOGOUT_USE_CASE } from "./application/interfaces/admin-logout.use-case.interface";
 import { AdminLogoutUseCase } from "./application/use-cases/admin-logout.use-case";
 import { UserModule } from "../users/users.module";
@@ -32,7 +32,7 @@ import { AdminAuditInterceptor } from "./presentation/interceptors/admin-audit.i
 import { MANAGE_USER_STATUS_USE_CASE } from "./application/interfaces/manage-user-status.use-case.interface";
 import { ManageUserStatusUseCase } from "./application/use-cases/manage-user-status.use-case";
 import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
-import { GetAdminUsersUserCase } from "./application/use-cases/get-admin-users.use-case";
+import { GetAdminUsersUseCase } from "./application/use-cases/get-admin-users.use-case";
 import { GET_ADMIN_USER_DETAILS_USE_CASE } from "./application/interfaces/get-admin-user-details.use-case.interface";
 import { GetAdminUserDetailsUseCase } from "./application/use-cases/get-admin-user-details.use-case";
 import { AdminUsersController } from "./presentation/controllers/admin-users.controller";
@@ -68,6 +68,40 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
 import { ScenePartnerModule } from "../scene-partner/scene-partner.module";
 import { AdminScenePartnerController } from "./presentation/controllers/admin-scene-partner.controller";
 import { AdminAuditLogController } from "./presentation/controllers/admin-audit-log.controller";
+import { ADMIN_APP_CONFIG } from "./application/interfaces/admin-app-config.interface";
+import { EnvConfig } from "../../shared/infrastructure/config/env.config";
+import {
+    ADMIN_CREATE_SCENARIO_USE_CASE,
+    ADMIN_EXPORT_SCENARIOS_USE_CASE,
+    ADMIN_GET_SCENARIO_BY_ID_USE_CASE,
+    ADMIN_GET_SCENARIO_IN_DEPTH_USE_CASE,
+    ADMIN_GET_SCENARIOS_USE_CASE,
+    ADMIN_GET_SCENE_ANALYTICS_USE_CASE,
+    ADMIN_GET_SCENE_SESSION_DETAILS_USE_CASE,
+    ADMIN_GET_SCENE_SESSIONS_USE_CASE,
+    ADMIN_SEND_PREVIEW_TURN_USE_CASE,
+    ADMIN_START_PREVIEW_SESSION_USE_CASE,
+    ADMIN_TOGGLE_SCENARIO_STATUS_USE_CASE,
+    ADMIN_UPDATE_PREVIEW_COACHING_USE_CASE,
+    ADMIN_UPDATE_SCENARIO_USE_CASE,
+} from "./application/interfaces/admin-scene-partner.use-cases.interface";
+import {
+    AdminCreateScenarioUseCase,
+    AdminExportScenariosUseCase,
+    AdminGetScenarioByIdUseCase,
+    AdminGetScenarioInDepthUseCase,
+    AdminGetScenariosUseCase,
+    AdminToggleScenarioStatusUseCase,
+    AdminUpdateScenarioUseCase,
+} from "./application/use-cases/admin-scenario.use-cases";
+import {
+    AdminGetSceneAnalyticsUseCase,
+    AdminGetSceneSessionDetailsUseCase,
+    AdminGetSceneSessionsUseCase,
+    AdminSendPreviewTurnUseCase,
+    AdminStartPreviewSessionUseCase,
+    AdminUpdatePreviewCoachingUseCase,
+} from "./application/use-cases/admin-scene-session.use-cases";
 
 @Module({
     imports: [
@@ -90,17 +124,24 @@ import { AdminAuditLogController } from "./presentation/controllers/admin-audit-
     ],
     providers: [
         AdminSeederService,
+        {
+            provide: ADMIN_APP_CONFIG,
+            useValue: {
+                refreshExpirationSeconds: EnvConfig.jwt.refreshExpirationSeconds,
+                inviteTtlSeconds: EnvConfig.admin.inviteTtlSeconds,
+            },
+        },
         { provide: ADMIN_REPOSITORY, useClass: AdminRepository },
         { provide: ADMIN_LOGIN_USE_CASE, useClass: AdminLoginUseCase },
         { provide: ADMIN_OTP_SERVICE, useClass: AdminRedisOtpService },
         { provide: ADMIN_FORGOT_PASSWORD_USE_CASE, useClass: AdminForgotPasswordUseCase },
         { provide: ADMIN_VERIFY_RESET_OTP_USE_CASE, useClass: AdminVerifyResetOtpUseCase },
         { provide: ADMIN_RESET_PASSWORD_USE_CASE, useClass: AdminResetPasswordUseCase },
-        { provide: ADMIN_REFRESH_TOKEN_USE_CASE, useClass: AdminRefreshTokenUsecase },
+        { provide: ADMIN_REFRESH_TOKEN_USE_CASE, useClass: AdminRefreshTokenUseCase },
         { provide: ADMIN_LOGOUT_USE_CASE, useClass: AdminLogoutUseCase },
         { provide: MODERATION_LOG_REPOSITORY, useClass: ModerationLogRepository },
         { provide: MANAGE_USER_STATUS_USE_CASE, useClass: ManageUserStatusUseCase },
-        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUserCase },
+        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUseCase },
         { provide: GET_ADMIN_USER_DETAILS_USE_CASE, useClass: GetAdminUserDetailsUseCase },
         { provide: ADMIN_INVITE_SERVICE, useClass: AdminRedisInviteService },
         { provide: INVITE_ADMIN_USE_CASE, useClass: InviteAdminUseCase },
@@ -127,6 +168,21 @@ import { AdminAuditLogController } from "./presentation/controllers/admin-audit-
         { provide: RECORD_ADMIN_AUDIT_LOG_USE_CASE, useClass: RecordAdminAuditLogUseCase },
         { provide: GET_ADMIN_AUDIT_LOGS_USE_CASE, useClass: GetAdminAuditLogsUseCase },
         { provide: GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, useClass: GetScenarioActivityHistoryUseCase },
+        // Scenario Administration Use Cases
+        { provide: ADMIN_CREATE_SCENARIO_USE_CASE, useClass: AdminCreateScenarioUseCase },
+        { provide: ADMIN_GET_SCENARIOS_USE_CASE, useClass: AdminGetScenariosUseCase },
+        { provide: ADMIN_GET_SCENARIO_BY_ID_USE_CASE, useClass: AdminGetScenarioByIdUseCase },
+        { provide: ADMIN_GET_SCENARIO_IN_DEPTH_USE_CASE, useClass: AdminGetScenarioInDepthUseCase },
+        { provide: ADMIN_UPDATE_SCENARIO_USE_CASE, useClass: AdminUpdateScenarioUseCase },
+        { provide: ADMIN_TOGGLE_SCENARIO_STATUS_USE_CASE, useClass: AdminToggleScenarioStatusUseCase },
+        { provide: ADMIN_EXPORT_SCENARIOS_USE_CASE, useClass: AdminExportScenariosUseCase },
+        // Scene Sessions & Analytics Use Cases
+        { provide: ADMIN_GET_SCENE_ANALYTICS_USE_CASE, useClass: AdminGetSceneAnalyticsUseCase },
+        { provide: ADMIN_GET_SCENE_SESSIONS_USE_CASE, useClass: AdminGetSceneSessionsUseCase },
+        { provide: ADMIN_GET_SCENE_SESSION_DETAILS_USE_CASE, useClass: AdminGetSceneSessionDetailsUseCase },
+        { provide: ADMIN_START_PREVIEW_SESSION_USE_CASE, useClass: AdminStartPreviewSessionUseCase },
+        { provide: ADMIN_SEND_PREVIEW_TURN_USE_CASE, useClass: AdminSendPreviewTurnUseCase },
+        { provide: ADMIN_UPDATE_PREVIEW_COACHING_USE_CASE, useClass: AdminUpdatePreviewCoachingUseCase },
         AdminAuditInterceptor,
         // Register Event Listener
         UserPhotoFlaggedListener,

@@ -1,5 +1,6 @@
-import { AdminStatusLog } from "../../domain/entities/admin.entity";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminStatusLog } from "../../domain/interfaces/admin.types";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
 
 export interface AdminDetailsDto {
     id: string;
