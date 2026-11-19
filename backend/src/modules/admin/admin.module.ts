@@ -68,6 +68,8 @@ import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from ".
 import { ScenePartnerModule } from "../scene-partner/scene-partner.module";
 import { AdminScenePartnerController } from "./presentation/controllers/admin-scene-partner.controller";
 import { AdminAuditLogController } from "./presentation/controllers/admin-audit-log.controller";
+import { ADMIN_APP_CONFIG } from "./application/interfaces/admin-app-config.interface";
+import { EnvConfig } from "../../shared/infrastructure/config/env.config";
 
 @Module({
     imports: [
@@ -90,6 +92,13 @@ import { AdminAuditLogController } from "./presentation/controllers/admin-audit-
     ],
     providers: [
         AdminSeederService,
+        {
+            provide: ADMIN_APP_CONFIG,
+            useValue: {
+                refreshExpirationSeconds: EnvConfig.jwt.refreshExpirationSeconds,
+                inviteTtlSeconds: EnvConfig.admin.inviteTtlSeconds,
+            },
+        },
         { provide: ADMIN_REPOSITORY, useClass: AdminRepository },
         { provide: ADMIN_LOGIN_USE_CASE, useClass: AdminLoginUseCase },
         { provide: ADMIN_OTP_SERVICE, useClass: AdminRedisOtpService },

@@ -6,9 +6,9 @@ import { ADMIN_INVITE_SERVICE, IAdminInviteService } from "../../domain/interfac
 import { EMAIL_SERVICE, IEmailService } from "../../../../shared/domain/interfaces/email-service.interface";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { ADMIN_ERROR_MESSAGES } from "../../domain/constants/admin-error-messages.constant";
 import { ADMIN_POLICY } from "../../domain/constants/admin.constants";
+import { ADMIN_APP_CONFIG, IAdminAppConfig } from "../interfaces/admin-app-config.interface";
 
 @Injectable()
 export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
@@ -16,13 +16,14 @@ export class ReinviteAdminUseCase implements IReinviteAdminUseCase {
         @Inject(ADMIN_REPOSITORY) private readonly _adminRepository: IAdminRepository,
         @Inject(ADMIN_INVITE_SERVICE) private readonly _inviteService: IAdminInviteService,
         @Inject(EMAIL_SERVICE) private readonly _emailService: IEmailService,
+        @Inject(ADMIN_APP_CONFIG) private readonly _config: IAdminAppConfig,
     ) { }
 
     async execute(targetAdminId: string, inviterEmail?: string): Promise<void> {
         const admin = await this._adminRepository.findById(targetAdminId);
         if (!admin) throw new DomainException(ErrorCode.USER_NOT_FOUND, ADMIN_ERROR_MESSAGES.ADMIN_NOT_FOUND);
 
-        const ttlSeconds = EnvConfig.admin.inviteTtlSeconds;
+        const ttlSeconds = this._config.inviteTtlSeconds;
         const newExpiryDate = new Date(Date.now() + (ttlSeconds * 1000));
 
         admin.renewInvitation(newExpiryDate);
