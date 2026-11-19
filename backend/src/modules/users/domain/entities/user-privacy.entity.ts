@@ -1,12 +1,9 @@
 import { ProfileVisibility } from "../enums/profile.enums";
-
-export interface UserPrivacyProps {
-    showAge: boolean;
-    showOccupation: boolean;
-    blurPhotos: boolean;
-    profileVisibility: ProfileVisibility;
-    updatedAt?: Date;
-}
+import {
+    UpdatePrivacySettingsPayload,
+    UserPrivacyProps,
+    UserPrivacySnapshot,
+} from "../interfaces/user-privacy.types";
 
 export class UserPrivacy {
     private _props: UserPrivacyProps;
@@ -28,7 +25,7 @@ export class UserPrivacy {
     get profileVisibility(): ProfileVisibility { return this._props.profileVisibility; }
     get updatedAt(): Date | undefined { return this._props.updatedAt; }
 
-    updateSettings(payload: Partial<UserPrivacyProps>): void {
+    updateSettings(payload: UpdatePrivacySettingsPayload): void {
         if (payload.showAge !== undefined) this._props.showAge = payload.showAge;
         if (payload.showOccupation !== undefined) this._props.showOccupation = payload.showOccupation;
         if (payload.blurPhotos !== undefined) this._props.blurPhotos = payload.blurPhotos;
@@ -37,7 +34,7 @@ export class UserPrivacy {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
+    toJSON(): UserPrivacySnapshot {
         return { ...this._props };
     }
 }
