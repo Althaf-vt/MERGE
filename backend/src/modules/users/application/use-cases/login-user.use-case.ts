@@ -11,7 +11,7 @@ import { TOKEN_SERVICE } from "../../../../shared/domain/interfaces/token-servic
 import type { ITokenservice } from "../../../../shared/domain/interfaces/token-service.interface";
 import { ILoginUserUseCase, LoginUserResponse } from "../interfaces/login-user.use-case.interface";
 import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/domain/interfaces/user-session.interface";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { IUserAppConfig, USER_APP_CONFIG } from "../interfaces/user-app-config.interface";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
 
@@ -22,6 +22,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         @Inject(PASSWORD_HASHER) private readonly _passwordHasher: IPasswordHasher,
         @Inject(TOKEN_SERVICE) private readonly _tokenService: ITokenservice,
         @Inject(USER_SESSION_SERVICE) private readonly _sessionService: IUserSessionService,
+        @Inject(USER_APP_CONFIG) private readonly _config: IUserAppConfig,
     ) { }
 
     async execute(dto: LoginUserDto, deviceInfo: string, ipAddress: string): Promise<LoginUserResponse> {
@@ -37,7 +38,7 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         user.recordLogin();
         await this._userRepository.update(user);
 
-        const ttlSeconds = EnvConfig.jwt.refreshExpirationSeconds;
+        const ttlSeconds = this._config.sessionTtlSeconds;
         const sessionId = await this._sessionService.createSession(user.id!, deviceInfo, ipAddress, ttlSeconds);
         
         const payload = {
