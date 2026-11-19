@@ -8,6 +8,10 @@ import { UserPrivacy } from "../entities/user-privacy.entity";
 import { UserPhoto } from "../entities/user-photo.entity";
 import { UserProfileSnapshot } from "./user-profile.types";
 import { UserKycSnapshot } from "./kyc-verification.types";
+import { UserPreferenceSnapshot } from "./user-preference.types";
+import { UserMedicalSnapshot } from "./user-medical.types";
+import { UserPrivacySnapshot } from "./user-privacy.types";
+import { UserPhotoSnapshot } from "./user-photo.types";
 
 export interface UserAggregateProps {
     id?: string;
@@ -70,10 +74,10 @@ export interface UserSnapshot {
     createdAt?: Date;
     updatedAt?: Date;
     profile?: UserProfileSnapshot;
-    preference?: Record<string, unknown>;
+    preference?: UserPreferenceSnapshot;
     kycVerification?: UserKycSnapshot;
-    medicalRecord?: Record<string, unknown>;
-    privacySettings?: Record<string, unknown>;
-    photos?: Array<Record<string, unknown>>;
+    medicalRecord?: UserMedicalSnapshot;
+    privacySettings?: UserPrivacySnapshot;
+    photos?: UserPhotoSnapshot[];
     [key: string]: unknown;
 }
