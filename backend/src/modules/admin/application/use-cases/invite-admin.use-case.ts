@@ -9,7 +9,8 @@ import { EmailVO } from "../../../../shared/domain/value-objects/email.vo";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { AdminAggregate } from "../../domain/entities/admin.entity";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 

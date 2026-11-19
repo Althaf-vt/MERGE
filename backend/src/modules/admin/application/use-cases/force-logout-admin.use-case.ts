@@ -4,7 +4,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IForceLogoutAdminUseCase } from "../interfaces/admin-personnel.use-case.interface";
 import { ADMIN_SESSION_SERVICE, IAdminSessionService } from "../../domain/interfaces/admin-session.interface";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 
 @Injectable()
 export class ForceLogoutAdminUseCase implements IForceLogoutAdminUseCase {

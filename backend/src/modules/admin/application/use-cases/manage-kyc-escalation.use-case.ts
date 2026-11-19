@@ -13,7 +13,7 @@ import { IKycEscalationTaskRepository, KYC_ESCALATION_TASK_REPOSITORY } from "..
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { GetKycTasksQueryDto, RejectKycTaskDto, RequestKycResubmissionDto } from "../dtos/kyc-escalation.dto";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 import { KycEscalationDtoMapper } from "../mappers/kyc-escalation-dto.mapper";
 

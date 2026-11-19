@@ -10,7 +10,7 @@ import { GetKycTasksQueryDto, KycEscalationTaskResponseDto, RejectKycTaskDto, Re
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { RESPONSE_MESSAGES } from "../../../../shared/presentation/constants/response-messages.constant";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AdminRolesGuard } from "../../../../shared/infrastructure/security/guards/admin-roles.guard";
 import { RequireRoles } from "../../../../shared/infrastructure/security/decorators/require-roles.decorator";
 import { ApiResponseHelper } from "../../../../shared/presentation/utils/api-response.helper";

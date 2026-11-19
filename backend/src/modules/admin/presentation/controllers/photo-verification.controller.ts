@@ -7,7 +7,7 @@ import { RequireRoles } from "../../../../shared/infrastructure/security/decorat
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { GetPhotoTasksQueryDto, PhotoVerificationTaskResponseDto, RejectPhotoTaskDto } from "../../application/dtos/photo-verification.dto";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import {
     APPROVE_PHOTO_VERIFICATION_USE_CASE,
     CLAIM_PHOTO_TASK_USE_CASE,

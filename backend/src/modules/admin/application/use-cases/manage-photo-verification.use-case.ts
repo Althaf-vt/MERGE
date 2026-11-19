@@ -12,7 +12,7 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationTask } from "../../domain/entities/photo-verification-task.entity";
 import { RejectPhotoTaskDto } from "../dtos/photo-verification.dto";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 
 @Injectable()
 export class ClaimPhotoTaskUseCase implements IClaimPhotoTaskUseCase {

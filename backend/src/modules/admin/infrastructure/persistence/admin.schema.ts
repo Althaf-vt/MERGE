@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
 import { Document, Types } from "mongoose";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 

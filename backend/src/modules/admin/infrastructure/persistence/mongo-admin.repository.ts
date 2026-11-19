@@ -6,7 +6,7 @@ import { GetAdminsFilters, IAdminRepository, PaginatedAdminsResult } from "../..
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { AdminPersistenceMapper } from "./mappers/admin-persistence.mapper";
-import { AdminRole } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()

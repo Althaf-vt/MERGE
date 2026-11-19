@@ -1,6 +1,7 @@
 import { IBaseRepository } from "../../../../shared/domain/interfaces/base-repository.interface";
 import { AdminAggregate } from "../entities/admin.entity";
-import { AdminRole, AdminStatus } from "../enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../enums/admin.enums";
 
 export const ADMIN_REPOSITORY = 'ADMIN_REPOSITORY';
 

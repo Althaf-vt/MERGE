@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
-import { AdminRole, AdminStatus } from "../../domain/enums/admin.enums";
+import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
+import { AdminStatus } from "../../domain/enums/admin.enums";
 import { AdminPermission } from "../../domain/enums/admin-permission.enums";
 
 export class AdminLoginDto {
