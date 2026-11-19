@@ -132,6 +132,14 @@ import { UNBAN_USER_USE_CASE } from "./application/interfaces/unban-user.use-cas
 import { UnbanUserUseCase } from "./application/use-cases/unban-user.use-case";
 import { MARK_CASTING_COMPLETE_USE_CASE } from "./application/interfaces/mark-casting-complete.use-case.interface";
 import { MarkCastingCompleteUseCase } from "./application/use-cases/mark-casting-complete.use-case";
+import { GET_ADMIN_USERS_USE_CASE } from "./application/interfaces/get-admin-users.use-case.interface";
+import { GetAdminUsersUseCase } from "./application/use-cases/get-admin-users.use-case";
+import { GET_ADMIN_USER_BY_ID_USE_CASE } from "./application/interfaces/get-admin-user-by-id.use-case.interface";
+import { GetAdminUserByIdUseCase } from "./application/use-cases/get-admin-user-by-id.use-case";
+import { GET_CASTING_USER_CONTEXT_USE_CASE } from "./application/interfaces/get-casting-user-context.use-case.interface";
+import { GetCastingUserContextUseCase } from "./application/use-cases/get-casting-user-context.use-case";
+import { GET_PUBLIC_PROFILE_USE_CASE } from "./application/interfaces/get-public-profile.use-case.interface";
+import { GetPublicProfileUseCase } from "./application/use-cases/get-public-profile.use-case";
 
 @Module({
     imports: [
@@ -236,6 +244,9 @@ import { MarkCastingCompleteUseCase } from "./application/use-cases/mark-casting
         { provide: BAN_USER_USE_CASE, useClass: BanUserUseCase },
         { provide: UNBAN_USER_USE_CASE, useClass: UnbanUserUseCase },
         { provide: MARK_CASTING_COMPLETE_USE_CASE, useClass: MarkCastingCompleteUseCase },
+        { provide: GET_ADMIN_USERS_USE_CASE, useClass: GetAdminUsersUseCase },
+        { provide: GET_ADMIN_USER_BY_ID_USE_CASE, useClass: GetAdminUserByIdUseCase },
+        { provide: GET_CASTING_USER_CONTEXT_USE_CASE, useClass: GetCastingUserContextUseCase },
         { provide: USER_MANAGEMENT_FACADE, useClass: UserManagementFacade },
         { provide: CASTING_USER_FACADE, useClass: CastingUserFacade },
         { provide: MEDIA_FACADE, useClass: MediaFacade },
@@ -253,6 +264,7 @@ import { MarkCastingCompleteUseCase } from "./application/use-cases/mark-casting
         { provide: BLOCK_USER_USE_CASE, useClass: BlockUserUseCase },
         { provide: UNBLOCK_USER_USE_CASE, useClass: UnblockUserUseCase },
         { provide: GET_BLOCKED_USERS_USE_CASE, useClass: GetBlockedUsersUseCase },
+        { provide: GET_PUBLIC_PROFILE_USE_CASE, useClass: GetPublicProfileUseCase },
         { provide: PUBLIC_PROFILE_FACADE, useClass: PublicProfileFacade },
         AdminPhotoReviewListener,
         AdminKycReviewListener,
