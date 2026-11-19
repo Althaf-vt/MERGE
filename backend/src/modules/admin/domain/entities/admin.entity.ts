@@ -7,6 +7,7 @@ import { AdminRole } from "../../../../shared/domain/enums/admin-rbac.enums";
 import { AdminStatus } from "../enums/admin.enums";
 import { AdminSuspensionDurationVO } from "../value-objects/admin-suspension-duration.vo";
 import { AdminAggregateProps, AdminSnapshot, AdminStatusLog, InternalAdminProps } from "../interfaces/admin.types";
+import { ADMIN_ERROR_MESSAGES } from "../constants/admin-error-messages.constant";
 
 export class AdminAggregate extends AggregateRoot {
     private _props: InternalAdminProps;
@@ -58,7 +59,7 @@ export class AdminAggregate extends AggregateRoot {
     // Encapsulate Behaviors
     recordLogin(): void {
         if (this._props.status !== AdminStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, "Inactive admin account cannot login.");
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, ADMIN_ERROR_MESSAGES.INACTIVE_ACCOUNT_LOGIN);
         }
         this._props.lastLoginAt = new Date();
         this._markUpdatedAt();
@@ -71,10 +72,10 @@ export class AdminAggregate extends AggregateRoot {
 
     suspendAccount(durationVO: AdminSuspensionDurationVO, reason: string, actionBy: string): void {
         if (this._props.status === AdminStatus.DEACTIVATED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot suspend a deactivated account.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.CANNOT_SUSPEND_DEACTIVATED);
         }
         if (this._props.role === AdminRole.SUPER_ADMIN) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Super Admins cannot be suspended.');
+            throw new DomainException(ErrorCode.FORBIDDEN, ADMIN_ERROR_MESSAGES.CANNOT_SUSPEND_SUPER_ADMIN);
         }
         this._props.status = AdminStatus.SUSPENDED;
         this._props.suspendedUntil = durationVO.getExpiresAt();
@@ -84,7 +85,7 @@ export class AdminAggregate extends AggregateRoot {
 
     deactivateAccount(reason: string, actionBy: string): void {
         if (this._props.role === AdminRole.SUPER_ADMIN) {
-            throw new DomainException(ErrorCode.FORBIDDEN, 'Super Admins cannot be deactivated.');
+            throw new DomainException(ErrorCode.FORBIDDEN, ADMIN_ERROR_MESSAGES.CANNOT_DEACTIVATE_SUPER_ADMIN);
         }
 
         this._props.status = AdminStatus.DEACTIVATED;
@@ -95,9 +96,8 @@ export class AdminAggregate extends AggregateRoot {
 
     reactivateAccount(reason: string, actionBy: string): void {
         if (this._props.status === AdminStatus.ACTIVE) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Account is already active.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.ACCOUNT_ALREADY_ACTIVE);
         }
-
         this._props.status = AdminStatus.ACTIVE;
         this._props.suspendedUntil = null;
         this._recordStatusLog(AdminStatus.ACTIVE, reason, actionBy);
@@ -108,7 +108,6 @@ export class AdminAggregate extends AggregateRoot {
         if (this._props.role === AdminRole.SUPER_ADMIN) {
             this._props.permissions = Object.values(AdminPermission);
         } else {
-            // Deduplicate icoming array
             this._props.permissions = Array.from(new Set(newPermissions));
         }
 
@@ -117,7 +116,7 @@ export class AdminAggregate extends AggregateRoot {
 
     changeRole(newRole: AdminRole): void {
         if (this._props.status === AdminStatus.DEACTIVATED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot change the role of a deactivated admin.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.CANNOT_CHANGE_ROLE_DEACTIVATED);
         }
         this._props.role = newRole;
         this._markUpdatedAt();
@@ -125,7 +124,7 @@ export class AdminAggregate extends AggregateRoot {
 
     acceptInvitation(newPasswordHash: string): void {
         if (this._props.status !== AdminStatus.INVITED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'This account is not pending an invitation')
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.NOT_PENDING_INVITATION);
         }
         this._props.passwordHash = newPasswordHash;
         this._props.status = AdminStatus.ACTIVE;
@@ -135,11 +134,11 @@ export class AdminAggregate extends AggregateRoot {
 
     renewInvitation(newExpiryDate: Date): void {
         if (this._props.status !== AdminStatus.INVITED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending invitations can be renewed.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.ONLY_PENDING_INVITATIONS_RENEWED);
         }
 
         if (this._props.inviteExpiresAt && this._props.inviteExpiresAt.getTime() > new Date().getTime()) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Current invitation is still active. You can only re-invite expired accounts.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.INVITATION_STILL_ACTIVE);
         }
         
         this._props.inviteExpiresAt = newExpiryDate;
@@ -148,7 +147,7 @@ export class AdminAggregate extends AggregateRoot {
 
     validateCanCancelInvitation(): void {
         if (this._props.status !== AdminStatus.INVITED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Only pending invitations can be cancelled. Active or suspended accounts must be deactivated.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.ONLY_PENDING_INVITATIONS_CANCELLED);
         }
     }
 

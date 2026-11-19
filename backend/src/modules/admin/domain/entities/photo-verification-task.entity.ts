@@ -7,6 +7,7 @@ import { PhotoApprovedDomainEvent } from "../events/photo-approved.domain-event"
 import { PhotoRejectedDomainEvent } from "../events/photo-rejected.domain-event";
 import { ClaimDetailsVO } from "../value-objects/claim-details.vo";
 import { PhotoVerificationTaskProps, PhotoVerificationTaskSnapshot } from "../interfaces/photo-verification-task.types";
+import { ADMIN_ERROR_MESSAGES } from "../constants/admin-error-messages.constant";
 
 export class PhotoVerificationTask extends AggregateRoot {
     private _props: Required<PhotoVerificationTaskProps>;
@@ -69,7 +70,7 @@ export class PhotoVerificationTask extends AggregateRoot {
         this._props.claimDetails.validateCanAct(adminId, isSuperAdmin);
 
         if (!reason || reason.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'A reason is required when rejecting a profile photo.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, ADMIN_ERROR_MESSAGES.PHOTO_REJECTION_REASON_REQUIRED);
         }
 
         this._props.taskStatus = PhotoTaskStatus.REJECTED;
