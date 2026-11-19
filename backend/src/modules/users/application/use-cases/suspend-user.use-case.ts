@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IUserRepository, USER_REPOSITORY } from "../../domain/interfaces/user-repository.interface";
-import { SuspensionDurationVO, SuspensionUnit } from "../../domain/value-objects/suspension-duration.vo";
+import { SuspensionDurationVO } from "../../domain/value-objects/suspension-duration.vo";
+import { SuspensionUnit } from "../../domain/enums/user.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";

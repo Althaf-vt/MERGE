@@ -1,11 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
-
-export enum SuspensionUnit {
-    HOURS = "HOURS",
-    DAYS = "DAYS",
-}
+import { SuspensionUnit } from "../enums/user.enums";
 
 export class SuspensionDurationVO {
     private readonly _until: Date;

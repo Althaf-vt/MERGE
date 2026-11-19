@@ -166,3 +166,8 @@ export enum HandoffStatus {
   CANCELLED = 'CANCELLED',
   EXPIRED = 'EXPIRED',
 }
+
+export enum SuspensionUnit {
+  HOURS = 'HOURS',
+  DAYS = 'DAYS',
+}
