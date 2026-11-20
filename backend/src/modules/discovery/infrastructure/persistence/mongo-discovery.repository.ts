@@ -1,20 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { IDiscoveryRepository } from "../../domain/interfaces/discovery-repository.interface";
 import { DiscoveryCandidate, DiscoveryUserSearchContext, VectorSearchParams } from "../../domain/interfaces/discovery.types";
-import { DiscoveryPass } from "../../domain/entities/discovery-pass.entity";
 import { DiscoveryPersistenceMapper } from "./mappers/discovery-persistence.mapper";
 import { InjectConnection } from "@nestjs/mongoose";
 import { Connection, PipelineStage, Types } from "mongoose";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
-import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
-import { DISCOVERY_PERSISTENCE_COLLECTIONS } from "../constants/discovery-persistence.constants";
 
 @Injectable()
 export class DiscoveryRepository implements IDiscoveryRepository {
     constructor(@InjectConnection() private readonly _connection: Connection) { }
 
     async getUserSearchContext(userId: string): Promise<DiscoveryUserSearchContext | null> {
-        const user = await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.USERS).findOne(
+        const user = await this._connection.collection('users').findOne(
             { _id: new Types.ObjectId(userId) },
             { projection: { personalityVector: 1, location: 1, preference: 1 } }
         );
@@ -26,7 +23,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
     async findVectorMatches(params: VectorSearchParams): Promise<DiscoveryCandidate[]> {
         const { userContext, isGlobal, excludedIds, limit, skip } = params;
-        const collection = this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.USERS);
+        const collection = this._connection.collection('users');
 
         // Convert string IDs to ObjectIds within the persistence layer
         const objectIdExcludedIds = (excludedIds || []).map(id => new Types.ObjectId(id));
@@ -91,27 +88,5 @@ export class DiscoveryRepository implements IDiscoveryRepository {
         const results = await cursor.toArray();
 
         return DiscoveryPersistenceMapper.toDomainCandidateList(results);
-    }
-
-    async recordPass(pass: DiscoveryPass): Promise<void> {
-        const data = DiscoveryPersistenceMapper.toPersistencePass(pass);
-        await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.DISCOVERY_PASSES).updateOne(
-            { userId: data.userId, targetUserId: data.targetUserId },
-            { $set: data },
-            { upsert: true }
-        );
-    }
-
-    async getPassedUserIds(userId: string): Promise<string[]> {
-        const cutoffDate = new Date(Date.now() - EnvConfig.discovery.passTtlSeconds * 1000);
-        const docs = await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.DISCOVERY_PASSES).find(
-            {
-                userId,
-                createdAt: { $gte: cutoffDate },
-            },
-            { projection: { targetUserId: 1 } }
-        ).toArray();
-
-        return docs.map(d => (d as { targetUserId?: string }).targetUserId).filter((id): id is string => Boolean(id));
     }
 }

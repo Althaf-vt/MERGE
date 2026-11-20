@@ -5,6 +5,8 @@ import { ConnectionsModule } from "../connections/connections.module";
 import { DiscoveryController } from "./presentation/controllers/discovery.controller";
 import { DISCOVERY_REPOSITORY } from "./domain/interfaces/discovery-repository.interface";
 import { DiscoveryRepository } from "./infrastructure/persistence/mongo-discovery.repository";
+import { DISCOVERY_PASS_REPOSITORY } from "./domain/interfaces/discovery-pass-repository.interface";
+import { DiscoveryPassRepository } from "./infrastructure/persistence/mongo-discovery-pass.repository";
 import { GET_RECOMMENDATIONS_USE_CASE } from "./application/interfaces/get-recommendations.use-case.interface";
 import { GetRecommendationsUseCase } from "./application/use-cases/get-recommendations.use-case";
 import { PASS_CANDIDATE_USE_CASE } from "./application/interfaces/pass-candidate.use-case.interface";
@@ -22,6 +24,7 @@ import { DiscoveryPassSchema, DiscoveryPassSchemaClass } from "./infrastructure/
     controllers: [DiscoveryController],
     providers: [
         { provide: DISCOVERY_REPOSITORY, useClass: DiscoveryRepository },
+        { provide: DISCOVERY_PASS_REPOSITORY, useClass: DiscoveryPassRepository },
         { provide: GET_RECOMMENDATIONS_USE_CASE, useClass: GetRecommendationsUseCase },
         { provide: PASS_CANDIDATE_USE_CASE, useClass: PassCandidateUseCase },
     ],

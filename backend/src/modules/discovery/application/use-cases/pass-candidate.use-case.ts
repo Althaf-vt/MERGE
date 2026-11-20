@@ -1,13 +1,13 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IPassCandidateUseCase } from "../interfaces/pass-candidate.use-case.interface";
-import { DISCOVERY_REPOSITORY, IDiscoveryRepository } from "../../domain/interfaces/discovery-repository.interface";
+import { DISCOVERY_PASS_REPOSITORY, IDiscoveryPassRepository } from "../../domain/interfaces/discovery-pass-repository.interface";
 import { PassCandidateDto } from "../dtos/discovery.dto";
 import { DiscoveryPass } from "../../domain/entities/discovery-pass.entity";
 
 @Injectable()
 export class PassCandidateUseCase implements IPassCandidateUseCase {
     constructor(
-        @Inject(DISCOVERY_REPOSITORY) private readonly _discoveryRepo: IDiscoveryRepository,
+        @Inject(DISCOVERY_PASS_REPOSITORY) private readonly _passRepo: IDiscoveryPassRepository,
     ) {}
 
     async execute(userId: string, dto: PassCandidateDto): Promise<void> {
@@ -16,6 +16,6 @@ export class PassCandidateUseCase implements IPassCandidateUseCase {
             targetUserId: dto.targetUserId,
         });
 
-        await this._discoveryRepo.recordPass(pass);
+        await this._passRepo.recordPass(pass);
     }
 }

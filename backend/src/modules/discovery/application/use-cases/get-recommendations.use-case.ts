@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IGetRecommendationsUseCase } from "../interfaces/get-recommendations.use-case.interface";
 import { DISCOVERY_REPOSITORY, IDiscoveryRepository } from "../../domain/interfaces/discovery-repository.interface";
+import { DISCOVERY_PASS_REPOSITORY, IDiscoveryPassRepository } from "../../domain/interfaces/discovery-pass-repository.interface";
 import { GetRecommendationsQueryDto, PaginatedRecommendationsDto } from "../dtos/discovery.dto";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
@@ -14,6 +15,7 @@ import { DiscoveryRecommendationMapper } from "../mappers/discovery-recommendati
 export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
     constructor(
         @Inject(DISCOVERY_REPOSITORY) private readonly _repository: IDiscoveryRepository,
+        @Inject(DISCOVERY_PASS_REPOSITORY) private readonly _passRepository: IDiscoveryPassRepository,
         @Inject(MEDIA_FACADE) private readonly _userMediaFacade: IMediaFacade,
         @Inject(CONNECTIONS_FACADE) private readonly _connectionsFacade: IConnectionsFacade,
     ) { }
@@ -22,7 +24,7 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         const [userContext, interactedIds, passedUserIds] = await Promise.all([
             this._repository.getUserSearchContext(userId),
             this._connectionsFacade.getInteractedUserIds(userId),
-            this._repository.getPassedUserIds(userId),
+            this._passRepository.getPassedUserIds(userId),
         ]);
 
         if (!userContext?.personalityVector || userContext.personalityVector.length !== DISCOVERY_CONSTANTS.PERSONALITY_VECTOR_DIMENSIONS) {
