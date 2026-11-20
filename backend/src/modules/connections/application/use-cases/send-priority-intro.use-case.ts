@@ -18,23 +18,19 @@ export class SendPriorityIntroUseCase implements ISendPriorityIntroUseCase {
     ) { }
 
     async execute(requesterId: string, dto: SendPriorityIntroDto): Promise<void> {
-        // 1. Create and validate domain invariants (valid IDs, not self, valid message length)
         const intro = PriorityIntroAggregate.send({
             senderId: requesterId,
             recipientId: dto.targetUserId,
             icebreakerMessage: dto.icebreakerMessage,
         });
 
-        // 2. Validate target user active status and peer interactability
         const isInteractable = await this._publicProfileFacade.isProfileInteractable(dto.targetUserId);
         if (!isInteractable) {
             throw new DomainException(ErrorCode.USER_NOT_FOUND, PRIORITY_INTRO_ERROR_MESSAGES.TARGET_PROFILE_UNAVAILABLE);
         }
 
-        // 3. Synchronous cross-module call to deduct credit
         await this._billingFacade.deductPriorityCredit(requesterId);
 
-        // 4. Persist independent priority intro (dispatches PriorityIntroSentDomainEvent)
         await this._priorityIntroRepo.create(intro);
     }
 }

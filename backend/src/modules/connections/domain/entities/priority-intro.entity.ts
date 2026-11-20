@@ -2,21 +2,10 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PRIORITY_INTRO_CONSTANTS, PRIORITY_INTRO_ERROR_MESSAGES } from "../constants/priority-intro.constants";
-import { PriorityIntroSentDomainEvent } from "../events/priority-intro-sent.domain-event";
-
-export interface PriorityIntroProps {
-    id?: string;
-    senderId: string;
-    recipientId: string;
-    icebreakerMessage: string;
-    createdAt?: Date;
-}
-
-export type CreatePriorityIntroProps = Pick<PriorityIntroProps, 'senderId' | 'recipientId' | 'icebreakerMessage'>;
-export type PriorityIntroData = Required<PriorityIntroProps>;
+import { CreatePriorityIntroProps, InternalPriorityIntroProps, PriorityIntroProps, PriorityIntroSnapshot } from "../interfaces/priority-intro.types";
 
 export class PriorityIntroAggregate extends AggregateRoot {
-    private readonly _props: PriorityIntroData;
+    private readonly _props: InternalPriorityIntroProps;
 
     constructor(props: PriorityIntroProps) {
         super();
@@ -32,9 +21,7 @@ export class PriorityIntroAggregate extends AggregateRoot {
     }
 
     public static send(props: CreatePriorityIntroProps): PriorityIntroAggregate {
-        const intro = new PriorityIntroAggregate(props);
-        intro.addDomainEvent(new PriorityIntroSentDomainEvent(intro.senderId, intro.recipientId));
-        return intro;
+        return new PriorityIntroAggregate(props);
     }
 
     private _validateInvariants(props: PriorityIntroProps): void {
@@ -62,7 +49,7 @@ export class PriorityIntroAggregate extends AggregateRoot {
     get icebreakerMessage(): string { return this._props.icebreakerMessage; }
     get createdAt(): Date { return this._props.createdAt; }
 
-    public toJSON(): PriorityIntroData {
+    public toJSON(): PriorityIntroSnapshot {
         return { ...this._props };
     }
 }

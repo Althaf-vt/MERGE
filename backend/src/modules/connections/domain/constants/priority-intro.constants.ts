@@ -4,10 +4,6 @@ export const PRIORITY_INTRO_CONSTANTS = {
     },
 } as const;
 
-export const PRIORITY_INTRO_DOMAIN_EVENTS = {
-    SENT: 'priority_intro.sent',
-} as const;
-
 export const PRIORITY_INTRO_ERROR_MESSAGES = {
     PARTICIPANTS_REQUIRED: 'Sender ID and Recipient ID are required.',
     CANNOT_SEND_TO_YOURSELF: 'You cannot send a priority introduction to yourself.',

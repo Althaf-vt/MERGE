@@ -17,11 +17,12 @@ export class PriorityIntroPersistenceMapper {
     }
 
     public static toPersistence(entity: PriorityIntroAggregate): Record<string, unknown> {
+        const snapshot = entity.toJSON();
         return {
-            senderId: entity.senderId,
-            recipientId: entity.recipientId,
-            icebreakerMessage: entity.icebreakerMessage,
-            createdAt: entity.createdAt,
+            senderId: snapshot.senderId,
+            recipientId: snapshot.recipientId,
+            icebreakerMessage: snapshot.icebreakerMessage,
+            createdAt: snapshot.createdAt,
         };
     }
 }
