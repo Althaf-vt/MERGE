@@ -1,13 +1,7 @@
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../constants/scene-partner.constants";
-
-export interface CoachNoteProps {
-    observation: string;
-    tone: string;
-    pacing: string;
-    nextTip: string;
-}
+import { CoachNoteProps, CoachNoteSnapshot } from "../interfaces/coach-note.types";
 
 export class CoachNoteVO {
     private readonly _observation: string;
@@ -65,7 +59,7 @@ export class CoachNoteVO {
         );
     }
 
-    public toJSON(): CoachNoteProps {
+    public toJSON(): CoachNoteSnapshot {
         return {
             observation: this._observation,
             tone: this._tone,

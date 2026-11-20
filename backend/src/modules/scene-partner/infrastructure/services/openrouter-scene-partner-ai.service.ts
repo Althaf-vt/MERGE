@@ -6,7 +6,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 import { GenerateTurnResult, IScenePartnerAiService, SceneSessionSummaryData, SceneSimulationContext } from "../../domain/interfaces/scene-partner-ai.interface";
 import { SceneTurnSnapshot } from "../../domain/interfaces/scene-session.types";
-import { CoachNoteProps } from "../../domain/value-objects/coach-note.vo";
+import { CoachNoteProps } from "../../domain/interfaces/coach-note.types";
 import { PersonaPrompt } from "../../domain/prompts/persona.prompt";
 import { CoachEvaluationRawResult, CoachPrompt } from "../../domain/prompts/coach.prompt";
 import { SessionSummaryPrompt } from "../../domain/prompts/session-summary.prompt";

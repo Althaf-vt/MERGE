@@ -30,6 +30,8 @@ import { ResumeSceneSessionUseCase } from "./application/use-cases/resume-scene-
 import { EndSceneSessionUseCase } from "./application/use-cases/end-scene-session.use-case";
 import { GetActiveSceneSessionUseCase } from "./application/use-cases/get-active-scene-session.use-case";
 import { GetSceneSessionByIdUseCase } from "./application/use-cases/get-scene-session-by-id.use-case";
+import { GET_SESSION_BY_ID_USE_CASE } from "./application/interfaces/get-session-by-id.use-case.interface";
+import { GetSessionByIdUseCase } from "./application/use-cases/get-session-by-id.use-case";
 import { GetSceneSessionHistoryUseCase } from "./application/use-cases/get-scene-session-history.use-case";
 import { GetScenariosUseCase } from "./application/use-cases/get-scenarios.use-case";
 import { SCENE_PARTNER_FACADE } from "./application/interfaces/scene-partner-facade.interface";
@@ -76,6 +78,7 @@ import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-
         { provide: GET_ACTIVE_SCENE_SESSION_USE_CASE, useClass: GetActiveSceneSessionUseCase },
         { provide: GET_SCENE_SESSION_BY_ID_USE_CASE, useClass: GetSceneSessionByIdUseCase },
         { provide: GET_SCENE_SESSION_HISTORY_USE_CASE, useClass: GetSceneSessionHistoryUseCase },
+        { provide: GET_SESSION_BY_ID_USE_CASE, useClass: GetSessionByIdUseCase },
         { provide: GET_SCENARIOS_USE_CASE, useClass: GetScenariosUseCase },
         { provide: DELETE_SCENE_SESSION_USE_CASE, useClass: DeleteSceneSessionUseCase },
         { provide: UPDATE_COACHING_MODE_USE_CASE, useClass: UpdateCoachingModeUseCase },
