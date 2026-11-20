@@ -80,7 +80,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                 className={styles.modalContent}
                 onClick={(e) => e.stopPropagation()}
             >
-                // Header
+                {/* Header */}
                 <div className={styles.modalHeader}>
                     <div className={styles.headerLeft}>
                         {recipientPhotoUrl && !imageError ? (
@@ -127,7 +127,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                     </button>
                 </div>
 
-                // Body Form
+                {/* Body Form */}
                 <form onSubmit={handleSubmit}>
                     <div className={styles.modalBody}>
                         <div className={styles.textareaWrapper}>
@@ -146,7 +146,7 @@ export const PriorityIntroModal: React.FC<PriorityIntroModalProps> = ({
                         </div>
                     </div>
 
-                    // Footer
+                    {/* Footer */}
                     <div className={styles.modalFooter}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                             <div className={`${styles.creditBadge} ${!hasSufficientCredits && !isCreditLoading ? styles.creditBadgeWarning : ''}`}>
