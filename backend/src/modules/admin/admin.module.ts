@@ -65,6 +65,31 @@ import { ApprovePhotoVerificationUseCase, ClaimPhotoTaskUseCase, CreatePhotoVeri
 import { UserPhotoFlaggedListener } from "./application/listeners/user-photo-flagged.listener";
 import { PhotoVerificationController } from "./presentation/controllers/photo-verification.controller";
 import { PhotoVerificationTaskSchema, PhotoVerificationTaskSchemaClass } from "./infrastructure/persistence/photo-verification-task.schema";
+import { KYC_ESCALATION_TASK_REPOSITORY } from "./domain/interfaces/kyc-escalation-task-repository.interface";
+import { KycEscalationTaskRepository } from "./infrastructure/persistence/mongo-kyc-escalation-task.repository";
+import {
+    APPROVE_KYC_TASK_USE_CASE,
+    CLAIM_KYC_TASK_USE_CASE,
+    GET_KYC_TASKS_USE_CASE,
+    REJECT_KYC_TASK_USE_CASE,
+    RELEASE_KYC_TASK_CLAIM_USE_CASE,
+    REQUEST_RESUBMISSION_KYC_TASK_USE_CASE,
+    TAKEOVER_KYC_TASK_CLAIM_USE_CASE,
+} from "./application/interfaces/kyc-escalation.use-case.interface";
+import {
+    ApproveKycTaskUseCase,
+    ClaimKycTaskUseCase,
+    GetKycTasksUseCase,
+    RejectKycTaskUseCase,
+    ReleaseKycTaskClaimUseCase,
+    RequestKycResubmissionUseCase,
+    TakeoverKycTaskClaimUseCase,
+} from "./application/use-cases/manage-kyc-escalation.use-case";
+import { KycEscalationController } from "./presentation/controllers/kyc-escalation.controller";
+import { KycEscalationTaskSchema, KycEscalationTaskSchemaClass } from "./infrastructure/persistence/kyc-escalation-task.schema";
+import { CREATE_KYC_ESCALATION_TASK_USE_CASE } from "./application/interfaces/create-kyc-task.use-case.interface";
+import { CreateKycEscalationTaskUseCase } from "./application/use-cases/create-kyc-escalation-task.use-case";
+import { UserKycEscalatedListener } from "./application/listeners/user-kyc-escalated.listener";
 import { ScenePartnerModule } from "../scene-partner/scene-partner.module";
 import { AdminScenePartnerController } from "./presentation/controllers/admin-scene-partner.controller";
 import { AdminAuditLogController } from "./presentation/controllers/admin-audit-log.controller";
@@ -111,6 +136,7 @@ import {
             { name: Admin.name, schema: AdminSchema },
             { name: ModerationLogSchemaClass.name, schema: ModerationLogSchema },
             { name: PhotoVerificationTaskSchemaClass.name, schema: PhotoVerificationTaskSchema },
+            { name: KycEscalationTaskSchemaClass.name, schema: KycEscalationTaskSchema },
             { name: AdminAuditLogSchemaClass.name, schema: AdminAuditLogSchema },
         ]),
     ],
@@ -119,6 +145,7 @@ import {
         AdminUsersController,
         AdminManagementController,
         PhotoVerificationController,
+        KycEscalationController,
         AdminScenePartnerController,
         AdminAuditLogController,
     ],
@@ -164,6 +191,16 @@ import {
         { provide: APPROVE_PHOTO_VERIFICATION_USE_CASE, useClass: ApprovePhotoVerificationUseCase },
         { provide: REJECT_PHOTO_VERIFICATION_USE_CASE, useClass: RejectPhotoVerificationUseCase },
         { provide: CREATE_PHOTO_VERIFICATION_TASK_USE_CASE, useClass: CreatePhotoVerificationTaskUseCase },
+        // KYC Escalation Use Cases & Repository
+        { provide: KYC_ESCALATION_TASK_REPOSITORY, useClass: KycEscalationTaskRepository },
+        { provide: GET_KYC_TASKS_USE_CASE, useClass: GetKycTasksUseCase },
+        { provide: CLAIM_KYC_TASK_USE_CASE, useClass: ClaimKycTaskUseCase },
+        { provide: RELEASE_KYC_TASK_CLAIM_USE_CASE, useClass: ReleaseKycTaskClaimUseCase },
+        { provide: TAKEOVER_KYC_TASK_CLAIM_USE_CASE, useClass: TakeoverKycTaskClaimUseCase },
+        { provide: APPROVE_KYC_TASK_USE_CASE, useClass: ApproveKycTaskUseCase },
+        { provide: REJECT_KYC_TASK_USE_CASE, useClass: RejectKycTaskUseCase },
+        { provide: REQUEST_RESUBMISSION_KYC_TASK_USE_CASE, useClass: RequestKycResubmissionUseCase },
+        { provide: CREATE_KYC_ESCALATION_TASK_USE_CASE, useClass: CreateKycEscalationTaskUseCase },
         { provide: ADMIN_AUDIT_LOG_REPOSITORY, useClass: MongoAdminAuditLogRepository },
         { provide: RECORD_ADMIN_AUDIT_LOG_USE_CASE, useClass: RecordAdminAuditLogUseCase },
         { provide: GET_ADMIN_AUDIT_LOGS_USE_CASE, useClass: GetAdminAuditLogsUseCase },
@@ -186,6 +223,7 @@ import {
         AdminAuditInterceptor,
         // Register Event Listener
         UserPhotoFlaggedListener,
+        UserKycEscalatedListener,
     ],
     exports: [],
 })

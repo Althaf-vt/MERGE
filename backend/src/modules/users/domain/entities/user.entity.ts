@@ -17,6 +17,7 @@ import { BlockedRelationship } from "./blocked-relationship.entity";
 import { UserBlockedDomainEvent } from "../events/user-blocked.domain-event";
 import { UserUnblockedDomainEvent } from "../events/user-unblocked.domain-event";
 import { UserPhotoFlaggedDomainEvent } from "../events/user-photo-flagged.domain-event";
+import { UserKycEscalatedDomainEvent } from "../events/user-kyc-escalated.domain-event";
 import { UserAggregateProps, UserSnapshot } from "../interfaces/user.types";
 import { USER_ERROR_MESSAGES } from "../constants/user-error-messages.constant";
 import { USER_POLICY } from "../constants/user.constants";
@@ -233,6 +234,27 @@ export class UserAggregate extends AggregateRoot {
     completeKyc(): void {
         this._props.kycCompleted = true;
         this.advanceOnboardingStep(USER_POLICY.ONBOARDING_STEPS.KYC_COMPLETE);
+        this.markUpdatedAt();
+    }
+
+    escalateKycForManualReview(payload: {
+        documentType: string;
+        issuingCountry: string;
+        kycSelfieUrl: string;
+        uploadedDocumentUrl: string;
+        livenessScore: number;
+        faceMatchScore: number;
+    }): void {
+        if (!this.id) return;
+        this.addDomainEvent(new UserKycEscalatedDomainEvent(
+            this.id,
+            payload.documentType,
+            payload.issuingCountry,
+            payload.kycSelfieUrl,
+            payload.uploadedDocumentUrl,
+            payload.livenessScore,
+            payload.faceMatchScore
+        ));
         this.markUpdatedAt();
     }
 
