@@ -7,6 +7,8 @@ import { ICastingUserContext } from "../../domain/interfaces/casting-user-contex
 import { TranscriptEntry } from "../../domain/interfaces/casting-session.types";
 import { TranscriptRole } from "../../domain/enums/casting.enums";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
+import { CASTING_ERROR_MESSAGES } from "../../domain/constants/casting-error-messages.constant";
+import { CASTING_SESSION_DIALOGUE } from "../../domain/constants/casting-session.constant";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 import { AI_MESSAGE_ROLE, OPENROUTER_HEADERS } from "../../../../shared/infrastructure/constants/ai-protocol.constant";
 
@@ -22,7 +24,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
     constructor() {
         const apiKey = EnvConfig.ai.apiKey;
         if (!apiKey || apiKey.trim().length === 0) {
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, "OPENROUTER_API_KEY is missing.");
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, CASTING_ERROR_MESSAGES.OPENROUTER_KEY_MISSING);
         }
 
         this._chatModel = EnvConfig.ai.chatModel;
@@ -65,11 +67,11 @@ export class OpenRouterCastingAiService implements ICastingAiService {
                 temperature: this._chatTemperature,
             });
 
-            return completion.choices[0]?.message?.content || 'Hello! What does a perfect Sunday look like for you?';
+            return completion.choices[0]?.message?.content || CASTING_SESSION_DIALOGUE.DEFAULT_OPENING_FALLBACK;
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this._logger.error(`Failed to generate opening question: ${errorMessage}`);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to generate an opening question.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, CASTING_ERROR_MESSAGES.AI_OPENING_QUESTION_FAILED);
         }
     }
 
@@ -93,11 +95,11 @@ export class OpenRouterCastingAiService implements ICastingAiService {
                 temperature: this._chatTemperature,
             });
 
-            return completion.choices[0]?.message?.content || 'That is fascinating. Tell me more about how that impacts your relationships?';
+            return completion.choices[0]?.message?.content || CASTING_SESSION_DIALOGUE.DEFAULT_FOLLOW_UP_FALLBACK;
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this._logger.error(`Failed to generate follow up question: ${errorMessage}`);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to generate a follow-up question.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, CASTING_ERROR_MESSAGES.AI_FOLLOW_UP_FAILED);
         }
     }
 
@@ -114,7 +116,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
                 temperature: this._summaryTemperature,
             });
 
-            const aiSummary = summaryCompletion.choices[0]?.message?.content || 'An introspective individual valuing deep connections.';
+            const aiSummary = summaryCompletion.choices[0]?.message?.content || CASTING_SESSION_DIALOGUE.DEFAULT_SUMMARY_FALLBACK;
 
             // Generate the Vector Embedding for the RAG search using OpenRouter's passthrough
             const embeddingResponse = await this._client.embeddings.create({
@@ -128,7 +130,7 @@ export class OpenRouterCastingAiService implements ICastingAiService {
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             this._logger.error(`Failed to generate summary and vector: ${errorMessage}`);
-            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, 'AI Service failed to process final interview data.');
+            throw new DomainException(ErrorCode.INTERNAL_SERVER_ERROR, CASTING_ERROR_MESSAGES.AI_FINAL_DATA_FAILED);
         }
     }
 }
