@@ -7,6 +7,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { IMediaFacade, MEDIA_FACADE } from "../../../users/application/interfaces/media-facade.interface";
 import { CONNECTIONS_FACADE, IConnectionsFacade } from "../../../connections/application/interfaces/connections-facade.interface";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
+import { DISCOVERY_ERROR_MESSAGES } from "../../domain/constants/discovery-error-messages.constant";
 import { DiscoveryRecommendationMapper } from "../mappers/discovery-recommendation.mapper";
 
 @Injectable()
@@ -27,7 +28,7 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         if (!userContext?.personalityVector || userContext.personalityVector.length !== DISCOVERY_CONSTANTS.PERSONALITY_VECTOR_DIMENSIONS) {
             throw new DomainException(
                 ErrorCode.VALIDATION_FAILED,
-                'Personality vector missing or invalid. Please complete the Casting Director interview.'
+                DISCOVERY_ERROR_MESSAGES.INVALID_PERSONALITY_VECTOR
             );
         }
 

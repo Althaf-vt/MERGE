@@ -2,6 +2,7 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { DiscoveryPassProps, DiscoveryPassSnapshot, InternalDiscoveryPassProps } from "../interfaces/discovery-pass.types";
+import { DISCOVERY_ERROR_MESSAGES } from "../constants/discovery-error-messages.constant";
 
 export class DiscoveryPass extends AggregateRoot {
     private _props: InternalDiscoveryPassProps;
@@ -22,15 +23,15 @@ export class DiscoveryPass extends AggregateRoot {
         const targetUserId = props.targetUserId?.trim();
 
         if (!userId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'User ID is required.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, DISCOVERY_ERROR_MESSAGES.USER_ID_REQUIRED);
         }
 
         if (!targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Target user ID is required.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, DISCOVERY_ERROR_MESSAGES.TARGET_USER_REQUIRED);
         }
 
         if (userId === targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot pass on yourself.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, DISCOVERY_ERROR_MESSAGES.CANNOT_PASS_SELF);
         }
     }
 
