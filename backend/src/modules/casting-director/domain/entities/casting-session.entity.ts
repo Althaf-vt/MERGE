@@ -36,7 +36,7 @@ export class CastingSession extends AggregateRoot {
 
     // Adds a turn to the interview transcript and increments the turn count
     addTurn(role: TranscriptRole, content: string): void {
-        if (this._props.status === 'COMPLETED') {
+        if (this._props.status === CastingSessionStatus.COMPLETED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.CONCLUDED_SESSION_TURNS);
         }
 
@@ -68,16 +68,16 @@ export class CastingSession extends AggregateRoot {
     }
 
     // Finalizes the session with the generated vector and AI summary
-    completeSession(personalityVerctor: number[], aiSummary: string): void {
+    completeSession(personalityVector: number[], aiSummary: string): void {
         if (this._props.status === CastingSessionStatus.COMPLETED) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.SESSION_ALREADY_COMPLETED);
         }
 
-        if (!personalityVerctor || personalityVerctor.length === 0) {
+        if (!personalityVector || personalityVector.length === 0) {
             throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.PERSONALITY_VECTOR_REQUIRED);
         }
 
-        this._props.personalityVector = personalityVerctor;
+        this._props.personalityVector = personalityVector;
         this._props.aiSummary = aiSummary.trim();
         this._props.status = CastingSessionStatus.COMPLETED;
         this._markUpdatedAt();
