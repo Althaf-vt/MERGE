@@ -3,7 +3,6 @@ import { IProcessCastingMessageUseCase } from "../interfaces/process-casting-mes
 import { CASTING_SESSION_REPOSITORY, ICastingSessionRepository } from "../../domain/interfaces/casting-session-repository.interface";
 import { CASTING_USER_FACADE, IcastingUserFacade } from "../../../users/application/interfaces/casting-user-facade.interface";
 import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/casting-ai-service.interface";
-import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
