@@ -4,16 +4,17 @@ import { DiscoveryCandidate, DiscoveryUserSearchContext, VectorSearchParams } fr
 import { DiscoveryPass } from "../../domain/entities/discovery-pass.entity";
 import { DiscoveryPersistenceMapper } from "./mappers/discovery-persistence.mapper";
 import { InjectConnection } from "@nestjs/mongoose";
-import { Connection, Types } from "mongoose";
+import { Connection, PipelineStage, Types } from "mongoose";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { DISCOVERY_PERSISTENCE_COLLECTIONS } from "../constants/discovery-persistence.constants";
 
 @Injectable()
 export class DiscoveryRepository implements IDiscoveryRepository {
     constructor(@InjectConnection() private readonly _connection: Connection) { }
 
     async getUserSearchContext(userId: string): Promise<DiscoveryUserSearchContext | null> {
-        const user = await this._connection.collection('users').findOne(
+        const user = await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.USERS).findOne(
             { _id: new Types.ObjectId(userId) },
             { projection: { personalityVector: 1, location: 1, preference: 1 } }
         );
@@ -25,7 +26,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
     async findVectorMatches(params: VectorSearchParams): Promise<DiscoveryCandidate[]> {
         const { userContext, isGlobal, excludedIds, limit, skip } = params;
-        const collection = this._connection.collection('users');
+        const collection = this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.USERS);
 
         // Convert string IDs to ObjectIds within the persistence layer
         const objectIdExcludedIds = (excludedIds || []).map(id => new Types.ObjectId(id));
@@ -42,7 +43,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
         // 3. Atlas Vector Search Pipeline
         // Note: Target index 'personality_vector_index' with 1536 dims & cosine similarity as configured
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $vectorSearch: {
                     index: 'personality_vector_index',
@@ -94,7 +95,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
     async recordPass(pass: DiscoveryPass): Promise<void> {
         const data = DiscoveryPersistenceMapper.toPersistencePass(pass);
-        await this._connection.collection('discovery_passes').updateOne(
+        await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.DISCOVERY_PASSES).updateOne(
             { userId: data.userId, targetUserId: data.targetUserId },
             { $set: data },
             { upsert: true }
@@ -103,7 +104,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
     async getPassedUserIds(userId: string): Promise<string[]> {
         const cutoffDate = new Date(Date.now() - EnvConfig.discovery.passTtlSeconds * 1000);
-        const docs = await this._connection.collection('discovery_passes').find(
+        const docs = await this._connection.collection(DISCOVERY_PERSISTENCE_COLLECTIONS.DISCOVERY_PASSES).find(
             {
                 userId,
                 createdAt: { $gte: cutoffDate },

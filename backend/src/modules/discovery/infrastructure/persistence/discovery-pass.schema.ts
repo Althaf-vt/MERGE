@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
+import { DISCOVERY_PERSISTENCE_COLLECTIONS } from "../constants/discovery-persistence.constants";
 
 export type DiscoveryPassDocument = DiscoveryPassSchemaClass & Document;
 
-@Schema({ timestamps: { createdAt: true, updatedAt: false }, collection: 'discovery_passes' })
+@Schema({ timestamps: { createdAt: true, updatedAt: false }, collection: DISCOVERY_PERSISTENCE_COLLECTIONS.DISCOVERY_PASSES })
 export class DiscoveryPassSchemaClass {
     @Prop({ required: true, index: true })
     userId: string;
