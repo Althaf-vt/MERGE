@@ -32,6 +32,8 @@ import { PriorityIntroRepository } from "./infrastructure/persistence/mongo-prio
 import { GetPrivateListUseCase } from "./application/use-cases/get-private-list.use-case";
 import { GetConnectionsUseCase } from "./application/use-cases/get-connections.use-case";
 import { ConnectionAcceptedListener } from "./application/listeners/connection-accepted.listener";
+import { GET_INTERACTED_USER_IDS_USE_CASE } from "./application/interfaces/get-interacted-user-ids.use-case.interface";
+import { GetInteractedUserIdsUseCase } from "./application/use-cases/get-interacted-user-ids.use-case";
 
 @Module({
     imports: [
@@ -50,6 +52,7 @@ import { ConnectionAcceptedListener } from "./application/listeners/connection-a
         { provide: PRIORITY_INTRO_REPOSITORY, useClass: PriorityIntroRepository },
         { provide: BILLING_FACADE, useExisting: BILLING_PRIORITY_CREDIT_FACADE },
 
+        { provide: GET_INTERACTED_USER_IDS_USE_CASE, useClass: GetInteractedUserIdsUseCase },
         { provide: CONNECTIONS_FACADE, useClass: ConnectionsFacade },
 
         { provide: GET_CONNECTIONS_USE_CASE, useClass: GetConnectionsUseCase },
