@@ -1,5 +1,6 @@
 import { CastingSession } from "../../../domain/entities/casting-session.entity";
 import { CastingSessionStatus, TranscriptRole } from "../../../domain/enums/casting.enums";
+import { CastingSessionSnapshot } from "../../../domain/interfaces/casting-session.types";
 import { CastingSessionDocument } from "../casting-session.schema";
 
 export class CastingSessionPersistenceMapper {
@@ -18,14 +19,14 @@ export class CastingSessionPersistenceMapper {
             maxTurns: raw.maxTurns,
             personalityVector: raw.personalityVector,
             aiSummary: raw.aiSummary,
-            createdAt: raw['createdAt'],
-            updatedAt: raw['updatedAt'],
+            createdAt: raw.createdAt,
+            updatedAt: raw.updatedAt,
         });
     }
 
     // Flattens the Domain Entity into a plain object for MongoDB
     public static toPersistence(entity: CastingSession): Record<string, unknown> {
-        const data = entity.toJSON();
+        const data: CastingSessionSnapshot = entity.toJSON();
         return {
             userId: data.userId,
             status: data.status,

@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { ICastingUserContext } from "../../domain/interfaces/casting-user-context.interface";
-import { TranscriptEntry } from "../../domain/entities/casting-session.entity";
+import { TranscriptEntry } from "../../domain/interfaces/casting-session.types";
 import { TranscriptRole } from "../../domain/enums/casting.enums";
 import { CastingPrompts } from "../../domain/prompts/casting.prompts";
 import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";

@@ -3,28 +3,10 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { CastingSessionStatus, TranscriptRole } from "../enums/casting.enums";
 import { CASTING_SESSION_POLICY } from "../constants/casting-session.constant";
-
-export interface TranscriptEntry {
-    role: TranscriptRole;
-    content: string;
-    timestamp: Date;
-}
-
-export interface CastingSessionProps {
-    id?: string;
-    userId: string;
-    status: CastingSessionStatus;
-    transcript: TranscriptEntry[];
-    turnCount: number;
-    maxTurns?: number;
-    personalityVector?: number[];
-    aiSummary?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { CastingSessionProps, CastingSessionSnapshot, InternalCastingSessionProps, TranscriptEntry } from "../interfaces/casting-session.types";
 
 export class CastingSession extends AggregateRoot {
-    private _props: CastingSessionProps;
+    private _props: InternalCastingSessionProps;
 
     constructor(props: CastingSessionProps) {
         super();
@@ -104,7 +86,11 @@ export class CastingSession extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
-        return { ...this._props };
+    toJSON(): CastingSessionSnapshot {
+        return {
+            ...this._props,
+            transcript: this._props.transcript.map(entry => ({ ...entry })),
+            personalityVector: [...this._props.personalityVector],
+        };
     }
 }

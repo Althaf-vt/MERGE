@@ -1,5 +1,5 @@
 import { ICastingUserContext } from '../interfaces/casting-user-context.interface';
-import { TranscriptEntry } from '../entities/casting-session.entity';
+import { TranscriptEntry } from '../interfaces/casting-session.types';
 
 export const CastingPrompts = {
     getSystemPrompt: (context: ICastingUserContext): string => {

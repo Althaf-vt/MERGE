@@ -1,5 +1,5 @@
 import { ICastingUserContext } from "./casting-user-context.interface";
-import { TranscriptEntry } from "../entities/casting-session.entity";
+import { TranscriptEntry } from "./casting-session.types";
 
 export const CASTING_AI_SERVICE = 'CASTING_AI_SERVICE';
 
