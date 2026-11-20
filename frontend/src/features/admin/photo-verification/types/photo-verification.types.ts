@@ -15,7 +15,7 @@ export interface PhotoVerificationTask {
     rejectionReason?: string;
     resolvedAt: string | null;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
 
 export interface GetPhotoTasksQueryParams {
