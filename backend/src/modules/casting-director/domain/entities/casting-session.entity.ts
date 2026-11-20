@@ -3,6 +3,7 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { CastingSessionStatus, TranscriptRole } from "../enums/casting.enums";
 import { CASTING_SESSION_POLICY } from "../constants/casting-session.constant";
+import { CASTING_ERROR_MESSAGES } from "../constants/casting-error-messages.constant";
 import { CastingSessionProps, CastingSessionSnapshot, InternalCastingSessionProps, TranscriptEntry } from "../interfaces/casting-session.types";
 
 export class CastingSession extends AggregateRoot {
@@ -36,16 +37,16 @@ export class CastingSession extends AggregateRoot {
     // Adds a turn to the interview transcript and increments the turn count
     addTurn(role: TranscriptRole, content: string): void {
         if (this._props.status === 'COMPLETED') {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add turns to a concluded casting session.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.CONCLUDED_SESSION_TURNS);
         }
 
         // Block the user from typing more once we hit the limit
         if (this._props.status === CastingSessionStatus.ANALYZING && role === TranscriptRole.USER) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add user turns while the session is analyzing.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.ANALYZING_USER_TURNS);
         }
 
         if (!content || content.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Transcript content cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.EMPTY_TRANSCRIPT_CONTENT);
         }
 
         this._props.transcript.push({
@@ -69,11 +70,11 @@ export class CastingSession extends AggregateRoot {
     // Finalizes the session with the generated vector and AI summary
     completeSession(personalityVerctor: number[], aiSummary: string): void {
         if (this._props.status === CastingSessionStatus.COMPLETED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Casting session is already completed.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.SESSION_ALREADY_COMPLETED);
         }
 
         if (!personalityVerctor || personalityVerctor.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector embedding is required.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.PERSONALITY_VECTOR_REQUIRED);
         }
 
         this._props.personalityVector = personalityVerctor;

@@ -7,6 +7,8 @@ import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { CASTING_ERROR_MESSAGES } from "../../domain/constants/casting-error-messages.constant";
+import { CASTING_SESSION_DIALOGUE } from "../../domain/constants/casting-session.constant";
 import { CastingSessionResponseDto } from "../dtos/casting-session-response.dto";
 import { CastingSessionDtoMapper } from "../mappers/casting-session-dto.mapper";
 
@@ -22,7 +24,7 @@ export class ProcessCastingMessageUseCase implements IProcessCastingMessageUseCa
         const session = await this._sessionRepository.findActiveSessionByUserId(userId);
 
         if (!session) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'No active casting session found. Please initialize first.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.NO_ACTIVE_SESSION_INITIALIZE);
         }
 
         // Update the domain aggregate
@@ -30,14 +32,14 @@ export class ProcessCastingMessageUseCase implements IProcessCastingMessageUseCa
 
         if (session.status === CastingSessionStatus.ANALYZING) {
             // The limit has been reached. Add a final closing remark before the client triggers finalization.
-            session.addTurn(TranscriptRole.AI, 'Thank you for sharing all of that. I have everything I need to analyze your profile!');
+            session.addTurn(TranscriptRole.AI, CASTING_SESSION_DIALOGUE.CLOSING_REMARK);
             await this._sessionRepository.update(session);
             return CastingSessionDtoMapper.toResponseDto(session);
         }
 
         const userContext = await this._userFacade.getUserContextForCasting(userId);
         if (!userContext) {
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User context not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CASTING_ERROR_MESSAGES.USER_CONTEXT_NOT_FOUND);
         }
 
         // Call OpenRouter for the next question

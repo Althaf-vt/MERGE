@@ -7,6 +7,7 @@ import { CastingSession } from "../../domain/entities/casting-session.entity";
 import { CastingSessionStatus, TranscriptRole } from "../../domain/enums/casting.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { CASTING_ERROR_MESSAGES } from "../../domain/constants/casting-error-messages.constant";
 import { CastingSessionResponseDto } from "../dtos/casting-session-response.dto";
 import { CastingSessionDtoMapper } from "../mappers/casting-session-dto.mapper";
 
@@ -28,7 +29,7 @@ export class InitializeCastingSessionUseCase implements IInitializeCastingSessio
         // 2. Fetch user context across module boundaries using the isolated Facade
         const userContext = await this._userFacade.getUserContextForCasting(userId);
         if(!userContext){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, "User context could not be found for casting.");
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CASTING_ERROR_MESSAGES.USER_CONTEXT_NOT_FOUND_INIT);
         }
 
         // 3. Generate the dynamic opening question via AI using the isolated context
