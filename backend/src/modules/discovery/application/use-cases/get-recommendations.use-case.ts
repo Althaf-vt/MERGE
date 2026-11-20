@@ -41,7 +41,7 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         // Exclude current user, interacted profiles (connections, private lists, priority intros), and active passes
         const excludedIds = Array.from(new Set([userId, ...interactedIds, ...passedUserIds]));
 
-        const rawCandidates = await this._repository.findVectorMatches({
+        const candidates = await this._repository.findVectorMatches({
             userContext,
             isGlobal,
             excludedIds,
@@ -50,7 +50,7 @@ export class GetRecommendationsUseCase implements IGetRecommendationsUseCase {
         });
 
         return DiscoveryRecommendationMapper.toPaginatedResponseDto(
-            rawCandidates,
+            candidates,
             page,
             limit,
             userContext,
