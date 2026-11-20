@@ -18,11 +18,12 @@ export class PrivateListPersistenceMapper {
     }
 
     public static toPersistence(entity: PrivateListAggregate): Record<string, unknown> {
+        const snapshot = entity.toJSON();
         return {
-            userId: entity.userId,
-            targetUserId: entity.targetUserId,
-            listType: entity.listType,
-            createdAt: entity.createdAt,
+            userId: snapshot.userId,
+            targetUserId: snapshot.targetUserId,
+            listType: snapshot.listType,
+            createdAt: snapshot.createdAt,
         };
     }
 }

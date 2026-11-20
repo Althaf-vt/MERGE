@@ -20,12 +20,13 @@ export class ConnectionPersistenceMapper {
     }
 
     public static toPersistence(entity: ConnectionAggregate): Record<string, unknown> {
+        const snapshot = entity.toJSON();
         return {
-            requesterId: entity.requesterId,
-            recipientId: entity.recipientId,
-            status: entity.status,
-            respondedAt: entity.respondedAt ?? null,
-            updatedAt: entity.updatedAt,
+            requesterId: snapshot.requesterId,
+            recipientId: snapshot.recipientId,
+            status: snapshot.status,
+            respondedAt: snapshot.respondedAt ?? null,
+            updatedAt: snapshot.updatedAt,
         };
     }
 }
