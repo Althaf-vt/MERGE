@@ -1,5 +1,6 @@
 import { ScenarioCategory, SceneSessionStatus, SceneSpeakerRole, SimulationType } from "../../../../shared/domain/enums/scene-partner.enums";
-import { CoachNoteProps, CoachNoteVO } from "../value-objects/coach-note.vo";
+import { CoachNoteVO } from "../value-objects/coach-note.vo";
+import { CoachNoteProps } from "./coach-note.types";
 import { SceneSessionSummaryData } from "./scene-partner-ai.interface";
 
 export interface SceneTurn {
