@@ -27,6 +27,21 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
         // If the system auto-approves based on thresholds, update the aggregate
         if (kyc.verificationStatus === VerificationStatus.APPROVED) {
             user.completeKyc();
+        } else if (kyc.verificationStatus === VerificationStatus.UNDER_REVIEW) {
+            const livenessResults = kyc.livenessResults ?? [];
+            const passedLiveness = livenessResults.filter((r) => r.status === 'PASSED');
+            const averageLiveness = passedLiveness.length > 0
+                ? passedLiveness.reduce((acc, curr) => acc + curr.score, 0) / passedLiveness.length
+                : 0;
+
+            user.escalateKycForManualReview({
+                documentType: kyc.documentType || 'UNKNOWN',
+                issuingCountry: kyc.issuingCountry || 'UNKNOWN',
+                kycSelfieUrl: kyc.liveSelfieS3 || '',
+                uploadedDocumentUrl: kyc.liveSelfieS3 || '',
+                livenessScore: Math.round(averageLiveness * 100) / 100,
+                faceMatchScore: Math.round((kyc.selfieConfidence ?? 0) * 100) / 100,
+            });
         }
 
         await this._userRepository.update(user);
