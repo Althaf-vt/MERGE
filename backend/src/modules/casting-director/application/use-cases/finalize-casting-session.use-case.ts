@@ -6,6 +6,7 @@ import { CASTING_AI_SERVICE, ICastingAiService } from "../../domain/interfaces/c
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { CastingSessionStatus } from "../../domain/enums/casting.enums";
+import { CASTING_ERROR_MESSAGES } from "../../domain/constants/casting-error-messages.constant";
 
 @Injectable()
 export class FinalizeCastingSessionUseCase implements IFinalizeCastingSessionUseCase{
@@ -19,16 +20,16 @@ export class FinalizeCastingSessionUseCase implements IFinalizeCastingSessionUse
         const session = await this._sessionRepository.findActiveSessionByUserId(userId);
 
         if(!session){
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'No active casting session found to finalize.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.NO_ACTIVE_SESSION_FINALIZE);
         }
 
         if(session.status !== CastingSessionStatus.ANALYZING){
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Session has not reached the required turns to finalize.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.REQUIRED_TURNS_NOT_REACHED);
         }
 
         const userContext = await this._userFacade.getUserContextForCasting(userId);
         if(!userContext){
-            throw new DomainException(ErrorCode.USER_NOT_FOUND, 'User context not found.');
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, CASTING_ERROR_MESSAGES.USER_CONTEXT_NOT_FOUND);
         }
 
         // Trigger OpenRouter for the summary and vector embeddings

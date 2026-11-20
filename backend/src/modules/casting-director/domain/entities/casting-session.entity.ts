@@ -3,28 +3,11 @@ import { AggregateRoot } from "../../../../shared/domain/events/aggregate-root";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { CastingSessionStatus, TranscriptRole } from "../enums/casting.enums";
 import { CASTING_SESSION_POLICY } from "../constants/casting-session.constant";
-
-export interface TranscriptEntry {
-    role: TranscriptRole;
-    content: string;
-    timestamp: Date;
-}
-
-export interface CastingSessionProps {
-    id?: string;
-    userId: string;
-    status: CastingSessionStatus;
-    transcript: TranscriptEntry[];
-    turnCount: number;
-    maxTurns?: number;
-    personalityVector?: number[];
-    aiSummary?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { CASTING_ERROR_MESSAGES } from "../constants/casting-error-messages.constant";
+import { CastingSessionProps, CastingSessionSnapshot, InternalCastingSessionProps, TranscriptEntry } from "../interfaces/casting-session.types";
 
 export class CastingSession extends AggregateRoot {
-    private _props: CastingSessionProps;
+    private _props: InternalCastingSessionProps;
 
     constructor(props: CastingSessionProps) {
         super();
@@ -53,17 +36,17 @@ export class CastingSession extends AggregateRoot {
 
     // Adds a turn to the interview transcript and increments the turn count
     addTurn(role: TranscriptRole, content: string): void {
-        if (this._props.status === 'COMPLETED') {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add turns to a concluded casting session.');
+        if (this._props.status === CastingSessionStatus.COMPLETED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.CONCLUDED_SESSION_TURNS);
         }
 
         // Block the user from typing more once we hit the limit
         if (this._props.status === CastingSessionStatus.ANALYZING && role === TranscriptRole.USER) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot add user turns while the session is analyzing.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.ANALYZING_USER_TURNS);
         }
 
         if (!content || content.trim().length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Transcript content cannot be empty.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.EMPTY_TRANSCRIPT_CONTENT);
         }
 
         this._props.transcript.push({
@@ -85,16 +68,16 @@ export class CastingSession extends AggregateRoot {
     }
 
     // Finalizes the session with the generated vector and AI summary
-    completeSession(personalityVerctor: number[], aiSummary: string): void {
+    completeSession(personalityVector: number[], aiSummary: string): void {
         if (this._props.status === CastingSessionStatus.COMPLETED) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Casting session is already completed.');
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.SESSION_ALREADY_COMPLETED);
         }
 
-        if (!personalityVerctor || personalityVerctor.length === 0) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Personality vector embedding is required.');
+        if (!personalityVector || personalityVector.length === 0) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, CASTING_ERROR_MESSAGES.PERSONALITY_VECTOR_REQUIRED);
         }
 
-        this._props.personalityVector = personalityVerctor;
+        this._props.personalityVector = personalityVector;
         this._props.aiSummary = aiSummary.trim();
         this._props.status = CastingSessionStatus.COMPLETED;
         this._markUpdatedAt();
@@ -104,7 +87,11 @@ export class CastingSession extends AggregateRoot {
         this._props.updatedAt = new Date();
     }
 
-    toJSON() {
-        return { ...this._props };
+    toJSON(): CastingSessionSnapshot {
+        return {
+            ...this._props,
+            transcript: this._props.transcript.map(entry => ({ ...entry })),
+            personalityVector: [...this._props.personalityVector],
+        };
     }
 }

@@ -1,0 +1,16 @@
+export const CASTING_ERROR_MESSAGES = {
+    CONCLUDED_SESSION_TURNS: 'Cannot add turns to a concluded casting session.',
+    ANALYZING_USER_TURNS: 'Cannot add user turns while the session is analyzing.',
+    EMPTY_TRANSCRIPT_CONTENT: 'Transcript content cannot be empty.',
+    SESSION_ALREADY_COMPLETED: 'Casting session is already completed.',
+    PERSONALITY_VECTOR_REQUIRED: 'Personality vector embedding is required.',
+    NO_ACTIVE_SESSION_INITIALIZE: 'No active casting session found. Please initialize first.',
+    USER_CONTEXT_NOT_FOUND: 'User context not found.',
+    USER_CONTEXT_NOT_FOUND_INIT: 'User context could not be found for casting.',
+    NO_ACTIVE_SESSION_FINALIZE: 'No active casting session found to finalize.',
+    REQUIRED_TURNS_NOT_REACHED: 'Session has not reached the required turns to finalize.',
+    OPENROUTER_KEY_MISSING: 'OPENROUTER_API_KEY is missing.',
+    AI_OPENING_QUESTION_FAILED: 'AI Service failed to generate an opening question.',
+    AI_FOLLOW_UP_FAILED: 'AI Service failed to generate a follow-up question.',
+    AI_FINAL_DATA_FAILED: 'AI Service failed to process final interview data.',
+} as const;
