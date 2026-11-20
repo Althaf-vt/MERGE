@@ -106,6 +106,13 @@ export const EnvConfig = {
         },
     },
 
+    // Discovery
+    discovery: {
+        get passTtlSeconds(): number {
+            return parseInt(process.env.DISCOVERY_PASS_TTL_SECONDS || '900', 10);
+        },
+    },
+
     // AWS & Object Storage
     aws: {
         get region(): string | undefined {

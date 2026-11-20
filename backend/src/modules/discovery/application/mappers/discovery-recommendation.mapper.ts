@@ -1,4 +1,4 @@
-import { DiscoveryCandidateRaw, DiscoveryUserContext } from "../../domain/interfaces/discovery-repository.interface";
+import { DiscoveryCandidate, DiscoveryUserSearchContext } from "../../domain/interfaces/discovery.types";
 import { DiscoveryRecommendationDto, PaginatedRecommendationsDto } from "../dtos/discovery.dto";
 import { GeoUtil } from "../../../../shared/domain/utils/geo.util";
 import { DateUtil } from "../../../../shared/domain/utils/date.util";
@@ -7,8 +7,8 @@ import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants"
 
 export class DiscoveryRecommendationMapper {
     public static async toRecommendationDto(
-        candidate: DiscoveryCandidateRaw,
-        userContext: DiscoveryUserContext,
+        candidate: DiscoveryCandidate,
+        userContext: DiscoveryUserSearchContext,
         mediaFacade: IMediaFacade
     ): Promise<DiscoveryRecommendationDto> {
         // 1. Great-circle distance calculation
@@ -35,7 +35,7 @@ export class DiscoveryRecommendationMapper {
         const matchScore = Number((rawMatchScore * DISCOVERY_CONSTANTS.SCORE_PERCENTAGE_MULTIPLIER).toFixed(1));
 
         return {
-            id: String(candidate._id),
+            id: candidate.id,
             displayName: candidate.profile?.displayName || 'Unknown',
             customLabel: candidate.profile?.customLabel,
             bio: candidate.profile?.bio || '',
@@ -50,8 +50,8 @@ export class DiscoveryRecommendationMapper {
     }
 
     public static async toRecommendationDtoList(
-        candidates: DiscoveryCandidateRaw[],
-        userContext: DiscoveryUserContext,
+        candidates: DiscoveryCandidate[],
+        userContext: DiscoveryUserSearchContext,
         mediaFacade: IMediaFacade,
     ): Promise<DiscoveryRecommendationDto[]> {
         return Promise.all(
@@ -62,10 +62,10 @@ export class DiscoveryRecommendationMapper {
     }
 
     public static async toPaginatedResponseDto(
-        candidates: DiscoveryCandidateRaw[],
+        candidates: DiscoveryCandidate[],
         page: number,
         limit: number,
-        userContext: DiscoveryUserContext,
+        userContext: DiscoveryUserSearchContext,
         mediaFacade: IMediaFacade,
     ): Promise<PaginatedRecommendationsDto> {
         const data = await DiscoveryRecommendationMapper.toRecommendationDtoList(candidates, userContext, mediaFacade);

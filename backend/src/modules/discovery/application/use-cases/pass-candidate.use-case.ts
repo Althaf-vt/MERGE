@@ -1,27 +1,21 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IPassCandidateUseCase } from "../interfaces/pass-candidate.use-case.interface";
-import { DISCOVERY_REPOSITORY, IDiscoveryRepository } from "../../domain/interfaces/discovery-repository.interface";
+import { DISCOVERY_PASS_REPOSITORY, IDiscoveryPassRepository } from "../../domain/interfaces/discovery-pass-repository.interface";
 import { PassCandidateDto } from "../dtos/discovery.dto";
-import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
-import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
+import { DiscoveryPass } from "../../domain/entities/discovery-pass.entity";
 
 @Injectable()
 export class PassCandidateUseCase implements IPassCandidateUseCase {
     constructor(
-        @Inject(DISCOVERY_REPOSITORY) private readonly _discoveryRepo: IDiscoveryRepository,
+        @Inject(DISCOVERY_PASS_REPOSITORY) private readonly _passRepo: IDiscoveryPassRepository,
     ) {}
 
     async execute(userId: string, dto: PassCandidateDto): Promise<void> {
-        const targetUserId = dto.targetUserId?.trim();
+        const pass = new DiscoveryPass({
+            userId,
+            targetUserId: dto.targetUserId,
+        });
 
-        if (!targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Target user ID is required.');
-        }
-
-        if (userId === targetUserId) {
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Cannot pass on yourself.');
-        }
-
-        await this._discoveryRepo.recordPass(userId, targetUserId);
+        await this._passRepo.recordPass(pass);
     }
 }

@@ -1,22 +1,27 @@
 import { Injectable } from "@nestjs/common";
-import { DiscoveryCandidateRaw, DiscoveryUserContext, IDiscoveryRepository, VectorSearchParams } from "../../domain/interfaces/discovery-repository.interface";
+import { IDiscoveryRepository } from "../../domain/interfaces/discovery-repository.interface";
+import { DiscoveryCandidate, DiscoveryUserSearchContext, VectorSearchParams } from "../../domain/interfaces/discovery.types";
+import { DiscoveryPersistenceMapper } from "./mappers/discovery-persistence.mapper";
 import { InjectConnection } from "@nestjs/mongoose";
-import { Connection, Types } from "mongoose";
+import { Connection, PipelineStage, Types } from "mongoose";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
 
 @Injectable()
 export class DiscoveryRepository implements IDiscoveryRepository {
     constructor(@InjectConnection() private readonly _connection: Connection) { }
 
-    async getUserSearchContext(userId: string): Promise<DiscoveryUserContext | null> {
+    async getUserSearchContext(userId: string): Promise<DiscoveryUserSearchContext | null> {
         const user = await this._connection.collection('users').findOne(
             { _id: new Types.ObjectId(userId) },
             { projection: { personalityVector: 1, location: 1, preference: 1 } }
         );
-        return user as DiscoveryUserContext | null;
+        if (!user) {
+            return null;
+        }
+        return DiscoveryPersistenceMapper.toDomainUserSearchContext(user);
     }
 
-    async findVectorMatches(params: VectorSearchParams): Promise<DiscoveryCandidateRaw[]> {
+    async findVectorMatches(params: VectorSearchParams): Promise<DiscoveryCandidate[]> {
         const { userContext, isGlobal, excludedIds, limit, skip } = params;
         const collection = this._connection.collection('users');
 
@@ -35,7 +40,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
 
         // 3. Atlas Vector Search Pipeline
         // Note: Target index 'personality_vector_index' with 1536 dims & cosine similarity as configured
-        const pipeline: any[] = [
+        const pipeline: PipelineStage[] = [
             {
                 $vectorSearch: {
                     index: 'personality_vector_index',
@@ -82,27 +87,6 @@ export class DiscoveryRepository implements IDiscoveryRepository {
         const cursor = collection.aggregate(pipeline);
         const results = await cursor.toArray();
 
-        return results as DiscoveryCandidateRaw[];
-    }
-
-    async recordPass(userId: string, targetUserId: string): Promise<void> {
-        await this._connection.collection('discovery_passes').updateOne(
-            { userId, targetUserId },
-            { $set: { userId, targetUserId, createdAt: new Date() } },
-            { upsert: true }
-        );
-    }
-
-    async getPassedUserIds(userId: string): Promise<string[]> {
-        const cutoffDate = new Date(Date.now() - DISCOVERY_CONSTANTS.PASS_TTL_SECONDS * 1000);
-        const docs = await this._connection.collection('discovery_passes').find(
-            {
-                userId,
-                createdAt: { $gte: cutoffDate },
-            },
-            { projection: { targetUserId: 1 } }
-        ).toArray();
-
-        return docs.map(d => (d as { targetUserId?: string }).targetUserId).filter((id): id is string => Boolean(id));
+        return DiscoveryPersistenceMapper.toDomainCandidateList(results);
     }
 }

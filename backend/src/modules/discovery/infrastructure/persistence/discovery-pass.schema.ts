@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 export type DiscoveryPassDocument = DiscoveryPassSchemaClass & Document;
 
@@ -23,5 +23,5 @@ DiscoveryPassSchema.index({ userId: 1, targetUserId: 1 }, { unique: true });
 // Automatic MongoDB TTL index for pass expiration
 DiscoveryPassSchema.index(
     { createdAt: 1 },
-    { expireAfterSeconds: DISCOVERY_CONSTANTS.PASS_TTL_SECONDS }
+    { expireAfterSeconds: EnvConfig.discovery.passTtlSeconds }
 );
