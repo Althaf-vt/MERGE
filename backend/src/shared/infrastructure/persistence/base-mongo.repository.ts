@@ -2,6 +2,7 @@ import { Document, Model } from "mongoose";
 import { IBaseRepository } from "../../domain/interfaces/base-repository.interface";
 import { DomainException } from "../../domain/exceptions/domain.exception";
 import { ErrorCode } from "../../domain/enums/error-code.enum";
+import { SHARED_ERROR_MESSAGES } from "../../domain/constants/shared-error-messages.constant";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { AggregateRoot } from "../../domain/events/aggregate-root";
 
@@ -46,7 +47,7 @@ export abstract class BaseRepository<TAggregate extends AggregateRoot & { id?: s
             .findByIdAndUpdate(entity.id, persistenceData, { returnDocument: 'after' })
             .exec();
 
-        if (!document) throw new DomainException(ErrorCode.USER_NOT_FOUND, "Entity not found");
+        if (!document) throw new DomainException(ErrorCode.USER_NOT_FOUND, SHARED_ERROR_MESSAGES.ENTITY_NOT_FOUND);
 
         await this.dispatchEvents(entity);
 

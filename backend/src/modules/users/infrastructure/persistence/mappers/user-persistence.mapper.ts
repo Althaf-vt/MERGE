@@ -92,17 +92,17 @@ export class UserPersistenceMapper {
                 userId: raw._id.toString(),
                 preferredGender: rawPref.preferredGender,
                 preferredAgeMin: rawPref.preferredAgeMin,
-                preferredAgeMax: rawPref.preferredAgeMax ?? (rawPref as any).prefferedAgeMax,
-                relationshipGoals: rawPref.relationshipGoals ?? (rawPref as any).relationShipGoals,
+                preferredAgeMax: rawPref.preferredAgeMax,
+                relationshipGoals: rawPref.relationshipGoals,
                 minimumOutnessLevel: rawPref.minimumOutnessLevel,
                 openToAdoption: rawPref.openToAdoption,
                 immigrationReady: rawPref.immigrationReady,
                 partnerExpectations: rawPref.partnerExpectations,
-                diabetesBpPreference: rawPref.diabetesBpPreference ?? (rawPref as any).diabeteBpPreference,
+                diabetesBpPreference: rawPref.diabetesBpPreference,
                 fertilityPreference: rawPref.fertilityPreference,
                 geneticPreference: rawPref.geneticPreference,
                 infectiousPreference: rawPref.infectiousPreference,
-                disabilityPreference: rawPref.disabilityPreference ?? (rawPref as any).disablilityPreferece,
+                disabilityPreference: rawPref.disabilityPreference,
             });
         }
 
