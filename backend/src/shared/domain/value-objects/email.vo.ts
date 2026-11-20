@@ -1,21 +1,20 @@
-// Represents an email as a value object, validating and normalizing the email
-// while keeping its value immutable and providing value-based comaprison.
-
 import { ErrorCode } from "../enums/error-code.enum";
 import { DomainException } from "../exceptions/domain.exception";
-export class EmailVO{
+import { SHARED_ERROR_MESSAGES } from "../constants/shared-error-messages.constant";
+import { SHARED_VALIDATION_PATTERNS } from "../constants/shared-validation.constant";
+
+export class EmailVO {
     private readonly _value: string;
 
-    constructor(email: string){
-        if(!email || !this.validate(email)){
-            throw new DomainException(ErrorCode.VALIDATION_FAILED, 'Invalid email format');
+    constructor(email: string) {
+        if (!email || !this.validate(email)) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, SHARED_ERROR_MESSAGES.INVALID_EMAIL_FORMAT);
         }
-        this._value = email.toLocaleLowerCase().trim();
+        this._value = email.toLowerCase().trim();
     }
 
-    private validate(email: string): boolean{
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+    private validate(email: string): boolean {
+        return SHARED_VALIDATION_PATTERNS.EMAIL.test(email);
     }
 
     getValue(): string{

@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/commo
 import { ITokenservice, TOKEN_SERVICE } from '../../../domain/interfaces/token-service.interface';
 import { DomainException } from '../../../domain/exceptions/domain.exception';
 import { ErrorCode } from '../../../domain/enums/error-code.enum';
+import { SHARED_ERROR_MESSAGES } from '../../../domain/constants/shared-error-messages.constant';
 import { AuthenticatedRequest } from '../interfaces/authenticated-request.interface';
 
 @Injectable()
@@ -15,14 +16,14 @@ export class JwtAuthGuard implements CanActivate {
         const authHeader = request.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Missing or invalid authorization header.');
+            throw new DomainException(ErrorCode.UNAUTHORIZED, SHARED_ERROR_MESSAGES.MISSING_OR_INVALID_AUTH_HEADER);
         }
 
         const token = authHeader.split(' ')[1];
         
         const payload = this._tokenService.verifyAccessToken(token);
         if (!payload) {
-            throw new DomainException(ErrorCode.UNAUTHORIZED, 'Invalid or expired access token.');
+            throw new DomainException(ErrorCode.UNAUTHORIZED, SHARED_ERROR_MESSAGES.INVALID_OR_EXPIRED_ACCESS_TOKEN);
         }
 
         request.user = payload;
