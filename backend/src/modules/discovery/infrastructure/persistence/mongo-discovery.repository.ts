@@ -6,6 +6,7 @@ import { DiscoveryPersistenceMapper } from "./mappers/discovery-persistence.mapp
 import { InjectConnection } from "@nestjs/mongoose";
 import { Connection, Types } from "mongoose";
 import { DISCOVERY_CONSTANTS } from "../../domain/constants/discovery.constants";
+import { EnvConfig } from "../../../../shared/infrastructure/config/env.config";
 
 @Injectable()
 export class DiscoveryRepository implements IDiscoveryRepository {
@@ -101,7 +102,7 @@ export class DiscoveryRepository implements IDiscoveryRepository {
     }
 
     async getPassedUserIds(userId: string): Promise<string[]> {
-        const cutoffDate = new Date(Date.now() - DISCOVERY_CONSTANTS.PASS_TTL_SECONDS * 1000);
+        const cutoffDate = new Date(Date.now() - EnvConfig.discovery.passTtlSeconds * 1000);
         const docs = await this._connection.collection('discovery_passes').find(
             {
                 userId,
