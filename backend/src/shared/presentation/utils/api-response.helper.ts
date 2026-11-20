@@ -1,4 +1,4 @@
-import { ApiResponse, PaginationMeta } from "../interfaces/api-response.interface";
+import { ApiError, ApiResponse, PaginationMeta } from "../interfaces/api-response.interface";
 
 export class ApiResponseHelper {
     static success<T>(message: string, data?: T, meta?: PaginationMeta): ApiResponse<T> {
@@ -10,7 +10,7 @@ export class ApiResponseHelper {
         };
     }
 
-    static error<T>(message: string, error?: any): ApiResponse<T> {
+    static error<T>(message: string, error?: ApiError): ApiResponse<T> {
         return {
             success: false,
             message,
