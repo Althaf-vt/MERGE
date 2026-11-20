@@ -3,21 +3,10 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PrivateListType } from "../enums/private-list.enums";
 import { PRIVATE_LIST_ERROR_MESSAGES } from "../constants/private-list.constants";
-
-export interface PrivateListProps {
-    id?: string;
-    userId: string;
-    targetUserId: string;
-    listType: PrivateListType;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-export type CreatePrivateListProps = Pick<PrivateListProps, 'userId' | 'targetUserId' | 'listType'>;
-export type PrivateListData = Required<PrivateListProps>;
+import { CreatePrivateListProps, InternalPrivateListProps, PrivateListProps, PrivateListSnapshot } from "../interfaces/private-list.types";
 
 export class PrivateListAggregate extends AggregateRoot {
-    private readonly _props: PrivateListData;
+    private readonly _props: InternalPrivateListProps;
 
     constructor(props: PrivateListProps) {
         super();
@@ -63,7 +52,7 @@ export class PrivateListAggregate extends AggregateRoot {
     get createdAt(): Date { return this._props.createdAt; }
     get updatedAt(): Date { return this._props.updatedAt; }
 
-    public toJSON(): PrivateListData {
+    public toJSON(): PrivateListSnapshot {
         return { ...this._props };
     }
 
