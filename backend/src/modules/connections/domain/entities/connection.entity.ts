@@ -4,22 +4,10 @@ import { DomainException } from "../../../../shared/domain/exceptions/domain.exc
 import { CONNECTION_ERROR_MESSAGES } from "../constants/connection.constants";
 import { ConnectionStatus } from "../enums/connection.enums";
 import { ConnectionAcceptedDomainEvent } from "../events/connection-accepted.domain-event";
-
-export interface ConnectionProps {
-    id?: string;
-    requesterId: string;
-    recipientId: string;
-    status?: ConnectionStatus;
-    respondedAt?: Date | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-export type CreateConnectionProps = Pick<ConnectionProps, 'requesterId' | 'recipientId'>;
-export type ConnectionData = Required<ConnectionProps>;
+import { ConnectionProps, ConnectionSnapshot, CreateConnectionProps, InternalConnectionProps } from "../interfaces/connection.types";
 
 export class ConnectionAggregate extends AggregateRoot {
-    private readonly _props: ConnectionData;
+    private readonly _props: InternalConnectionProps;
 
     constructor(props: ConnectionProps) {
         super();
@@ -139,7 +127,7 @@ export class ConnectionAggregate extends AggregateRoot {
         this._props.updatedAt = now;
     }
 
-    public toJSON(): ConnectionData {
+    public toJSON(): ConnectionSnapshot {
         return { ...this._props };
     }
 }
