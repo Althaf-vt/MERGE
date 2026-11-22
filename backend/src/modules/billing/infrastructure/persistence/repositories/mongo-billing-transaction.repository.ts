@@ -11,7 +11,7 @@ import { BillingTransactionPersistenceMapper } from '../mappers/billing-transact
 import { BillingTransactionDocument, BillingTransactionSchemaClass } from '../schemas/billing-transaction.schema';
 
 @Injectable()
-export class MongoBillingTransactionRepository implements IBillingTransactionRepository {
+export class BillingTransactionRepository implements IBillingTransactionRepository {
     constructor(
         @InjectModel(BillingTransactionSchemaClass.name) private readonly _model: Model<BillingTransactionDocument>,
     ) { }

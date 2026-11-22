@@ -16,7 +16,7 @@ import { MongoUserSubscriptionRepository } from './infrastructure/persistence/re
 import { CREDIT_ACCOUNT_REPOSITORY } from './domain/interfaces/credit-account-repository.interface';
 import { CreditAccountRepository } from './infrastructure/persistence/repositories/mongo-credit-account.repository';
 import { BILLING_TRANSACTION_REPOSITORY } from './domain/interfaces/billing-transaction-repository.interface';
-import { MongoBillingTransactionRepository } from './infrastructure/persistence/repositories/mongo-billing-transaction.repository';
+import { BillingTransactionRepository } from './infrastructure/persistence/repositories/mongo-billing-transaction.repository';
 
 import { PAYMENT_GATEWAY } from './application/interfaces/payment-gateway.interface';
 import { RazorpayPaymentService } from './infrastructure/services/razorpay-payment.service';
@@ -82,7 +82,7 @@ import { SubscriptionController } from './presentation/controllers/subscription.
         { provide: CREDIT_PACK_REPOSITORY, useClass: MongoCreditPackRepository },
         { provide: USER_SUBSCRIPTION_REPOSITORY, useClass: MongoUserSubscriptionRepository },
         { provide: CREDIT_ACCOUNT_REPOSITORY, useClass: CreditAccountRepository },
-        { provide: BILLING_TRANSACTION_REPOSITORY, useClass: MongoBillingTransactionRepository },
+        { provide: BILLING_TRANSACTION_REPOSITORY, useClass: BillingTransactionRepository },
 
         // Payment Gateway
         { provide: PAYMENT_GATEWAY, useClass: RazorpayPaymentService },
