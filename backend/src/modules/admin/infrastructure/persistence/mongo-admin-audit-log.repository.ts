@@ -8,7 +8,7 @@ import { AdminAuditLogDocument, AdminAuditLogSchemaClass } from './admin-audit-l
 import { AdminAuditLogPersistenceMapper } from './mappers/admin-audit-log-persistence.mapper';
 
 @Injectable()
-export class MongoAdminAuditLogRepository implements IAdminAuditLogRepository {
+export class AdminAuditLogRepository implements IAdminAuditLogRepository {
     constructor(
         @InjectModel(AdminAuditLogSchemaClass.name)
         private readonly _model: Model<AdminAuditLogDocument>,
