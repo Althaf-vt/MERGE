@@ -11,7 +11,7 @@ import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { SCENE_PARTNER_ERROR_MESSAGES } from "../../domain/constants/scene-partner.constants";
 
 @Injectable()
-export class MongoScenarioRepository implements IScenarioRepository {
+export class ScenarioRepository implements IScenarioRepository {
     constructor(
         @InjectModel(ScenarioSchemaClass.name)
         private readonly _model: Model<ScenarioDocument>,
