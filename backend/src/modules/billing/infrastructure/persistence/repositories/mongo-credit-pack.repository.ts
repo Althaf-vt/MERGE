@@ -10,7 +10,7 @@ import { CreditPackPersistenceMapper } from '../mappers/credit-pack-persistence.
 import { CreditPackDocument, CreditPackSchemaClass } from '../schemas/credit-pack.schema';
 
 @Injectable()
-export class MongoCreditPackRepository implements ICreditPackRepository {
+export class CreditPackRepository implements ICreditPackRepository {
     constructor(
         @InjectModel(CreditPackSchemaClass.name) private readonly _model: Model<CreditPackDocument>,
     ) { }

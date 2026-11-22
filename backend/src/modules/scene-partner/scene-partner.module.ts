@@ -7,9 +7,9 @@ import { SceneSessionSchema, SceneSessionSchemaClass } from "./infrastructure/pe
 import { ScenarioSchema, ScenarioSchemaClass } from "./infrastructure/persistence/scenario.schema";
 import { ScenePartnerController } from "./presentation/controllers/scene-partner.controller";
 import { SCENE_SESSION_REPOSITORY } from "./domain/interfaces/scene-session-repository.interface";
-import { MongoSceneSessionRepository } from "./infrastructure/persistence/mongo-scene-session.repository";
+import { SceneSessionRepository } from "./infrastructure/persistence/mongo-scene-session.repository";
 import { SCENARIO_REPOSITORY } from "./domain/interfaces/scenario-repository.interface";
-import { MongoScenarioRepository } from "./infrastructure/persistence/mongo-scenario.repository";
+import { ScenarioRepository } from "./infrastructure/persistence/mongo-scenario.repository";
 import { ScenarioSeederService } from "./infrastructure/services/scenario-seeder.service";
 import { SCENE_PARTNER_AI_SERVICE } from "./domain/interfaces/scene-partner-ai.interface";
 import { OpenRouterScenePartnerAiService } from "./infrastructure/services/openrouter-scene-partner-ai.service";
@@ -63,8 +63,8 @@ import { GetScenarioInDepthUseCase } from "./application/use-cases/get-scenario-
     ],
     controllers: [ScenePartnerController],
     providers: [
-        { provide: SCENE_SESSION_REPOSITORY, useClass: MongoSceneSessionRepository },
-        { provide: SCENARIO_REPOSITORY, useClass: MongoScenarioRepository },
+        { provide: SCENE_SESSION_REPOSITORY, useClass: SceneSessionRepository },
+        { provide: SCENARIO_REPOSITORY, useClass: ScenarioRepository },
         ScenarioSeederService,
         { provide: SCENE_PARTNER_AI_SERVICE, useClass: OpenRouterScenePartnerAiService },
         { provide: SCENE_PARTNER_SUBSCRIPTION_FACADE, useExisting: BILLING_SUBSCRIPTION_FACADE },

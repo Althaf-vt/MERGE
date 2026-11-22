@@ -11,7 +11,7 @@ import { SubscriptionPlanPersistenceMapper } from '../mappers/subscription-plan-
 import { SubscriptionPlanDocument, SubscriptionPlanSchemaClass } from '../schemas/subscription-plan.schema';
 
 @Injectable()
-export class MongoSubscriptionPlanRepository implements ISubscriptionPlanRepository {
+export class SubscriptionPlanRepository implements ISubscriptionPlanRepository {
     constructor(
         @InjectModel(SubscriptionPlanSchemaClass.name) private readonly _model: Model<SubscriptionPlanDocument>,
     ) { }

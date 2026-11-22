@@ -23,7 +23,7 @@ import { MODERATION_LOG_REPOSITORY } from "./domain/interfaces/moderation-log-re
 import { ModerationLogRepository } from "./infrastructure/persistence/mongo-moderation-log.repository";
 import { AdminAuditLogSchema, AdminAuditLogSchemaClass } from "./infrastructure/persistence/admin-audit-log.schema";
 import { ADMIN_AUDIT_LOG_REPOSITORY } from "./domain/interfaces/admin-audit-log-repository.interface";
-import { MongoAdminAuditLogRepository } from "./infrastructure/persistence/mongo-admin-audit-log.repository";
+import { AdminAuditLogRepository } from "./infrastructure/persistence/mongo-admin-audit-log.repository";
 import { GET_ADMIN_AUDIT_LOGS_USE_CASE, GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, RECORD_ADMIN_AUDIT_LOG_USE_CASE } from "./application/interfaces/admin-audit.use-cases.interface";
 import { RecordAdminAuditLogUseCase } from "./application/use-cases/record-admin-audit-log.use-case";
 import { GetAdminAuditLogsUseCase } from "./application/use-cases/get-admin-audit-logs.use-case";
@@ -201,7 +201,7 @@ import {
         { provide: REJECT_KYC_TASK_USE_CASE, useClass: RejectKycTaskUseCase },
         { provide: REQUEST_RESUBMISSION_KYC_TASK_USE_CASE, useClass: RequestKycResubmissionUseCase },
         { provide: CREATE_KYC_ESCALATION_TASK_USE_CASE, useClass: CreateKycEscalationTaskUseCase },
-        { provide: ADMIN_AUDIT_LOG_REPOSITORY, useClass: MongoAdminAuditLogRepository },
+        { provide: ADMIN_AUDIT_LOG_REPOSITORY, useClass: AdminAuditLogRepository },
         { provide: RECORD_ADMIN_AUDIT_LOG_USE_CASE, useClass: RecordAdminAuditLogUseCase },
         { provide: GET_ADMIN_AUDIT_LOGS_USE_CASE, useClass: GetAdminAuditLogsUseCase },
         { provide: GET_SCENARIO_ACTIVITY_HISTORY_USE_CASE, useClass: GetScenarioActivityHistoryUseCase },
