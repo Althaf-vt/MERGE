@@ -10,7 +10,7 @@ import { SceneSessionDocument, SceneSessionSchemaClass } from "./scene-session.s
 import { SceneSessionPersistenceMapper } from "./mappers/scene-session-persistence.mapper";
 
 @Injectable()
-export class MongoSceneSessionRepository extends BaseRepository<SceneSession, SceneSessionDocument> implements ISceneSessionRepository {
+export class SceneSessionRepository extends BaseRepository<SceneSession, SceneSessionDocument> implements ISceneSessionRepository {
     constructor(
         @InjectModel(SceneSessionSchemaClass.name) model: Model<SceneSessionDocument>,
         eventEmitter: EventEmitter2,
