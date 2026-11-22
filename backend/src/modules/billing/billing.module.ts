@@ -10,7 +10,7 @@ import { UserSubscriptionSchema, UserSubscriptionSchemaClass } from './infrastru
 import { SUBSCRIPTION_PLAN_REPOSITORY } from './domain/interfaces/subscription-plan-repository.interface';
 import { SubscriptionPlanRepository } from './infrastructure/persistence/repositories/mongo-subscription-plan.repository';
 import { CREDIT_PACK_REPOSITORY } from './domain/interfaces/credit-pack-repository.interface';
-import { MongoCreditPackRepository } from './infrastructure/persistence/repositories/mongo-credit-pack.repository';
+import { CreditPackRepository } from './infrastructure/persistence/repositories/mongo-credit-pack.repository';
 import { USER_SUBSCRIPTION_REPOSITORY } from './domain/interfaces/user-subscription-repository.interface';
 import { MongoUserSubscriptionRepository } from './infrastructure/persistence/repositories/mongo-user-subscription.repository';
 import { CREDIT_ACCOUNT_REPOSITORY } from './domain/interfaces/credit-account-repository.interface';
@@ -79,7 +79,7 @@ import { SubscriptionController } from './presentation/controllers/subscription.
     providers: [
         // Repositories
         { provide: SUBSCRIPTION_PLAN_REPOSITORY, useClass: SubscriptionPlanRepository },
-        { provide: CREDIT_PACK_REPOSITORY, useClass: MongoCreditPackRepository },
+        { provide: CREDIT_PACK_REPOSITORY, useClass: CreditPackRepository },
         { provide: USER_SUBSCRIPTION_REPOSITORY, useClass: MongoUserSubscriptionRepository },
         { provide: CREDIT_ACCOUNT_REPOSITORY, useClass: CreditAccountRepository },
         { provide: BILLING_TRANSACTION_REPOSITORY, useClass: BillingTransactionRepository },
