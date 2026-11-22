@@ -11,7 +11,7 @@ import { CreditAccountPersistenceMapper } from '../mappers/credit-account-persis
 import { CreditAccountDocument, CreditAccountSchemaClass } from '../schemas/credit-account.schema';
 
 @Injectable()
-export class MongoCreditAccountRepository implements ICreditAccountRepository {
+export class CreditAccountRepository implements ICreditAccountRepository {
     constructor(
         @InjectModel(CreditAccountSchemaClass.name) private readonly _model: Model<CreditAccountDocument>,
     ) { }

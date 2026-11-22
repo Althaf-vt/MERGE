@@ -14,7 +14,7 @@ import { MongoCreditPackRepository } from './infrastructure/persistence/reposito
 import { USER_SUBSCRIPTION_REPOSITORY } from './domain/interfaces/user-subscription-repository.interface';
 import { MongoUserSubscriptionRepository } from './infrastructure/persistence/repositories/mongo-user-subscription.repository';
 import { CREDIT_ACCOUNT_REPOSITORY } from './domain/interfaces/credit-account-repository.interface';
-import { MongoCreditAccountRepository } from './infrastructure/persistence/repositories/mongo-credit-account.repository';
+import { CreditAccountRepository } from './infrastructure/persistence/repositories/mongo-credit-account.repository';
 import { BILLING_TRANSACTION_REPOSITORY } from './domain/interfaces/billing-transaction-repository.interface';
 import { MongoBillingTransactionRepository } from './infrastructure/persistence/repositories/mongo-billing-transaction.repository';
 
@@ -81,7 +81,7 @@ import { SubscriptionController } from './presentation/controllers/subscription.
         { provide: SUBSCRIPTION_PLAN_REPOSITORY, useClass: MongoSubscriptionPlanRepository },
         { provide: CREDIT_PACK_REPOSITORY, useClass: MongoCreditPackRepository },
         { provide: USER_SUBSCRIPTION_REPOSITORY, useClass: MongoUserSubscriptionRepository },
-        { provide: CREDIT_ACCOUNT_REPOSITORY, useClass: MongoCreditAccountRepository },
+        { provide: CREDIT_ACCOUNT_REPOSITORY, useClass: CreditAccountRepository },
         { provide: BILLING_TRANSACTION_REPOSITORY, useClass: MongoBillingTransactionRepository },
 
         // Payment Gateway
