@@ -1,34 +1,49 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../app/hooks';
+import { useEffect, useRef } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { useRefreshMutation } from '../api/auth.api';
+import { setCredentials, setInitialized } from '../slices/auth.slice';
 
 export const PersistLogin = () => {
-    const { isAuthenticated, isInitializing } = useAppSelector((state) => state.auth);
-    const location = useLocation();
+    const dispatch = useAppDispatch();
+    const { accessToken, isAuthenticated } = useAppSelector((state) => state.auth);
+    const [refresh] = useRefreshMutation();
+    const effectRan = useRef(false);
 
-    // While SessionInitializer is verifying the session, block child routes from mounting
-    if (isInitializing) {
-        return (
-            <div
-                style={{
-                    display: 'flex',
-                    height: '100vh',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color: 'var(--text-muted, #71717a)',
-                    fontSize: '14px',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                }}
-            >
-                Restoring secure session...
-            </div>
-        );
-    }
+    useEffect(() => {
+        // Prevent React 18 strict mode double-firing
+        if (effectRan.current) return;
 
-    // Once initialization finishes, if not authenticated, redirect to login
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
+        const restoreSession = async () => {
+            try {
+                const response = await refresh().unwrap();
+                if (response.data?.accessToken) {
+                    dispatch(
+                        setCredentials({
+                            accessToken: response.data.accessToken,
+                            user: response.data.user,
+                        })
+                    );
+                }
+            } catch {
+                // If it fails, cookie is missing or expired.
+                // Downstream route guards will naturally handle the unauthenticated state.
+            } finally {
+                dispatch(setInitialized());
+            }
+        };
 
-    // Authenticated, render protected child routes
+        // If we don't have an access token in memory and haven't authenticated yet, restore session
+        if (!accessToken && !isAuthenticated) {
+            restoreSession();
+        } else {
+            dispatch(setInitialized());
+        }
+
+        return () => {
+            effectRan.current = true;
+        };
+    }, [accessToken, isAuthenticated, dispatch, refresh]);
+
     return <Outlet />;
 };
