@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
+import type { BaseQueryApi, BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
 import { logout, setCredentials, type AuthUser } from '../../features/auth/slices/auth.slice';
 import type { RootState } from '../../app/store';
@@ -8,6 +9,7 @@ import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
 import type { ApiResponse } from '../types/api-response.types';
 
 const mutex = new Mutex();
+let inFlightRefreshPromise: Promise<boolean> | null = null;
 
 const baseQuery = fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3110/api/v1',
@@ -21,6 +23,71 @@ const baseQuery = fetchBaseQuery({
         return headers;
     },
 });
+
+const resetAllApiCaches = (dispatch: ThunkDispatch<unknown, unknown, UnknownAction>) => {
+    dispatch({ type: 'api/resetApiState' });
+    dispatch({ type: 'discoveryApi/resetApiState' });
+    dispatch({ type: 'connectionsApi/resetApiState' });
+    dispatch({ type: 'scenePartnerApi/resetApiState' });
+    dispatch({ type: 'billingApi/resetApiState' });
+};
+
+/**
+ * Executes a single-flight POST /auth/refresh guarded by the shared reauth mutex
+ * so PersistLogin boot restoration and 401 reauth never race or double-fire.
+ */
+export const refreshAuthSession = (
+    dispatch: ThunkDispatch<unknown, unknown, UnknownAction>,
+    getState: () => unknown,
+    extraOptions: Record<string, unknown> = {}
+): Promise<boolean> => {
+    if (inFlightRefreshPromise) {
+        return inFlightRefreshPromise;
+    }
+
+    inFlightRefreshPromise = (async () => {
+        const release = await mutex.acquire();
+        try {
+            const controller = new AbortController();
+            const apiContext: BaseQueryApi = {
+                signal: controller.signal,
+                abort: (reason?: string) => controller.abort(reason),
+                dispatch,
+                getState,
+                extra: undefined,
+                endpoint: 'refresh',
+                type: 'mutation',
+            };
+
+            const refreshResult = await baseQuery(
+                { url: API_ENDPOINTS.AUTH.REFRESH, method: 'POST' },
+                apiContext,
+                extraOptions
+            );
+
+            if (refreshResult.data) {
+                const response = refreshResult.data as ApiResponse<{ accessToken: string; user: AuthUser }>;
+                if (response.success && response.data?.accessToken) {
+                    dispatch(
+                        setCredentials({
+                            accessToken: response.data.accessToken,
+                            user: response.data.user,
+                        })
+                    );
+                    return true;
+                }
+            }
+            return false;
+        } catch {
+            return false;
+        } finally {
+            release();
+            inFlightRefreshPromise = null;
+        }
+    })();
+
+    return inFlightRefreshPromise;
+};
 
 export const baseQueryWithReauth: BaseQueryFn<
     string | FetchArgs,
@@ -66,38 +133,20 @@ export const baseQueryWithReauth: BaseQueryFn<
 
     if (result.error && result.error.status === 401 && !isRefreshRequest && !isAuthRequest) {
         if (!mutex.isLocked()) {
-            const release = await mutex.acquire();
-            try {
-                const refreshResult = await baseQuery(
-                    { url: API_ENDPOINTS.AUTH.REFRESH, method: 'POST' },
-                    api,
-                    extraOptions
-                );
+            const refreshed = await refreshAuthSession(
+                api.dispatch,
+                api.getState,
+                (extraOptions || {}) as Record<string, unknown>
+            );
 
-                if (refreshResult.data) {
-                    const response = refreshResult.data as ApiResponse<{ accessToken: string; user: AuthUser }>;
-                    if (response.success && response.data) {
-                        api.dispatch(
-                            setCredentials({
-                                accessToken: response.data.accessToken,
-                                user: response.data.user,
-                            })
-                        );
-                        result = await baseQuery(args, api, extraOptions);
-                    } else {
-                        throw new Error('Refresh failed payload extraction');
-                    }
-                } else {
-                    api.dispatch(logout());
-                    api.dispatch({ type: 'api/resetApiState' });
+            if (refreshed) {
+                result = await baseQuery(args, api, extraOptions);
+            } else {
+                api.dispatch(logout());
+                resetAllApiCaches(api.dispatch);
+                if (window.location.pathname !== '/login') {
                     window.location.href = '/login';
                 }
-            } catch {
-                api.dispatch(logout());
-                api.dispatch({ type: 'api/resetApiState' });
-                window.location.href = '/login';
-            } finally {
-                release();
             }
         } else {
             await mutex.waitForUnlock();

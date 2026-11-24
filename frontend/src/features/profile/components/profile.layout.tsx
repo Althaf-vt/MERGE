@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { logout } from '../../auth/slices/auth.slice';
+import { authApi, useLogoutUserMutation } from '../../auth/api/auth.api';
 import { useGetProfileQuery } from '../api/profile.api';
 import styles from './profile.layout.module.css';
 
@@ -9,6 +10,7 @@ export const ProfileLayout: React.FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { user } = useAppSelector((state) => state.auth);
+    const [logoutUser] = useLogoutUserMutation();
 
     // Fetch fresh profile data including presigned photo URLs
     const { data: profileResponse } = useGetProfileQuery();
@@ -27,9 +29,16 @@ export const ProfileLayout: React.FC = () => {
         setImageError(false);
     }, [primaryPhoto?.url]);
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await logoutUser().unwrap();
+        } catch {
+            // Proceed with local cleanup even if backend session is already expired
+        } finally {
+            dispatch(logout());
+            dispatch(authApi.util.resetApiState());
+            navigate('/login', { replace: true });
+        }
     };
 
     const displayName: string = liveProfile?.displayName || 'User';

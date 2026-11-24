@@ -16,7 +16,7 @@ import { LandingComponent } from './features/onboarding/components/landing-page.
 import { ProfileLivePage } from './features/onboarding/components/profile-live.page';
 import { ForgotPasswordPage } from './features/auth/pages/forgot-password.page';
 import { GlobalLayout } from './shared/components/layouts/global.layout.component';
-import { SessionInitializer } from './features/auth/components/session-initializer.component';
+import { ProtectedRoute } from './features/auth/components/protected-route.component';
 import { AdminForgotPasswordPage } from './features/admin/auth/pages/admin-forgot-password.page';
 
 
@@ -93,24 +93,24 @@ export const App = () => {
                 {/* =========================================
                     USER FACING PLATFORM
                 ========================================= */}
-                <Route element={<GlobalLayout />}>
-                    {/* Runs silent background refresh across all routes so TopNav stays authenticated on refresh */}
-                    <Route element={<SessionInitializer />}>
-                        {/* Landing Page as default root */}
+                <Route element={<PersistLogin />}>
+
+                    {/* Public & Landing Routes */}
+                    <Route element={<GlobalLayout />}>
                         <Route path="/" element={<LandingComponent />} />
 
-                        {/* AUTHENTICATION ROUTES */}
                         <Route element={<PublicRoute />}>
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path='/forgot-password' element={<ForgotPasswordPage />} />
                         </Route>
 
-                        {/* Public Mobile Handoff */}
                         <Route path="/handoff" element={<MobileHandoff />} />
+                    </Route>
 
-                        {/* PROTECTED ROUTES */}
-                        <Route element={<PersistLogin />}>
+                    {/* Protected Routes */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route element={<GlobalLayout />}>
                             {/* Post-onboarding success page */}
                             <Route path="/profile-live" element={<ProfileLivePage />} />
                             <Route path='/casting-director' element={<CastingDirectorPage />} />
@@ -137,8 +137,8 @@ export const App = () => {
                                 <Route path="billing/credits/history" element={<CreditHistoryPage />} />
                             </Route>
 
-                            {/* // ONBOARDING ROUTES
-                            // Nested inside OnboardingGuard so completed users are automatically redirected to /profile-live */}
+                            {/* ONBOARDING ROUTES
+                            Nested inside OnboardingGuard so completed users are automatically redirected to /profile-live */}
                             <Route element={<OnboardingGuard />}>
                                 <Route path="/onboarding/kyc" element={<KycPage />} />
                                 <Route path="/onboarding/profile" element={<PersonaPage />} />
@@ -147,10 +147,10 @@ export const App = () => {
                                 <Route path="/onboarding/bio" element={<GenerateBioPage />} />
                             </Route>
                         </Route>
-
-                        {/* Catch-all */}
-                        <Route path="*" element={<div>404 - Page Not Found</div>} />
                     </Route>
+
+                    {/* Catch-all */}
+                    <Route path="*" element={<div>404 - Page Not Found</div>} />
                 </Route>
 
             </Routes>

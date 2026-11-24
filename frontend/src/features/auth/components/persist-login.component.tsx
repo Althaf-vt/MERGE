@@ -1,34 +1,37 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../app/hooks';
+import { useEffect, useRef } from 'react';
+import { useStore } from 'react-redux';
+import { Outlet } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import type { RootState } from '../../../app/store';
+import { refreshAuthSession } from '../../../shared/api/base-api';
+import { setInitialized } from '../slices/auth.slice';
 
 export const PersistLogin = () => {
-    const { isAuthenticated, isInitializing } = useAppSelector((state) => state.auth);
-    const location = useLocation();
+    const dispatch = useAppDispatch();
+    const store = useStore<RootState>();
+    const { accessToken, isAuthenticated, isInitializing } = useAppSelector((state) => state.auth);
+    const effectRan = useRef(false);
 
-    // While SessionInitializer is verifying the session, block child routes from mounting
-    if (isInitializing) {
-        return (
-            <div
-                style={{
-                    display: 'flex',
-                    height: '100vh',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color: 'var(--text-muted, #71717a)',
-                    fontSize: '14px',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                }}
-            >
-                Restoring secure session...
-            </div>
-        );
-    }
+    useEffect(() => {
+        // Restore session strictly once during initial app boot; never re-fire on logout().
+        if (effectRan.current || !isInitializing) return;
+        effectRan.current = true;
 
-    // Once initialization finishes, if not authenticated, redirect to login
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
+        if (accessToken || isAuthenticated) {
+            dispatch(setInitialized());
+            return;
+        }
 
-    // Authenticated, render protected child routes
+        const restoreSession = async () => {
+            try {
+                await refreshAuthSession(dispatch, store.getState);
+            } finally {
+                dispatch(setInitialized());
+            }
+        };
+
+        restoreSession();
+    }, [accessToken, isAuthenticated, isInitializing, dispatch, store]);
+
     return <Outlet />;
 };

@@ -129,6 +129,10 @@ export class AuthController {
         const refreshToken = req.cookies[COOKIE_NAMES.USER_REFRESH_TOKEN];
         await this._logoutUseCase.execute(refreshToken);
         CookieUtil.clearAuthCookie(res, COOKIE_NAMES.USER_REFRESH_TOKEN);
+        if (req.cookies?.refreshToken) {
+            // Scrub legacy generic 'refreshToken' cookie if still present on Path=/
+            CookieUtil.clearAuthCookie(res, 'refreshToken');
+        }
 
         return ApiResponseHelper.success(RESPONSE_MESSAGES.AUTH.LOGOUT_SUCCESS);
     }

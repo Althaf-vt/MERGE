@@ -2,7 +2,7 @@ import { CookieOptions, Response } from 'express';
 import { EnvConfig } from '../../infrastructure/config/env.config';
 
 export const COOKIE_NAMES = {
-    USER_REFRESH_TOKEN: 'refreshToken',
+    USER_REFRESH_TOKEN: 'userRefreshToken',
     ADMIN_REFRESH_TOKEN: 'adminRefreshToken',
 } as const;
 
@@ -11,7 +11,7 @@ export const DEFAULT_COOKIE_MAX_AGE = EnvConfig.app.cookieMaxAge;
 export const DEFAULT_COOKIE_OPTIONS: Readonly<CookieOptions> = {
     httpOnly: true,
     secure: EnvConfig.app.isProduction,
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
     maxAge: DEFAULT_COOKIE_MAX_AGE,
 };
