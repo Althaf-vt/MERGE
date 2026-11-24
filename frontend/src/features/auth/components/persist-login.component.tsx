@@ -1,22 +1,35 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { useRefreshMutation } from '../api/auth.api';
+import { authApi } from '../api/auth.api';
 import { setCredentials, setInitialized } from '../slices/auth.slice';
+
+// Module-level singleton promise: ensures that across all React 18 mounts,
+// StrictMode remounts, and re-renders, exactly ONE refresh request is in flight.
+let activeRefreshPromise: Promise<void> | null = null;
 
 export const PersistLogin = () => {
     const dispatch = useAppDispatch();
     const { accessToken, isAuthenticated } = useAppSelector((state) => state.auth);
-    const [refresh] = useRefreshMutation();
-    const effectRan = useRef(false);
 
     useEffect(() => {
-        // Prevent React 18 strict mode double-firing
-        if (effectRan.current) return;
+        // If already authenticated or token present, mark initialized and exit
+        if (accessToken || isAuthenticated) {
+            dispatch(setInitialized());
+            return;
+        }
 
-        const restoreSession = async () => {
+        // If a refresh is already in-flight, do NOT fire a duplicate request
+        if (activeRefreshPromise) {
+            return;
+        }
+
+        activeRefreshPromise = (async () => {
             try {
-                const response = await refresh().unwrap();
+                const response = await dispatch(
+                    authApi.endpoints.refresh.initiate()
+                ).unwrap();
+
                 if (response.data?.accessToken) {
                     dispatch(
                         setCredentials({
@@ -27,23 +40,13 @@ export const PersistLogin = () => {
                 }
             } catch {
                 // If it fails, cookie is missing or expired.
-                // Downstream route guards will naturally handle the unauthenticated state.
+                // Downstream route guards (ProtectedRoute) will handle redirection.
             } finally {
                 dispatch(setInitialized());
+                activeRefreshPromise = null;
             }
-        };
-
-        // If we don't have an access token in memory and haven't authenticated yet, restore session
-        if (!accessToken && !isAuthenticated) {
-            restoreSession();
-        } else {
-            dispatch(setInitialized());
-        }
-
-        return () => {
-            effectRan.current = true;
-        };
-    }, [accessToken, isAuthenticated, dispatch, refresh]);
+        })();
+    }, [accessToken, isAuthenticated, dispatch]);
 
     return <Outlet />;
 };
