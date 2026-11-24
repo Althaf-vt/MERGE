@@ -11,7 +11,7 @@ export const DEFAULT_COOKIE_MAX_AGE = EnvConfig.app.cookieMaxAge;
 export const DEFAULT_COOKIE_OPTIONS: Readonly<CookieOptions> = {
     httpOnly: true,
     secure: EnvConfig.app.isProduction,
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
     maxAge: DEFAULT_COOKIE_MAX_AGE,
 };
