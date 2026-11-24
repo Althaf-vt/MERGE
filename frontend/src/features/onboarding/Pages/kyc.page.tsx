@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { KycDocumentUpload } from "../components/kyc-document-upload.component";
 import { KycLayout } from "../../../shared/components/layouts/kyc.layout.component";
@@ -19,8 +19,7 @@ export const KycPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    // 1. Grab auth state, the restored user profile, and current Redux step
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+    // 1. Grab restored user profile and current Redux step
     const user = useAppSelector((state) => state.auth.user);
     const currentStep = useAppSelector((state) => state.kyc.currentStep);
 
@@ -60,12 +59,7 @@ export const KycPage = () => {
         }
     }, [user, dispatch, navigate]);
 
-    // 3, Unauthenticated safeguard 
-    if(!isAuthenticated){
-        return <Navigate to='/login' replace/>
-    }
-
-    // 4. Render the correct component based on the synchronized Redux state
+    // 3. Render the correct component based on the synchronized Redux state
     const renderCurrentStep = () => {
         switch(currentStep){
             case 'DOCUMENT_UPLOAD':
