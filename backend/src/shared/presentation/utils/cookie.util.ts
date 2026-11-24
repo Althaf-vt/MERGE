@@ -2,7 +2,7 @@ import { CookieOptions, Response } from 'express';
 import { EnvConfig } from '../../infrastructure/config/env.config';
 
 export const COOKIE_NAMES = {
-    USER_REFRESH_TOKEN: 'refreshToken',
+    USER_REFRESH_TOKEN: 'userRefreshToken',
     ADMIN_REFRESH_TOKEN: 'adminRefreshToken',
 } as const;
 
