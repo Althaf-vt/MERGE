@@ -68,7 +68,7 @@ export class UserKyc {
     get updatedAt(): Date | undefined { return this._props.updatedAt; }
 
     public hasValidDocument(): boolean {
-        return !!this._props.documentType && !!this._props.hashedDocumentNumber;
+        return !!this._props.documentType && (!!this._props.hashedDocumentNumber || !!this._props.legalName);
     }
 
     public hasApprovedBiometrics(): boolean {
