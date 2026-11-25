@@ -18,7 +18,7 @@ export class CreateKycEscalationTaskUseCase implements ICreateKycEscalationTaskU
         livenessScore: number,
         faceMatchScore: number
     ): Promise<void> {
-        const exists = await this._repository.existsForUser(targetUserId);
+        const exists = await this._repository.existsActiveForUser(targetUserId);
         if (exists) {
             return;
         }
