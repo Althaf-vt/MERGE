@@ -8,6 +8,7 @@ export interface ICreateKycEscalationTaskUseCase {
         kycSelfieUrl: string,
         uploadedDocumentUrl: string,
         livenessScore: number,
-        faceMatchScore: number
+        faceMatchScore: number,
+        legalName?: string | null
     ): Promise<void>;
 }

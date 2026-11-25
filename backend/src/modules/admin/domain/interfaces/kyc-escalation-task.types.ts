@@ -12,6 +12,7 @@ export interface KycEscalationTaskProps {
     uploadedDocumentUrl: string;
     livenessScore: number;
     faceMatchScore: number;
+    legalName?: string | null;
     taskStatus?: KycTaskStatus;
     claimDetails?: ClaimDetailsVO;
     rejectionReason?: string;
@@ -31,6 +32,7 @@ export interface KycEscalationTaskSnapshot {
     uploadedDocumentUrl: string;
     livenessScore: number;
     faceMatchScore: number;
+    legalName?: string | null;
     taskStatus: KycTaskStatus;
     claimDetails: ClaimDetailsSnapshot;
     rejectionReason?: string;

@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
         SELFIE: '/kyc/selfie',
         LIVENESS: '/kyc/liveness',
         SUBMIT_VERIFICATION: '/kyc/submit-verification',
+        RESET_RESUBMISSION: '/kyc/reset-resubmission',
     },
     HANDOFF: {
         BASE: '/verification/phone-handoff',

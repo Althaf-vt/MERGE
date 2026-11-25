@@ -7,6 +7,8 @@ import { ISubmitLivenessCheckUseCase, SUBMIT_LIVENESS_CHECK_USE_CASE, SubmitLive
 import { ISubmitFinalVerificationUseCase, SUBMIT_FINAL_VERIFICATION_USE_CASE, SubmitFinalVerificationResult } from "../../application/interfaces/submit-final-verification.use-case.interface";
 import { ISubmitLiveSelfieUseCase, SUBMIT_LIVE_SELFIE_USE_CASE, SubmitLiveSelfieResult } from "../../application/interfaces/submit-live-selfie.use-case.interface";
 import { ISubmitKycDocumentUseCase, SUBMIT_KYC_DOCUMENT_USE_CASE, SubmitKycDocumentResult } from "../../application/interfaces/submit-kyc-document.use-case.interface";
+import { IResetKycForResubmissionUseCase, RESET_KYC_FOR_RESUBMISSION_USE_CASE } from "../../application/interfaces/reset-kyc-for-resubmission.use-case.interface";
+import { UserResponseDto } from "../../application/dtos/user-response.dto";
 import { AuthenticatedRequest } from "../../../../shared/infrastructure/security/interfaces/authenticated-request.interface";
 import { API_ENDPOINTS } from "../../../../shared/presentation/constants/api-endpoints.constant";
 import { ApiResponse } from "../../../../shared/presentation/interfaces/api-response.interface";
@@ -22,6 +24,7 @@ export class KycController {
         @Inject(SUBMIT_LIVE_SELFIE_USE_CASE) private readonly _submitLiveSelfieUseCase: ISubmitLiveSelfieUseCase,
         @Inject(SUBMIT_LIVENESS_CHECK_USE_CASE) private readonly _submitLivenessCheckUseCase: ISubmitLivenessCheckUseCase,
         @Inject(SUBMIT_FINAL_VERIFICATION_USE_CASE) private readonly _submitFinalVerificationUseCase: ISubmitFinalVerificationUseCase,
+        @Inject(RESET_KYC_FOR_RESUBMISSION_USE_CASE) private readonly _resetKycUseCase: IResetKycForResubmissionUseCase,
     ) { }
 
     @Post(API_ENDPOINTS.KYC.SUBMIT)
@@ -77,5 +80,14 @@ export class KycController {
         const data = await this._submitFinalVerificationUseCase.execute(userId);
 
         return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.VERIFICATION_SUBMITTED, data);
+    }
+
+    @Post(API_ENDPOINTS.KYC.RESET_RESUBMISSION)
+    @HttpCode(HttpStatus.OK)
+    async resetForResubmission(@Req() req: AuthenticatedRequest): Promise<ApiResponse<UserResponseDto>> {
+        const userId = req.user.userId;
+        const userDto = await this._resetKycUseCase.execute(userId);
+
+        return ApiResponseHelper.success(RESPONSE_MESSAGES.KYC.RESUBMISSION_RESET, userDto);
     }
 }

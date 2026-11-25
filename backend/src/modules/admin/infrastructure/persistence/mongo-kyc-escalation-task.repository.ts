@@ -3,6 +3,7 @@ import { BaseRepository } from "../../../../shared/infrastructure/persistence/ba
 import { KycEscalationTask } from "../../domain/entities/kyc-escalation-task.entity";
 import { KycEscalationTaskDocument, KycEscalationTaskSchemaClass } from "./kyc-escalation-task.schema";
 import { GetKycTasksFilters, IKycEscalationTaskRepository, PaginatedKycTaskResult } from "../../domain/interfaces/kyc-escalation-task-repository.interface";
+import { KycTaskStatus } from "../../domain/enums/kyc-task-status.enum";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -48,6 +49,14 @@ export class KycEscalationTaskRepository extends BaseRepository<KycEscalationTas
 
     async existsForUser(targetUserId: string): Promise<boolean> {
         const count = await this._model.countDocuments({ targetUserId }).exec();
+        return count > 0;
+    }
+
+    async existsActiveForUser(targetUserId: string): Promise<boolean> {
+        const count = await this._model.countDocuments({
+            targetUserId,
+            taskStatus: KycTaskStatus.PENDING,
+        }).exec();
         return count > 0;
     }
 }

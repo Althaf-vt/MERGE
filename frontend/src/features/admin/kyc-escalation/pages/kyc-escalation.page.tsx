@@ -40,11 +40,16 @@ export const KycEscalationPage: React.FC = () => {
 
     const columns: AdminTableColumn<KycEscalationTask>[] = [
         {
-            header: 'TARGET USER ID',
+            header: 'APPLICANT / LEGAL NAME',
             render: (task) => (
-                <span className={styles.userIdCell} title={task.targetUserId}>
-                    {task.targetUserId}
-                </span>
+                <div className={styles.applicantCell} title={`Legal Name: ${task.legalName || 'N/A'}\nUser ID: ${task.targetUserId}`}>
+                    <span className={styles.legalNameText}>
+                        {task.legalName || 'Name Pending Extraction'}
+                    </span>
+                    <span className={styles.userIdSubtext}>
+                        ID: {task.targetUserId}
+                    </span>
+                </div>
             ),
         },
         {

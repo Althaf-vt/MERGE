@@ -17,6 +17,7 @@ export interface KycEscalationTask {
     uploadedDocumentUrl: string;
     livenessScore: number;
     faceMatchScore: number;
+    legalName?: string | null;
     taskStatus: KycTaskStatus;
     claimStatus: ClaimStatus;
     claimedBy: string | null;

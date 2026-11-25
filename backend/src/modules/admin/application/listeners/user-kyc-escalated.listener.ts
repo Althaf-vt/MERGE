@@ -23,7 +23,8 @@ export class UserKycEscalatedListener {
                 event.kycSelfieUrl,
                 event.uploadedDocumentUrl,
                 event.livenessScore,
-                event.faceMatchScore
+                event.faceMatchScore,
+                event.legalName
             );
         } catch (error: unknown) {
             this._logger.error(

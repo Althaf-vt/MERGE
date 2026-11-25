@@ -8,6 +8,7 @@ export type KycStep =
   | 'LIVE_SELFIE' 
   | 'LIVENESS_CHALLENGE' 
   | 'REVIEW_VERIFICATION'
+  | 'RESUBMISSION_PENDING'
   | 'VERIFIED'          
   | 'UNDER_REVIEW'      
   | 'FAILED'

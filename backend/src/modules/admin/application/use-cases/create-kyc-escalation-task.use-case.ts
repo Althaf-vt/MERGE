@@ -16,9 +16,10 @@ export class CreateKycEscalationTaskUseCase implements ICreateKycEscalationTaskU
         kycSelfieUrl: string,
         uploadedDocumentUrl: string,
         livenessScore: number,
-        faceMatchScore: number
+        faceMatchScore: number,
+        legalName?: string | null
     ): Promise<void> {
-        const exists = await this._repository.existsForUser(targetUserId);
+        const exists = await this._repository.existsActiveForUser(targetUserId);
         if (exists) {
             return;
         }
@@ -31,6 +32,7 @@ export class CreateKycEscalationTaskUseCase implements ICreateKycEscalationTaskU
             uploadedDocumentUrl,
             livenessScore,
             faceMatchScore,
+            legalName: legalName ?? null,
         });
 
         await this._repository.create(task);

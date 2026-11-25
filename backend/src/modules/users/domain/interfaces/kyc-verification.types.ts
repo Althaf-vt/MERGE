@@ -1,5 +1,6 @@
 import {
     DocumentType,
+    KycResubmissionReason,
     ReviewDecision,
     SelfieVerificationStatus,
     VerificationDevice,
@@ -35,7 +36,7 @@ export interface UserKycProps {
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
     rejectionReason?: string;
-    resubmissionReasons?: string[];
+    resubmissionReasons?: (KycResubmissionReason | string)[];
     resubmissionMessage?: string;
     resubmissionRequestedAt?: Date;
     submittedAt?: Date;
@@ -77,7 +78,7 @@ export interface RejectManualReviewPayload {
 
 export interface RequestResubmissionPayload {
     adminId: string;
-    reasons: string[];
+    reasons: (KycResubmissionReason | string)[];
     message?: string;
 }
 
@@ -103,7 +104,7 @@ export interface UserKycSnapshot {
     manualReviewRequired?: boolean;
     adminReviewedBy?: string;
     rejectionReason?: string;
-    resubmissionReasons?: string[];
+    resubmissionReasons?: (KycResubmissionReason | string)[];
     resubmissionMessage?: string;
     resubmissionRequestedAt?: Date;
     submittedAt?: Date;

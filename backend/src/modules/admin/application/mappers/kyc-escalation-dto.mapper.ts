@@ -19,6 +19,7 @@ export class KycEscalationDtoMapper {
             uploadedDocumentUrl: signedDocumentUrl || entity.uploadedDocumentUrl,
             livenessScore: entity.livenessScore,
             faceMatchScore: entity.faceMatchScore,
+            legalName: entity.legalName ?? null,
             taskStatus: entity.taskStatus,
             claimStatus: entity.claimDetails.status,
             claimedBy: entity.claimDetails.claimedBy,
