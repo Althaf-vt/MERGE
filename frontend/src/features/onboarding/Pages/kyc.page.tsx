@@ -12,6 +12,7 @@ import { ReviewVerification } from "../components/review-verification.component"
 import { KycVerified } from "../components/kyc-verified.component";
 import { KycUnderReview } from "../components/kyc-under-review.component";
 import { KycFailed } from "../components/kyc-failed.component";
+import { KycResubmissionPending } from "../components/kyc-resubmission-pending.component";
 
 const OnboardingComplete = () => <div>KYC Complete. Redirecting to Profile Setup...</div>;
 
@@ -38,7 +39,12 @@ export const KycPage = () => {
 
         if(!kyc) return;
 
-        // 2. Terminal review states
+        // 2. Terminal and resubmission review states
+        if (kyc.verificationStatus === 'RESUBMISSION_REQUESTED') {
+            dispatch(setKycStep('RESUBMISSION_PENDING'));
+            return;
+        }
+
         if(kyc.verificationSubmitted){
             if(kyc.verificationStatus === 'UNDER_REVIEW') dispatch(setKycStep('UNDER_REVIEW'));
             else if(kyc.verificationStatus === 'APPROVED') dispatch(setKycStep('VERIFIED'));
@@ -47,13 +53,15 @@ export const KycPage = () => {
         }
 
         // 3. Granular step restoration (skip completed phases)
-        if(kyc.documentType && kyc.selfieVerificationStatus !== 'APPROVED'){
+        if (!kyc.documentType) {
+            dispatch(setKycStep('DOCUMENT_UPLOAD'));
+        } else if (kyc.documentType && kyc.selfieVerificationStatus !== 'APPROVED') {
             // Document is verified but selfie is missing
             dispatch(setKycStep('DEVICE_SELECTION'));
-        }else if(kyc.selfieVerificationStatus === 'APPROVED' && (kyc.passedPrompts?.length ?? 0) < 4){
+        } else if (kyc.selfieVerificationStatus === 'APPROVED' && (kyc.passedPrompts?.length ?? 0) < 4) {
             // selfie is approved, but liveness prompts are incomplete/failed
             dispatch(setKycStep('LIVENESS_CHALLENGE'));
-        }else if((kyc.passedPrompts?.length ?? 0) === 4 && !kyc.verificationSubmitted){
+        } else if (kyc.documentType && (kyc.passedPrompts?.length ?? 0) === 4 && !kyc.verificationSubmitted) {
             // Liveness is done, ready for final review
             dispatch(setKycStep('REVIEW_VERIFICATION'));
         }
@@ -84,6 +92,8 @@ export const KycPage = () => {
                 return <KycUnderReview/>;
             case 'FAILED':
                 return <KycFailed/>;
+            case 'RESUBMISSION_PENDING':
+                return <KycResubmissionPending/>;
             
             case 'SUCCESS':
                 return <OnboardingComplete/>;
