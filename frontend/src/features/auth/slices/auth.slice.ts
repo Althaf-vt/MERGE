@@ -35,6 +35,9 @@ export interface AuthUser {
         passedPrompts?: string[];
         reviewDecision?: string;
         verifiedDOB?: Date | string;
+        resubmissionReasons?: string[];
+        resubmissionMessage?: string | null;
+        resubmissionRequestedAt?: Date | string;
     };
     createdAt?: Date | string;
 }
@@ -99,6 +102,10 @@ const authSlice = createSlice({
             state.isInitializing = false;
         },
 
+        updateUser: (state, action: PayloadAction<AuthUser>) => {
+            state.user = action.payload;
+        },
+
         logout: (state) => {
             state.accessToken = null;
             state.user = null;
@@ -116,6 +123,7 @@ export const {
     resetRegistration,
     setCredentials,
     setInitialized,
+    updateUser,
     logout,
 } = authSlice.actions;
 
