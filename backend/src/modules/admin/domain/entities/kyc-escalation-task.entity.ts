@@ -17,6 +17,7 @@ export class KycEscalationTask extends AggregateRoot {
         this._props = {
             ...props,
             id: props.id ?? '',
+            legalName: props.legalName ?? null,
             taskStatus: props.taskStatus ?? KycTaskStatus.PENDING,
             claimDetails: props.claimDetails ?? new ClaimDetailsVO(ClaimStatus.UNCLAIMED),
             rejectionReason: props.rejectionReason ?? undefined,
@@ -36,6 +37,7 @@ export class KycEscalationTask extends AggregateRoot {
     get uploadedDocumentUrl(): string { return this._props.uploadedDocumentUrl; }
     get livenessScore(): number { return this._props.livenessScore; }
     get faceMatchScore(): number { return this._props.faceMatchScore; }
+    get legalName(): string | null | undefined { return this._props.legalName; }
     get taskStatus(): KycTaskStatus { return this._props.taskStatus; }
     get claimDetails(): ClaimDetailsVO { return this._props.claimDetails; }
     get rejectionReason(): string | undefined { return this._props.rejectionReason; }

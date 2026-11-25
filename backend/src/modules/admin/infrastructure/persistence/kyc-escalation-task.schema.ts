@@ -43,6 +43,9 @@ export class KycEscalationTaskSchemaClass {
     @Prop({ required: true })
     faceMatchScore: number;
 
+    @Prop({ type: String, default: null })
+    legalName?: string | null;
+
     @Prop({ type: String, enum: KycTaskStatus, default: KycTaskStatus.PENDING, index: true })
     taskStatus: string;
 
