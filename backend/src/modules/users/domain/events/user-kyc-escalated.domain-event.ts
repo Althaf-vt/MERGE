@@ -11,6 +11,7 @@ export class UserKycEscalatedDomainEvent implements IUserKycEscalatedEventPayloa
         public readonly kycSelfieUrl: string,
         public readonly uploadedDocumentUrl: string,
         public readonly livenessScore: number,
-        public readonly faceMatchScore: number
+        public readonly faceMatchScore: number,
+        public readonly legalName?: string
     ) { }
 }

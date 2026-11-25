@@ -15,6 +15,7 @@ export interface IUserKycEscalatedEventPayload extends DomainEvent {
     readonly uploadedDocumentUrl: string;
     readonly livenessScore: number;
     readonly faceMatchScore: number;
+    readonly legalName?: string;
 }
 
 export interface IKycApprovedEventPayload extends DomainEvent {
