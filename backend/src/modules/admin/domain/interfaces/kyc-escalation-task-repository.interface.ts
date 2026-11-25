@@ -20,7 +20,8 @@ export interface PaginatedKycTaskResult{
     limit: number;
 }
 
-export interface IKycEscalationTaskRepository extends IBaseRepository<KycEscalationTask>{
+export interface IKycEscalationTaskRepository extends IBaseRepository<KycEscalationTask> {
     findAllPaginated(filters: GetKycTasksFilters): Promise<PaginatedKycTaskResult>;
     existsForUser(targetUserId: string): Promise<boolean>;
+    existsActiveForUser(targetUserId: string): Promise<boolean>;
 }
