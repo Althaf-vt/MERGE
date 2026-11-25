@@ -35,6 +35,8 @@ import { SubmitLivenessCheckUseCase } from "./application/use-cases/submit-liven
 import { SUBMIT_LIVENESS_CHECK_USE_CASE } from "./application/interfaces/submit-liveness-check.use-case.interface";
 import { SUBMIT_FINAL_VERIFICATION_USE_CASE } from "./application/interfaces/submit-final-verification.use-case.interface";
 import { SubmitFinalVerificationUseCase } from "./application/use-cases/submit-final-verification.use-case";
+import { ResetKycForResubmissionUseCase } from "./application/use-cases/reset-kyc-for-resubmission.use-case";
+import { RESET_KYC_FOR_RESUBMISSION_USE_CASE } from "./application/interfaces/reset-kyc-for-resubmission.use-case.interface";
 import { UpdatePersonaUseCase } from "./application/use-cases/update-persona.use-case";
 import { ProfileController } from "./presentation/controllers/profile.controller";
 import { UPDATE_PERSONA_USE_CASE } from "./application/interfaces/update-persona.use-case.interface";
@@ -215,6 +217,7 @@ import { GetPublicProfileUseCase } from "./application/use-cases/get-public-prof
         { provide: STORAGE_SERVICE, useClass: S3StorageService },
         { provide: SUBMIT_LIVENESS_CHECK_USE_CASE, useClass: SubmitLivenessCheckUseCase },
         { provide: SUBMIT_FINAL_VERIFICATION_USE_CASE, useClass: SubmitFinalVerificationUseCase },
+        { provide: RESET_KYC_FOR_RESUBMISSION_USE_CASE, useClass: ResetKycForResubmissionUseCase },
         { provide: UPDATE_PERSONA_USE_CASE, useClass: UpdatePersonaUseCase },
         { provide: UPDATE_LIFESTYLE_USE_CASE, useClass: UpdateLifeStyleUseCase },
         { provide: UPDATE_PREFERENCES_USE_CASE, useClass: UpdatePreferencesUseCase },
