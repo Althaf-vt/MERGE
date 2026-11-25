@@ -109,6 +109,7 @@ export const USER_ERROR_MESSAGES = {
     REJECTION_REASON_REQUIRED: 'Rejection reason is required when rejecting KYC.',
     RESUBMISSION_REASON_REQUIRED: 'At least one resubmission reason is required when requesting KYC resubmission.',
     BIOMETRIC_VALIDATION_FAILED: 'Biometric validation failed.',
+    CANNOT_RESET_UNREQUESTED_KYC: 'KYC reset is only allowed when resubmission has been requested.',
     KYC_HASH_PEPPER_MISSING: 'CRITICAL: KYC_HASH_PEPPER is missing from environment variables.',
 
     // Aadhaar PKI & Offline e-KYC

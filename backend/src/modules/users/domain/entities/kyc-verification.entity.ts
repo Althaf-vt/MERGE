@@ -1,4 +1,4 @@
-import { DocumentType, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
+import { DocumentType, KycResubmissionReason, ReviewDecision, SelfieVerificationStatus, VerificationDevice, VerificationStatus } from "../enums/user.enums";
 import { DomainException } from "../../../../shared/domain/exceptions/domain.exception";
 import { ErrorCode } from "../../../../shared/domain/enums/error-code.enum";
 import { PhotoVerificationStatus } from "../enums/profile.enums";
@@ -66,6 +66,15 @@ export class UserKyc {
     get rejectedAt(): Date | undefined { return this._props.rejectedAt; }
     get createdAt(): Date | undefined { return this._props.createdAt; }
     get updatedAt(): Date | undefined { return this._props.updatedAt; }
+
+    public hasValidDocument(): boolean {
+        return !!this._props.documentType && !!this._props.hashedDocumentNumber;
+    }
+
+    public hasApprovedBiometrics(): boolean {
+        const passedCount = (this._props.livenessResults ?? []).filter(r => r.status === 'PASSED').length;
+        return this._props.selfieVerificationStatus === SelfieVerificationStatus.APPROVED && passedCount >= 4;
+    }
 
     // Instant PKI validation
     recordPkiValidation(payload: SubmitPkiDocumentsPayload): void {
@@ -254,6 +263,55 @@ export class UserKyc {
         this._props.resubmissionReasons = [...payload.reasons];
         this._props.resubmissionMessage = payload.message?.trim() || undefined;
         this._props.resubmissionRequestedAt = new Date();
+        this._props.updatedAt = new Date();
+    }
+
+    public resetForResubmission(): void {
+        if (this._props.verificationStatus !== VerificationStatus.RESUBMISSION_REQUESTED) {
+            throw new DomainException(ErrorCode.VALIDATION_FAILED, USER_ERROR_MESSAGES.CANNOT_RESET_UNREQUESTED_KYC);
+        }
+
+        const reasons = this._props.resubmissionReasons || [];
+        const hasDocIssue = reasons.some(
+            r => r === KycResubmissionReason.UPLOAD_CORRECT_DOCUMENT || r === KycResubmissionReason.COUNTRY_SELECTION_CORRECTION
+        );
+        const hasBiometricIssue = reasons.some(
+            r => r === KycResubmissionReason.RETAKE_SELFIE || r === KycResubmissionReason.RETRY_LIVENESS_VERIFICATION
+        );
+        const isGeneralIssue = reasons.includes(KycResubmissionReason.OTHER) || (!hasDocIssue && !hasBiometricIssue);
+
+        // Increment attempt counter and release submission lock
+        this._props.verificationSubmitted = false;
+        this._props.manualReviewRequired = false;
+        this._props.reviewDecision = undefined;
+        this._props.verificationAttempt = (this._props.verificationAttempt ?? 1) + 1;
+
+        // PILLAR 1 RESET: If document is flagged or general reset
+        if (hasDocIssue || isGeneralIssue) {
+            this._props.documentType = undefined;
+            this._props.issuingCountry = undefined;
+            this._props.legalName = undefined;
+            this._props.verifiedDOB = undefined;
+            this._props.hashedDocumentNumber = undefined;
+        }
+
+        // PILLAR 2 RESET: If selfie/liveness is flagged or general reset
+        if (hasBiometricIssue || isGeneralIssue) {
+            this._props.liveSelfieS3 = undefined;
+            this._props.selfieFaceEmbedding = undefined;
+            this._props.selfieVerificationStatus = SelfieVerificationStatus.NOT_STARTED;
+            this._props.selfieConfidence = undefined;
+            this._props.livenessResults = [];
+        }
+
+        // Status calculation
+        if (!this.hasValidDocument()) {
+            this._props.verificationStatus = VerificationStatus.NOT_STARTED;
+        } else {
+            // Document is already verified; awaiting biometrics
+            this._props.verificationStatus = VerificationStatus.APPROVED;
+        }
+
         this._props.updatedAt = new Date();
     }
 

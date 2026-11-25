@@ -207,6 +207,15 @@ export class UserAggregate extends AggregateRoot {
         this.markUpdatedAt();
     }
 
+    resetKycForResubmission(): void {
+        if (!this._props.kycVerification) {
+            throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_OR_KYC_NOT_FOUND);
+        }
+        this._props.kycVerification.resetForResubmission();
+        this._props.kycCompleted = false;
+        this.markUpdatedAt();
+    }
+
     advanceOnboardingStep(step: number): void {
         this._props.onboardingStep = step;
         this.markUpdatedAt();
