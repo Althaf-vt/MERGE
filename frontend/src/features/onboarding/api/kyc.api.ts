@@ -1,6 +1,7 @@
 import { rootApi } from '../../../shared/api/base-api';
 import { API_ENDPOINTS } from '../../../shared/constants/api-endpoints.constant';
 import type { ApiResponse } from '../../../shared/types/api-response.types';
+import type { AuthUser } from '../../auth/slices/auth.slice';
 import type { LivenessResponse } from '../types';
 
 export interface ExtractedKycData {
@@ -69,6 +70,14 @@ export const kycApi = rootApi.injectEndpoints({
             }),
             invalidatesTags: ['User', 'Profile'],
         }),
+
+        resetKycResubmission: builder.mutation<ApiResponse<AuthUser>, void>({
+            query: () => ({
+                url: API_ENDPOINTS.KYC.RESET_RESUBMISSION,
+                method: 'POST',
+            }),
+            invalidatesTags: ['User', 'Profile'],
+        }),
     }),
     overrideExisting: false,
 });
@@ -78,4 +87,5 @@ export const {
     useSubmitLiveSelfieMutation,
     useSubmitLivenessMutation,
     useSubmitFinalVerificationMutation,
+    useResetKycResubmissionMutation,
 } = kycApi;
