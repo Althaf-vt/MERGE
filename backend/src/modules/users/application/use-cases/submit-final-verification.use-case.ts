@@ -41,6 +41,7 @@ export class SubmitFinalVerificationUseCase implements ISubmitFinalVerificationU
                 uploadedDocumentUrl: kyc.liveSelfieS3 || '',
                 livenessScore: Math.round(averageLiveness * 100) / 100,
                 faceMatchScore: Math.round((kyc.selfieConfidence ?? 0) * 100) / 100,
+                legalName: kyc.legalName,
             });
         }
 

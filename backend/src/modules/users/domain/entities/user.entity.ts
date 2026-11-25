@@ -253,6 +253,7 @@ export class UserAggregate extends AggregateRoot {
         uploadedDocumentUrl: string;
         livenessScore: number;
         faceMatchScore: number;
+        legalName?: string;
     }): void {
         if (!this.id) return;
         this.addDomainEvent(new UserKycEscalatedDomainEvent(
@@ -262,7 +263,8 @@ export class UserAggregate extends AggregateRoot {
             payload.kycSelfieUrl,
             payload.uploadedDocumentUrl,
             payload.livenessScore,
-            payload.faceMatchScore
+            payload.faceMatchScore,
+            payload.legalName
         ));
         this.markUpdatedAt();
     }
