@@ -14,6 +14,7 @@ import { IUserSessionService, USER_SESSION_SERVICE } from "../../../../shared/do
 import { IUserAppConfig, USER_APP_CONFIG } from "../interfaces/user-app-config.interface";
 import { UserResponseMapper } from "../mappers/user-response.mapper";
 import { USER_ERROR_MESSAGES } from "../../domain/constants/user-error-messages.constant";
+import { AuthProvider } from "../../domain/enums/user.enums";
 
 @Injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -29,7 +30,14 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         const user = await this._userRepository.findByEmail(dto.email);
 
         if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_EXISTS_REGISTER);
-        if (!user.passwordHash) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.SOCIAL_LOGIN_GOOGLE);
+
+        if (user.authProvider === AuthProvider.GOOGLE) {
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.SOCIAL_LOGIN_GOOGLE);
+        }
+
+        if (!user.passwordHash) {
+            throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.INVALID_CREDENTIALS);
+        }
 
         const isPasswordValid = await this._passwordHasher.compare(dto.password, user.passwordHash!);
         if (!isPasswordValid) throw new DomainException(ErrorCode.INVALID_CREDENTIALS, USER_ERROR_MESSAGES.INVALID_CREDENTIALS);
