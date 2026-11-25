@@ -8,6 +8,7 @@ interface KycComparisonProps {
     livenessScore: number;
     documentType: string;
     issuingCountry: string;
+    legalName?: string | null;
 }
 
 export const KycComparison: React.FC<KycComparisonProps> = ({
@@ -17,6 +18,7 @@ export const KycComparison: React.FC<KycComparisonProps> = ({
     livenessScore,
     documentType,
     issuingCountry,
+    legalName,
 }) => {
     const [enlargedImage, setEnlargedImage] = useState<{ src: string; title: string } | null>(null);
 
@@ -47,6 +49,12 @@ export const KycComparison: React.FC<KycComparisonProps> = ({
         <div className={styles.comparisonContainer}>
             {/* Metadata Strip */}
             <div className={styles.metaStrip}>
+                {legalName && (
+                    <div className={styles.metaItem}>
+                        <span className={styles.metaLabel}>LEGAL NAME:</span>
+                        <span className={styles.metaValue}>{legalName}</span>
+                    </div>
+                )}
                 <div className={styles.metaItem}>
                     <span className={styles.metaLabel}>DOCUMENT TYPE:</span>
                     <span className={styles.metaValue}>{documentType ? documentType.replace(/_/g, ' ') : 'N/A'}</span>

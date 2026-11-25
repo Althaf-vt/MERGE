@@ -59,7 +59,7 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
                 isOpen={isOpen}
                 onClose={onClose}
                 title="REVIEW KYC ESCALATION"
-                subtitle={`USER: ${task.targetUserId} • CREATED: ${new Date(task.createdAt).toLocaleString()}`}
+                subtitle={`${task.legalName ? `APPLICANT: ${task.legalName} • ` : ''}USER ID: ${task.targetUserId} • CREATED: ${new Date(task.createdAt).toLocaleString()}`}
                 size="xl"
                 contentClassName={styles.modal}
             >
@@ -125,6 +125,7 @@ export const KycReviewModal: React.FC<KycReviewModalProps> = ({
                             livenessScore={task.livenessScore}
                             documentType={task.documentType}
                             issuingCountry={task.issuingCountry}
+                            legalName={task.legalName}
                         />
 
                         {/* Inline Rejection Input */}
