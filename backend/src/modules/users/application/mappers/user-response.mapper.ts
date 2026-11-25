@@ -31,6 +31,9 @@ export class UserResponseMapper {
                 verificationSubmitted: entity.kycVerification.verificationSubmitted,
                 passedPrompts: entity.kycVerification.passedPrompts,
                 reviewDecision: entity.kycVerification.reviewDecision,
+                resubmissionReasons: entity.kycVerification.resubmissionReasons,
+                resubmissionMessage: entity.kycVerification.resubmissionMessage,
+                resubmissionRequestedAt: entity.kycVerification.resubmissionRequestedAt,
             } : null,
 
             photos: (entity.photos || []).map(p => p.toJSON()),

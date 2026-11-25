@@ -1,5 +1,18 @@
 import { AuthProvider, UserStatus } from "../../domain/enums/user.enums";
 
+export interface UserKycResponseDto {
+    verificationStatus?: string;
+    documentType?: string;
+    verifiedDOB?: Date;
+    selfieVerificationStatus?: string;
+    verificationSubmitted?: boolean;
+    passedPrompts?: string[];
+    reviewDecision?: string;
+    resubmissionReasons?: string[];
+    resubmissionMessage?: string;
+    resubmissionRequestedAt?: Date;
+}
+
 export interface UserResponseDto {
     id?: string;
     email: string;
@@ -18,7 +31,7 @@ export interface UserResponseDto {
     // Sub-entities
     profile?: Record<string, unknown> | null; 
     preference?: Record<string, unknown> | null;
-    kycVerification?: Record<string, unknown> | null;
+    kycVerification?: UserKycResponseDto | null;
     photos?: Record<string, unknown>[];
     privacySettings?: Record<string, unknown> | null;
     medicalRecord?: Record<string, unknown> | null;
