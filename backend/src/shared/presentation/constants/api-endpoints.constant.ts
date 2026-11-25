@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
         SELFIE: 'selfie',
         LIVENESS: 'liveness',
         SUBMIT_VERIFICATION: 'submit-verification',
+        RESET_RESUBMISSION: 'reset-resubmission',
     },
     HANDOFF: {
         BASE: 'verification/phone-handoff',

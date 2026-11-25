@@ -16,6 +16,7 @@ export const RESPONSE_MESSAGES = {
         LIVENESS_VERIFIED: 'Liveness prompt verified successfully.',
         VERIFICATION_SUBMITTED: 'Verification submitted successfully.',
         HANDOFF_CREATED: 'Phone handoff session created.',
+        RESUBMISSION_RESET: 'KYC verification reset successfully for resubmission.',
     },
     HANDOFF: {
         PHONE_CONNECTED: 'Phone securely connected via QR Handoff.',
