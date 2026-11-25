@@ -21,8 +21,8 @@ export class SubmitLiveSelfieUseCase implements ISubmitLiveSelfieUseCase {
         const user = await this._userRepository.findById(userId);
         if (!user) throw new DomainException(ErrorCode.USER_NOT_FOUND, USER_ERROR_MESSAGES.USER_NOT_FOUND);
 
-        // Ensure phase 3-7 (Document PKI) is actually finished first
-        if (user.kycVerification?.verificationStatus !== 'APPROVED') {
+        // Ensure Pillar 1 (Document PKI) is validated before accepting biometrics
+        if (!user.kycVerification?.hasValidDocument()) {
             throw new DomainException(ErrorCode.KYC_DOCUMENT_INVALID, USER_ERROR_MESSAGES.DOCUMENT_VERIFICATION_FIRST);
         }
 
